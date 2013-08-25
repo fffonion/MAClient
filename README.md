@@ -16,8 +16,8 @@
 
 ###account_?
 
-####?可选cn,cn2,tw分别对应国服1区，国服2区，台服
-####session不用管它
+?可选cn,cn2,tw分别对应国服1区，国服2区，台服
+session不用管它
 
 
 ###carddeck
@@ -141,7 +141,8 @@ factor=93714777,54276719
     FP 友情点数
     FAIRY_ALIVE 自己的妖精是否存活
 
-####factor为因子战需满足的表达式，
+####factor
+因子战需满足的表达式，
 变量：
 star，cid，分别对应头像的星数和卡片id
 eg:
@@ -149,7 +150,8 @@ eg:
     start ==1 or star ==2或cid in [1,2] #卡片为一星或两星
     cid in [124,8,256] #卡片id为124,8或256：
 
-####explore_area为选择秘境满足的表达式，
+####explore_area
+选择秘境满足的表达式，
 变量：area
 属性：
 活动秘境 IS_EVENT, 每日秘境 IS_DAILY_EVENT,未刷完 NOT_FINNISHED,秘境名称 name
@@ -158,7 +160,8 @@ eg.：
     area.IS_EVENT and area.NOT_FINNISHED　#想进入一个没完成的活动秘境
     area.name == ' 學校四樓教室' #进入 学校四楼教室
 
-####explore_floor为选择地区满足的表达式，
+####explore_floor
+选择地区满足的表达式，
 变量：floor
 属性：
 未刷完 NOT_FINNISHED, AP消耗 cost
@@ -166,7 +169,8 @@ eg.：
 
     floor.cost<6 and floor.NOT_FINNISHED #进没完成的且cost小于6的地区：
 
-####fairy_select为妖精列表里的什么妖精要打
+####fairy_select
+妖精列表里的什么妖精要打
 变量：fairy
 属性：
 是我开的 IS_MINE,剩余时间 TIME_LIMIT(单位为秒),已舔 BATTLED,等级 lv,是否觉醒 IS_WAKE,自己的妖精是否还活着 STILL_ALIVE
@@ -174,7 +178,8 @@ eg.：
 
     not fairy.IS_MINE and fairy.ELAPSED>10m and not fairy.BATTLED #打不是我发现的，已经过去10分钟的，还没舔过的妖精
 
-####fairy_select_carddeck为遇到什么样的妖精时选择什么样的卡组
+####fairy_select_carddeck
+遇到什么样的妖精时选择什么样的卡组
 变量：fairy
 属性：
 lv,hp,name,IS_MINE,自己的妖精是否还活着 STILL_ALIVE, 剩余时间 TIME_LIMIT(单位为秒)
@@ -184,7 +189,8 @@ eg.：
     fairy.hp>200000 and 'tiandao' or 'full' 也可写作 'tiandao' if fairy.hp>200000 else 'full'　#遇到hp>200000的妖精用卡组tiandao，否则用full
     'no_change' #不改变
 
-####select_card_to_sell自动卖卡卖哪些
+####select_card_to_sell
+自动卖卡卖哪些
 变量：card
 属性：
 star,lv,序列号 sid,卡片编号 cid，贩卖价格price
