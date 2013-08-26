@@ -1122,15 +1122,17 @@ class maClient():
                 while True:
                     #print(self.remote.status,self.remote.STARTED)
                     if self.remote.status==self.remote.STARTED:
+                        if self.remote.tasker!='':
+                            self.tasker(cmd=self.remote.get_task())
                         break
                     if not informed:
                         logging.inform(du8('remote_hdl:已被远程停止，等待开始信号ww'))
                         informed=True
                     time.sleep(30)
             elif method=='PROFILE':
-                self.remote.set({'ap':100*self.player.ap['current']/self.player.ap['max'],
-                    'bc':100*self.player.bc['current']/self.player.bc['max'],
-                    'g':self.player.gold})
+                self.remote.set({'ap_current':self.player.ap['current'],'ap_max':self.player.ap['max'],
+                    'bc_current':self.player.bc['current'],'bc_max':self.player.bc['max'],
+                    'gold':self.player.gold})
             elif method=='FAIRY':
                 self.remote.fckfairy(fairy)
             if self.remote.lastprofile!=0:

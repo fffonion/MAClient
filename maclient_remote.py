@@ -41,12 +41,15 @@ class maRemote():
         self.rpt.start()
         self.lastquery=0
         self.lastprofile=0
+        self.task=''
         
     def do(self,uri='',param='',method='GET'):
         if method=='GET':
             #print self.home+uri+'?'+param
             header={'Cookie':self.cookie}
             resp,ct=self.ht.request(self.home+uri+'?'+param,headers=header)
+            if 'set-cookie' in resp:
+                self.cookie=resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
             #print ct
             return ct
         elif method=='POST':
@@ -54,6 +57,10 @@ class maRemote():
     '''def conn_status(self):
         #远程连接状况回报
         return self.lastquery,self.lastprofile'''
+    def get_task(self):
+        t=self.task
+        self.task=''
+        return t
     def login(self):
         self.log_in=True
         '''return True,msg'''
