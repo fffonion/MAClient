@@ -2,7 +2,7 @@
 
 密钥已删除，请自行搜索
 
-有关API，请参阅[API文档](https://github.com/fffonion/maClient/blob/master/API DOCUMENT.md)
+有关API，请参阅[API文档](https://github.com/fffonion/maClient/blob/master/API Document.md)
 
 ##运行
 
