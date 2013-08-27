@@ -1,4 +1,5 @@
 #coding:utf-8
+#A tool to unpack master_item file to csv
 import os,os.path as opth
 import sys
 import binascii

@@ -43,6 +43,8 @@ task 下一步maclient要执行的命令
 ####login
 当maclient的set_remote被调用后自动被执行，须返回一个元组，内容为(是否登录成功，提示信息)
 
+比如，可以在这个方法中得到一个cookie以供后续操作。无需显式地处理cookie，maclient_remote自动使用得到的cookie
+
 需要继承maclient_remote的login方法
         
 ####queryloop
@@ -56,7 +58,7 @@ task 下一步maclient要执行的命令
 ####fckfairy
 当玩家进行一次妖精战时，本方法被调用一次，传入一个名为fairy的object_dict，可得到fairy.name, fairy.lv, fairy.hp等属性值
 
-当需要网络操作时，可以使用方法self.do(uri='',param='',method='GET')，传入uri，上传的内容(仅POST)，方法（'POST','GET'），返回值为回调内容
+当需要网络操作时，可以使用方法self.do(uri='',param='',method='GET')，传入uri，上传的内容(POST或GET中分别表示post data和query string)，方法（'POST','GET'），返回值为回调内容
 已支持cookie
 
 在maclient_plugin_test中可以是这样的：

@@ -1,4 +1,5 @@
 #coding:utf-8
+#A tool to scratch card data from duowan db
 import httplib2
 import re
 import base64 as b64

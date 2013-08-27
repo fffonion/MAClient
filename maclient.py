@@ -552,13 +552,18 @@ class maClient():
                         if info.event_type=='3':
                             usercard=info.user_card
                             logging.debug('explore:cid %s sid %s'%(usercard.master_card_id,usercard.serial_id))
-                            logging.info(du8('获得了 ')+self.carddb[int(usercard.master_card_id)][0]+\
+                            logging.info(du8('获得了 ')+self.carddb[int(usercard.master_card_id)][0]+
                                 (' x1 %s☆')%(self.carddb[int(usercard.master_card_id)][1]))
                         if info.event_type=='15':
                             compcard=info.autocomp_card[-1]
-                            logging.debug('explore:cid %s sid %s'%(compcard.master_card_id,compcard.serial_id))
-                            logging.info(du8('合成了 ')+self.carddb[int(compcard.master_card_id)][0]+\
-                                (' lv%s exp%s nextexp%s')%(compcard.lv,compcard.exp,compcard.next_exp))
+                            logging.debug('explore:cid %s sid %s'%(
+                                compcard.master_card_id,
+                                compcard.serial_id))
+                            logging.info(du8('合成了 ')+self.carddb[int(compcard.master_card_id)][0]+
+                                (' lv%s exp%s nextexp%s')%(
+                                    compcard.lv,
+                                    compcard.exp,
+                                    compcard.next_exp))
                         if info.event_type=='5':
                             logging.info(du8('AREA %s CLEAR -v-'%floor.id))
                             time.sleep(2)
@@ -619,7 +624,11 @@ class maClient():
                 rare_str=' '+rare[self.carddb[int(mid)][1]-3]
             else:
                 rare_str=' '
-            excname.append('[%s]%s%s'%(self.carddb[int(mid)][0],self.player.card.sid(card.serial_id).holography =='1' and '-HOLO' or '',rare_str))
+            excname.append('[%s]%s%s'%(
+                self.carddb[int(mid)][0],
+                self.player.card.sid(card.serial_id).holography =='1' and '-HOLO' or '',
+                rare_str
+            ))
         
         logging.info(du8('获得%d张新卡片: '%len(excname))+', '.join(excname))
         self.player.friendship_point=self.player.friendship_point-200*len(excname)
@@ -663,9 +672,11 @@ class maClient():
             evalres=eval(evalcard) and not card.mid in [390,391,392]#切尔莉
             if evalres:
                 if card.star>3:
-                    warning_card.append(self.carddb[int(card.master_card_id)][0]+du8(' lv%d ☆%s'%(card.lv_i,self.carddb[int(card.master_card_id)][1])))
+                    warning_card.append(self.carddb[int(card.master_card_id)][0]+
+                        du8(' lv%d ☆%s'%(card.lv_i,self.carddb[int(card.master_card_id)][1])))
                 sid.append(card.serial_id)
-                cinfo.append(self.carddb[int(card.master_card_id)][0]+du8(' lv%d ☆%s'%(card.lv_i,self.carddb[int(card.master_card_id)][1])))
+                cinfo.append(self.carddb[int(card.master_card_id)][0]+
+                    du8(' lv%d ☆%s'%(card.lv_i,self.carddb[int(card.master_card_id)][1])))
         logging.info(len(sid)==0 and du8('没有要贩卖的卡片') or du8('将要贩卖这些卡片：')+', '.join(cinfo))
         if len(warning_card)>0:
             if self.sellcardwarning>=1:
@@ -690,8 +701,7 @@ class maClient():
         if serial_id==[]:
             logging.debug('sell_card:no cards selected')
             return
-        paramenter='mode=1'
-        if self._dopost('card_exchange',postdata=paramenter)[0]['error']:
+        if self._dopost('card_exchange',postdata='mode=1')[0]['error']:
             return 0
         while len(serial_id)>0:
             #>30张要分割
@@ -841,8 +851,8 @@ class maClient():
                 if atk.discoverer=='1':
                     disc_name=atk.user_name
                     break
-        logging.info(du8('妖精:')+fairy.name+'lv%d'%fairy.lv+du8(' 发现者:')+'%s hp:%d attackers:%d %s'%(\
-        disc_name,fairy.hp,len(fairy.attacker_history.attacker),fairy.rare_flg=='1' and 'WAKE!' or''))
+        logging.info(du8('妖精:')+fairy.name+'lv%d'%fairy.lv+du8(' 发现者:')+'%s hp:%d attackers:%d %s'%(
+            disc_name,fairy.hp,len(fairy.attacker_history.attacker),fairy.rare_flg=='1' and 'WAKE!' or''))
         evalsel=self._eval_gen(self._read_config('condition','fairy_select_carddeck'),evalfairy_select_carddeck)
         cardd=eval(evalsel)
         logging.debug('fairy_battle:eval:%s result:%s'%(evalsel,cardd))
@@ -895,9 +905,11 @@ class maClient():
                 self.player.fairy={'id':0,'alive':False}
         else:
             logging.info(du8('YOU LOSE- -'))
-        logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(\
-            int(res.before_exp)-int(res.after_exp),res.after_exp,\
-            int(res.after_gold)-int(res.before_gold),res.after_gold,\
+        logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
+            int(res.before_exp)-int(res.after_exp),
+            res.after_exp,
+            int(res.after_gold)-int(res.before_gold),
+            res.after_gold
             )))
         if not res.before_level==res.after_level:
             logging.info(du8('升级了：↑%s'%res.after_level))
@@ -937,7 +949,9 @@ class maClient():
                 deluser=None
                 maxlogintime=0
                 for user in users:
-                    strf+='%d.%s\t最后上线:%s  LV:%s  BC:%s\n'%(i,user.name,user.last_login,user.town_level,user.cost)
+                    strf+='%d.%s\t最后上线:%s  LV:%s  BC:%s\n'%(
+                        i,user.name,user.last_login,user.town_level,user.cost
+                    )
                     try:
                         user.logintime=int(user.last_login[:-1])
                     except UnicodeEncodeError:
@@ -953,7 +967,9 @@ class maClient():
                 if deluser!=None:
                     doit=False
                     if not autodel:
-                        logging.warning(du8('即将删除%d天以上没上线的：'%delfriend)+'%s 最后上线:%s ID:%s'%(deluser.name,deluser.last_login,deluser.id))
+                        logging.warning(du8('即将删除%d天以上没上线的：'%delfriend)+'%s 最后上线:%s ID:%s'%(
+                            deluser.name,deluser.last_login,deluser.id
+                        ))
                         if self._raw_input('y/n >')=='y':
                             doit=True
                     if autodel or doit:
@@ -976,7 +992,9 @@ class maClient():
                 i=1
                 strf=''
                 for user in users:
-                    strf+='%d.%s\tLV:%s\t最后上线:%s\t好友:%s/%s\tBC:%s\n'%(i,user.name,user.town_level,user.last_login,user.friends,user.friend_max,user.cost)
+                    strf+='%d.%s\tLV:%s\t最后上线:%s\t好友:%s/%s\tBC:%s\n'%(
+                        i,user.name,user.town_level,user.last_login,user.friends,user.friend_max,user.cost
+                    )
                     i+=1
                 logging.info(du8('申请列表:\n')+strf)
                 adduser=self._raw_input('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
@@ -1011,7 +1029,9 @@ class maClient():
                 i=1
                 strf=''
                 for user in users:
-                    strf+='%d.%s\tLV:%s\t最后上线:%s\t好友:%s/%s\tBC:%s\n'%(i,user.name,user.town_level,user.last_login,user.friends,user.friend_max,user.cost)
+                    strf+='%d.%s\tLV:%s\t最后上线:%s\t好友:%s/%s\tBC:%s\n'%(
+                        i,user.name,user.town_level,user.last_login,user.friends,user.friend_max,user.cost
+                    )
                     i+=1
                 logging.info(du8('搜索结果:\n')+strf)
                 u=self._raw_input('选择要添加的好友序号> ')
@@ -1026,12 +1046,6 @@ class maClient():
             else:
                 logging.error(du8('木有这个选项哟0w0'))
             choice=''
-
-    def _exit(self,code=0):
-        self.stitle.flag=0
-        self.stitle.join(0.1)
-        raw_input('THAT\'S THE END')
-        sys.exit(code)
 
     def factor_battle(self,minbc=0):
         minbc=int(minbc)
@@ -1079,10 +1093,16 @@ class maClient():
                     try:
                         star=int(self.carddb[cid][1])
                     except KeyError:
-                        logging.warning(du8('id为 %d 的卡片木有找到. 你可能想要查看这个网页:\n%s'%(cid,
-                                        duowan[self.loc]%(base64.encodestring('{"no":"%d"}'%cid).strip('\n').replace('=','_3_')))))
+                        logging.warning(du8('id为 %d 的卡片木有找到. 你可能想要查看这个网页:\n%s'%(
+                            cid,
+                            duowan[self.loc]%(base64.encodestring('{"no":"%d"}'%cid).strip('\n').replace('=','_3_')))))
                     else:
-                        logging.debug('factor_battle:eval:%s, result:%s, star:%s, cid:%d'%(evalstr,eval(evalstr),star,cid))
+                        logging.debug('factor_battle:eval:%s, result:%s, star:%s, cid:%d'%(
+                            evalstr,
+                            eval(evalstr),
+                            star,
+                            cid)
+                        )
                         if eval(evalstr):
                             logging.debug('factor_battle:->%s @ %s'%(u.name,u.leader_card.master_card_id))
                             ap=self.player.ap['current']
@@ -1104,9 +1124,17 @@ class maClient():
                                     logging.warning('no BC ?')
                                     return
                                 #print bc,self.player.bc.current
-                                logging.info(du8(result=='0' and '擦输了QAQ' or '赢了XDDD')+\
-                                    ' AP:%s%d/%s/%s'%(self.player.ap['current']>=ap and '+' or '',self.player.ap['current']-ap,self.player.ap['current'],self.player.ap['max'])+\
-                                    ' BC:%s%d/%s/%s'%(self.player.bc['current']>=bc and '+' or '',self.player.bc['current']-bc,self.player.bc['current'],self.player.bc['max']) )
+                                logging.info(du8(result=='0' and '擦输了QAQ' or '赢了XDDD')+
+                                    ' AP:%s%d/%s/%s'%(
+                                        self.player.ap['current']>=ap and '+' or '',
+                                        self.player.ap['current']-ap,
+                                        self.player.ap['current'],
+                                        self.player.ap['max'])+
+                                    ' BC:%s%d/%s/%s'%(
+                                        self.player.bc['current']>=bc and '+' or '',
+                                        self.player.bc['current']-bc,
+                                        self.player.bc['current'],
+                                        self.player.bc['max']) )
                                 time.sleep(8.62616513)
                                 self._dopost('battle_init',checkerror=False)
                                 resp,dec=self._dopost('battle_parts')
@@ -1130,16 +1158,27 @@ class maClient():
                         informed=True
                     time.sleep(30)
             elif method=='PROFILE':
-                self.remote.set({'ap_current':self.player.ap['current'],'ap_max':self.player.ap['max'],
-                    'bc_current':self.player.bc['current'],'bc_max':self.player.bc['max'],
+                self.remote.set(
+                    {'ap_current':self.player.ap['current'],
+                    'ap_max':self.player.ap['max'],
+                    'bc_current':self.player.bc['current'],
+                    'bc_max':self.player.bc['max'],
                     'gold':self.player.gold})
             elif method=='FAIRY':
                 self.remote.fckfairy(fairy)
             if self.remote.lastprofile!=0:
-                logging.debug('remote_hdl:profile has been uploaded %s seconds ago'%(int(time.time()-self.remote.lastprofile)))
+                logging.debug('remote_hdl:profile has been uploaded %s seconds ago'%
+                    (int(time.time()-self.remote.lastprofile)))
                 self.remote.lastprofile=0
-
         return do
+
+    def _exit(self,code=0):
+        if self.settitle:
+            self.stitle.flag=0
+            self.stitle.join(0.1)
+        raw_input('THAT\'S THE END')
+        sys.exit(code)
+
     def download_card(self,cardid,level=CARD_NORM):
         #print serv['%s_data'%self.loc]+uri['%s_data_card'%loc]+uri['cardlevel'][level]%cardid
         rev={'cn_card':169,'tw_card':171}
