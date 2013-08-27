@@ -150,7 +150,7 @@ class maClient():
                 if not err.code in ['1050','1010']:
                     logging.error('code:%s msg:%s'%(err.code,err.message))
                     resp.update({'error':True,'errno':int(err.code)})
-                if resp['errno']=='9000':
+                if err.code == '9000':
                     self._write_config('account_%s'%self.loc,'session','')
                     logging.info(du8('已清除会话，正在重新登录……'))
                     self.login()
@@ -269,11 +269,14 @@ class maClient():
                 elif task[0]=='login' or task[0]=='l':
                     if len(task)==2:
                         task=[task[0],'--PLACEHOLDER--','']
-                    self.login(task[1],task[2])
+                    dec=self.login(task[1],task[2])
+                    self.initplayer(dec)
                 elif task[0]=='friend' or task[0]=='f':
                     if len(task)==2:
                         task=[task[0],'','']
                     self.friends(task[1],task[2]=='True')
+                elif task[0]=='point' or task[0]=='p':
+                    self.point_setting()
                 elif task[0]=='gacha' or task[0]=='g':
                     if len(task)==2:
                         task[1]=GACHA_FRIENNSHIP_POINT
@@ -294,8 +297,8 @@ class maClient():
             logging.info(du8('加载了保存的账户XD'))
             dec=open(self.playerfile,'r').read()
         else:
-            self.username=self.username or uname
-            self.password=self.password or pwd
+            self.username= uname or self.username
+            self.password= pwd or self.password
             if uname=='--PLACEHOLDER--' or self.username=='':
                 self.username=self._raw_input('Username:')
             if (uname!='' and pwd=='') or self.password=='':
@@ -324,6 +327,10 @@ class maClient():
         self.carddb=self.player.card.db
         self.itemdb=self.player.item.name
         self.player_initiated=True
+        if self.player.id!='0':
+            self._write_config('acount_%s'%self.loc,'user_id',self.player.id)
+        else:
+            self.player.id=self._read_config('acount_%s'%self.loc,'user_id')
         if self.settitle:
             #窗口标题线程
             self.stitle=set_title(self)
@@ -358,17 +365,17 @@ class maClient():
         last_set_bc=self._read_config('record','last_set_bc')
         if last_set_bc=='':
             last_set_bc=0
-            cards=self._read_connfig('record','last_set_card')
+            cards=self._read_config('record','last_set_card')
             if cards=='':
                 logging.debug('strict_bc:no last set card, return False')
                 return False
             else:
                 for cardid in cards.split(','):
-                    if cardid>3 and not cardid=='empty':
+                    if len(cardid)>3 and cardid!='empty':
                         mid=self.player.card.sid(cardid).master_card_id
                     else:
                         mid=cardid
-                    last_set_bc+=int(self.carddb[int(cardid)][-1])
+                    last_set_bc+=int(self.carddb[int(mid)][-1])
             self._write_config('record','last_set_bc',str(last_set_bc))
         else:
             last_set_bc=int(last_set_bc)
@@ -1046,6 +1053,28 @@ class maClient():
             else:
                 logging.error(du8('木有这个选项哟0w0'))
             choice=''
+    def point_setting(self):
+        if self._dopost('menu_playerinfo',postdata='kind=6&user_id=%s'%self.player.id)[0]['error']:
+            return
+        resp,ct=self._dopost('town_lvup_status',postdata='kind=6&user_id=%s'%self.player.id)
+        if resp['error']:
+            return
+        free_points = int(XML2Dict().fromstring(ct).response.header.your_data.free_ap_bc_point)
+        if free_points==0:
+            logging.debug(du8('point_setting:没有未分配点数233'))
+            return False
+        else:
+            logging.info(du8('还有%d点未分配点数'%free_points))
+        while True:
+            try:
+                ap,bc=self._raw_input('输入要分配给AP BC的点数，空格分隔> ').split(' ')
+            except ValueError:
+                logging.warning(du8('少输入了一个数或者多输了一个数吧'))
+            else:
+                break
+        if not self._dopost('town_pointsetting',postdata='ap=%s&bc=%s'%(ap,bc))[0]['error']:
+            logging.info(du8('点数分配成功！'))
+
 
     def factor_battle(self,minbc=0):
         minbc=int(minbc)
@@ -1173,9 +1202,9 @@ class maClient():
         return do
 
     def _exit(self,code=0):
-        if self.settitle:
-            self.stitle.flag=0
-            self.stitle.join(0.1)
+        # if self.settitle:
+        #     self.stitle.flag=0
+        #     self.stitle.join(0.1)
         raw_input('THAT\'S THE END')
         sys.exit(code)
 

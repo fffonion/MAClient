@@ -35,12 +35,12 @@ nosetests.xml
 .pydevproject
 
 #others
+_mine
 *.exe
 release
 *.pyc
 *.playerdata
 config.ini
-config_cn.ini
 android
 debug
 release
@@ -48,4 +48,5 @@ release
 *mengsky*
 *.log
 *.bat
-mac.saved.txt
+*.saved.*
+testxml.py

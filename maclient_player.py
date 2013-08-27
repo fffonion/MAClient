@@ -41,6 +41,8 @@ class player(object):
 			xml = XML2Dict().fromstring(xmldata)
 			if 'login' in xml.response.body:
 				self.id=xml.response.body.login.user_id
+			else:
+				self.id='0'
 			self.playerdata=xml.response.header.your_data
 		except:
 			

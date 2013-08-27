@@ -256,5 +256,5 @@ sell_card_warning 卖卡提醒'''))
                         maclient1.tasker(cmd=ch)
             else:
                 maclient.logging.error(du8('嗯-v-？'))
-            print(' %s %s'%('-'*getTerminalSize()[0],'\n'))
+            print(' %s %s'%('-'*(getTerminalSize()[0]-2),'\n'))
 raw_input('THAT\'S THE END')
