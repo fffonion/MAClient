@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding:utf-8
-# A MA emulator network frontend
+# maclient!
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
 from __future__ import print_function
@@ -142,7 +142,7 @@ class maClient():
         if self.displayani:
             connani.flag=0
             connani.join(0.16)
-        if resp['status']>=400:
+        if int(resp['status'])>=400:
             return resp,dec
         if checkerror:
             err=XML2Dict().fromstring(dec).response.header.error
@@ -271,7 +271,7 @@ class maClient():
                     self.loc=task[1]
                 elif task[0]=='login' or task[0]=='l':
                     if len(task)==2:
-                        task=[task[0],'--PLACEHOLDER--','']
+                        task.append('')
                     dec=self.login(task[1],task[2])
                     self.initplayer(dec)
                 elif task[0]=='friend' or task[0]=='f':
@@ -280,6 +280,8 @@ class maClient():
                     self.friends(task[1],task[2]=='True')
                 elif task[0]=='point' or task[0]=='p':
                     self.point_setting()
+                elif task[0]=='rb' or task[0]=='reward_box':
+                    self.reward_box()
                 elif task[0]=='gacha' or task[0]=='g':
                     if len(task)==2:
                         task[1]=GACHA_FRIENNSHIP_POINT
@@ -291,7 +293,7 @@ class maClient():
                 if cnt!=1:
                     logging.inform(du8('tasker:正在滚床单wwww'))
                     time.sleep(3.15616546511)
-                    resp,ct=self._dopost('main_menu')#初始化
+                    resp,ct=self._dopost('mainmenu')#初始化
 
     def login(self,uname='',pwd=''):
 
@@ -302,9 +304,9 @@ class maClient():
         else:
             self.username= uname or self.username
             self.password= pwd or self.password
-            if uname=='--PLACEHOLDER--' or self.username=='':
+            if self.username=='':
                 self.username=self._raw_input('Username:')
-            if (uname!='' and pwd=='') or self.password=='':
+            if self.password=='' or (uname!='' and pwd==''):
                 self.password=getpass.getpass('Password:')
                 if self._raw_input('是否保存密码(y/n)？')=='y':
                     self._write_config('account_%s'%self.loc,'password',self.password)
@@ -312,8 +314,8 @@ class maClient():
             token=self._read_config('system','device_token').replace('\\n','\n') or \
             'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
             self._dopost('check_inspection',checkerror=False,extraheader={},usecookie=False)
-            self._dopost('post_token',postdata='S=%s&login_id=%s&password=%s&app=and&token=%s'%('nosessionid',self.username,self.password,token),checkerror=False)
-
+            self._dopost('notification/post_devicetoken',postdata='S=%s&login_id=%s&password=%s&app=and&token=%s'%('nosessionid',self.username,self.password,token),checkerror=False)
+            
             resp,dec=self._dopost('login',postdata='login_id=%s&password=%s'%(self.username,self.password))
             if resp['error']:
                 logging.info(du8('登录失败しました'))
@@ -341,9 +343,9 @@ class maClient():
             self.stitle.start()
 
     def auto_check(self,doingwhat):
-        if not doingwhat in ['login','check_inspection','post_token']:
+        if not doingwhat in ['login','check_inspection','notification/post_devicetoken']:
             if int(self.player.card.count) >=200 and \
-                not doingwhat in ['card_exchange', 'trunk_sell']:
+                not doingwhat in ['card/exchange', 'trunk/sell']:
                 if self.autosell:
                     logging.inform(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))
                     self.select_card_sell()
@@ -352,7 +354,7 @@ class maClient():
                     logging.warning(du8('卡片已经放不下了，请自行卖卡www'))
                     return False
             if self.player.friendship_point>=9900 and \
-                not doingwhat in ['gacha_buy','gacha_select','card_exchange', 'trunk_sell']:
+                not doingwhat in ['gacha/buy','gacha/select/getcontents','card/exchange', 'trunk/sell']:
                 if self.autogacha:
                     logging.inform(du8('绊点有点多，自动转蛋(*￣▽￣)y '))
                     self._gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
@@ -416,13 +418,13 @@ class maClient():
         while True:
             if param==['empty']*12:
                 break
-            if self._dopost('edit_card',postdata='move=1')[0]['error']:
+            if self._dopost('roundtable/edit',postdata='move=1')[0]['error']:
                 break
             t=random.randint(5,10)
             logging.inform(du8('休息%d秒，假装在找卡'%t))
             time.sleep(t)
             postparam='C='+','.join(param)+'&lr='+param[0]
-            if self._dopost('set_card',postdata=postparam)[0]['error']:
+            if self._dopost('cardselect/savedeckcard',postdata=postparam)[0]['error']:
                 break
             logging.info(du8('成功更换卡组为%s'%deckkey))
             #保存
@@ -436,7 +438,7 @@ class maClient():
 
     def _use_item(self,itemid):
         param='item_id=%s'%itemid
-        resp,ct=self._dopost('item_use',postdata=param)
+        resp,ct=self._dopost('item/use',postdata=param)
         if resp['error']:
             return False
         else:
@@ -474,7 +476,7 @@ class maClient():
         #选择秘境
         has_boss=[]
         while True:
-            resp,ct=self._dopost('explore_area')
+            resp,ct=self._dopost('exploration/area')
             if resp['error']:
                 return
             areas=XML2Dict().fromstring(ct).response.body.exploration_area.area_info_list.area_info
@@ -485,7 +487,7 @@ class maClient():
                 areasel=[areas[int(self._raw_input('选择： ') or '1')-1]]
             else:
                 logging.info(du8('自动选图www'))
-                evalstr=self._eval_gen(cond or self._read_config('condition','explore_area'),eval_explore_area)
+                evalstr=self._eval_gen(cond or self._read_config('condition','exploration/area'),eval_explore_area)
                 areasel=[]
                 logging.debug('explore:eval:%s'%(evalstr))
                 for area in areas:
@@ -500,14 +502,14 @@ class maClient():
             while True:
                 #选择地区
                 param='area_id=%s'%(area.id)
-                resp,ct=self._dopost('explore_floor',postdata=param)
+                resp,ct=self._dopost('exploration/floor',postdata=param)
                 if resp['error']:
                     return
                 floors=XML2Dict().fromstring(ct).response.body.exploration_floor.floor_info_list.floor_info
                 if 'found_item_list' in floors:
                     floors=[floors]#只有一个
                 nofloorselect=True
-                evalstr=self._eval_gen(self._read_config('condition','explore_floor'),eval_explore_floor)
+                evalstr=self._eval_gen(self._read_config('condition','exploration/floor'),eval_explore_floor)
                 logging.debug('explore:eval:%s'%(evalstr))
                 for floor in floors:
                     floor.cost=int(floor.cost)
@@ -524,12 +526,12 @@ class maClient():
                 logging.info(du8('进♂入地区 ')+floor.id)
                 #进入
                 param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
-                if self._dopost('explore_get_floor',postdata=param)[0]['error']:
+                if self._dopost('exploration/get_floor',postdata=param)[0]['error']:
                     return
                 #走路
                 param='area_id=%s&auto_build=1&floor_id=%s'%(area.id,floor.id)
                 while True:
-                    resp,ct=self._dopost('explore',postdata=param)
+                    resp,ct=self._dopost('exploration/explore',postdata=param)
                     if resp['error']:
                         return
                     info=XML2Dict().fromstring(ct).response.body.explore
@@ -619,11 +621,11 @@ class maClient():
         else:
             ab=self._read_config('system','auto_build')
             bulk='0'
-        if self._dopost('gacha_select')[0]['error']:
+        if self._dopost('gacha/select/getcontents')[0]['error']:
             return
         logging.debug("gacha:auto_build:%s bulk:%s product_id:%d"%(ab,bulk,gacha_type))
         param="auto_build=%s&bulk=%s&product_id=%d"%(ab,bulk,gacha_type)
-        resp,ct=self._dopost('gacha_buy',postdata=param)
+        resp,ct=self._dopost('gacha/buy',postdata=param)
         if resp['error']:
             return
         gacha_buy=XML2Dict().fromstring(ct).response.body.gacha_buy
@@ -661,13 +663,21 @@ class maClient():
         time.sleep(7.3890560964)
 
     def _get_rewards(self,notice_id):
-        param="notice_id=%s"%(','.join(notice_id))
-        resp,ct=self._dopost('menu_get_rewards',postdata=param)
-        if not resp['error']:
-            logging.debug('_get_rewards:get successfully.')
-            return True
-        else:
-            return False
+        hasgot=False
+        while len(notice_id)>0:
+            #一次20个
+            if len(notice_id)>20:
+                logging.debug('_get_rewards:too many rewards (%d)'%(len(notice_id)))
+                no_id=notice_id[:20]
+            else:
+                no_id=notice_id
+            notice_id=notice_id[len(no_id):]
+            param="notice_id=%s"%(','.join(no_id))
+            resp,ct=self._dopost('menu/get_rewards',postdata=param)
+            if not resp['error']:
+                logging.debug('_get_rewards:get successfully.')
+                hasgot=True
+        return hasgot
 
     def select_card_sell(self,cond=''):
         evalcard=self._eval_gen(cond or self._read_config('condition','select_card_to_sell'),eval_select_card)
@@ -715,7 +725,7 @@ class maClient():
         if serial_id==[]:
             logging.debug('sell_card:no cards selected')
             return
-        if self._dopost('card_exchange',postdata='mode=1')[0]['error']:
+        if self._dopost('card/exchange',postdata='mode=1')[0]['error']:
             return 0
         while len(serial_id)>0:
             #>30张要分割
@@ -730,7 +740,7 @@ class maClient():
             slp=random.random()*15+7
             logging.inform(du8('%f秒后卖卡……'%slp))
             time.sleep(slp)
-            resp,ct=self._dopost('trunk_sell',postdata=paramsell)
+            resp,ct=self._dopost('trunk/sell',postdata=paramsell)
             if not resp['error']:
                 logging.info(resp['errmsg']+du8('(%d张卡片)'%len(se_id)))
 
@@ -768,17 +778,17 @@ class maClient():
 
 
     def fairy_select(self,cond=''):
-        resp,ct=self._dopost('menu_list')
+        resp,ct=self._dopost('menu/menulist')
         if resp['error']:
             return
         time.sleep(2)
-        resp,ct=self._dopost('main_menu')
+        resp,ct=self._dopost('mainmenu')
         if resp['error']:
             return
         if XML2Dict().fromstring(ct).response.header.your_data.fairy_appearance!='1':
             return
         time.sleep(2)
-        resp,ct=self._dopost('menu_fairy_select')
+        resp,ct=self._dopost('menu/fairyselect')
         if resp['error']:
             return
         fs=XML2Dict().fromstring(ct).response.body.fairy_select
@@ -822,14 +832,14 @@ class maClient():
             if self._fairy_battle(f.fairy,type=NORMAL_BATTLE):
                 instant_refresh=True
             #走个形式
-            resp,ct=self._dopost('menu_fairy_select')
+            resp,ct=self._dopost('menu/fairyselect')
             if resp['error']:
                 return
         return instant_refresh
             #fairy.user.name,fairy.fairy.name,fairy.fairy.serial_id,fairy.fairy.lv,fairy.put_down
             #fairy.start_time,fairy.fairy.time_limit
     def _fairy_rewards(self):
-        resp,ct=self._dopost('menu_fairy_rewards')
+        resp,ct=self._dopost('menu/fairyrewards')
         if resp['error']:
             return
         rws=XML2Dict().fromstring(ct).response.body.fairy_rewards.reward_details
@@ -846,7 +856,7 @@ class maClient():
         '''
         def fairy_floor():
             paramfl='check=1&serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
-            resp,ct=self._dopost('explore_fairy_floor',postdata=paramfl)
+            resp,ct=self._dopost('exploration/fairy_floor',postdata=paramfl)
             return XML2Dict().fromstring(ct).response.body.fairy_floor.explore.fairy
         if type==NORMAL_BATTLE:    
             fairy=fairy_floor()#走形式
@@ -885,7 +895,7 @@ class maClient():
             else:
                 return True
         paramf='serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
-        resp,ct=self._dopost('explore_battle',postdata=paramf)
+        resp,ct=self._dopost('exploration/fairybattle',postdata=paramf)
         if resp['error']:
             return
         elif resp['errno']==1050:
@@ -924,7 +934,7 @@ class maClient():
         else:
             hpleft=int(XML2Dict().fromstring(ct).response.body.explore.fairy.hp)
             logging.info(du8('YOU LOSE- - Fairy-HP:%d'%hpleft))
-            if self.fairyfinalkillhp<=hpleft:
+            if self.fairyfinalkillhp>=hpleft:
                 logging.debug('_fairy_battle:instant refresh!')
                 need_refresh=True
         logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
@@ -957,7 +967,7 @@ class maClient():
             else:
                 loop=1
             if choice=='1':
-                resp,dec=self._dopost('menu_friendlist',postdata='move=0')
+                resp,dec=self._dopost('menu/friendlist',postdata='move=0')
                 lastmove=1
                 if resp['error']:
                     return
@@ -998,13 +1008,13 @@ class maClient():
                             doit=True
                     if autodel or doit:
                         param='dialog=1&user_id=%s'%deluser.id
-                        resp,dec=self._dopost('remove_friend',postdata=param)
+                        resp,dec=self._dopost('friend/remove_friend',postdata=param)
                         logging.info(resp['errmsg'])
                 else:
                     logging.debug(du8('没有要删除的好友'))
             elif choice=='3':
                 lastmove=3
-                resp,dec=self._dopost('menu_friend_notice',postdata='move=0')
+                resp,dec=self._dopost('menu/friend_notice',postdata='move=0')
                 if resp['error']:return
                 try:
                     users=XML2Dict().fromstring(dec).response.body.friend_notice.user_list.user
@@ -1027,21 +1037,21 @@ class maClient():
                         if u.startswith('-'):
                             u=u[1:]
                             param='dialog=1&user_id=%s'%users[int(u)-1].id
-                            resp,dec=self._dopost('refuse_friend',postdata=param)
+                            resp,dec=self._dopost('friend/refuse_friend',postdata=param)
                         else:
                             if users[int(u)-1].friends==users[int(u)-1].friend_max:
                                 logging.warning(du8('无法成为好友ww'))
                             param='dialog=1&user_id=%s'%users[int(u)-1].id
-                            resp,dec=self._dopost('approve_friend',postdata=param)
+                            resp,dec=self._dopost('friend/approve_friend',postdata=param)
                         logging.info(resp['errmsg'])
                         time.sleep(2)
             elif choice=='2':
                 if lastmove!=2:
-                    resp,dec=self._dopost('friend_other')
+                    resp,dec=self._dopost('menu/other_list')
                 lastmove=2
                 qry=self._raw_input('输入关键词> ').decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
                 param='name=%s'%qry
-                resp,dec=self._dopost('player_search',postdata=param)
+                resp,dec=self._dopost('menu/player_search',postdata=param)
                 if resp['error']:return
                 try:
                     users=XML2Dict().fromstring(dec).response.body.player_search.user_list.user
@@ -1063,17 +1073,57 @@ class maClient():
                     if users[int(u)-1].friends==users[int(u)-1].friend_max:
                         logging.warning(du8('无法成为好友ww'))
                     param='dialog=1&user_id=%s'%users[int(u)-1].id
-                    resp,dec=self._dopost('approve_friend',postdata=param)
+                    resp,dec=self._dopost('friend/approve_friend',postdata=param)
                     logging.info(resp['errmsg'])
             elif choice=='4':
                 return True
             else:
                 logging.error(du8('木有这个选项哟0w0'))
             choice=''
+
+    def reward_box(self):
+        if self._dopost('menu/menulist')[0]['error']:
+            return False
+        resp,ct=self._dopost('mainmenu')
+        if resp['error']:
+            return False
+        if XML2Dict().fromstring(ct).response.body.mainmenu.rewards=='0':
+            logging.info(du8('木有礼物盒wwww'))
+            return False
+        resp,ct=self._dopost('menu/rewardbox')
+        if resp['error']:
+            return False
+        rwds=XML2Dict().fromstring(ct).response.body.rewardbox_list.rewardbox
+        if 'id' in rwds:
+            rwds=[rwds]
+        strl=''
+        nid=[]
+        #type 2:道具 3:4:绊点 金 5:蛋卷 1:卡片
+        for r in rwds:
+            strl+=('%s:'%r.content)
+            if r.type=='1':
+                strl+='%s'%(self.carddb[int(r.card_id)][0])
+            elif r.type=='2':
+                strl+='%sx%s'%(self.itemdb[int(r.item_id)],r.get_num)
+            elif r.type=='3':
+                strl+='%sG'%r.point
+            elif r.type=='4':
+                strl+='%sFP'%r.point
+            elif r.type=='5':
+                strl+='%sx%s'%(du8('蛋蛋卷'),r.get_num)
+            else:
+                strl+=r.type
+            strl+=', '
+            nid.append(r.id)
+        logging.info(strl.rstrip(','))
+        if self._get_rewards(nid):
+            logging.info(du8('已成功领取'))
+
+
     def point_setting(self):
-        if self._dopost('menu_playerinfo',postdata='kind=6&user_id=%s'%self.player.id)[0]['error']:
+        if self._dopost('menu/playerinfo',postdata='kind=6&user_id=%s'%self.player.id)[0]['error']:
             return
-        resp,ct=self._dopost('town_lvup_status',postdata='kind=6&user_id=%s'%self.player.id)
+        resp,ct=self._dopost('town/lvup_status',postdata='kind=6&user_id=%s'%self.player.id)
         if resp['error']:
             return
         free_points = int(XML2Dict().fromstring(ct).response.header.your_data.free_ap_bc_point)
@@ -1089,15 +1139,15 @@ class maClient():
                 logging.warning(du8('少输入了一个数或者多输了一个数吧'))
             else:
                 break
-        if not self._dopost('town_pointsetting',postdata='ap=%s&bc=%s'%(ap,bc))[0]['error']:
+        if not self._dopost('town/pointsetting',postdata='ap=%s&bc=%s'%(ap,bc))[0]['error']:
             logging.info(du8('点数分配成功！'))
             return True
 
 
     def factor_battle(self,minbc=0):
         minbc=int(minbc)
-        self._dopost('battle_init',checkerror=False)
-        resp,dec=self._dopost('battle_parts')
+        self._dopost('battle/area',checkerror=False)
+        resp,dec=self._dopost('battle/competition_parts?redirect_flg=1',noencrypt=True)
         if resp['error']:
             return 
         lakes=XML2Dict().fromstring(dec).response.body.competition_parts.lake
@@ -1125,12 +1175,12 @@ class maClient():
                     return
                 logging.info(du8('选择因子 %s:%s, 碎片id %d'%(l.lake_id,l.lake_id=='0' and 'NONE' or l.title,partid)))
                 param='knight_id=%s&move=1&parts_id=%d'%(l.lake_id,partid)
-                resp,dec=self._dopost('battle_userlist',postdata=param)
+                resp,dec=self._dopost('battle/battle_userlist',postdata=param)
                 if resp['error']:
                     continue
-                #print xml2.response.body.battle_userlist.user_list
+                #print xml2.response.body.battle/battle_userlist.user_list
                 try:
-                    userlist=XML2Dict().fromstring(dec).response.body.battle_userlist.user_list.user
+                    userlist=XML2Dict().fromstring(dec).response.body.battle/battle_userlist.user_list.user
                 except KeyError:#no user found
                     continue
                 if len(userlist)==18:#only 1 user
@@ -1156,7 +1206,7 @@ class maClient():
                             bc=self.player.bc['current']
                             logging.info('%s%s%s'%(du8('艹了一下一个叫 '),u.name,du8(' 的家伙')))
                             fparam='lake_id=%s&parts_id=%d&user_id=%s'%(l.lake_id,partid,u.id)
-                            resp,dec=self._dopost('battle',postdata=fparam)
+                            resp,dec=self._dopost('battle/battle',postdata=fparam)
                             if resp['error']:
                                 continue
                             elif resp['errno']==1050:
@@ -1183,8 +1233,8 @@ class maClient():
                                         self.player.bc['current'],
                                         self.player.bc['max']) )
                                 time.sleep(8.62616513)
-                                self._dopost('battle_init',checkerror=False)
-                                resp,dec=self._dopost('battle_parts')
+                                self._dopost('battle/area',checkerror=False)
+                                resp,dec=self._dopost('battle/competition_parts?redirect_flg=1')
                                 break
                 time.sleep(int(self._read_config('system','factor_sleep')))
             logging.inform(du8('换一个碎片……睡觉先，勿扰：-/'))
@@ -1250,7 +1300,7 @@ if __name__=='__main__':
     else:
         maClient1=maClient(savesession=True)
     #进入游戏
-    #maClient1._dopost('post_token',postdata=ma.encode_param('S=nosessionid&login_id=%s&password=%s&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb'%(username,password)),extraheader={'Cookie2': '$Version=1'})
+    #maClient1._dopost('notification/post_devicetoken',postdata=ma.encode_param('S=nosessionid&login_id=%s&password=%s&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb'%(username,password)),extraheader={'Cookie2': '$Version=1'})
     #登陆
     #import profile
     #profile.run("maClient1.login()")

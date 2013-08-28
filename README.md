@@ -117,6 +117,9 @@ session不用管它
 
 删除几天以上没上线的好友
 
+####fairy_final_kill_hp
+
+若打完妖精后血量低于设定值则立即再打一次，默认为20000
 
 ###tasker
 
@@ -124,7 +127,7 @@ session不用管它
 
 可选：
 
-登陆login/l, 设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,刷列表中的妖精 fairy_battle/fyb,嗑药 red_tea/rt,嗑药 green_tea/gt,自动卖卡 sell_card/slc,设置账号类型 set_server/ss,好友相关 friend/f,转蛋gacha/g,分配点数point/p
+登陆login/l, 设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,刷列表中的妖精 fairy_battle/fyb,嗑药 red_tea/rt,嗑药 green_tea/gt,自动卖卡 sell_card/slc,设置账号类型 set_server/ss,好友相关 friend/f,转蛋gacha/g,分配点数point/p,礼物盒reward_box/rb
 
 以t:开头可执行任务
 

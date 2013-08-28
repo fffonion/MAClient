@@ -1,4 +1,8 @@
-#coding:utf-8
+#!/usr/bin/env python
+# coding:utf-8
+# maclient remote plugin base
+# Contributor:
+#      fffonion        <fffonion@gmail.com>
 import httplib2
 import re
 import hashlib

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding:utf-8
-# A MA emulator backend
+# maclient player class
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
 import os

@@ -1,4 +1,9 @@
-__version__=1.2
+#!/usr/bin/env python
+# coding:utf-8
+# maclient transparent proxy
+# modified from sogou proxy
+# Contributor:
+#      fffonion        <fffonion@gmail.com>
 from threading import Thread, Lock  
 from struct import unpack  
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer  
