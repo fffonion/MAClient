@@ -19,7 +19,7 @@ import getpass
 import maclient_player
 import maclient_network
 import maclient_logging
-__version__=1.39
+__version__=1.41
 #CONSTS:
 CARD_NORM,CARD_MAX,CARD_NORM_HOLO,CARD_MAX_HOLO=0,1,2,3
 EXPLORE_BATTLE,NORMAL_BATTLE=0,1
@@ -96,6 +96,7 @@ class maClient():
         self.autoredtealevel=self._read_config('system','auto_red_tea_level')
         self.strictbc=self._read_config('system','strict_bc')=='1'
         self.sellcardwarning=int(self.sellcardwarning)
+        self.fairyfinalkillhp=int(self._read_config('system','fairy_final_kill_hp') or '20000')
         logging.basicConfig(level=self._read_config('system','loglevel'))
         logging.setlogfile('events_%s.log'%self.loc)
         self.savesession=savesession
@@ -141,6 +142,8 @@ class maClient():
         if self.displayani:
             connani.flag=0
             connani.join(0.16)
+        if resp['status']>=400:
+            return resp,dec
         if checkerror:
             err=XML2Dict().fromstring(dec).response.header.error
             resp.update({'error':False,'errno':0,'errmsg':''})
@@ -328,9 +331,9 @@ class maClient():
         self.itemdb=self.player.item.name
         self.player_initiated=True
         if self.player.id!='0':
-            self._write_config('acount_%s'%self.loc,'user_id',self.player.id)
+            self._write_config('account_%s'%self.loc,'user_id',self.player.id)
         else:
-            self.player.id=self._read_config('acount_%s'%self.loc,'user_id')
+            self.player.id=self._read_config('account_%s'%self.loc,'user_id')
         if self.settitle:
             #窗口标题线程
             self.stitle=set_title(self)
@@ -359,11 +362,11 @@ class maClient():
                     return False
         return True
 
-    def check_strict_bc(self):
+    def check_strict_bc(self,refresh=False):
         if not self.strictbc:
             return False
         last_set_bc=self._read_config('record','last_set_bc')
-        if last_set_bc=='':
+        if last_set_bc=='' or refresh:
             last_set_bc=0
             cards=self._read_config('record','last_set_card')
             if cards=='':
@@ -413,19 +416,19 @@ class maClient():
         while True:
             if param==['empty']*12:
                 break
+            if self._dopost('edit_card',postdata='move=1')[0]['error']:
+                break
             t=random.randint(5,10)
             logging.inform(du8('休息%d秒，假装在找卡'%t))
             time.sleep(t)
-            if self._dopost('edit_card',postdata='move=1')[0]['error']:
-                break
             postparam='C='+','.join(param)+'&lr='+param[0]
             if self._dopost('set_card',postdata=postparam)[0]['error']:
                 break
             logging.info(du8('成功更换卡组为%s'%deckkey))
-            #记录BC
-            self.check_strict_bc()
             #保存
             self._write_config('record','last_set_card',self._read_config('carddeck',deckkey))
+            #记录BC
+            self.check_strict_bc(refresh=True)
             return True
         logging.info(du8('卡组没有改变'))
         return False
@@ -438,7 +441,7 @@ class maClient():
             return False
         else:
             logging.info(du8('使用了道具 ')+self.itemdb[int(itemid)])
-            logging.debug('useitem:item %s : %s left'%(itemid,self.player.item.count[itemid]))
+            logging.debug('useitem:item %s : %s left'%(itemid,self.player.item.count[int(itemid)]))
             return True
 
     def red_tea(self,silent=False):
@@ -448,7 +451,7 @@ class maClient():
             return self._use_item('2')
         else:
             if silent:
-                logging.debug('auto mode, let it go~')
+                logging.debug('red_tea:auto mode, let it go~')
                 return False
             else:
                 if self._raw_input(du8('来一坨红茶？ y/n '))=='y':
@@ -461,15 +464,15 @@ class maClient():
             return self._use_item('1')
         else:
             if silent:
-                logging.debug('auto mode, let it go~')
+                logging.debug('green_tea:auto mode, let it go~')
                 return False
             else:
                 if self._raw_input(du8('嗑一瓶绿茶？ y/n '))=='y':
                     return self._use_item('1')
 
     def explore(self,cond=''):
-
         #选择秘境
+        has_boss=[]
         while True:
             resp,ct=self._dopost('explore_area')
             if resp['error']:
@@ -486,7 +489,7 @@ class maClient():
                 areasel=[]
                 logging.debug('explore:eval:%s'%(evalstr))
                 for area in areas:
-                    if eval(evalstr):
+                    if eval(evalstr) and not area.id in has_boss:
                         areasel.append(area)
                 if areasel==[]:
                     logging.info(du8('没有符合条件的秘境www'))
@@ -514,6 +517,10 @@ class maClient():
                         break
                 if nofloorselect:
                     break#更换秘境
+                if floor.type=='1':
+                    logging.warning(du8('秘境守护者出现，请手动干掉之www；将忽略此秘境'))
+                    has_boss.append(area.id)
+                    break
                 logging.info(du8('进♂入地区 ')+floor.id)
                 #进入
                 param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
@@ -651,7 +658,7 @@ class maClient():
                 logging.info(du8('合成了%d张新卡片:'%len(autocname))+', '.join(autocname))
             except:
                 logging.debug('gacha:no auto build')
-
+        time.sleep(7.3890560964)
 
     def _get_rewards(self,notice_id):
         param="notice_id=%s"%(','.join(notice_id))
@@ -858,8 +865,11 @@ class maClient():
                 if atk.discoverer=='1':
                     disc_name=atk.user_name
                     break
-        logging.info(du8('妖精:')+fairy.name+'lv%d'%fairy.lv+du8(' 发现者:')+'%s hp:%d attackers:%d %s'%(
-            disc_name,fairy.hp,len(fairy.attacker_history.attacker),fairy.rare_flg=='1' and 'WAKE!' or''))
+        hms=lambda x:x>=3600 and time.strftime('%H:%M:%S',time.localtime(x+16*3600)) or time.strftime('%M:%S',time.localtime(x))
+        logging.info('%s:%sLv%d hp:%d %s:%s %s:%d %s%s %s'%(
+            du8('妖精'),fairy.name,fairy.lv,fairy.hp,du8('发现者'),disc_name,
+            du8('小伙伴'),len(fairy.attacker_history.attacker),du8('剩余'),hms(fairy.time_limit),
+            fairy.rare_flg=='1' and 'WAKE!' or''))
         evalsel=self._eval_gen(self._read_config('condition','fairy_select_carddeck'),evalfairy_select_carddeck)
         cardd=eval(evalsel)
         logging.debug('fairy_battle:eval:%s result:%s'%(evalsel,cardd))
@@ -894,6 +904,7 @@ class maClient():
             logging.warning(du8('没有发现奖励，妖精已经挂了？'))
             return False
         self.remoteHdl(method='FAIRY',fairy=fairy)
+        need_refresh=False
         if res.winner=='1':#赢了
             logging.info(du8('YOU WIN 233'))
             bonus=XML2Dict().fromstring(ct).response.body.bonus_list.bonus
@@ -911,22 +922,28 @@ class maClient():
             if fairy.serial_id==self.player.fairy['id']:
                 self.player.fairy={'id':0,'alive':False}
         else:
-            logging.info(du8('YOU LOSE- -'))
+            hpleft=int(XML2Dict().fromstring(ct).response.body.explore.fairy.hp)
+            logging.info(du8('YOU LOSE- - Fairy-HP:%d'%hpleft))
+            if self.fairyfinalkillhp<=hpleft:
+                logging.debug('_fairy_battle:instant refresh!')
+                need_refresh=True
         logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
             int(res.before_exp)-int(res.after_exp),
             res.after_exp,
             int(res.after_gold)-int(res.before_gold),
             res.after_gold
-            )))
+        )))
+            
         if not res.before_level==res.after_level:
             logging.info(du8('升级了：↑%s'%res.after_level))
         if 'special_item' in res:
             it=res.special_item
             logging.info(du8('收集品[%s]:+%d(%s)'%(\
                 self.itemdb[int(it.item_id)],int(it.after_count)-int(it.before_count),it.after_count)))
-        #等着看结果
-        time.sleep(4)
-        return False
+        if not need_refresh:
+            #等着看结果
+            time.sleep(4)
+        return need_refresh
 
     def friends(self,choice='',autodel=False):
         delfriend=int(self._read_config('system','del_friend_day') or '5')
@@ -1061,7 +1078,7 @@ class maClient():
             return
         free_points = int(XML2Dict().fromstring(ct).response.header.your_data.free_ap_bc_point)
         if free_points==0:
-            logging.debug(du8('point_setting:没有未分配点数233'))
+            logging.info(du8('没有未分配点数233'))
             return False
         else:
             logging.info(du8('还有%d点未分配点数'%free_points))
@@ -1074,6 +1091,7 @@ class maClient():
                 break
         if not self._dopost('town_pointsetting',postdata='ap=%s&bc=%s'%(ap,bc))[0]['error']:
             logging.info(du8('点数分配成功！'))
+            return True
 
 
     def factor_battle(self,minbc=0):
@@ -1124,7 +1142,7 @@ class maClient():
                     except KeyError:
                         logging.warning(du8('id为 %d 的卡片木有找到. 你可能想要查看这个网页:\n%s'%(
                             cid,
-                            duowan[self.loc]%(base64.encodestring('{"no":"%d"}'%cid).strip('\n').replace('=','_3_')))))
+                            duowan[self.loc[:2]]%(base64.encodestring('{"no":"%d"}'%cid).strip('\n').replace('=','_3_')))))
                     else:
                         logging.debug('factor_battle:eval:%s, result:%s, star:%s, cid:%d'%(
                             evalstr,

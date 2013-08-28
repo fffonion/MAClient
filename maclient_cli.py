@@ -14,7 +14,7 @@ import maclient_proxy
 import maclient_logging
 import maclient_remote
 import getpass
-__version__=1.40
+__version__=1.41
 du8=lambda str:str.decode('utf-8')
 def iter_printer(l,sep='\n'):
     cnt=1
@@ -141,7 +141,10 @@ if __name__=='__main__':
                 maclient1.initplayer(dec)
                 maclient1.tasker()
             elif ch=='h':
-                print(du8('登陆 login/l,设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,刷列表中的妖精 fairy_battle/fyb,嗑药 red_tea/rt,嗑药 green_tea/gt,自动卖卡 sell_card/slc,设置账号类型 set_server/ss,好友相关 friend/f,转蛋gacha/g; | 分割多个，空格分隔命令与参数\n以t:开头可执行任务\nContact:http://www.yooooo.us'))
+                print(du8('登陆 login/l,设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,刷列表中的妖精 fairy_battle/fyb,嗑药 red_tea/rt,嗑药 green_tea/gt,自动卖卡 sell_card/slc,设置账号类型 set_server/ss,好友相关 friend/f,转蛋gacha/g,分配点数point/p; '
+                    '| 分割多个，空格分隔命令与参数\n'
+                    '以t:开头可执行任务\n'
+                    'Contact:http://www.yooooo.us'))
             elif ch=='2':
                 print(du8('此功能暂停使用'))
                 continue
@@ -179,9 +182,7 @@ if __name__=='__main__':
                 mod=(mod+1)%2
             elif ch =='4':
                 cards=ma.decode_param(read_proxy(work=1))
-                cdeck=cards.split('&')[0].split('=')[1].strip('%0A')
-                while cdeck.endswith('empty'):
-                    cdeck=cdeck.rstrip(',empty')
+                cdeck=cards.split('&')[0].split('=')[1].strip('%0A').rstrip(',empty')
                 decks=maclient1._list_option('carddeck')
                 print(du8('选择卡组，输入卡组名以添加新卡组'))
                 print(iter_printer(decks))

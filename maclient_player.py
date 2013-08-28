@@ -13,8 +13,9 @@ from xml2dict import XML2Dict
 
 class player(object):
 	def __init__(self,login_xml,loc):
-		self.card=card(loc)
-		self.item=item(loc)
+		#[:2]可以让cn2变成cn以使用同一个卡组/道具数据
+		self.card=card(loc[:2])
+		self.item=item(loc[:2])
 		self.update_all(login_xml)
 		self.loc=loc
 		self.fairy={'id':0,'alive':False}
