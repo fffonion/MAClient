@@ -1,37 +1,37 @@
-##˵��
+﻿##说明
 
-��Կ��ɾ��������������
+密钥已删除，请自行搜索
 
-�й�API�������[API�ĵ�](https://github.com/fffonion/maClient/blob/master/API Document.md)
+有关API，请参阅[API文档](https://github.com/fffonion/maClient/blob/master/API Document.md)
 
-##����
+##运行
 
     maclient_cli.py
     maclient_cli.py [config file]
     maclient_cli.py [config file] [task]/[commands]
 
-##CONFIG.INI�ļ�˵��
+##CONFIG.INI文件说明
 
-����config.ini���Բο�config_sample.ini
+关于config.ini可以参考config_sample.ini
 
 ***
 
 ###account_?
 
-?��ѡcn,cn2,tw�ֱ��Ӧ����1��������2����̨��
+?可选cn,cn2,tw分别对应国服1区，国服2区，台服
 
-session���ù���
+session不用管它
 
 
 ###carddeck
 
-####�����б�
+####卡组列表
 
-ֵ��ѡ��Ƭid���߿�Ƭ���к�
+值可选卡片id或者卡片序列号
 
-�磺
+如：
 
-    factor=124 #ѡ��С��Ů
+    factor=124 #选出小狼女
     factor=93714777,54276719 
 
 
@@ -39,201 +39,201 @@ session���ù���
 
 ####server
 
-ѡ������ѡcn��cn2��tw
+选服，可选cn，cn2，tw
 
 ####loglevel
 
-��Ļ�����־���𣬿�ѡ0-6���ӷ��͵����
+屏幕输出日志级别，可选0-6，嫌烦就调大点
 
 ####taskname
 
-��ʾ��Ҫ����ִ�е��������ƣ�tasker�У���|�ָ�
+表示需要程序执行的任务名称（tasker中），|分割
 
 ####try_factor_time
 
-��ˢ����ս�б��Ĵ�����0Ϊ����
+是刷因子战列表的次数，0为无限
 
 ####factor_sleep
 
-ˢ�б��ļ��(��)
+刷列表的间隔(秒)
 
 ####explore_sleep
 
-ˢ�ؾ��ļ��(��)
+刷秘境的间隔(秒)
 
 ####fairy_battle_times
 
-ˢ�����б�����
+刷妖精列表次数
 
 ####fairy_battle_sleep
 
-ˢ�����б����(��)����ʱ�����ã�����0-5��ÿ5��ˢ��һ�Σ�5-10��ÿ2��ˢ��һ�Σ� 0,5,5|5,10,2�������ڷ�Χ�ڣ�Ĭ��1.5��
+刷妖精列表间隔(分)，按时间设置，比如0-5点每5分刷新一次，5-10点每2分刷新一次： 0,5,5|5,10,2，若不在范围内，默认1.5分
 
 ####auto_explore
 
-�Ƿ��Զ�ѡ���ؾ�(����explore_area��explore_floor����)����Ϊ1
+是否自动选择秘境(按照explore_area和explore_floor规则)，是为1
 
 ####auto_green_tea,auto_red_tea
 
-�����ҩ��������ǰ���������Զ�����ʱ����������Ϊ0�������AP/BC����ʱֱ���˳�
+设置嗑药次数，当前任务已是自动任务时，若此项设为0，则会在AP/BC不足时直接退出
 
 ####auto_red_tea_level
 
-�Զ��ҩ����1.���������ľ����Զ��ҩ��2.��������������Ҳ�ҩ��0.��Զ���ҩ(BC�����������
+自动嗑药条件1.满足条件的觉醒自动嗑药，2.满足条件的普妖也嗑药，0.永远不嗑药(BC不足就跳过）
 
 ####strict_bc
 
-�ϸ�BCģʽ, ��ʱ����ǰBC���ڿ���costʱ��ΪBC����(ֻӰ������ս)
+严格BC模式, 打开时，当前BC低于卡组cost时认为BC不足(只影响妖精战)
 
 ####auto_sell_card
 
-����200�����Ƿ��Զ�����������select_card_to_sell����
+到≥200张了是否自动卖卡，按照select_card_to_sell规则
 
 ####auto_fp_gacha
 
-���㵽9900���Ƿ��Զ�ת��
+绊点到9900了是否自动转蛋
 
 ####fp_gacha_bulk
 
-�Ƿ�������ת����һ��10��
+是否批量绊转蛋（一次10张
 
 ####auto_build
 
-�Ƿ��Զ��ϳ���ͬ��Ƭ��Ĭ��Ϊ1��ֻӰ��̽����ת���е�һ��/���ǿ�
+是否自动合成相同卡片，默认为1，只影响探索和转蛋中的一星/二星卡
 
 ####delay
 
-����POST�ӳ٣�Ĭ�Ϲرգ���Ϊ0ʱ����ʾWARNING
+设置POST延迟，默认关闭，设为0时会提示WARNING
 
 ####auto_fairy_rewards
 
-�Զ���ȡ��������
+自动领取妖精奖励
 
 ####sell_card_warning
 
-�������ѣ�������2:ȫ���� ��1:R+���ѣ�0:������(��ʱֻ��R���¿�)
+卖卡提醒，可设置2:全提醒 ，1:R+提醒，0:不提醒(此时只卖R以下卡)
 
 ####del_friend_day
 
-ɾ����������û���ߵĺ���
+删除几天以上没上线的好友
 
 ####fairy_final_kill_hp
 
-������������Ѫ�������趨ֵ�������ٴ�һ�Σ�Ĭ��Ϊ20000
+若打完妖精后血量低于设定值则立即再打一次，默认为20000
 
 ###tasker
 
-���Խ�������������ʽ��ÿ������ʽ��|�ָ���������ÿո�ָ�����Ͳ�����
+可以建立多个任务表达式，每个表达式用|分割，单个任务用空格分割命令和参数，
 
-��ѡ��
+可选：
 
-��½login/l, ���ÿ��� set_card/sc,����ս factor_battle/fcb,�ؾ�̽�� explore/e,ˢ�б��е����� fairy_battle/fyb,�ҩ red_tea/rt,�ҩ green_tea/gt,�Զ����� sell_card/slc,�����˺����� set_server/ss,������� friend/f,ת��gacha/g,�������point/p,�����reward_box/rb
+登陆login/l, 设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,刷列表中的妖精 fairy_battle/fyb,嗑药 red_tea/rt,嗑药 green_tea/gt,自动卖卡 sell_card/slc,设置账号类型 set_server/ss,好友相关 friend/f,转蛋gacha/g,分配点数point/p,礼物盒reward_box/rb
 
-��t:��ͷ��ִ������
+以t:开头可执行任务
 
-����explore��sell_card��ɸ�������ָ��������������condition�е�����ִ��;factor_battle��ѡ���� ���BC��Ĭ��Ϊ0��fairy_battle��ѡ���� ѭ��������Ĭ�ϰ���config����ָ���Ĵ���
+其中explore，sell_card后可跟参数以指定条件，否则按照condition中的条件执行;factor_battle可选参数 最低BC，默认为0；fairy_battle可选参数 循环次数，默认按照config中所指定的次数
 
-�磺
+如：
 
-    login heheh 123456 #��½ 
-    set_server cn|set_card factor|factor_battle #���ù�������������ս���飬Ȼ������ս
-    ss cn|sc factor|fcb #ͬ��
-    explore '���R�º͍u' in area.name #̽���ؾ����ư���'���R�º͍u' 
+    login heheh 123456 #登陆 
+    set_server cn|set_card factor|factor_battle #设置国服，设置因子战卡组，然后因子战
+    ss cn|sc factor|fcb #同上
+    explore '明鏡月和島' in area.name #探索秘境名称包含'明鏡月和島' 
 
 
 ###condition
-ָ������ʲô����ʱ��ʲô��
+指定满足什么条件时做什么事
 
-ȫ�ֿ��õ�����
+全局可用的量：
 
-    hour ��ǰ(24Сʱ�Ƶ�)Сʱ
-    minute ��ǰ����
-    BC ʣ��bc
-    AP ʣ��ap
-    G ���
-    FP �������
-    FAIRY_ALIVE �Լ��������Ƿ���
+    hour 当前(24小时制的)小时
+    minute 当前分钟
+    BC 剩余bc
+    AP 剩余ap
+    G 金币
+    FP 友情点数
+    FAIRY_ALIVE 自己的妖精是否存活
 
 ####factor
-����ս������ı���ʽ
+因子战需满足的表达式
 
-������
+变量：
 
-star��cid���ֱ��Ӧͷ��������Ϳ�Ƭid
+star，cid，分别对应头像的星数和卡片id
 
 eg:
 
-    start ==1 or star ==2��star in [1,2] #��ƬΪһ�ǻ�����
-    cid in [124,8,256] #�ӳ���ƬidΪ124,8��256��
+    start ==1 or star ==2或star in [1,2] #卡片为一星或两星
+    cid in [124,8,256] #队长卡片id为124,8或256：
 
 ####explore_area
-ѡ���ؾ�����ı���ʽ
+选择秘境满足的表达式
 
-������area
+变量：area
 
-���ԣ�
+属性：
 
-��ؾ� IS_EVENT, ÿ���ؾ� IS_DAILY_EVENT,δˢ�� NOT_FINNISHED,�ؾ����� name
+活动秘境 IS_EVENT, 每日秘境 IS_DAILY_EVENT,未刷完 NOT_FINNISHED,秘境名称 name
 
-eg.��
+eg.：
 
-    area.IS_EVENT and area.NOT_FINNISHED��#�����һ��û��ɵĻ�ؾ�
-    area.name == ' �WУ�Ęǽ���' #���� ѧУ��¥����
+    area.IS_EVENT and area.NOT_FINNISHED　#想进入一个没完成的活动秘境
+    area.name == ' 學校四樓教室' #进入 学校四楼教室
 
 ####explore_floor
-ѡ���������ı���ʽ
+选择地区满足的表达式
 
-������floor
+变量：floor
 
-���ԣ�
+属性：
 
-δˢ�� NOT_FINNISHED, AP���� cost
+未刷完 NOT_FINNISHED, AP消耗 cost
 
-eg.��
+eg.：
 
-    floor.cost<6 and floor.NOT_FINNISHED #��û��ɵ���costС��6�ĵ�����
+    floor.cost<6 and floor.NOT_FINNISHED #进没完成的且cost小于6的地区：
 
 ####fairy_select
-�����б����ʲô����Ҫ��
+妖精列表里的什么妖精要打
 
-������fairy
+变量：fairy
 
-���ԣ�
+属性：
 
-���ҿ��� IS_MINE,ʣ��ʱ�� LIMIT(��λΪ��),û��� NOT_BATTLED,�ȼ� lv,�Ƿ���� IS_WAKE,�Լ��������Ƿ񻹻��� STILL_ALIVE
+是我开的 IS_MINE,剩余时间 LIMIT(单位为秒),没打过 NOT_BATTLED,等级 lv,是否觉醒 IS_WAKE,自己的妖精是否还活着 STILL_ALIVE
 
-eg.��
+eg.：
 
-    not fairy.IS_MINE and fairy.LIMIT<600 and fairy.NOT_BATTLED #�����ҷ��ֵģ�ʣ��ʱ��Ϊ10���ӵģ���û���������
+    not fairy.IS_MINE and fairy.LIMIT<600 and fairy.NOT_BATTLED #打不是我发现的，剩余时间为10分钟的，还没舔过的妖精
 
 ####fairy_select_carddeck
-����ʲô��������ʱѡ��ʲô���Ŀ���
+遇到什么样的妖精时选择什么样的卡组
 
-������fairy
+变量：fairy
 
-���ԣ�
+属性：
 
-lv,hp,name,IS_MINE,�Լ��������Ƿ񻹻��� STILL_ALIVE, ʣ��ʱ�� TIME_LIMIT(��λΪ��)
+lv,hp,name,IS_MINE,自己的妖精是否还活着 STILL_ALIVE, 剩余时间 TIME_LIMIT(单位为秒)
 
-ֻ��ʹ��and or����ʽ ��if else����ʽ����Ƕ�ף���������������ţ�����carddeck�и���������ʹ��'no_change'��ʾ�����Ŀ���
+只能使用and or表达式 或if else表达式，可嵌套；卡组名称需加引号，需在carddeck中给出；可以使用'no_change'表示不更改卡组
 
-eg.��
+eg.：
 
-    fairy.hp>200000 and 'tiandao' or 'full' Ҳ��д�� 'tiandao' if fairy.hp>200000 else 'full'��#����hp>200000�������ÿ���tiandao��������full
-    'no_change' #���ı�
+    fairy.hp>200000 and 'tiandao' or 'full' 也可写作 'tiandao' if fairy.hp>200000 else 'full'　#遇到hp>200000的妖精用卡组tiandao，否则用full
+    'no_change' #不改变
 
 ####select_card_to_sell
-�Զ���������Щ
+自动卖卡卖哪些
 
-������card
+变量：card
 
-���ԣ�
+属性：
 
-star,lv,���к� sid,��Ƭ��� cid�������۸�price
+star,lv,序列号 sid,卡片编号 cid，贩卖价格price
 
-eg��
+eg：
 
-    card.star in [1,2] and card.lv<5 and card.cid != 124 #1��2�� lv5һ�µĿ��Ҳ���С��Ů:
+    card.star in [1,2] and card.lv<5 and card.cid != 124 #1星2星 lv5一下的卡且不是小狼女:
 
-ע��
-���Զ��ų������ж����������ѡ��R�����ϵĿ����������ʾȷ��
+注：
+已自动排除三种切尔莉，如果不慎选入R及以上的卡，会出现提示确认

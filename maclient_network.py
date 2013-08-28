@@ -10,8 +10,9 @@ import socket
 import urllib
 import httplib
 import httplib2
-from Crypto.Cipher import AES
-key={'res': '?'*16,'helper':'?'*16,'crypt':'?'*16}
+
+key={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
+    }
 
 serv={'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/','cn_data':'http://MA.webpatch.sdg-china.com/',
     'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/','cn2_data':'http://MA.webpatch.sdg-china.com/',
@@ -20,8 +21,16 @@ serv={'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/','cn_data':'http://MA
 
 headers_main={'User-Agent': 'Million/100 (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys','Connection': 'Keep-Alive'}
 headers_post={'Content-Type': 'application/x-www-form-urlencoded'}
-cod_res = AES.new(key['res'], AES.MODE_ECB)
-cod_data = AES.new(key['crypt'], AES.MODE_ECB)
+try:
+    from Crypto.Cipher import AES
+    cod_res = AES.new(key['res'], AES.MODE_ECB)
+    cod_data = AES.new(key['crypt'], AES.MODE_ECB)
+    slow=False
+except ImportError:
+    import pyaes
+    cod_res = pyaes.new(key['res'], pyaes.MODE_ECB)
+    cod_data = pyaes.new(key['crypt'], pyaes.MODE_ECB)
+    slow=True
 BS=16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
 unpad = lambda s : s[0:-ord(s[-1])]
@@ -83,6 +92,8 @@ class poster():
         self.header.update(headers_post)
         if ua:
             self.header['User-Agent']=ua
+        if slow:
+            self.logger.warning(du8('post:没有安装pycrypto库，可能将额外耗费大量时间'))
     def set_cookie(self,cookie):
         self.cookie=cookie
     def post(self,uri,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},noencrypt=False):

@@ -1,4 +1,4 @@
-VERSION 1.0
+﻿VERSION 1.0
 
 本文档介绍使用python和其他后台的web应用与maClient的通信方式
 

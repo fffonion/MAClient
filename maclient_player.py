@@ -166,7 +166,7 @@ if __name__=='__main__':
 	# #knight_id=0%0A&move=1%0A&parts_id=0
 	# #S=nosessionid&login_id=zzh930916&password=19930917&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb
 	# #59247865
-	# #xmld=open(r'D:\Dev\Python\Workspace\binary-works\MA\login','r').read()
+	# #xmld=open(r'D:\Dev\Python\Workspace\maClient\login','r').read()
 	# #pl=player(xmld)
 	# #print pl.card.cid('9999')
 	

@@ -343,9 +343,8 @@ class maClient():
             self.stitle.start()
 
     def auto_check(self,doingwhat):
-        if not doingwhat in ['login','check_inspection','notification/post_devicetoken']:
-            if int(self.player.card.count) >=200 and \
-                not doingwhat in ['card/exchange', 'trunk/sell']:
+        if not doingwhat in ['login','check_inspection','notification/post_devicetoken','card/exchange', 'trunk/sell','roundtable/edit','cardselect/savedeckcard']:
+            if int(self.player.card.count) >=200:
                 if self.autosell:
                     logging.inform(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))
                     self.select_card_sell()
@@ -354,7 +353,7 @@ class maClient():
                     logging.warning(du8('卡片已经放不下了，请自行卖卡www'))
                     return False
             if self.player.friendship_point>=9900 and \
-                not doingwhat in ['gacha/buy','gacha/select/getcontents','card/exchange', 'trunk/sell']:
+                not doingwhat in ['gacha/buy','gacha/select/getcontents']:
                 if self.autogacha:
                     logging.inform(du8('绊点有点多，自动转蛋(*￣▽￣)y '))
                     self._gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
@@ -487,7 +486,7 @@ class maClient():
                 areasel=[areas[int(self._raw_input('选择： ') or '1')-1]]
             else:
                 logging.info(du8('自动选图www'))
-                evalstr=self._eval_gen(cond or self._read_config('condition','exploration/area'),eval_explore_area)
+                evalstr=self._eval_gen(cond or self._read_config('condition','explore_area'),eval_explore_area)
                 areasel=[]
                 logging.debug('explore:eval:%s'%(evalstr))
                 for area in areas:
@@ -509,7 +508,7 @@ class maClient():
                 if 'found_item_list' in floors:
                     floors=[floors]#只有一个
                 nofloorselect=True
-                evalstr=self._eval_gen(self._read_config('condition','exploration/floor'),eval_explore_floor)
+                evalstr=self._eval_gen(self._read_config('condition','explore_floor'),eval_explore_floor)
                 logging.debug('explore:eval:%s'%(evalstr))
                 for floor in floors:
                     floor.cost=int(floor.cost)
@@ -583,6 +582,7 @@ class maClient():
                         if info.event_type=='5':
                             logging.info(du8('AREA %s CLEAR -v-'%floor.id))
                             time.sleep(2)
+                            break
                         if info.event_type=='12':
                             logging.info(du8('AP回复~'))
                         if info.event_type=='13':
@@ -606,9 +606,8 @@ class maClient():
                     if info.lvup=='1':
                         logging.info(du8('升级了：↑')+self.player.lv)
                         time.sleep(3)
-                    if info.progress=='100':
-                        break
-                        
+                    # if info.progress=='100':
+                    #     break
                     time.sleep(int(self._read_config('system','explore_sleep')))
 
                     #print '%s - %s%% cost%s'%\
@@ -1180,7 +1179,7 @@ class maClient():
                     continue
                 #print xml2.response.body.battle/battle_userlist.user_list
                 try:
-                    userlist=XML2Dict().fromstring(dec).response.body.battle/battle_userlist.user_list.user
+                    userlist=XML2Dict().fromstring(dec).response.body.battle_userlist.user_list.user
                 except KeyError:#no user found
                     continue
                 if len(userlist)==18:#only 1 user
@@ -1234,7 +1233,7 @@ class maClient():
                                         self.player.bc['max']) )
                                 time.sleep(8.62616513)
                                 self._dopost('battle/area',checkerror=False)
-                                resp,dec=self._dopost('battle/competition_parts?redirect_flg=1')
+                                resp,dec=self._dopost('battle/competition_parts?redirect_flg=1',noencrypt=True)
                                 break
                 time.sleep(int(self._read_config('system','factor_sleep')))
             logging.inform(du8('换一个碎片……睡觉先，勿扰：-/'))

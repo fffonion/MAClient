@@ -4,7 +4,7 @@ import ma
 import random
 loc='tw'
 maClient1=maClient.maClient(savesession=True)
-maClient1.initplayer(open(r'D:\Dev\Python\Workspace\binary-works\MA\.%s.playerdata'%loc).read())
+maClient1.initplayer(open(r'D:\Dev\Python\Workspace\maClient\.%s.playerdata'%loc).read())
 maClient1.loc=loc
 cardlist=[i for i in maClient1.carddb]
 random.shuffle(cardlist)

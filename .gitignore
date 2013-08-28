@@ -50,3 +50,4 @@ release
 *.bat
 *.saved.*
 testxml.py
+desktop.ini

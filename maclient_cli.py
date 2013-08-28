@@ -14,7 +14,7 @@ import maclient_proxy
 import maclient_logging
 import maclient_remote
 import getpass
-__version__=1.41
+__version__=1.42
 du8=lambda str:str.decode('utf-8')
 def iter_printer(l,sep='\n'):
     cnt=1
@@ -104,7 +104,7 @@ def auth():
 
 
 if __name__=='__main__':
-    logging=maclient_logging.logging
+    logging = maclient_logging.Logging('logging')
     reload(sys)
     sys.setdefaultencoding('utf-8')
     ht=httplib2.Http(timeout=30)
@@ -194,7 +194,7 @@ if __name__=='__main__':
                 maclient1._write_config('carddeck',name,cdeck)
                 print(du8('保存到了%s'%name))
             elif ch =='5':
-                print(du8('依次输入配置类别，配置名，值；如设置自动嗑红茶3次 auto_red_tea 3\n输入h查看列表'))
+                print(du8('依次输入配置名，值；如设置自动嗑红茶3次 auto_red_tea 3\n输入h查看列表'))
                 inp=raw_input('> ')
                 if inp=='h':
                     print(du8('''taskname需要程序执行的任务名称，|分割
@@ -212,7 +212,7 @@ sell_card_warning 卖卡提醒'''))
                     try:
                         p1,p2=inp.split(' ')
                     except:
-                        logging.error('输入有误www')
+                        logging.error(du8('输入有误www'))
                     else:
                         maclient1._write_config('system',p1,p2)
                         print(du8('已保存~'))
