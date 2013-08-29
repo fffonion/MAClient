@@ -14,7 +14,7 @@
 
 关于config.ini可以参考config_sample.ini
 
-图形化工具配置maClientGUI可以从[这里下载](http://mac.yooooo.us/maClientGUI.zip)
+图形化配置工具maClientGUI可以从[这里下载](http://mac.yooooo.us/maClientGUI.zip)
 
 ***
 

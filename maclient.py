@@ -577,7 +577,7 @@ class maClient():
                             usercard=info.user_card
                             logging.debug('explore:cid %s sid %s'%(usercard.master_card_id,usercard.serial_id))
                             logging.info(du8('获得了 ')+self.carddb[int(usercard.master_card_id)][0]+
-                                (' x1 %s☆')%(self.carddb[int(usercard.master_card_id)][1]))
+                                (' %s☆')%(self.carddb[int(usercard.master_card_id)][1]))
                         if info.event_type=='15':
                             compcard=info.autocomp_card[-1]
                             logging.debug('explore:cid %s sid %s'%(

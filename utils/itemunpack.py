@@ -5,7 +5,7 @@ import sys
 import binascii
 reload(sys)
 sys.setdefaultencoding('utf-8')
-dt=open(r'z:\master_item_c','rb').read()
+dt=open(r'z:\master_item','rb').read()
 curpos=0
 zzz=0
 while zzz!=-1:
@@ -17,5 +17,5 @@ while zzz!=-1:
 		name=dt[zzz+12:z2].decode('utf-8')
 		desc=dt[z2+4:z3].decode('utf-8')
 		#print curpos,int(binascii.hexlify(dt[zzz+3]),16),name,desc
-		open(r'z:/item.cn.txt','a').write(','.join([str(int(binascii.hexlify(dt[zzz+3]),16)),name,desc])+'\n')
+		open(r'z:/item.tw.txt','a').write(','.join([str(int(binascii.hexlify(dt[zzz+3]),16)),name,desc])+'\n')
 	curpos=zzz+1
