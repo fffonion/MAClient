@@ -85,21 +85,7 @@ def read_proxy(work=0):
             srver.join(1)
             os.remove('.carddeck')
             return carddeck
-        time.sleep(1)
-def macs(uri,header={},body='',method='GET'):
-    header.update({'User-Agent':'maclient/%f'%__version__})
-    try:
-        resp,ct=ht.request('%s/%s'%(server,uri),body=body,method=method,headers=header)
-    except:
-        resp,ct=ht.request('%s/%s'%('http://mac.3owl.com',uri),body=body,method=method,headers=header)
-    return resp,ct
-def _calc(str):
-    import hashlib
-    return hashlib.md5(hashlib.md5('9801931maclient---%s---maclient12378138'%str).hexdigest()).hexdigest()
-def auth():
-    return
-    
-            
+        time.sleep(1)     
 
 
 
@@ -112,6 +98,7 @@ if __name__=='__main__':
     print(du8('%s%s%s%s'%('='*((getTerminalSize()[0]-len(intro)-18)/2),'丧心病狂的MA客户端',intro,'='*((getTerminalSize()[0]-len(intro)-18)/2))))
     if len(sys.argv)>2:
         maclient1=maclient.maClient(configfile=sys.argv[1],savesession=True)
+        #auth()
         dec=maclient1.login()
         maclient1.initplayer(dec)
         arg=' '.join(sys.argv[2:])
@@ -129,8 +116,7 @@ if __name__=='__main__':
         #maclient1._dopost('post_token',postdata=ma.encode_param('S=nosessionid&login_id=%s&password=%s&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb'%(username,password)),usecookie=True,extraheader={'Cookie2': '$Version=1'})
         #登陆
         server=maclient1._read_config('remote','maCServer') or 'http://mac.yooooo.us'
-        
-        auth()
+        #auth()
         mode=['普通','同时在线']
         mod=0
         while True:

@@ -77,6 +77,9 @@ class maClient():
          or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
         self.cf=ConfigParser.ConfigParser()
         if configfile=='':
+            if not os.path.exists(self.getPATH0()+opath.sep+'config.ini'):
+                print(du8('正在尝试以默认配置文件启动，但该文件(config.ini)不存在'))
+                self._exit(1)
             self.configfile=self.getPATH0()+opath.sep+'config.ini'
         else:
             self.configfile=configfile
@@ -149,8 +152,8 @@ class maClient():
             resp.update({'error':False,'errno':0,'errmsg':''})
             if err.code!='0':
                 resp['errmsg']=err.message
-                #1050木有BC 1010卖了卡
-                if not err.code in ['1050','1010']:
+                #1050木有BC 1010卖了卡 8000领取礼物
+                if not err.code in ['1050','1010','8000']:
                     logging.error('code:%s msg:%s'%(err.code,err.message))
                     resp.update({'error':True,'errno':int(err.code)})
                 if err.code == '9000':
@@ -449,27 +452,33 @@ class maClient():
         auto=int(self._read_config('system','auto_red_tea') or '0')
         if auto>0:
             self._write_config('system','auto_red_tea',str(auto-1))
-            return self._use_item('2')
+            res=self._use_item('2')
         else:
             if silent:
                 logging.debug('red_tea:auto mode, let it go~')
                 return False
             else:
                 if self._raw_input(du8('来一坨红茶？ y/n '))=='y':
-                    return self._use_item('2')
+                    res=self._use_item('2')
+        if res:
+            self.player.bc['current']=self.player.bc['max']
+        return res
 
     def green_tea(self,silent=False):
         auto=int(self._read_config('system','auto_green_tea') or '0')
         if auto>0:
             self._write_config('system','auto_green_tea',str(auto-1))
-            return self._use_item('1')
+            res=self._use_item('1')
         else:
             if silent:
                 logging.debug('green_tea:auto mode, let it go~')
                 return False
             else:
                 if self._raw_input(du8('嗑一瓶绿茶？ y/n '))=='y':
-                    return self._use_item('1')
+                    res=self._use_item('1')
+        if res:
+            self.player.ap['current']=self.player.ap['max']
+        return res
 
     def explore(self,cond=''):
         #选择秘境
@@ -676,7 +685,7 @@ class maClient():
             if not resp['error']:
                 logging.debug('_get_rewards:get successfully.')
                 hasgot=True
-        return hasgot
+        return hasgot,resp['errmsg']
 
     def select_card_sell(self,cond=''):
         evalcard=self._eval_gen(cond or self._read_config('condition','select_card_to_sell'),eval_select_card)
@@ -927,7 +936,9 @@ class maClient():
                     logging.debug('fairy_battle:type:%s card_id %s holoflag %s'%(b.type,b.card_id,b.holo_flag))
                     logging.info(du8('获得卡片 ')+self.carddb[int(b.card_id)][0]+(b.holo_flag=='1' and du8('(闪)') or ''))
             if nid!=[]:
-                self._get_rewards(nid)
+                res=elf._get_rewards(nid)
+                if not res[0]:
+                    logging.warning(res[1])
             if fairy.serial_id==self.player.fairy['id']:
                 self.player.fairy={'id':0,'alive':False}
         else:
@@ -1115,8 +1126,9 @@ class maClient():
             strl+=', '
             nid.append(r.id)
         logging.info(strl.rstrip(','))
-        if self._get_rewards(nid):
-            logging.info(du8('已成功领取'))
+        res=self._get_rewards(nid)
+        if res[0]:
+            logging.info(dres[1])
 
 
     def point_setting(self):
