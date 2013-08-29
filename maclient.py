@@ -152,8 +152,8 @@ class maClient():
             resp.update({'error':False,'errno':0,'errmsg':''})
             if err.code!='0':
                 resp['errmsg']=err.message
-                #1050木有BC 1010卖了卡 8000领取礼物
-                if not err.code in ['1050','1010','8000']:
+                #1050木有BC 1010卖了卡 8000无法进行当前操作
+                if not err.code in ['1050','1010']:
                     logging.error('code:%s msg:%s'%(err.code,err.message))
                     resp.update({'error':True,'errno':int(err.code)})
                 if err.code == '9000':

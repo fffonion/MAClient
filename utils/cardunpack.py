@@ -11,12 +11,20 @@ dt=open(r'z:\master_card','rb').read()
 curpos=dt.find(b'\x00\x00\x00\x01\x00\x00\x00\x01\x00\x00\x00')+8#卡组数据开始，第一张为兰斯洛特
 nextpos=0
 intl=lambda x:[str(int(binascii.hexlify(i),16)) for i in x]
+lastcid='0'
 while nextpos!=-1 and curpos<=len(dt):
     card_info=['',]*9
     #00x3 [cid] 00 00 00 01 00 00 00 [名称] 00 00 01 [描述] 00 00 00  [COMBO_EN] 00 00 00 [COMBO_CN] 00 00 00[COMBO_DESC]
     #00 00 00 [ILLUST] 00 00 00 [cost] 00 00 00 [star] 00x6 [??] 00 00 [??] 00x10 [lv1 hp] 00 00 [lv1 atk] +105bit
     #unicode字符串前一字节要截去(00 00 00后一字节)
-    cid=str(int(binascii.hexlify(dt[curpos-6:curpos-4]),16))
+    cid='0'
+    offset=0
+    #上次平移150字节后，有时会有1~2字节的偏差，需要修正
+    while int(lastcid)>=int(cid):
+        cid=str(int(binascii.hexlify(dt[curpos-6+offset:curpos-4+offset]),16))
+        curpos+=1
+    curpos-=1
+    lastcid=cid
     is001=True
     for i in range(1,7):
         nextpos=dt.find(b'\x00\x00\x00',curpos+4)#卡片开始标志
@@ -34,7 +42,7 @@ while nextpos!=-1 and curpos<=len(dt):
     print(cid+'\n--'.join(card_info).decode('utf-8',errors='replace').encode('gbk',errors='replace'))
     curpos+=150
     #to debug
-    if not int(card_info[7]) in xrange(1,7):
+    if not int(card_info[7]) in xrange(1,7) :
         raw_input()
         #print curpos,int(binascii.hexlify(dt[zzz+3]),16),name,desc
-    open(r'z:/card.cn.txt','a').write('%s,%s\n'%(cid,','.join([card_info[0],card_info[7],card_info[6]]+card_info[1:5]).replace('\n','\\n')))
+    open(r'z:/card.tw.txt','a').write('%s,%s\n'%(cid,','.join([card_info[0],card_info[7],card_info[6]]+card_info[1:5]).replace('\n','\\n')))
