@@ -4,6 +4,7 @@
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
 from __future__ import print_function
+import math
 import os
 import os.path as opath
 import re
@@ -836,7 +837,9 @@ class maClient():
             if fitemp==fairy.fairy.serial_id and fairy.put_down=='1':
                 self.player.fairy={'alive':True,'id':fairy.fairy.serial_id}
             fairy['time_limit']=int(fairy.fairy.time_limit)
-            fairy['wake']=fairy.fairy.name[:2] in ['觉醒','覺醒','希波','數理','教官','雅熙']
+            fairy['wake']=False
+            for k in ['觉醒','覺醒','護士','主任','教官','校長','雅熙','数理']
+                fairy['wake']=fairy['wake'] or (k in fairy.fairy.name)
             ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
             fairy['not_battled']= ftime[0]==''
             #logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
@@ -928,6 +931,7 @@ class maClient():
                 return True
         try:
             res=XML2Dict().fromstring(ct).response.body.battle_result
+            blist=XML2Dict().fromstring(ct).response.body.battle_battle.battle_action_list
         except KeyError:
             logging.warning(du8('没有发现奖励，妖精已经挂了？'))
             return False
@@ -970,6 +974,31 @@ class maClient():
             it=res.special_item
             logging.info(du8('收集品[%s]:+%d(%s)'%(\
                 self.itemdb[int(it.item_id)],int(it.after_count)-int(it.before_count),it.after_count)))
+        #战斗详情分析
+        # <battle_action_list>
+        #     <action_player>0</action_player>
+        #     <skill_id>208</skill_id>
+        #     <skill_type>2</skill_type>
+        #     <skill_card>604</skill_card>
+        #     <skill_hp_player>3240</skill_hp_player>
+        #     <attack_card>604</attack_card>
+        #     <attack_type>1</attack_type>
+        #     <attack_damage>11967</attack_damage>
+        # </battle_action_list>
+        fatk,matk,rnd,skillcnt=0,0,0,0
+        skillcard=[]
+        for l in blist:
+            if 'attack_damage' in l:
+                if l.action_player=='0':
+                    matk+=int(l.attack_damage)
+                else:
+                    fatk+=int(l.attack_damage)
+                rnd+=0.5
+            if 'skill_id' in l:
+                skillcnt+=1
+                skillcard.append(self.carddb[int(l.skill_card)])
+        logging.info(du8('回合数:%d/%d 平均ATK:%.1f/%.1f 技能发动:%d次(%s)'%
+            (math.ceil(rnd),math.floor(rnd),matk/math.ceil(rnd),fatk/math.floor(rnd),skillcnt,','.join(skillcard))))
         if not need_refresh:
             #等着看结果
             time.sleep(4)
@@ -1218,7 +1247,7 @@ class maClient():
                             duowan[self.loc[:2]]%(base64.encodestring('{"no":"%d"}'%cid).strip('\n').replace('=','_3_')))))
                     else:
                         logging.debug('factor_battle:eval:%s, result:%s, star:%s, cid:%d'%(
-                            evalstr,
+                            self.evalstr_factor,
                             eval(self.evalstr_factor),
                             star,
                             cid)
