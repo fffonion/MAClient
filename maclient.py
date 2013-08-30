@@ -27,8 +27,8 @@ EXPLORE_BATTLE,NORMAL_BATTLE=0,1
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #eval dicts
-evalfairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
-evalfairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE':'rare_flg=="1"','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
+eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
+eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE':'rare_flg=="1"','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
 eval_explore_area={'IS_EVENT':"area_type=='1'",'IS_DAILY_EVENT':"id.startswith('5')",'NOT_FINNISHED':"prog_area!='100'",\
             }
 eval_explore_floor={'NOT_FINNISHED':'progress!="100"'}
@@ -89,23 +89,22 @@ class maClient():
         self.playerfile='.%s.playerdata'%self.loc
         self.username=self._read_config('account_%s'%self.loc,'username')
         self.password=self._read_config('account_%s'%self.loc,'password')
-        self.autoexplore=not self._read_config('system','auto_explore')=='0'
-        self.autosell=not self._read_config('system','auto_sell_cards')=='0'
-        self.autogacha=not self._read_config('system','auto_fp_gacha')=='0'
-        self.autofairyrewards=not self._read_config('system','auto_fairy_rewards')=='0'
-        self.autobuild= self._read_config('system','auto_fp_gacha')=='1' and '1' or '0'
-        self.fpgachabulk=self._read_config('system','fp_gacha_bulk')=='1' and '1' or '0'
-        self.sellcardwarning=self._read_config('system','sell_card_warning') or '1'
-        self.autoredtealevel=self._read_config('system','auto_red_tea_level')
-        self.strictbc=self._read_config('system','strict_bc')=='1'
-        self.sellcardwarning=int(self.sellcardwarning)
-        self.fairyfinalkillhp=int(self._read_config('system','fairy_final_kill_hp') or '20000')
+        self.cfg_auto_explore=not self._read_config('system','auto_explore')=='0'
+        self.cfg_auto_sell=not self._read_config('system','auto_sell_cards')=='0'
+        self.cfg_auto_gacha=not self._read_config('system','auto_fp_gacha')=='0'
+        self.cfg_auto_fairy_rewards=not self._read_config('system','auto_fairy_rewards')=='0'
+        self.cfg_auto_build= self._read_config('system','auto_fp_gacha')=='1' and '1' or '0'
+        self.cfg_fp_gacha_buld=self._read_config('system','fp_gacha_bulk')=='1' and '1' or '0'
+        self.cfg_sell_card_warning=int(self._read_config('system','sell_card_warning') or '1')
+        self.cfg_auto_rt_level=self._read_config('system','auto_red_tea_level')
+        self.cfg_strict_bc=self._read_config('system','strict_bc')=='1'
+        self.cfg_fairy_final_kill_hp=int(self._read_config('system','fairy_final_kill_hp') or '20000')
         logging.basicConfig(level=self._read_config('system','loglevel'))
         logging.setlogfile('events_%s.log'%self.loc)
-        self.savesession=savesession
-        self.delay=float(self._read_config('system','delay'))
+        self.cfg_save_session=savesession
+        self.cfg_delay=float(self._read_config('system','delay'))
+        self.cfg_display_ani=(self._read_config('system','display_ani') or '1')=='1'
         self.settitle=os.name=='nt'
-        self.displayani=(self._read_config('system','display_ani') or '1')=='1'
         self.posttime=0
         self.set_remote(None)
         ua=self._read_config('system','user-agent')
@@ -114,6 +113,18 @@ class maClient():
         self.poster=maclient_network.poster(self,self.loc,logging,ua)
         self.cookie=self._read_config('account_%s'%self.loc,'session')
         self.poster.set_cookie(self.cookie)
+        #eval
+        etmp=self._read_config('condition','fairy_select') or 'True'
+        self.evalstr_fairy=self._eval_gen(
+            '(%s) and fairy.put_down in ["0","1"]'%etmp,
+            eval_fairy_select)#1战斗中 2胜利 3失败
+        self.evalstr_area=self._eval_gen(self._read_config('condition','explore_area'),eval_explore_area)
+        self.evalstr_floor=self._eval_gen(self._read_config('condition','explore_floor'),eval_explore_floor)
+        self.evalstr_selcard=self._eval_gen(self._read_config('condition','select_card_to_sell'),eval_select_card)
+        self.evalstr_fairy_select_carddeck=self._eval_gen(self._read_config('condition','fairy_select_carddeck'),
+            eval_fairy_select_carddeck)
+        self.evalstr_factor=self._eval_gen(self._read_config('condition','factor'),{})
+        #tasker须动态生成#self.evalstr_task=self._eval_gen(self._read_config('system','tasker'),{})
         logging.debug(du8('system:初始化完成(%s)'%self.loc))
         self.lastposttime=time.time()
         self.player_initiated=False
@@ -130,19 +141,19 @@ class maClient():
                 return False  
     def _dopost(self,urikey,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},checkerror=True,noencrypt=False):
         self.remoteHdl()
-        if self.displayani:
+        if self.cfg_display_ani:
             connani=conn_ani()
             connani.setDaemon(True)
             connani.start()
-        if time.time()-self.lastposttime<=self.delay:
-            if  self.delay==0:
+        if time.time()-self.lastposttime<=self.cfg_delay:
+            if  self.cfg_delay==0:
                 logging.warning('post:NO DELAY!')
             else:
                 logging.debug('post:slow down...')
-                time.sleep(random.random()*self.delay)
+                time.sleep(random.random()*self.cfg_delay)
             self.lastposttime=time.time()
         resp,dec=self.poster.post(urikey,postdata,usecookie,setcookie,extraheader,noencrypt)
-        if self.displayani:
+        if self.cfg_display_ani:
             connani.flag=0
             connani.join(0.16)
         if int(resp['status'])>=400:
@@ -158,7 +169,7 @@ class maClient():
                     resp.update({'error':True,'errno':int(err.code)})
                 if err.code == '9000':
                     self._write_config('account_%s'%self.loc,'session','')
-                    logging.info(du8('使用新的小饼干重新登录……'))
+                    logging.info(du8('A一个新的小饼干……'))
                     self.login(fast=True)
                     return self._dopost(urikey,postdata,usecookie,setcookie,extraheader,checkerror,noencrypt)
             else:
@@ -263,6 +274,8 @@ class maClient():
                     self.factor_battle(' '.join(task[1:]))
                 elif task[0]=='fairy_battle' or task[0]=='fyb':
                     self.fairy_battle_loop(task[1])
+                elif task[0]=='fairy_select' or task[0]=='fs':
+                    self.fairy_select(cond=task[1:])
                 elif task[0]=='green_tea' or task[0]=='gt':
                     self.green_tea()
                 elif task[0]=='red_tea' or task[0]=='rt':
@@ -272,6 +285,9 @@ class maClient():
                 elif task[0]=='set_server' or task[0]=='ss':
                     self._write_config('system','server',task[1])
                     self.loc=task[1]
+                elif task[0]=='relogin' or task[0]=='rl':
+                    self._write_config('account_%s'%self.loc,'session','')
+                    self.login()
                 elif task[0]=='login' or task[0]=='l':
                     if len(task)==2:
                         task.append('')
@@ -350,7 +366,7 @@ class maClient():
     def auto_check(self,doingwhat):
         if not doingwhat in ['login','check_inspection','notification/post_devicetoken','card/exchange', 'trunk/sell','roundtable/edit','cardselect/savedeckcard']:
             if int(self.player.card.count) >=200:
-                if self.autosell:
+                if self.cfg_auto_sell:
                     logging.inform(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))
                     self.select_card_sell()
                     return True
@@ -359,7 +375,7 @@ class maClient():
                     return False
             if self.player.friendship_point>=9900 and \
                 not doingwhat in ['gacha/buy','gacha/select/getcontents']:
-                if self.autogacha:
+                if self.cfg_auto_gacha:
                     logging.inform(du8('绊点有点多，自动转蛋(*￣▽￣)y '))
                     self._gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
                     return True
@@ -369,7 +385,7 @@ class maClient():
         return True
 
     def check_strict_bc(self,refresh=False):
-        if not self.strictbc:
+        if not self.cfg_strict_bc:
             return False
         last_set_bc=self._read_config('record','last_set_bc') or '0'
         last_set_bc=int(last_set_bc)
@@ -395,8 +411,12 @@ class maClient():
         cardid=cardid.split(',')
         param=[]
         last_set_bc=0
+        leader_card=0
         for i in xrange(len(cardid)):
-            if len(cardid[0])>3 and not cardid=='empty':
+            if cardid[i]=='empty':
+                param.append('empty')
+                leader_card+=1
+            elif len(cardid[i])>3:
                 param.append(cardid[i])
                 mid=self.player.card.sid(cardid[i]).master_card_id
                 last_set_bc+=int(self.carddb[int(mid)][2])
@@ -416,7 +436,7 @@ class maClient():
             t=random.randint(5,10)
             logging.inform(du8('休息%d秒，假装在找卡'%t))
             time.sleep(t)
-            postparam='C='+','.join(param)+'&lr='+param[0]
+            postparam='C='+','.join(param)+'&lr='+param[leader_card]
             if self._dopost('cardselect/savedeckcard',postdata=postparam)[0]['error']:
                 break
             logging.info(du8('成功更换卡组为%s cost%d'%(deckkey,last_set_bc)))
@@ -479,14 +499,14 @@ class maClient():
             if resp['error']:
                 return
             areas=XML2Dict().fromstring(ct).response.body.exploration_area.area_info_list.area_info
-            if not self.autoexplore:
+            if not self.cfg_auto_explore:
                 for i in xrange(len(areas)):
                     print('%d.%s(%s%%/%s%%) %s'%\
                         (i+1,areas[i].name,areas[i].prog_area,areas[i].prog_item,(areas[i].area_type=='1' and 'EVENT' or '')))
                 areasel=[areas[int(self._raw_input('选择： ') or '1')-1]]
             else:
                 logging.info(du8('自动选图www'))
-                evalstr=self._eval_gen(cond or self._read_config('condition','explore_area'),eval_explore_area)
+                evalstr= (cond!='' and self._eval_gen(cond) or self.evalstr_area)
                 areasel=[]
                 logging.debug('explore:eval:%s'%(evalstr))
                 for area in areas:
@@ -508,12 +528,11 @@ class maClient():
                 if 'found_item_list' in floors:
                     floors=[floors]#只有一个
                 nofloorselect=True
-                evalstr=self._eval_gen(self._read_config('condition','explore_floor'),eval_explore_floor)
-                logging.debug('explore:eval:%s'%(evalstr))
+                logging.debug('explore:eval:%s'%(self.evalstr_floor))
                 for floor in floors:
                     floor.cost=int(floor.cost)
                     floor.cost=int(floor.cost)
-                    if eval(evalstr):
+                    if eval(self.evalstr_floor):
                         nofloorselect=False
                         break
                 if nofloorselect:
@@ -598,7 +617,7 @@ class maClient():
                                  logging.debug('explore:item not found?')
                     else:
                         logging.warning(du8('AP不够了TUT'))
-                        if not self.green_tea(self.autoexplore):
+                        if not self.green_tea(self.cfg_auto_explore):
                             logging.error(du8('不给喝，不走了o(￣ヘ￣o＃) '))
                             return
                         else:
@@ -615,8 +634,8 @@ class maClient():
    
     def _gacha(self,gacha_type=GACHA_FRIENNSHIP_POINT):
         if gacha_type==GACHA_FRIENNSHIP_POINT:
-            ab=self.autobuild
-            bulk=self.fpgachabulk
+            ab=self.cfg_auto_build
+            bulk=self.cfg_fp_gacha_buld
         else:
             ab=self._read_config('system','auto_build')
             bulk='0'
@@ -679,11 +698,10 @@ class maClient():
         return hasgot,resp['errmsg']
 
     def select_card_sell(self,cond=''):
-        evalcard=self._eval_gen(cond or self._read_config('condition','select_card_to_sell'),eval_select_card)
         cinfo=[]
         sid=[]
         warning_card=[]
-        logging.debug('select_card:eval:%s'%(evalcard))
+        logging.debug('select_card:eval:%s'%(self.evalstr_selcard))
         for card in self.player.card.cards:
             card.star=int(self.carddb[int(card.master_card_id)][1])
             card.lv_i=int(card.lv)
@@ -692,7 +710,7 @@ class maClient():
             card.mid=int(card.master_card_id)
             card.price=int(card.sale_price)
             card.sid=int(card.serial_id)
-            evalres=eval(evalcard) and not card.mid in [390,391,392]#切尔莉
+            evalres=eval(self.evalstr_selcard) and not card.mid in [390,391,392]#切尔莉
             if evalres:
                 if card.star>3:
                     warning_card.append(self.carddb[int(card.master_card_id)][0]+
@@ -702,7 +720,7 @@ class maClient():
                     du8(' lv%d ☆%s'%(card.lv_i,self.carddb[int(card.master_card_id)][1])))
         logging.info(len(sid)==0 and du8('没有要贩卖的卡片') or du8('将要贩卖这些卡片：')+', '.join(cinfo))
         if len(warning_card)>0:
-            if self.sellcardwarning>=1:
+            if self.cfg_sell_card_warning>=1:
                 logging.warning(du8('存在稀有以上卡片：')+', '.join(warning_card)+'\n真的要继续吗？y/n')
                 if raw_input('> ')=='y':
                     self._sell_card(sid)
@@ -711,7 +729,7 @@ class maClient():
             else:
                     logging.debug('select_card:auto aborted')
         else:
-            if self.sellcardwarning==2:
+            if self.cfg_sell_card_warning==2:
                 logging.warning(du8('根据卖卡警告设置，需要亚瑟大人的确认\n真的要继续吗？y/n'))
                 if raw_input('> ')=='y':
                     self._sell_card(sid)
@@ -794,7 +812,7 @@ class maClient():
         fs=XML2Dict().fromstring(ct).response.body.fairy_select
         fairy_event=fs.fairy_event
         if fs.remaining_rewards!='0':
-            if self.autofairyrewards:
+            if self.cfg_auto_fairy_rewards:
                 self._fairy_rewards()
             else:
                 logging.debug('fairy_select:do not get rewards')
@@ -806,12 +824,10 @@ class maClient():
             if int(self._read_config('fairy',fsid).split(',')[0])<time.time() or not fsid in fsids:
                 logging.debug('fairy_select:delete sid %s from record'%(fsid))
                 self._del_option('fairy',fsid)
-
         #筛选
         fitemp= self.player.fairy['id']
         self.player.fairy={'alive':False,'id':0}
-        evalstr=self._eval_gen(cond or self._read_config('condition','fairy_select'),evalfairy_select)
-        evalstr='(%s) and fairy.put_down in ["0","1"]'%evalstr#1战斗中国 2胜利 3失败
+        evalstr=(cond!='' and self._eval_gen(cond) or self.evalstr_fairy)
         logging.debug('fairy_select:eval:%s'%(evalstr))
         fairies=[]
         for fairy in fairy_event:
@@ -823,11 +839,11 @@ class maClient():
             fairy['wake']=fairy.fairy.name[:2] in ['觉醒','覺醒','希波','數理','教官','雅熙']
             ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
             fairy['not_battled']= ftime[0]==''
-            if time.time()-int(ftime[1] or '0') < 300:
-                logging.debug('fairy_select:sid %s battled in less than 5 min'%fairy.fairy.serial_id)
-                continue
             #logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
             if eval(evalstr):
+                if time.time()-int(ftime[1] or '0') < 180:
+                    logging.debug('fairy_select:sid %s battled in less than 3 min'%fairy.fairy.serial_id)
+                    continue
                 fairies.append(fairy)
         logging.info(du8(len(fairies)==0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD'%len(fairies)))
         instant_refresh=False
@@ -885,15 +901,14 @@ class maClient():
             du8('妖精'),fairy.name,fairy.lv,fairy.hp,du8('发现者'),disc_name,
             du8('小伙伴'),len(fairy.attacker_history.attacker),du8('剩余'),hms(fairy.time_limit),
             fairy.rare_flg=='1' and 'WAKE!' or''))
-        evalsel=self._eval_gen(self._read_config('condition','fairy_select_carddeck'),evalfairy_select_carddeck)
-        cardd=eval(evalsel)
-        logging.debug('fairy_battle:eval:%s result:%s'%(evalsel,cardd))
+        cardd=eval(self.evalstr_fairy_select_carddeck)
+        logging.debug('fairy_battle:eval:%s result:%s'%(self.evalstr_fairy_select_carddeck,cardd))
         if (self.set_card(cardd)):
             fairy=fairy_floor()#设完卡组返回时
         #打
         if self.check_strict_bc():#strict BC
             logging.warning(du8('BC不够了TOT'))
-            autored=(self.autoredtealevel=='2') or (self.autoredtealevel=='1' and fairy.rare_flg=='1')
+            autored=(self.cfg_auto_rt_level=='2') or (self.cfg_auto_rt_level=='1' and fairy.rare_flg=='1')
             if not self.red_tea(autored):
                 logging.error(du8('那就不打了哟(*￣︶￣)y '))
                 return False
@@ -905,7 +920,7 @@ class maClient():
             return
         elif resp['errno']==1050:
             logging.warning(du8('BC不够了TOT'))
-            autored=(self.autoredtealevel=='2') or (self.autoredtealevel=='1' and fairy.rare_flg=='1')
+            autored=(self.cfg_auto_rt_level=='2') or (self.cfg_auto_rt_level=='1' and fairy.rare_flg=='1')
             if not self.red_tea(autored):
                 logging.error(du8('那就不打了哟(*￣︶￣)y '))
                 return False
@@ -939,7 +954,7 @@ class maClient():
         else:
             hpleft=int(XML2Dict().fromstring(ct).response.body.explore.fairy.hp)
             logging.info(du8('YOU LOSE- - Fairy-HP:%d'%hpleft))
-            if self.fairyfinalkillhp>=hpleft:
+            if self.cfg_fairy_final_kill_hp>=hpleft:
                 logging.debug('_fairy_battle:instant refresh!')
                 need_refresh=True
         logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
@@ -1160,7 +1175,6 @@ class maClient():
         if resp['error']:
             return 
         lakes=XML2Dict().fromstring(dec).response.body.competition_parts.lake
-        evalstr=self._eval_gen(self._read_config('condition','factor'),{})
         #only one
         if len(lakes)==1:
             lakes=[lakes]
@@ -1205,11 +1219,11 @@ class maClient():
                     else:
                         logging.debug('factor_battle:eval:%s, result:%s, star:%s, cid:%d'%(
                             evalstr,
-                            eval(evalstr),
+                            eval(self.evalstr_factor),
                             star,
                             cid)
                         )
-                        if eval(evalstr):
+                        if eval(self.evalstr_factor):
                             logging.debug('factor_battle:->%s @ %s'%(u.name,u.leader_card.master_card_id))
                             ap=self.player.ap['current']
                             bc=self.player.bc['current']
