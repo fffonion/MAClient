@@ -12,6 +12,7 @@ import threading
 import maclient
 import maclient_proxy
 import maclient_logging
+import maclient_network
 import maclient_remote
 import getpass
 __version__=1.43
@@ -174,7 +175,7 @@ if __name__=='__main__':
                     maclient1._write_config('account_%s'%maclient1._read_config('system','server'),'session',session)
                 mod=(mod+1)%2
             elif ch =='4':
-                cards=ma.decode_param(read_proxy(work=1))
+                cards=maclient_network.decode_param(read_proxy(work=1))
                 cdeck=cards.split('&')[0].split('=')[1].strip('%0A').rstrip(',empty')
                 decks=maclient1._list_option('carddeck')
                 print(du8('选择卡组，输入卡组名以添加新卡组'))

@@ -1,5 +1,7 @@
 ﻿- 1.43
 	- +fairy_battle_sleep_factor缩放刷新列表时间
+	- +妖精选择逻辑修正（脑残了
+	- 修正刷新时间很短时频繁打一只妖精
 	
 - 1.42
 	- +领取礼物盒（cli输入rb或reward_box

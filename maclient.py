@@ -328,7 +328,8 @@ class maClient():
                 logging.info(du8('[%s] 登录成功!'%self.username))
                 self._write_config('account_%s'%self.loc,'username',self.username)
                 open(self.playerfile,'w').write(dec)
-                self._write_config('carddeck','LAST_SET','')
+                self._write_config('record','last_set_card','')
+                self._write_config('record','last_set_bc','0')
         return dec
         
     def initplayer(self,xml):
@@ -802,7 +803,7 @@ class maClient():
         #清理记录
         fsids=[f.fairy.serial_id for f in fairy_event]
         for fsid in self._list_option('fairy'):
-            if int(self._read_config('fairy',fsid))<time.time() or not fsid in fsids:
+            if int(self._read_config('fairy',fsid).split(',')[0])<time.time() or not fsid in fsids:
                 logging.debug('fairy_select:delete sid %s from record'%(fsid))
                 self._del_option('fairy',fsid)
 
@@ -810,18 +811,22 @@ class maClient():
         fitemp= self.player.fairy['id']
         self.player.fairy={'alive':False,'id':0}
         evalstr=self._eval_gen(cond or self._read_config('condition','fairy_select'),evalfairy_select)
-        evalstr+=' and fairy.put_down in ["0","1"]'#1战斗中国 2胜利 3失败
+        evalstr='(%s) and fairy.put_down in ["0","1"]'%evalstr#1战斗中国 2胜利 3失败
         logging.debug('fairy_select:eval:%s'%(evalstr))
+        fairies=[]
         for fairy in fairy_event:
             fairy.fairy.lv=int(fairy.fairy.lv)
-            fairies=[]
              #检查自己的还活着不
             if fitemp==fairy.fairy.serial_id and fairy.put_down=='1':
                 self.player.fairy={'alive':True,'id':fairy.fairy.serial_id}
             fairy['time_limit']=int(fairy.fairy.time_limit)
-            fairy['wake']=fairy.fairy.name[:2] in ['觉醒','覺醒','希波','數理','教官']
-            fairy['not_battled']= self._read_config('fairy',fairy.fairy.serial_id)==''
-            logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
+            fairy['wake']=fairy.fairy.name[:2] in ['觉醒','覺醒','希波','數理','教官','雅熙']
+            ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
+            fairy['not_battled']= ftime[0]==''
+            if time.time()-int(ftime[1] or '0') < 300:
+                logging.debug('fairy_select:sid %s battled in less than 5 min'%fairy.fairy.serial_id)
+                continue
+            #logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
             if eval(evalstr):
                 fairies.append(fairy)
         logging.info(du8(len(fairies)==0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD'%len(fairies)))
@@ -906,8 +911,6 @@ class maClient():
                 return False
             else:
                 return True
-
-        self._write_config('fairy',fairy.serial_id,str(int(fairy.time_limit)+int(float(time.time()))))
         try:
             res=XML2Dict().fromstring(ct).response.body.battle_result
         except KeyError:
@@ -955,6 +958,9 @@ class maClient():
         if not need_refresh:
             #等着看结果
             time.sleep(4)
+        #记录截止时间，上次战斗时间，如果需要立即刷新，上次战斗时间为0.1
+        self._write_config('fairy',fairy.serial_id,
+            '%d,%.0f'%(int(fairy.time_limit)+int(float(time.time())),need_refresh and 0.1 or time.time()))
         return need_refresh
 
     def friends(self,choice='',autodel=False):
