@@ -14,7 +14,7 @@ import maclient_proxy
 import maclient_logging
 import maclient_remote
 import getpass
-__version__=1.42
+__version__=1.43
 du8=lambda str:str.decode('utf-8')
 def iter_printer(l,sep='\n'):
     cnt=1
@@ -62,8 +62,8 @@ class srv(threading.Thread):
 def read_proxy(work=0):
     serverport=23300
     server_address = ("", serverport) 
-    hdl=maProxy.Handler 
-    server = maProxy.ThreadingHTTPServer(server_address,hdl )  
+    hdl=maclient_proxy.Handler 
+    server = maclient_proxy.ThreadingHTTPServer(server_address,hdl )  
     # Random Target Proxy Server 
     if work==0:
         print(du8('请将设备的代理设置为 本机ip:%s 然后随便进行一次操作' % (serverport)))
@@ -86,7 +86,14 @@ def read_proxy(work=0):
             os.remove('.carddeck')
             return carddeck
         time.sleep(1)     
-
+        
+def macs(uri,header={},body='',method='GET'):
+    header.update({'User-Agent':'maClient/%f'%__version__})
+    try:
+        resp,ct=ht.request('%s/%s'%(server,uri),body=body,method=method,headers=header)
+    except:
+        resp,ct=ht.request('%s/%s'%('http://mac.3owl.com',uri),body=body,method=method,headers=header)
+    return resp,ct
 
 
 if __name__=='__main__':

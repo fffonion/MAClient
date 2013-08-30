@@ -158,8 +158,8 @@ class maClient():
                     resp.update({'error':True,'errno':int(err.code)})
                 if err.code == '9000':
                     self._write_config('account_%s'%self.loc,'session','')
-                    logging.info(du8('已清除会话，正在重新登录……'))
-                    self.login()
+                    logging.info(du8('使用新的小饼干重新登录……'))
+                    self.login(fast=True)
                     return self._dopost(urikey,postdata,usecookie,setcookie,extraheader,checkerror,noencrypt)
             else:
                 resp.update({'error':False})
@@ -275,7 +275,7 @@ class maClient():
                 elif task[0]=='login' or task[0]=='l':
                     if len(task)==2:
                         task.append('')
-                    dec=self.login(task[1],task[2])
+                    dec=self.login(uname=task[1],pwd=task[2])
                     self.initplayer(dec)
                 elif task[0]=='friend' or task[0]=='f':
                     if len(task)==2:
@@ -298,7 +298,7 @@ class maClient():
                     time.sleep(3.15616546511)
                     resp,ct=self._dopost('mainmenu')#初始化
 
-    def login(self,uname='',pwd=''):
+    def login(self,uname='',pwd='',fast=False):
 
         sessionfile='.%s.session'%self.loc
         if os.path.exists(self.playerfile) and self._read_config('account_%s'%self.loc,'session')!='' and uname=='':
@@ -316,8 +316,9 @@ class maClient():
                     logging.warning(du8('保存的登录信息没有加密www'))
             token=self._read_config('system','device_token').replace('\\n','\n') or \
             'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
-            self._dopost('check_inspection',checkerror=False,extraheader={},usecookie=False)
-            self._dopost('notification/post_devicetoken',postdata='S=%s&login_id=%s&password=%s&app=and&token=%s'%('nosessionid',self.username,self.password,token),checkerror=False)
+            if not fast:
+                self._dopost('check_inspection',checkerror=False,extraheader={},usecookie=False)
+                self._dopost('notification/post_devicetoken',postdata='S=%s&login_id=%s&password=%s&app=and&token=%s'%('nosessionid',self.username,self.password,token),checkerror=False)
             
             resp,dec=self._dopost('login',postdata='login_id=%s&password=%s'%(self.username,self.password))
             if resp['error']:
@@ -369,23 +370,8 @@ class maClient():
     def check_strict_bc(self,refresh=False):
         if not self.strictbc:
             return False
-        last_set_bc=self._read_config('record','last_set_bc')
-        if last_set_bc=='' or refresh:
-            last_set_bc=0
-            cards=self._read_config('record','last_set_card')
-            if cards=='':
-                logging.debug('strict_bc:no last set card, return False')
-                return False
-            else:
-                for cardid in cards.split(','):
-                    if len(cardid)>3 and cardid!='empty':
-                        mid=self.player.card.sid(cardid).master_card_id
-                    else:
-                        mid=cardid
-                    last_set_bc+=int(self.carddb[int(mid)][-1])
-            self._write_config('record','last_set_bc',str(last_set_bc))
-        else:
-            last_set_bc=int(last_set_bc)
+        last_set_bc=self._read_config('record','last_set_bc') or '0'
+        last_set_bc=int(last_set_bc)
         if self.player.bc['current']<last_set_bc:
             logging.warning(du8('strict_bc:严格BC模式已触发www'))
             return True
@@ -407,13 +393,17 @@ class maClient():
             return False
         cardid=cardid.split(',')
         param=[]
+        last_set_bc=0
         for i in xrange(len(cardid)):
             if len(cardid[0])>3 and not cardid=='empty':
                 param.append(cardid[i])
+                mid=self.player.card.sid(cardid[i]).master_card_id
+                last_set_bc+=int(self.carddb[int(mid)][2])
             else:
                 c=self.player.card.cid(cardid[i])
                 if c!=[]:
                     param.append(c[-1].serial_id)
+                    last_set_bc+=int(self.carddb[int(cardid[i])][2])
                 else:
                     logging.error(du8('你木有 id为 %s (%s)的卡片'%(cardid[i],self.carddb[int(cardid[i])][0])))
         param=param+['empty']*(12-len(param))
@@ -428,11 +418,11 @@ class maClient():
             postparam='C='+','.join(param)+'&lr='+param[0]
             if self._dopost('cardselect/savedeckcard',postdata=postparam)[0]['error']:
                 break
-            logging.info(du8('成功更换卡组为%s'%deckkey))
+            logging.info(du8('成功更换卡组为%s cost%d'%(deckkey,last_set_bc)))
             #保存
             self._write_config('record','last_set_card',self._read_config('carddeck',deckkey))
             #记录BC
-            self.check_strict_bc(refresh=True)
+            self._write_config('record','last_set_bc',str(last_set_bc))
             return True
         logging.info(du8('卡组没有改变'))
         return False
@@ -762,6 +752,7 @@ class maClient():
             looptime='9999999'
         looptime=int(looptime)
         slptime=self._read_config('system','fairy_battle_sleep')
+        slpfactor=float(self._read_config('system','fairy_battle_sleep_factor') or '1')
         if slptime=='':
             slptime=1.5
         secs=slptime.split('|')
@@ -779,7 +770,7 @@ class maClient():
             logging.debug('fairy_battle_loop:%d/%d'%(l+1,looptime))
             refresh=self.fairy_select()
             if not refresh:#没有立即刷新
-                s=random.randint(int(60*slptime*0.75),int(60*slptime*1.25))
+                s=random.randint(int(60*slptime*0.8*slpfactor),int(60*slptime*1.2*slpfactor))
                 logging.inform(du8('%d秒后刷新……'%s))
                 time.sleep(s)
 
@@ -819,7 +810,7 @@ class maClient():
         fitemp= self.player.fairy['id']
         self.player.fairy={'alive':False,'id':0}
         evalstr=self._eval_gen(cond or self._read_config('condition','fairy_select'),evalfairy_select)
-        evalstr+=' and fairy.put_down in ["0","1"]'#=0?
+        evalstr+=' and fairy.put_down in ["0","1"]'#1战斗中国 2胜利 3失败
         logging.debug('fairy_select:eval:%s'%(evalstr))
         for fairy in fairy_event:
             fairy.fairy.lv=int(fairy.fairy.lv)
@@ -828,8 +819,9 @@ class maClient():
             if fitemp==fairy.fairy.serial_id and fairy.put_down=='1':
                 self.player.fairy={'alive':True,'id':fairy.fairy.serial_id}
             fairy['time_limit']=int(fairy.fairy.time_limit)
-            fairy['wake']=fairy.fairy.name.startswith('觉醒') or fairy.fairy.name.startswith('覺醒')
+            fairy['wake']=fairy.fairy.name[:2] in ['觉醒','覺醒','希波','數理','教官']
             fairy['not_battled']= self._read_config('fairy',fairy.fairy.serial_id)==''
+            logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
             if eval(evalstr):
                 fairies.append(fairy)
         logging.info(du8(len(fairies)==0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD'%len(fairies)))
@@ -1128,7 +1120,7 @@ class maClient():
         logging.info(strl.rstrip(','))
         res=self._get_rewards(nid)
         if res[0]:
-            logging.info(dres[1])
+            logging.info(res[1])
 
 
     def point_setting(self):
