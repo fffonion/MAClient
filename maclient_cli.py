@@ -15,7 +15,7 @@ import maclient_logging
 import maclient_network
 import maclient_remote
 import getpass
-__version__=1.43
+__version__=1.44
 du8=lambda str:str.decode('utf-8')
 def iter_printer(l,sep='\n'):
     cnt=1
@@ -176,6 +176,7 @@ if __name__=='__main__':
                 if mod==0:
                     session=read_proxy(work=0)
                     maclient1._write_config('account_%s'%maclient1._read_config('system','server'),'session',session)
+                    maclient1.login()
                 mod=(mod+1)%2
             elif ch =='4':
                 cards=maclient_network.decode_param(read_proxy(work=1))

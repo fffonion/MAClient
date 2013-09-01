@@ -45,4 +45,4 @@ while nextpos!=-1 and curpos<=len(dt):
     if not int(card_info[7]) in xrange(1,7) :
         raw_input()
         #print curpos,int(binascii.hexlify(dt[zzz+3]),16),name,desc
-    open(r'z:/card.tw.txt','a').write('%s,%s\n'%(cid,','.join([card_info[0],card_info[7],card_info[6]]+card_info[1:5]).replace('\n','\\n')))
+    open(r'z:/card.cn.txt','a').write('%s,%s\n'%(cid,','.join([card_info[0],card_info[7],card_info[6]]+card_info[1:5]).replace('\n','\\n')))

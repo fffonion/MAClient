@@ -189,10 +189,19 @@ class maClient():
             if not resp['error']:
                 self.remoteHdl(method='PROFILE')
                 if self.settitle:
-                    setT('[%s] AP:%d/%d BC:%d/%d G:%d FP:%d Cards:%d'%(self.player.name,self.player.ap['current'],self.player.ap['max'],self.player.bc['current'],self.player.bc['max'],self.player.gold,self.player.friendship_point,self.player.card.count))
+                    setT('[%s] AP:%d/%d BC:%d/%d G:%d FP:%d Cards:%d%s'%(
+                        self.player.name,
+                        self.player.ap['current'],self.player.ap['max'],
+                        self.player.bc['current'],self.player.bc['max'],
+                        self.player.gold,self.player.friendship_point,self.player.card.count,
+                        self.player.fairy['alive'] and ' FAIRY_ALIVE' or ''))
                 else:
                     if self.posttime==5:
-                        logging.inform(du8('汇报')+' AP:%d/%d BC:%d/%d G:%d FP:%d '%(self.player.ap['current'],self.player.ap['max'],self.player.bc['current'],self.player.bc['max'],self.player.gold,self.player.friendship_point))
+                        logging.inform(du8('汇报')+' AP:%d/%d BC:%d/%d G:%d FP:%d %s'%(
+                            self.player.ap['current'],self.player.ap['max'],
+                            self.player.bc['current'],self.player.bc['max'],
+                            self.player.gold,self.player.friendship_point,
+                            self.player.fairy['alive'] and 'FAIRY_ALIVE' or ''))
                     self.posttime=(self.posttime+1)%6
                 if update_dt[1]:
                     logging.debug(update_dt[0])
@@ -272,11 +281,19 @@ class maClient():
                 elif task[0]=='explore' or task[0]=='e':
                     self.explore(' '.join(task[1:]))
                 elif task[0]=='factor_battle' or task[0]=='fcb':
-                    self.factor_battle(' '.join(task[1:]))
+                    arg_lake=None
+                    arg_minbc=0
+                    if len(task)>2:
+                        for i in range(len(task)-2):
+                            if task[i+1].startswith('lake:') or task[i+1].startswith('l:'):
+                                arg_lake=task[i+1].split(':')[1]
+                            else:
+                                arg_minbc=int(task[i+1])
+                    self.factor_battle(minbc=arg_minbc,sel_lake=arg_lake)
                 elif task[0]=='fairy_battle' or task[0]=='fyb':
                     self.fairy_battle_loop(task[1])
                 elif task[0]=='fairy_select' or task[0]=='fs':
-                    self.fairy_select(cond=task[1:])
+                    self.fairy_select(cond=' '.join(task[1:]))
                 elif task[0]=='green_tea' or task[0]=='gt':
                     self.green_tea()
                 elif task[0]=='red_tea' or task[0]=='rt':
@@ -418,26 +435,33 @@ class maClient():
                 param.append('empty')
                 leader_card+=1
             elif len(cardid[i])>3:
-                param.append(cardid[i])
-                mid=self.player.card.sid(cardid[i]).master_card_id
-                last_set_bc+=int(self.carddb[int(mid)][2])
+                try:
+                    mid=self.player.card.sid(cardid[i]).master_card_id
+                except IndexError:
+                    logging.error(du8('你木有sid为 %s 的卡片'%(cardid[i])))
+                else:
+                    last_set_bc+=int(self.carddb[int(mid)][2])
+                    param.append(cardid[i])
             else:
                 c=self.player.card.cid(cardid[i])
                 if c!=[]:
                     param.append(c[-1].serial_id)
                     last_set_bc+=int(self.carddb[int(cardid[i])][2])
                 else:
-                    logging.error(du8('你木有 id为 %s (%s)的卡片'%(cardid[i],self.carddb[int(cardid[i])][0])))
+                    logging.error(du8('你木有id为 %s (%s)的卡片'%(cardid[i],self.carddb[int(cardid[i])][0])))
+        noe=cardid.replace(',empty','').replace('empty,','').split(',')
+        lc=random.choice(noe)
+        t=3+random.random()*len(noe)*0.6
         param=param+['empty']*(12-len(param))
         while True:
             if param==['empty']*12:
                 break
             if self._dopost('roundtable/edit',postdata='move=1')[0]['error']:
                 break
-            t=random.randint(5,10)
+            
             logging.inform(du8('休息%d秒，假装在找卡'%t))
             time.sleep(t)
-            postparam='C='+','.join(param)+'&lr='+param[leader_card]
+            postparam='C=%s&lr=%s'%(','.join(param),lc)
             if self._dopost('cardselect/savedeckcard',postdata=postparam)[0]['error']:
                 break
             logging.info(du8('成功更换卡组为%s cost%d'%(deckkey,last_set_bc)))
@@ -789,7 +813,7 @@ class maClient():
                 hour_last=hour_now
             logging.debug('fairy_battle_loop:%d/%d'%(l+1,looptime))
             refresh=self.fairy_select()
-            if not refresh:#没有立即刷新
+            if not refresh and not looptime==1:#没有立即刷新
                 s=random.randint(int(60*slptime*0.8*slpfactor),int(60*slptime*1.2*slpfactor))
                 logging.inform(du8('%d秒后刷新……'%s))
                 time.sleep(s)
@@ -834,11 +858,11 @@ class maClient():
         for fairy in fairy_event:
             fairy.fairy.lv=int(fairy.fairy.lv)
              #检查自己的还活着不
-            if fitemp==fairy.fairy.serial_id and fairy.put_down=='1':
+            if (fitemp==fairy.fairy.serial_id or fairy.user.id==self.player.id) and fairy.put_down=='1':
                 self.player.fairy={'alive':True,'id':fairy.fairy.serial_id}
             fairy['time_limit']=int(fairy.fairy.time_limit)
             fairy['wake']=False
-            for k in ['觉醒','覺醒','護士','主任','教官','校長','雅熙','数理']
+            for k in ['觉醒','覺醒','護士','主任','教官','校長','雅熙','数理']:
                 fairy['wake']=fairy['wake'] or (k in fairy.fairy.name)
             ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
             fairy['not_battled']= ftime[0]==''
@@ -905,7 +929,7 @@ class maClient():
             du8('小伙伴'),len(fairy.attacker_history.attacker),du8('剩余'),hms(fairy.time_limit),
             fairy.rare_flg=='1' and 'WAKE!' or''))
         cardd=eval(self.evalstr_fairy_select_carddeck)
-        logging.debug('fairy_battle:eval:%s result:%s'%(self.evalstr_fairy_select_carddeck,cardd))
+        logging.debug('fairy_battle:carddeck result:%s'%(cardd))
         if (self.set_card(cardd)):
             fairy=fairy_floor()#设完卡组返回时
         #打
@@ -985,8 +1009,9 @@ class maClient():
         #     <attack_type>1</attack_type>
         #     <attack_damage>11967</attack_damage>
         # </battle_action_list>
-        fatk,matk,rnd,skillcnt=0,0,0,0
-        skillcard=[]
+        fatk,matk,rnd=0,0,0
+        skills=[]
+        skill_type=['0','ATK↑','HP↑','3','4','5']
         for l in blist:
             if 'attack_damage' in l:
                 if l.action_player=='0':
@@ -995,10 +1020,16 @@ class maClient():
                     fatk+=int(l.attack_damage)
                 rnd+=0.5
             if 'skill_id' in l:
-                skillcnt+=1
-                skillcard.append(self.carddb[int(l.skill_card)])
-        logging.info(du8('回合数:%d/%d 平均ATK:%.1f/%.1f 技能发动:%d次(%s)'%
-            (math.ceil(rnd),math.floor(rnd),matk/math.ceil(rnd),fatk/math.floor(rnd),skillcnt,','.join(skillcard))))
+                #skillcnt+=1
+                skills.append('[%d]%s.%s'%(
+                    math.ceil(rnd),skill_type[int(l.skill_type)],self.carddb[int(l.skill_card)][0])
+                )
+        logging.info(du8('回合数:%d/%d 平均ATK:%.1f/%.1f %s %s'%
+            (math.ceil(rnd),math.floor(rnd),
+            matk/math.ceil(rnd), 0 if rnd<1 else fatk/math.floor(rnd),
+            res.winner=='1' and '受到伤害:%d'%fatk or '总伤害:%d'%matk,
+            len(skills)>0 and '技能发动:%s'%(','.join(skills)) or '')
+        ))
         if not need_refresh:
             #等着看结果
             time.sleep(4)
@@ -1197,7 +1228,7 @@ class maClient():
             return True
 
 
-    def factor_battle(self,minbc=0):
+    def factor_battle(self,minbc=0,sel_lake=None):
         minbc=int(minbc)
         self._dopost('battle/area',checkerror=False)
         resp,dec=self._dopost('battle/competition_parts?redirect_flg=1',noencrypt=True)
@@ -1214,7 +1245,12 @@ class maClient():
         #try loop
         for i in xrange(int(trycnt)):
             logging.debug(du8('factor_battle:因子战:第%d/%s次 寻找油腻的师姐'%(i+1,trycnt)))
-            l=random.choice(lakes)
+            if sel_lake==None:
+                l=random.choice(lakes)
+            else:
+                for l in lakes:
+                    if l.lake_id==str(sel_lake):
+                        break
             if l.lake_id=='0':
                 partids=[0]
             else:

@@ -145,6 +145,7 @@ session不用管它
     set_server cn|set_card factor|factor_battle #设置国服，设置因子战卡组，然后因子战
     ss cn|sc factor|fcb #同上
     explore '明鏡月和島' in area.name #探索秘境名称包含'明鏡月和島' 
+	fcb l:1 70 或 fcb lake:1 70#因子战选择第一因子，下限BC70，因子默认为随机选择，BC下限默认为0
 
 
 ###condition
