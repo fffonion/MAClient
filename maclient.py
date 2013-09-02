@@ -912,7 +912,7 @@ class maClient():
         '''
         while time.time()-self.lastfairytime<15:
             time.sleep(3)
-            self.lastfairytime=time.time()
+        self.lastfairytime=time.time()
         def fairy_floor():
             paramfl='check=1&serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
             resp,ct=self._dopost('exploration/fairy_floor',postdata=paramfl)
