@@ -809,6 +809,7 @@ class maClient():
             slptime=1.5
         secs=slptime.split('|')
         hour_last=99999
+        refresh=False
         for l in xrange(looptime):
             hour_now=int(time.strftime('%H',time.localtime(time.time())))
             if hour_now!=hour_last:
@@ -820,15 +821,15 @@ class maClient():
                     slptime=1.5
                 hour_last=hour_now
             logging.debug('fairy_battle_loop:%d/%d'%(l+1,looptime))
-            refresh=self.fairy_select()
-            if not refresh and not looptime==1:#没有立即刷新
+            refresh=self.fairy_select(is_refresh=refresh)
+            if not refresh and looptime!=l+1:#没有立即刷新
                 s=random.randint(int(60*slptime*0.8*slpfactor),int(60*slptime*1.2*slpfactor))
                 logging.inform(du8('%d秒后刷新……'%s))
                 time.sleep(s)
 
 
 
-    def fairy_select(self,cond=''):
+    def fairy_select(self,cond='',is_refresh=False):
         resp,ct=self._dopost('menu/menulist')
         if resp['error']:
             return
@@ -875,7 +876,7 @@ class maClient():
             ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
             fairy['not_battled']= ftime[0]==''
             #logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
-            if eval(evalstr):
+            if eval(evalstr) or is_refresh:
                 if time.time()-int(ftime[1] or '0') < 180:
                     logging.debug('fairy_select:sid %s battled in less than 3 min'%fairy.fairy.serial_id)
                     continue
@@ -1319,6 +1320,8 @@ class maClient():
                                 except KeyError:
                                     logging.warning('no BC ?')
                                     return
+                                if len(dec)>10000:
+                                    logging.info(du8('收集碎片合成了新的骑士卡片！'))
                                 #print bc,self.player.bc.current
                                 logging.info(du8(result=='0' and '擦输了QAQ' or '赢了XDDD')+
                                     ' AP:%s%d/%s/%s'%(
