@@ -214,6 +214,7 @@ sell_card_warning 卖卡提醒'''))
                     else:
                         maclient1._write_config('system',p1,p2)
                         print(du8('已保存~'))
+                        maclient1.load_config()
             elif ch =='6':
                 getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
                  and sys.path[0].decode(sys.getfilesystemencoding()) \

@@ -22,7 +22,6 @@ import maclient_network
 import maclient_logging
 __version__=1.41
 #CONSTS:
-CARD_NORM,CARD_MAX,CARD_NORM_HOLO,CARD_MAX_HOLO=0,1,2,3
 EXPLORE_BATTLE,NORMAL_BATTLE=0,1
 
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
@@ -84,27 +83,10 @@ class maClient():
             self.configfile=self.getPATH0()+opath.sep+'config.ini'
         else:
             self.configfile=configfile
+        #configuration
         self.cf.read(self.configfile)
-        #configurations
-        self.loc=self._read_config('system','server')
-        self.playerfile='.%s.playerdata'%self.loc
-        self.username=self._read_config('account_%s'%self.loc,'username')
-        self.password=self._read_config('account_%s'%self.loc,'password')
-        self.cfg_auto_explore=not self._read_config('system','auto_explore')=='0'
-        self.cfg_auto_sell=not self._read_config('system','auto_sell_cards')=='0'
-        self.cfg_auto_gacha=not self._read_config('system','auto_fp_gacha')=='0'
-        self.cfg_auto_fairy_rewards=not self._read_config('system','auto_fairy_rewards')=='0'
-        self.cfg_auto_build= self._read_config('system','auto_fp_gacha')=='1' and '1' or '0'
-        self.cfg_fp_gacha_buld=self._read_config('system','fp_gacha_bulk')=='1' and '1' or '0'
-        self.cfg_sell_card_warning=int(self._read_config('system','sell_card_warning') or '1')
-        self.cfg_auto_rt_level=self._read_config('system','auto_red_tea_level')
-        self.cfg_strict_bc=self._read_config('system','strict_bc')=='1'
-        self.cfg_fairy_final_kill_hp=int(self._read_config('system','fairy_final_kill_hp') or '20000')
-        logging.basicConfig(level=self._read_config('system','loglevel'))
-        logging.setlogfile('events_%s.log'%self.loc)
+        self.load_config()
         self.cfg_save_session=savesession
-        self.cfg_delay=float(self._read_config('system','delay'))
-        self.cfg_display_ani=(self._read_config('system','display_ani') or '1')=='1'
         self.settitle=os.name=='nt'
         self.posttime=0
         self.set_remote(None)
@@ -128,7 +110,30 @@ class maClient():
         #tasker须动态生成#self.evalstr_task=self._eval_gen(self._read_config('system','tasker'),{})
         logging.debug(du8('system:初始化完成(%s)'%self.loc))
         self.lastposttime=time.time()
+        self.lastfairytime=time.time()
         self.player_initiated=False
+
+    def load_config(self):
+        #configurations
+        self.loc=self._read_config('system','server')
+        self.playerfile='.%s.playerdata'%self.loc
+        self.username=self._read_config('account_%s'%self.loc,'username')
+        self.password=self._read_config('account_%s'%self.loc,'password')
+        self.cfg_auto_explore=not self._read_config('system','auto_explore')=='0'
+        self.cfg_auto_sell=not self._read_config('system','auto_sell_cards')=='0'
+        self.cfg_auto_gacha=not self._read_config('system','auto_fp_gacha')=='0'
+        self.cfg_auto_fairy_rewards=not self._read_config('system','auto_fairy_rewards')=='0'
+        self.cfg_auto_build= self._read_config('system','auto_fp_gacha')=='1' and '1' or '0'
+        self.cfg_fp_gacha_buld=self._read_config('system','fp_gacha_bulk')=='1' and '1' or '0'
+        self.cfg_sell_card_warning=int(self._read_config('system','sell_card_warning') or '1')
+        self.cfg_auto_rt_level=self._read_config('system','auto_red_tea_level')
+        self.cfg_strict_bc=self._read_config('system','strict_bc')=='1'
+        self.cfg_fairy_final_kill_hp=int(self._read_config('system','fairy_final_kill_hp') or '20000')
+        logging.basicConfig(level=self._read_config('system','loglevel'))
+        logging.setlogfile('events_%s.log'%self.loc)
+        self.cfg_delay=float(self._read_config('system','delay'))
+        self.cfg_display_ani=(self._read_config('system','display_ani') or '1')=='1'
+
     def set_remote(self,remoteInstance):
         self.remote=remoteInstance
         self.remoteHdl=(self.remote ==None and (lambda method=None,fairy='':True) or self.remote_Hdl_())
@@ -140,6 +145,7 @@ class maClient():
             else:
                 logging.warning('remote_hdl:%s'%msg)
                 return False  
+
     def _dopost(self,urikey,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},checkerror=True,noencrypt=False):
         self.remoteHdl()
         if self.cfg_display_ani:
@@ -449,7 +455,7 @@ class maClient():
                     last_set_bc+=int(self.carddb[int(cardid[i])][2])
                 else:
                     logging.error(du8('你木有id为 %s (%s)的卡片'%(cardid[i],self.carddb[int(cardid[i])][0])))
-        noe=cardid.replace(',empty','').replace('empty,','').split(',')
+        noe=','.join(param).replace(',empty','').replace('empty,','').split(',')
         lc=random.choice(noe)
         t=3+random.random()*len(noe)*0.6
         param=param+['empty']*(12-len(param))
@@ -512,6 +518,8 @@ class maClient():
             else:
                 if self._raw_input(du8('嗑一瓶绿茶？ y/n '))=='y':
                     res=self._use_item('1')
+                else:
+                    res=False
         if res:
             self.player.ap['current']=self.player.ap['max']
         return res
@@ -902,6 +910,9 @@ class maClient():
         '''
         Return bool 是否需要立即重刷列表
         '''
+        while time.time()-self.lastfairytime<15:
+            time.sleep(3)
+            self.lastfairytime=time.time()
         def fairy_floor():
             paramfl='check=1&serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
             resp,ct=self._dopost('exploration/fairy_floor',postdata=paramfl)
@@ -1364,17 +1375,7 @@ class maClient():
         raw_input('THAT\'S THE END')
         sys.exit(code)
 
-    def download_card(self,cardid,level=CARD_NORM):
-        #print serv['%s_data'%self.loc]+uri['%s_data_card'%loc]+uri['cardlevel'][level]%cardid
-        rev={'cn_card':169,'tw_card':171}
-        card={'cn_data_card':'MA/PROD/%d/'%rev['cn_card'],'tw_data_card':'contents/%d/'%rev['tw_card'],\
-        'cardlevel':\
-            ['card_full/full_thumbnail_chara_%d?cyt=1','card_full_max/full_thumbnail_chara_5%03d?cyt=1',\
-            'card_full_h/full_thumbnail_chara_%d_horo?cyt=1','card_full_h_max/full_thumbnail_chara_5%03d_horo?cyt=1']
-        }
-        resp,content=ht.request(serv['%s_data'%self.loc]+card['%s_data_card'%self.loc]+card['cardlevel'][level]%cardid,\
-                method='GET',headers={'ua':'Million/100','accept':'gzip','connection':'keep-alive'})
-        return content
+
 
 
 if __name__=='__main__':
