@@ -15,7 +15,7 @@ import maclient_logging
 import maclient_network
 import maclient_remote
 import getpass
-__version__=1.44
+__version__=1.45
 du8=lambda str:str.decode('utf-8')
 def iter_printer(l,sep='\n'):
     cnt=1

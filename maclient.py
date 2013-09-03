@@ -96,6 +96,8 @@ class maClient():
         self.poster=maclient_network.poster(self,self.loc,logging,ua)
         self.cookie=self._read_config('account_%s'%self.loc,'session')
         self.poster.set_cookie(self.cookie)
+        if self.cfg_save_traffic:
+            self.poster.enable_savetraffic()
         #eval
         etmp=self._read_config('condition','fairy_select') or 'True'
         self.evalstr_fairy=self._eval_gen(
@@ -109,8 +111,8 @@ class maClient():
         self.evalstr_factor=self._eval_gen(self._read_config('condition','factor'),{})
         #tasker须动态生成#self.evalstr_task=self._eval_gen(self._read_config('system','tasker'),{})
         logging.debug(du8('system:初始化完成(%s)'%self.loc))
-        self.lastposttime=time.time()
-        self.lastfairytime=time.time()
+        self.lastposttime=0
+        self.lastfairytime=0
         self.player_initiated=False
 
     def load_config(self):
@@ -129,6 +131,7 @@ class maClient():
         self.cfg_auto_rt_level=self._read_config('system','auto_red_tea_level')
         self.cfg_strict_bc=self._read_config('system','strict_bc')=='1'
         self.cfg_fairy_final_kill_hp=int(self._read_config('system','fairy_final_kill_hp') or '20000')
+        self.cfg_save_traffic=not self._read_config('system','save_traffic')=='0'
         logging.basicConfig(level=self._read_config('system','loglevel'))
         logging.setlogfile('events_%s.log'%self.loc)
         self.cfg_delay=float(self._read_config('system','delay'))
@@ -146,7 +149,7 @@ class maClient():
                 logging.warning('remote_hdl:%s'%msg)
                 return False  
 
-    def _dopost(self,urikey,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},checkerror=True,noencrypt=False):
+    def _dopost(self,urikey,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},checkerror=True,noencrypt=False,savetraffic=False):
         self.remoteHdl()
         if self.cfg_display_ani:
             connani=conn_ani()
@@ -159,11 +162,15 @@ class maClient():
                 logging.debug('post:slow down...')
                 time.sleep(random.random()*self.cfg_delay)
             self.lastposttime=time.time()
-        resp,dec=self.poster.post(urikey,postdata,usecookie,setcookie,extraheader,noencrypt)
+        resp,dec=self.poster.post(urikey,postdata,usecookie,setcookie,extraheader,noencrypt,savetraffic)
         if self.cfg_display_ani:
             connani.flag=0
             connani.join(0.16)
         if int(resp['status'])>=400:
+            return resp,dec
+        if savetraffic:
+            logging.debug('post:save traffic')
+            self.lastposttime+=3#本来应该过一会才会收到所有信息的
             return resp,dec
         if checkerror:
             err=XML2Dict().fromstring(dec).response.header.error
@@ -548,7 +555,7 @@ class maClient():
                 if areasel==[]:
                     logging.info(du8('没有符合条件的秘境www'))
                     return
-            area=areasel[0]
+            area=random.choice(areasel)
             logging.debug('explore:area id:%s'%area.id)
             logging.info(du8('选择了秘境 ')+area.name)
             while True:
@@ -911,7 +918,8 @@ class maClient():
         '''
         Return bool 是否需要立即重刷列表
         '''
-        while time.time()-self.lastfairytime<15:
+        while time.time()-self.lastfairytime<20:
+            logging.inform(du8('等待20s战斗冷却'))
             time.sleep(3)
         self.lastfairytime=time.time()
         def fairy_floor():
@@ -920,6 +928,9 @@ class maClient():
             return XML2Dict().fromstring(ct).response.body.fairy_floor.explore.fairy
         if type==NORMAL_BATTLE:    
             fairy=fairy_floor()#走形式
+        if fairy.hp=='0':
+            logging.info(du8('妖精已被消灭'))
+            return False
         fairy['lv']=int(fairy.lv)
         fairy['hp']=int(fairy.hp)
         fairy['time_limit']=int(fairy.time_limit)
@@ -954,7 +965,11 @@ class maClient():
             else:
                 return True
         paramf='serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
-        resp,ct=self._dopost('exploration/fairybattle',postdata=paramf)
+        savet=(cardd=='min')
+        resp,ct=self._dopost('exploration/fairybattle',postdata=paramf,savetraffic=savet)
+        if len(ct)==0:
+            logging.info(du8('舔刀卡组，省流模式开启'))
+            return False
         if resp['error']:
             return
         elif resp['errno']==1050:

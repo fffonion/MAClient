@@ -94,9 +94,15 @@ class poster():
             self.header['User-Agent']=ua
         if slow:
             self.logger.warning(du8('post:没有安装pycrypto库，可能将额外耗费大量时间'))
+        self.issavetraffic=False
+
     def set_cookie(self,cookie):
         self.cookie=cookie
-    def post(self,uri,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},noencrypt=False):
+
+    def enable_savetraffic(self):
+        self.issavetraffic=True
+
+    def post(self,uri,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},noencrypt=False,savetraffic=False):
             header={}
             header.update(self.header)
             header.update(extraheader)
@@ -106,9 +112,12 @@ class poster():
                 postdata=encode_param(postdata)
             trytime=0
             ttimes=3
+            callback_hook=None
+            if savetraffic and self.issavetraffic:
+                callback_hook=lambda x:x
             while trytime<ttimes:
                 try:
-                    resp,content=ht.request('%s%s%s'%(serv[self.servloc],uri,not noencrypt and '?cyt=1' or ''),method='POST',headers=header,body=postdata)
+                    resp,content=ht.request('%s%s%s'%(serv[self.servloc],uri,not noencrypt and '?cyt=1' or ''),method='POST',headers=header,body=postdata,callback_hook=callback_hook,chunk_size=None)
                 except socket.error,e:
                     if e.errno==None:
                         err='Timed out'
@@ -126,22 +135,23 @@ class poster():
                     self.logger.warning('post:POSTing %s, server returns code %s, retrying in %d times'%(uri,resp['status'],3-trytime))
                 resp,content={'status':'600'},''
                 trytime+=1
-            dec=decode_data(content)
-            if os.path.exists('debug'):
-                open('debug/%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(dec)
-            
             if not 'content-length' in resp:
-                resp['content-length']=str(len(dec))
+                resp['content-length']=str(len(content))
             if int(resp['status'])>400:
                 self.logger.error('post:%s %s'%(uri,','.join([ ( i in resp and (i+':'+resp[i]) or '' )for i in ['status','content-length','set-cookie']])+du8('\n请到信号良好的地方重试【←←')))
                 resp.update({'error':True,'errno':resp['status'],'errmsg':'Client or server error.'})
                 return resp,dec
             else:
                 self.logger.debug('post:%s %s'%(uri,','.join([ ( i in resp and (i+':'+resp[i]) or '' )for i in ['status','content-length','set-cookie']])))
+            if savetraffic and self.issavetraffic:
+                return resp,content
+            dec=decode_data(content)
+            if os.path.exists('debug'):
+                open('debug/%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(dec)
             if setcookie and 'set-cookie' in resp:
                 self.cookie=resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
             #print self.cookie
             return resp,dec
 
 if __name__=="__main__":
-    print decode_param('notice_id=yYR9MXvxbQ3ZCzjF89B%2FG3HG%2Fho0AoGJbzYwu6SJ5GR0Mm6xGffIWvXmPsOBGJrn7Gjjp2rkAdG3%0ANLHJZ6tgqw%3D%3D%0A')
+    print decode_param('C=vyuAfaH%2FKZRcOPDAyZy54z7OpI2p%2FrQKvjqAxiEVz1%2FHOGvWF10MZHbPBHC7Jg1QZAYkDH7v0n9Y%0A%2FboRFRm9k83hsHZFRs%2ByfEqapAl7vSI%3D%0A&lr=ZWJHCdUg1r9%2FuTuW%2FMBBig%3D%3D%0A')
