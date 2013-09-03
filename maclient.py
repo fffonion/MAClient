@@ -210,7 +210,7 @@ class maClient():
                         self.player.fairy['alive'] and ' FAIRY_ALIVE' or ''))
                 else:
                     if self.posttime==5:
-                        logging.inform(du8('汇报')+' AP:%d/%d BC:%d/%d G:%d FP:%d %s'%(
+                        logging.sleep(du8('汇报')+' AP:%d/%d BC:%d/%d G:%d FP:%d %s'%(
                             self.player.ap['current'],self.player.ap['max'],
                             self.player.bc['current'],self.player.bc['max'],
                             self.player.gold,self.player.friendship_point,
@@ -341,7 +341,7 @@ class maClient():
                 else:
                     logging.warning('command "%s" not recognized.'%task[0])
                 if cnt!=1:
-                    logging.inform(du8('tasker:正在滚床单wwww'))
+                    logging.sleep(du8('tasker:正在滚床单wwww'))
                     time.sleep(3.15616546511)
                     resp,ct=self._dopost('mainmenu')#初始化
 
@@ -398,7 +398,7 @@ class maClient():
         if not doingwhat in ['login','check_inspection','notification/post_devicetoken','card/exchange', 'trunk/sell','roundtable/edit','cardselect/savedeckcard']:
             if int(self.player.card.count) >=200:
                 if self.cfg_auto_sell:
-                    logging.inform(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))
+                    logging.sleep(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))
                     self.select_card_sell()
                     return True
                 else:
@@ -407,7 +407,7 @@ class maClient():
             if self.player.friendship_point>=9900 and \
                 not doingwhat in ['gacha/buy','gacha/select/getcontents']:
                 if self.cfg_auto_gacha:
-                    logging.inform(du8('绊点有点多，自动转蛋(*￣▽￣)y '))
+                    logging.sleep(du8('绊点有点多，自动转蛋(*￣▽￣)y '))
                     self._gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
                     return True
                 else:
@@ -472,7 +472,7 @@ class maClient():
             if self._dopost('roundtable/edit',postdata='move=1')[0]['error']:
                 break
             
-            logging.inform(du8('休息%d秒，假装在找卡'%t))
+            logging.sleep(du8('休息%d秒，假装在找卡'%t))
             time.sleep(t)
             postparam='C=%s&lr=%s'%(','.join(param),lc)
             if self._dopost('cardselect/savedeckcard',postdata=postparam)[0]['error']:
@@ -616,7 +616,7 @@ class maClient():
                             #    {'fairy':'info.fairy'})
                             #logging.debug('eval:%s result:%s'%(evalfight,eval(evalfight)))
                             #if eval(evalfight):
-                            logging.inform(du8('3秒后开始战斗www'))
+                            logging.sleep(du8('3秒后开始战斗www'))
                             time.sleep(3)
                             self._fairy_battle(info.fairy,type=EXPLORE_BATTLE)
                             time.sleep(5.5)
@@ -795,7 +795,7 @@ class maClient():
             #卖
             paramsell='serial_id=%s'%(','.join(se_id))
             slp=random.random()*15+7
-            logging.inform(du8('%f秒后卖卡……'%slp))
+            logging.sleep(du8('%f秒后卖卡……'%slp))
             time.sleep(slp)
             resp,ct=self._dopost('trunk/sell',postdata=paramsell)
             if not resp['error']:
@@ -831,7 +831,7 @@ class maClient():
             refresh=self.fairy_select(is_refresh=refresh)
             if not refresh and looptime!=l+1:#没有立即刷新
                 s=random.randint(int(60*slptime*0.8*slpfactor),int(60*slptime*1.2*slpfactor))
-                logging.inform(du8('%d秒后刷新……'%s))
+                logging.sleep(du8('%d秒后刷新……'%s))
                 time.sleep(s)
 
 
@@ -927,7 +927,7 @@ class maClient():
         Return bool 是否需要立即重刷列表
         '''
         while time.time()-self.lastfairytime<20:
-            logging.inform(du8('等待20s战斗冷却'))
+            logging.sleep(du8('等待20s战斗冷却'))
             time.sleep(5)
         self.lastfairytime=time.time()
         def fairy_floor():
@@ -1361,13 +1361,11 @@ class maClient():
                                     logging.info(du8('收集碎片合成了新的骑士卡片！'))
                                 #print bc,self.player.bc.current
                                 logging.info(du8(result=='0' and '擦输了QAQ' or '赢了XDDD')+
-                                    ' AP:%s%d/%s/%s'%(
-                                        self.player.ap['current']>=ap and '+' or '',
+                                    ' AP:%+d/%s/%s'%(
                                         self.player.ap['current']-ap,
                                         self.player.ap['current'],
                                         self.player.ap['max'])+
-                                    ' BC:%s%d/%s/%s'%(
-                                        self.player.bc['current']>=bc and '+' or '',
+                                    ' BC:%+d/%s/%s'%(
                                         self.player.bc['current']-bc,
                                         self.player.bc['current'],
                                         self.player.bc['max']) )
@@ -1376,22 +1374,22 @@ class maClient():
                                 resp,dec=self._dopost('battle/competition_parts?redirect_flg=1',noencrypt=True)
                                 break
                 time.sleep(int(self._read_config('system','factor_sleep')))
-            logging.inform(du8('换一个碎片……睡觉先，勿扰：-/'))
+            logging.sleep(du8('换一个碎片……睡觉先，勿扰：-/'))
             time.sleep(int(self._read_config('system','factor_sleep')))
 
     def remote_Hdl_(self):
         def do(method=None,fairy=''):
             if method==None:
-                informed=False
+                sleeped=False
                 while True:
                     #print(self.remote.status,self.remote.STARTED)
                     if self.remote.status==self.remote.STARTED:
                         if self.remote.tasker!='':
                             self.tasker(cmd=self.remote.get_task())
                         break
-                    if not informed:
-                        logging.inform(du8('remote_hdl:已被远程停止，等待开始信号ww'))
-                        informed=True
+                    if not sleeped:
+                        logging.sleep(du8('remote_hdl:已被远程停止，等待开始信号ww'))
+                        sleeped=True
                     time.sleep(30)
             elif method=='PROFILE':
                 self.remote.set(

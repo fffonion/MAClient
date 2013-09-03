@@ -13,7 +13,7 @@ class Logging(type(sys)):
     WARNING = 3
     WARN = WARNING
     INFO = 2
-    INFORM=INFO
+    SLEEP=INFO
     DEBUG = 1
     NOTSET = 0
     def __init__(self, *args, **kwargs):
@@ -33,14 +33,14 @@ class Logging(type(sys)):
                 self.__set_error_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x0C)
                 self.__set_warning_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x06)
                 self.__set_debug_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x02)
-                self.__set_inform_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x08)
+                self.__set_sleep_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x08)
                 self.__set_bright_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x0F)
                 self.__reset_color = lambda: SetConsoleTextAttribute(GetStdHandle(-11), 0x07)
             elif os.name == 'posix':
                 self.__set_error_color = lambda: __write('\033[31m')
                 self.__set_warning_color = lambda: __write('\033[33m')
                 self.__set_debug_color = lambda: __write('\033[32m')
-                self.__set_inform_color = lambda: __write('\033[36m')
+                self.__set_sleep_color = lambda: __write('\033[36m')
                 self.__set_bright_color = lambda: __write('\033[32m')
                 self.__reset_color = lambda: __write('\033[0m')
     def setlogfile(self,f):
@@ -53,8 +53,8 @@ class Logging(type(sys)):
         if self.level > self.__class__.DEBUG:
             self.debug = self.dummy
     def log(self, level, fmt, *args, **kwargs):
-        self.__write(self.__convstr('%s - [%s] %s\n' % (level, time.ctime()[:4]+time.ctime()[11:-5], fmt % args)))
-        return '[%s] %s\n' % (time.ctime()[:4]+time.ctime()[11:-5], fmt % args)
+        self.__write(self.__convstr('%-5s - [%s] %s\n' % (level, time.strftime('%X',time.localtime()), fmt % args)))
+        return '[%s] %s\n' % (time.strftime('%b %d %X',time.localtime()), fmt % args)
     def dummy(self, *args, **kwargs):
         pass
     def debug(self, fmt, *args, **kwargs):
@@ -64,9 +64,9 @@ class Logging(type(sys)):
     def info(self, fmt, *args, **kwargs):
         puretext=self.log('INFO', fmt, *args)
         self.logfile.write(puretext)
-    def inform(self, fmt, *args, **kwargs):
-        self.__set_inform_color()
-        self.log('INFORM', fmt, *args, **kwargs)
+    def sleep(self, fmt, *args, **kwargs):
+        self.__set_sleep_color()
+        self.log('SLEEP', fmt, *args, **kwargs)
         self.__reset_color()
     def warning(self, fmt, *args, **kwargs):
         self.__set_warning_color()
