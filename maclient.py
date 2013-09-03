@@ -168,7 +168,7 @@ class maClient():
             connani.join(0.16)
         if int(resp['status'])>=400:
             return resp,dec
-        if savetraffic:
+        if savetraffic and self.cfg_save_traffic:
             logging.debug('post:save traffic')
             self.lastposttime+=3#本来应该过一会才会收到所有信息的
             return resp,dec
