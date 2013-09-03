@@ -137,14 +137,17 @@ class poster():
                 trytime+=1
             if not 'content-length' in resp:
                 resp['content-length']=str(len(content))
+            #状态码判断
             if int(resp['status'])>400:
                 self.logger.error('post:%s %s'%(uri,','.join([ ( i in resp and (i+':'+resp[i]) or '' )for i in ['status','content-length','set-cookie']])+du8('\n请到信号良好的地方重试【←←')))
                 resp.update({'error':True,'errno':resp['status'],'errmsg':'Client or server error.'})
-                return resp,dec
+                return resp,content
             else:
                 self.logger.debug('post:%s %s'%(uri,','.join([ ( i in resp and (i+':'+resp[i]) or '' )for i in ['status','content-length','set-cookie']])))
+            #省流模式
             if savetraffic and self.issavetraffic:
                 return resp,content
+            #否则解码
             dec=decode_data(content)
             if os.path.exists('debug'):
                 open('debug/%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(dec)

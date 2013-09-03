@@ -837,6 +837,7 @@ class maClient():
 
 
     def fairy_select(self,cond='',is_refresh=False):
+        #走个形式
         resp,ct=self._dopost('menu/menulist')
         if resp['error']:
             return
@@ -844,7 +845,7 @@ class maClient():
         resp,ct=self._dopost('mainmenu')
         if resp['error']:
             return
-        if XML2Dict().fromstring(ct).response.header.your_data.fairy_appearance!='1':
+        if XML2Dict().fromstring(ct).response.header.your_data.fairy_appearance!='1':#没有“妖精出现中”
             return
         time.sleep(2)
         resp,ct=self._dopost('menu/fairyselect')
@@ -852,6 +853,7 @@ class maClient():
             return
         fs=XML2Dict().fromstring(ct).response.body.fairy_select
         fairy_event=fs.fairy_event
+        #领取妖精奖励
         if fs.remaining_rewards!='0':
             if self.cfg_auto_fairy_rewards:
                 self._fairy_rewards()
@@ -866,15 +868,19 @@ class maClient():
                 logging.debug('fairy_select:delete sid %s from record'%(fsid))
                 self._del_option('fairy',fsid)
         #筛选
+        #先置为已挂了
         fitemp= self.player.fairy['id']
         self.player.fairy={'alive':False,'id':0}
         evalstr=(cond!='' and self._eval_gen(cond) or self.evalstr_fairy)
         logging.debug('fairy_select:eval:%s'%(evalstr))
         fairies=[]
         for fairy in fairy_event:
+            #挂了
+            if fairy.put_down not in ['1','0']:
+                continue
             fairy.fairy.lv=int(fairy.fairy.lv)
-             #检查自己的还活着不
-            if (fitemp==fairy.fairy.serial_id or fairy.user.id==self.player.id) and fairy.put_down=='1':
+            #检查自己的还活着不
+            if (fitemp==fairy.fairy.serial_id or fairy.user.id==self.player.id):
                 self.player.fairy={'alive':True,'id':fairy.fairy.serial_id}
             fairy['time_limit']=int(fairy.fairy.time_limit)
             fairy['wake']=False
@@ -890,6 +896,7 @@ class maClient():
                 fairies.append(fairy)
         logging.info(du8(len(fairies)==0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD'%len(fairies)))
         instant_refresh=False
+        #依次艹
         for f in fairies:
             logging.debug('fairy_select:select sid %s discoverer %s battled %s'%(f.fairy.serial_id,f.user.name,not f.not_battled))
             f.fairy.discoverer_id=f.user.id
@@ -902,6 +909,7 @@ class maClient():
         return instant_refresh
             #fairy.user.name,fairy.fairy.name,fairy.fairy.serial_id,fairy.fairy.lv,fairy.put_down
             #fairy.start_time,fairy.fairy.time_limit
+
     def _fairy_rewards(self):
         resp,ct=self._dopost('menu/fairyrewards')
         if resp['error']:
@@ -920,7 +928,7 @@ class maClient():
         '''
         while time.time()-self.lastfairytime<20:
             logging.inform(du8('等待20s战斗冷却'))
-            time.sleep(3)
+            time.sleep(5)
         self.lastfairytime=time.time()
         def fairy_floor():
             paramfl='check=1&serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
@@ -928,8 +936,9 @@ class maClient():
             return XML2Dict().fromstring(ct).response.body.fairy_floor.explore.fairy
         if type==NORMAL_BATTLE:    
             fairy=fairy_floor()#走形式
+        #已经挂了
         if fairy.hp=='0':
-            logging.info(du8('妖精已被消灭'))
+            logging.warning(du8('妖精已被消灭'))
             return False
         fairy['lv']=int(fairy.lv)
         fairy['hp']=int(fairy.hp)
@@ -955,8 +964,8 @@ class maClient():
         logging.debug('fairy_battle:carddeck result:%s'%(cardd))
         if (self.set_card(cardd)):
             fairy=fairy_floor()#设完卡组返回时
-        #打
-        if self.check_strict_bc():#strict BC
+        #判断BC
+        if self.check_strict_bc() or self.player.bc['current']<2:#strict BC或者BC不足
             logging.warning(du8('BC不够了TOT'))
             autored=(self.cfg_auto_rt_level=='2') or (self.cfg_auto_rt_level=='1' and fairy.rare_flg=='1')
             if not self.red_tea(autored):
@@ -964,102 +973,113 @@ class maClient():
                 return False
             else:
                 return True
+        #打
         paramf='serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
         savet=(cardd=='min')
         resp,ct=self._dopost('exploration/fairybattle',postdata=paramf,savetraffic=savet)
         if len(ct)==0:
             logging.info(du8('舔刀卡组，省流模式开启'))
-            return False
-        if resp['error']:
-            return
-        elif resp['errno']==1050:
-            logging.warning(du8('BC不够了TOT'))
-            autored=(self.cfg_auto_rt_level=='2') or (self.cfg_auto_rt_level=='1' and fairy.rare_flg=='1')
-            if not self.red_tea(autored):
-                logging.error(du8('那就不打了哟(*￣︶￣)y '))
-                return False
-            else:
-                return True
-        try:
-            res=XML2Dict().fromstring(ct).response.body.battle_result
-            blist=XML2Dict().fromstring(ct).response.body.battle_battle.battle_action_list
-        except KeyError:
-            logging.warning(du8('没有发现奖励，妖精已经挂了？'))
-            return False
-        self.remoteHdl(method='FAIRY',fairy=fairy)
-        need_refresh=False
-        if res.winner=='1':#赢了
-            logging.info(du8('YOU WIN 233'))
-            bonus=XML2Dict().fromstring(ct).response.body.bonus_list.bonus
-            nid=[]
-            for b in bonus:
-                if 'item_id' in b:
-                    #logging.debug('fairy_battle:type:%s item_id %s count %s'%(b.type,b.item_id,b.item_num))
-                    logging.info(du8('获得收集品[')+self.itemdb[int(b.item_id)]+'] x'+b.item_num)
-                    nid.append(b.id)
+            need_refresh=False
+        else:
+            if resp['error']:
+                return
+            elif resp['errno']==1050:
+                logging.warning(du8('BC不够了TOT'))
+                autored=(self.cfg_auto_rt_level=='2') or (self.cfg_auto_rt_level=='1' and fairy.rare_flg=='1')
+                if not self.red_tea(autored):
+                    logging.error(du8('那就不打了哟(*￣︶￣)y '))
+                    return False
                 else:
-                    logging.debug('fairy_battle:type:%s card_id %s holoflag %s'%(b.type,b.card_id,b.holo_flag))
-                    logging.info(du8('获得卡片 ')+self.carddb[int(b.card_id)][0]+(b.holo_flag=='1' and du8('(闪)') or ''))
+                    return True
+            try:
+                res=XML2Dict().fromstring(ct).response.body.battle_result
+                blist=XML2Dict().fromstring(ct).response.body.battle_battle.battle_action_list
+            except KeyError:
+                logging.warning(du8('没有发现奖励，妖精已经挂了？'))
+                return False
+            self.remoteHdl(method='FAIRY',fairy=fairy)
+            need_refresh=False
+            #战斗结果
+            nid=[]
+            if res.winner=='1':#赢了
+                logging.info(du8('YOU WIN 233'))
+                #妖精已死
+                if type==EXPLORE_BATTLE:
+                    self.player.fairy={'id':0,'alive':False}
+                bonus=XML2Dict().fromstring(ct).response.body.bonus_list.bonus
+                #奖励
+                for b in bonus:
+                    if 'item_id' in b:
+                        #收集品 情况1：要通过点击“立即领取”领取的，在sleep之后领取
+                        #logging.debug('fairy_battle:type:%s item_id %s count %s'%(b.type,b.item_id,b.item_num))
+                        logging.info(du8('获得收集品[')+self.itemdb[int(b.item_id)]+'] x'+b.item_num)
+                        nid.append(b.id)
+                    else:
+                        logging.debug('fairy_battle:type:%s card_id %s holoflag %s'%(b.type,b.card_id,b.holo_flag))
+                        logging.info(du8('获得卡片 ')+self.carddb[int(b.card_id)][0]+(b.holo_flag=='1' and du8('(闪)') or ''))
+                if fairy.serial_id==self.player.fairy['id']:
+                    self.player.fairy={'id':0,'alive':False}
+            else:#输了
+                hpleft=int(XML2Dict().fromstring(ct).response.body.explore.fairy.hp)
+                logging.info(du8('YOU LOSE- - Fairy-HP:%d'%hpleft))
+                #立即尾刀触发
+                if self.cfg_fairy_final_kill_hp>=hpleft:
+                    logging.debug('_fairy_battle:instant refresh!')
+                    need_refresh=True
+            logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
+                int(res.before_exp)-int(res.after_exp),
+                res.after_exp,
+                int(res.after_gold)-int(res.before_gold),
+                res.after_gold
+            )))
+            #是否升级
+            if not res.before_level==res.after_level:
+                logging.info(du8('升级了：↑%s'%res.after_level))
+            #收集品 情况2：自动往上加的
+            if 'special_item' in res:
+                it=res.special_item
+                logging.info(du8('收集品[%s]:+%d(%s)'%(\
+                    self.itemdb[int(it.item_id)],int(it.after_count)-int(it.before_count),it.after_count)))
+            #战斗详情分析
+            # <battle_action_list>
+            #     <action_player>0</action_player>
+            #     <skill_id>208</skill_id>
+            #     <skill_type>2</skill_type>
+            #     <skill_card>604</skill_card>
+            #     <skill_hp_player>3240</skill_hp_player>
+            #     <attack_card>604</attack_card>
+            #     <attack_type>1</attack_type>
+            #     <attack_damage>11967</attack_damage>
+            # </battle_action_list>
+            fatk,matk,rnd=0,0,0
+            skills=[]
+            skill_type=['0','ATK↑','HP↑','3','4','5']
+            for l in blist:
+                if 'attack_damage' in l:
+                    if l.action_player=='0':
+                        matk+=int(l.attack_damage)
+                    else:
+                        fatk+=int(l.attack_damage)
+                    rnd+=0.5
+                if 'skill_id' in l:
+                    #skillcnt+=1
+                    skills.append('[%d]%s.%s'%(
+                        math.ceil(rnd),skill_type[int(l.skill_type)],self.carddb[int(l.skill_card)][0])
+                    )
+            logging.info(du8('回合数:%d/%d 平均ATK:%.1f/%.1f %s %s'%
+                (math.ceil(rnd),math.floor(rnd),
+                matk/math.ceil(rnd), 0 if rnd<1 else fatk/math.floor(rnd),
+                res.winner=='1' and '受到伤害:%d'%fatk or '总伤害:%d'%matk,
+                len(skills)>0 and '技能发动:%s'%(','.join(skills)) or '')
+            ))
+            if not need_refresh:
+                #等着看结果
+                time.sleep(random.randint(6,9))
+            #领取收集品
             if nid!=[]:
-                res=elf._get_rewards(nid)
+                res=self._get_rewards(nid)
                 if not res[0]:
                     logging.warning(res[1])
-            if fairy.serial_id==self.player.fairy['id']:
-                self.player.fairy={'id':0,'alive':False}
-        else:
-            hpleft=int(XML2Dict().fromstring(ct).response.body.explore.fairy.hp)
-            logging.info(du8('YOU LOSE- - Fairy-HP:%d'%hpleft))
-            if self.cfg_fairy_final_kill_hp>=hpleft:
-                logging.debug('_fairy_battle:instant refresh!')
-                need_refresh=True
-        logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
-            int(res.before_exp)-int(res.after_exp),
-            res.after_exp,
-            int(res.after_gold)-int(res.before_gold),
-            res.after_gold
-        )))
-            
-        if not res.before_level==res.after_level:
-            logging.info(du8('升级了：↑%s'%res.after_level))
-        if 'special_item' in res:
-            it=res.special_item
-            logging.info(du8('收集品[%s]:+%d(%s)'%(\
-                self.itemdb[int(it.item_id)],int(it.after_count)-int(it.before_count),it.after_count)))
-        #战斗详情分析
-        # <battle_action_list>
-        #     <action_player>0</action_player>
-        #     <skill_id>208</skill_id>
-        #     <skill_type>2</skill_type>
-        #     <skill_card>604</skill_card>
-        #     <skill_hp_player>3240</skill_hp_player>
-        #     <attack_card>604</attack_card>
-        #     <attack_type>1</attack_type>
-        #     <attack_damage>11967</attack_damage>
-        # </battle_action_list>
-        fatk,matk,rnd=0,0,0
-        skills=[]
-        skill_type=['0','ATK↑','HP↑','3','4','5']
-        for l in blist:
-            if 'attack_damage' in l:
-                if l.action_player=='0':
-                    matk+=int(l.attack_damage)
-                else:
-                    fatk+=int(l.attack_damage)
-                rnd+=0.5
-            if 'skill_id' in l:
-                #skillcnt+=1
-                skills.append('[%d]%s.%s'%(
-                    math.ceil(rnd),skill_type[int(l.skill_type)],self.carddb[int(l.skill_card)][0])
-                )
-        logging.info(du8('回合数:%d/%d 平均ATK:%.1f/%.1f %s %s'%
-            (math.ceil(rnd),math.floor(rnd),
-            matk/math.ceil(rnd), 0 if rnd<1 else fatk/math.floor(rnd),
-            res.winner=='1' and '受到伤害:%d'%fatk or '总伤害:%d'%matk,
-            len(skills)>0 and '技能发动:%s'%(','.join(skills)) or '')
-        ))
-        if not need_refresh:
-            #等着看结果
-            time.sleep(4)
         #记录截止时间，上次战斗时间，如果需要立即刷新，上次战斗时间为0.1
         self._write_config('fairy',fairy.serial_id,
             '%d,%.0f'%(int(fairy.time_limit)+int(float(time.time())),need_refresh and 0.1 or time.time()))
@@ -1232,6 +1252,8 @@ class maClient():
 
 
     def point_setting(self):
+        if self._dopost('menu/menulist')[0]['error']:
+            return
         if self._dopost('menu/playerinfo',postdata='kind=6&user_id=%s'%self.player.id)[0]['error']:
             return
         resp,ct=self._dopost('town/lvup_status',postdata='kind=6&user_id=%s'%self.player.id)
