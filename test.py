@@ -35,6 +35,9 @@ def fuckall():
             print ''
             continue
         print 100.00*len(os.listdir('e:\\ma'))/4/len(cardlist),"%"
-        dt=maclient_network.decode_res(download_card(i,j))
+        a=download_card(i,j)
+        if len(a)%16:
+            continue
+        dt=maclient_network.decode_res(a)
         open('e:\\ma\\%s_%d.png'%(i,j),'wb').write(dt)
 fuckall()

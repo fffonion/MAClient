@@ -22,8 +22,7 @@ import maclient_network
 import maclient_logging
 __version__=1.41
 #CONSTS:
-EXPLORE_BATTLE,NORMAL_BATTLE=0,1
-
+EXPLORE_BATTLE,NORMAL_BATTLE,WAKE_BATTLE=0,1,2
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #eval dicts
@@ -338,6 +337,11 @@ class maClient():
                     else:
                         task[1]=int(task[1])
                     self._gacha(gacha_type=task[1])
+                elif task[0] in ['greet','gr','like']:
+                    if task[1]=='':
+                        self.like()
+                    else:
+                        self.like(words=task[1])
                 else:
                     logging.warning('command "%s" not recognized.'%task[0])
                 if cnt!=1:
@@ -398,7 +402,7 @@ class maClient():
         if not doingwhat in ['login','check_inspection','notification/post_devicetoken','card/exchange', 'trunk/sell','roundtable/edit','cardselect/savedeckcard']:
             if int(self.player.card.count) >=200:
                 if self.cfg_auto_sell:
-                    logging.sleep(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))
+                    logging.info(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))
                     self.select_card_sell()
                     return True
                 else:
@@ -407,7 +411,7 @@ class maClient():
             if self.player.friendship_point>=9900 and \
                 not doingwhat in ['gacha/buy','gacha/select/getcontents']:
                 if self.cfg_auto_gacha:
-                    logging.sleep(du8('绊点有点多，自动转蛋(*￣▽￣)y '))
+                    logging.info(du8('绊点有点多，自动转蛋(*￣▽￣)y '))
                     self._gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
                     return True
                 else:
@@ -596,7 +600,7 @@ class maClient():
                     logging.debug('explore:event_type:'+info.event_type)
                     if info.event_type!='6':
                         logging.info(du8('获得:%sG %sEXP, 进度:%s, 升级剩余:%s'%(info.gold,info.get_exp,info.progress,info.next_exp)))
-                        #0,19似乎都是没事
+                        #已记录1 2 3 4 5 12 13 15 19
                         if info.event_type=='1':
                             '''<fairy>
                                     <serial_id>20840184</serial_id>
@@ -620,15 +624,15 @@ class maClient():
                             time.sleep(3)
                             self._fairy_battle(info.fairy,type=EXPLORE_BATTLE)
                             time.sleep(5.5)
-                        if info.event_type=='2':
+                        elif info.event_type=='2':
                             logging.info(du8('碰到个傻X：'+info.encounter.name+' -> '+info.message))
                             time.sleep(1.5)
-                        if info.event_type=='3':
+                        elif info.event_type=='3':
                             usercard=info.user_card
                             logging.debug('explore:cid %s sid %s'%(usercard.master_card_id,usercard.serial_id))
                             logging.info(du8('获得了 ')+self.carddb[int(usercard.master_card_id)][0]+
                                 (' %s☆')%(self.carddb[int(usercard.master_card_id)][1]))
-                        if info.event_type=='15':
+                        elif info.event_type=='15':
                             compcard=info.autocomp_card[-1]
                             logging.debug('explore:cid %s sid %s'%(
                                 compcard.master_card_id,
@@ -638,15 +642,15 @@ class maClient():
                                     compcard.lv,
                                     compcard.exp,
                                     compcard.next_exp))
-                        if info.event_type=='5':
+                        elif info.event_type=='5':
                             logging.info(du8('AREA %s CLEAR -v-'%floor.id))
                             time.sleep(2)
                             break
-                        if info.event_type=='12':
+                        elif info.event_type=='12':
                             logging.info(du8('AP回复~'))
-                        if info.event_type=='13':
+                        elif info.event_type=='13':
                             logging.info(du8('BC回复~'))
-                        if info.event_type=='19':
+                        elif info.event_type=='19':
                             try:
                                 itemid=info.special_item.item_id
                                 itembefore=int(info.special_item.before_count)
@@ -655,6 +659,9 @@ class maClient():
                                 logging.info(du8('获得收集品[%s] x%d!')%(self.itemdb[int(itemid)],itemnow-itembefore))
                             except KeyError:
                                  logging.debug('explore:item not found?')
+                        elif info.event_type=='4':
+                            logging.info(du8('获得了因子碎片 湖:%s 碎片:%s(已有%s片)'%(
+                                info.parts_one.lake_id,info.parts_one.parts.parts_num,info.parts_one.parts.parts_have)))
                     else:
                         logging.warning(du8('AP不够了TUT'))
                         if not self.green_tea(self.cfg_auto_explore):
@@ -934,8 +941,10 @@ class maClient():
             paramfl='check=1&serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
             resp,ct=self._dopost('exploration/fairy_floor',postdata=paramfl)
             return XML2Dict().fromstring(ct).response.body.fairy_floor.explore.fairy
-        if type==NORMAL_BATTLE:    
-            fairy=fairy_floor()#走形式
+        if type==NORMAL_BATTLE: 
+            #除了explore中碰到的妖精外，传入的fairy只有部分信息，因此客户端都会POST一个fairy_floor来取得完整信息
+            #包含了发现者，小伙伴数量，剩余血量等等s
+            fairy=fairy_floor()
         #已经挂了
         if fairy.hp=='0':
             logging.warning(du8('妖精已被消灭'))
@@ -974,6 +983,8 @@ class maClient():
             else:
                 return True
         #打
+        nid=[]
+        rare_fairy=None
         paramf='serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
         savet=(cardd=='min')
         resp,ct=self._dopost('exploration/fairybattle',postdata=paramf,savetraffic=savet)
@@ -1000,14 +1011,21 @@ class maClient():
             self.remoteHdl(method='FAIRY',fairy=fairy)
             need_refresh=False
             #战斗结果
-            nid=[]
+            
             if res.winner=='1':#赢了
                 logging.info(du8('YOU WIN 233'))
-                #妖精已死
+                #测试！
+                #if os.path.exists('debug'):
+                #    open('debug/%slv%s_%s.xml'%(fairy.name,fairy.lv,fairy.serial_id),'w').write(ct)
+                #自己的妖精设为死了
                 if type==EXPLORE_BATTLE:
                     self.player.fairy={'id':0,'alive':False}
-                bonus=XML2Dict().fromstring(ct).response.body.bonus_list.bonus
+                #觉醒
+                body=XML2Dict().fromstring(ct).response.body
+                if 'rare_fairy' in body.explore:
+                    rare_fairy=body.explore.rare_fairy
                 #奖励
+                bonus=body.bonus_list.bonus
                 for b in bonus:
                     if 'item_id' in b:
                         #收集品 情况1：要通过点击“立即领取”领取的，在sleep之后领取
@@ -1075,15 +1093,46 @@ class maClient():
             if not need_refresh:
                 #等着看结果
                 time.sleep(random.randint(6,9))
-            #领取收集品
-            if nid!=[]:
-                res=self._get_rewards(nid)
-                if not res[0]:
-                    logging.warning(res[1])
         #记录截止时间，上次战斗时间，如果需要立即刷新，上次战斗时间为0.1
         self._write_config('fairy',fairy.serial_id,
             '%d,%.0f'%(int(fairy.time_limit)+int(float(time.time())),need_refresh and 0.1 or time.time()))
+        #领取收集品
+        if nid!=[]:
+            res=self._get_rewards(nid)
+            if not res[0]:
+                logging.warning(res[1])
+        #接着打醒妖:
+        if rare_fairy!=None:
+            self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
+            self.like()
         return need_refresh
+
+    def like(self,words='你好！'):
+        resp,dec=self._dopost('menu/friendlist',postdata='move=0')
+        if resp['error']:
+            return
+        uids=[]
+        for u in XML2Dict().fromstring(dec).response.body.friend_list.user:
+            uids.append(u.id)
+        resp,dec=self._dopost('friend/like_user',postdata=('dialog=1&user_id=%s' % ','.join(uids)))
+        if resp['error']:
+            return
+        body=XML2Dict().fromstring(dec).response.body
+        if body.friend_act_res.success!='1':
+            logging.error(body.friend_act_res.message)
+            return
+        else:
+            logging.info(body.friend_act_res.message)
+        comment_ids=[]
+        for cmid in body.friend_comment_id.comment_id:
+            comment_ids.append(cmid.value)
+        resp,dec=self._dopost('comment/send',postdata=('comment_id=%s&like_message=%s&user_id=%s' %
+            (','.join(comment_ids),words,','.join(uids))
+            ))
+        if resp['error']:
+            return
+        logging.info(XML2Dict().fromstring(dec).response.header.message)
+        return True
 
     def friends(self,choice='',autodel=False):
         delfriend=int(self._read_config('system','del_friend_day') or '5')
@@ -1316,6 +1365,7 @@ class maClient():
                 if resp['error']:
                     continue
                 #print xml2.response.body.battle/battle_userlist.user_list
+                time.sleep(3.1415926)
                 try:
                     userlist=XML2Dict().fromstring(dec).response.body.battle_userlist.user_list.user
                 except KeyError:#no user found

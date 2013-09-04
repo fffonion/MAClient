@@ -39,18 +39,18 @@ class player(object):
 	def _update_data(self,xmldata):
 		self.calc_ap_bc()
 		try:
-			xml = XML2Dict().fromstring(xmldata)
-			if 'login' in xml.response.body:
-				self.id=xml.response.body.login.user_id
+			xmlresp = XML2Dict().fromstring(xmldata).response
+			if 'login' in xmlresp.body:
+				self.id=xmlresp.body.login.user_id
 			else:
 				self.id='0'
-			self.playerdata=xml.response.header.your_data
+			self.playerdata=xmlresp.header.your_data
 		except:
-			
 			return 'Profile no update',False
-		else:
+		try:
 			for key in ['ap','bc']:
-				self.__setattr__(key,{})
+				if not self.hasattr(key):
+					self.__setattr__(key,{})
 				for attr in self.playerdata[key]:
 					getattr(self,key)[attr]=int(self.playerdata[key][attr].value)
 			for key in ['gold','friendship_point']:
@@ -58,8 +58,10 @@ class player(object):
 			self.lv=self.playerdata['town_level'].value
 			self.leader_sid=self.playerdata['leader_serial_id'].value
 			self.name=self.playerdata['name'].value
-			#print self.ap.current,self.bc.current
-			return 'AP:%d/%d BC:%d/%d G:%d FP:%d '%(self.ap['current'],self.ap['max'],self.bc['current'],self.bc['max'],self.gold,self.friendship_point),True
+		except KeyError:
+			pass
+		#print self.ap.current,self.bc.current
+		return 'AP:%d/%d BC:%d/%d G:%d FP:%d '%(self.ap['current'],self.ap['max'],self.bc['current'],self.bc['max'],self.gold,self.friendship_point),True
 
 	def _update_card(self,xmldata):
 		try:
