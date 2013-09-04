@@ -1103,6 +1103,7 @@ class maClient():
                 logging.warning(res[1])
         #接着打醒妖:
         if rare_fairy!=None:
+            logging.info(du8('妖精真正的力量觉醒！'))
             self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
             self.like()
         return need_refresh
@@ -1132,6 +1133,8 @@ class maClient():
         if resp['error']:
             return
         logging.info(XML2Dict().fromstring(dec).response.header.message)
+        #走个形式
+        resp,ct=self._dopost('menu/menulist')
         return True
 
     def friends(self,choice='',autodel=False):
@@ -1374,6 +1377,11 @@ class maClient():
                     userlist=[userlist]
                 for u in userlist:
                     cid=int(u.leader_card.master_card_id)
+                    cost=int(u.cost)
+                    friends=int(u.friends)
+                    deck_rank=int(u.deck_rank)
+                    rank=int(u.rank)
+                    lv=int(u.town_level)
                     try:
                         star=int(self.carddb[cid][1])
                     except KeyError:
@@ -1381,11 +1389,12 @@ class maClient():
                             cid,
                             duowan[self.loc[:2]]%(base64.encodestring('{"no":"%d"}'%cid).strip('\n').replace('=','_3_')))))
                     else:
-                        logging.debug('factor_battle:eval:%s, result:%s, star:%s, cid:%d'%(
+                        logging.debug('factor_battle:eval:%s, result:%s, star:%s, cid:%d, deckrank:%d'%(
                             self.evalstr_factor,
                             eval(self.evalstr_factor),
                             star,
-                            cid)
+                            cid,
+                            deck_rank)
                         )
                         if eval(self.evalstr_factor):
                             logging.debug('factor_battle:->%s @ %s'%(u.name,u.leader_card.master_card_id))
