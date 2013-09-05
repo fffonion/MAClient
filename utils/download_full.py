@@ -1,15 +1,17 @@
-import maclient
 import os
-import maclient_network
 import random
 import httplib2
+import sys
+sys.path.append(os.path.abspath('..'))
+import maclient_player
+import maclient_network
+os.chdir(os.path.abspath('..'))
+sys.path[0]=os.path.abspath('.')
 CARD_NORM,CARD_MAX,CARD_NORM_HOLO,CARD_MAX_HOLO=0,1,2,3
 ht=httplib2.Http()
 loc='tw'
-maclient1=maclient.maClient(savesession=True,configfile=r'D:\Dev\Python\Workspace\maClient\_mine\config_little.ini')
-maclient1.initplayer(open(r'D:\Dev\Python\Workspace\maclient\.%s.playerdata'%loc).read())
-maclient1.loc=loc
-cardlist=[i for i in maclient1.carddb]
+p=maclient_player.player(open(r'D:\Dev\Python\Workspace\maclient\.%s.playerdata'%loc).read(),loc)
+cardlist=[i for i in p.card.db]
 random.shuffle(cardlist)
 def download_card(cardid,level=CARD_NORM):
         #print serv['%s_data'%self.loc]+uri['%s_data_card'%loc]+uri['cardlevel'][level]%cardid
