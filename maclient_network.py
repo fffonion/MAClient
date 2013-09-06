@@ -125,6 +125,8 @@ class poster():
                         err=e.errno
                     self.logger.warning('post:%s got socket error:%s, retrying in %d times'%(uri,err,ttimes-trytime))
                 except httplib.ResponseNotReady:
+                    #socket重置，不计入重试次数
+                    trytime-=1
                     self.logger.warning('post:socket closed, retrying in %d times'%(ttimes-trytime))
                 except httplib2.ServerNotFoundError:
                     self.logger.warning('post:no internet, retrying in %d times'%(ttimes-trytime))
@@ -157,4 +159,4 @@ class poster():
             return resp,dec
 
 if __name__=="__main__":
-    print decode_param('C=vyuAfaH%2FKZRcOPDAyZy54z7OpI2p%2FrQKvjqAxiEVz1%2FHOGvWF10MZHbPBHC7Jg1QZAYkDH7v0n9Y%0A%2FboRFRm9k83hsHZFRs%2ByfEqapAl7vSI%3D%0A&lr=ZWJHCdUg1r9%2FuTuW%2FMBBig%3D%3D%0A')
+    print decode_param('comment_id=blH2uGQYhYf10NcydcqGV62zHTI2z3z%2B1PS88%2BQwbcrFZlL85n%2F5mVhfQEXOF5Qxb8gd5C5iaGKW%0AWpzWNz2ADzSYVEH%2FYh7Z1QiP6H23w4HaC8ReyQTKrTOY%2B37t2YCBLtkmdezV%2F4tnGdAOw%2BPeJknc%0AajDFyB8pwU0mcwS40EaE3v261tFufLN70WSKG8nQKEHeKpQxpCFWKqcUFCltab19Ft50oBSjCOJe%0AcgJ9HvxL7BFeYIJg5tEynTRdm%2BFNZrk3z7AkwZiNCl%2B3Fub%2FN9X6z9gc64na1E1XRGvbLxCk%2B2OO%0AC%2Bd%2BiI8gm9qxQf9lrAn4AqcGo0Nuiz5hovpzwoaWWDJeXYLfbhSAYPgq26Q%3D%0A&like_message=CN9JhvUrGowlHYmCaHTBWt8n22M493Ex%2FhFosFHw13M%3D%0A&user_id=P%2Fpbi6UZClya6dboA4jhxFklIMW6%2BQF1vBGJbmzjn87KuNpGRr5y9S0ARauVXdHjXkVgT6ztzXeI%0AQupfxMOb59b5IaLnG%2FhzCKY4rRfMm4mwIMhLGldNCfEif21IRvy8trAmyiP80ZNF70%2Fw0aP5LaPZ%0A%2BiZ9FaDTV9SR%2BXSEstNcnMUNNP3tZ0pHNy14MnytZb9joQ35N5pBy7jK1o%2BoNYuOoPPdiBTsT%2B01%0A%2BISQuw0H%2FXq%2FsbpF747biQlNorQ7%0A')

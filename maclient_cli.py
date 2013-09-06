@@ -128,7 +128,7 @@ if __name__=='__main__':
         mode=['普通','同时在线']
         mod=0
         while True:
-            print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\t[快速通道]\n2.遥控器模式[NEW]\te.刷秘境\n3.切换模式->%s\tfyb.刷妖精\n4.编辑卡组\t\tfcb.因子战\n5.编辑配置\t\tf.好友相关\n6.更新数据库\t\th.命令速查\n7.退出'%(mode[mod],maclient1._read_config('system','server'),mode[(mod+1)%2])))
+            print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\t[快速通道]\n2.遥控器模式\t\te.刷秘境\n3.切换模式->%s\tfyb.刷妖精\n4.编辑卡组\t\tfcb.因子战\n5.编辑配置\t\tf.好友相关\n6.更新数据库\t\th.命令速查\n7.退出'%(mode[mod],maclient1._read_config('system','server'),mode[(mod+1)%2])))
             ch=raw_input('Select> ')
             if ch=='1' or ch =='':
                 dec=maclient1.login()
@@ -212,7 +212,13 @@ sell_card_warning 卖卡提醒'''))
                     except:
                         logging.error(du8('输入有误www'))
                     else:
-                        maclient1._write_config('system',p1,p2)
+                        if p1 in maclient1._list_option('system'):
+                            maclient1._write_config('system',p1,p2)
+                        elif p1 in maclient1._list_option('tactic'):
+                            maclient1._write_config('tactic',p1,p2)
+                        else:
+                            logging.error(du8('配置项不存在www'))
+                            continue
                         print(du8('已保存~'))
                         maclient1.load_config()
             elif ch =='6':

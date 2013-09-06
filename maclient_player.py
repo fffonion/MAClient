@@ -61,7 +61,7 @@ class player(object):
 		except KeyError:
 			pass
 		#print self.ap.current,self.bc.current
-		return 'AP:%d/%d BC:%d/%d G:%d FP:%d '%(self.ap['current'],self.ap['max'],self.bc['current'],self.bc['max'],self.gold,self.friendship_point),True
+		return 'AP:%d/%d BC:%d/%d G:%d FP:%d'%(self.ap['current'],self.ap['max'],self.bc['current'],self.bc['max'],self.gold,self.friendship_point),True
 
 	def _update_card(self,xmldata):
 		try:
