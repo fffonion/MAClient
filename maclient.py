@@ -1387,8 +1387,9 @@ class maClient():
                 if self.player.bc['current']<=minbc:
                     logging.info(du8('BC已突破下限%d，退出o(*≧▽≦)ツ '%minbc))
                     return
-                logging.info(du8('选择因子 %s:%s, 碎片id %d'%(l.lake_id,(l.lake_id=='0' or 'event_id' in l) and 'NONE' or l.title,partid)))
-                if 'event_id' in l:#event
+                logging.info(du8('选择因子 %s:%s, 碎片id %d'%(
+                    l.lake_id,l.lake_id=='0' and 'NONE' or l.title, 0 if ('event_id' in l) else partid)))
+                if l.event_id!='0':#event
                     param='event_id=%s&move=1'%(l.lake_id)
                 else:
                     param='knight_id=%s&move=1&parts_id=%d'%(l.lake_id,partid)
@@ -1429,7 +1430,7 @@ class maClient():
                             ap=self.player.ap['current']
                             bc=self.player.bc['current']
                             logging.info('%s%s%s'%(du8('艹了一下一个叫 '),u.name,du8(' 的家伙')))
-                            if 'event_id' in l:
+                            if l.event_id!='0':#event
                                 fparam='battle_type=0&event_id=%s&user_id=%s'%(l.event_id,u.id)
                             else:
                                 fparam='lake_id=%s&parts_id=%d&user_id=%s'%(l.lake_id,partid,u.id)
