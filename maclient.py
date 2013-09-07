@@ -376,7 +376,8 @@ class maClient():
             token=self._read_config('system','device_token').replace('\\n','\n') or \
             'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
             if not fast:
-                self._dopost('check_inspection',checkerror=False,extraheader={},usecookie=False)
+                ct=self._dopost('check_inspection',checkerror=False,extraheader={},usecookie=False)[1]
+                self.poster.update_server(ct)
                 self._dopost('notification/post_devicetoken',postdata='S=%s&login_id=%s&password=%s&app=and&token=%s'%('nosessionid',self.username,self.password,token),checkerror=False)
             
             resp,dec=self._dopost('login',postdata='login_id=%s&password=%s'%(self.username,self.password))
