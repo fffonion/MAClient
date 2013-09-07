@@ -20,7 +20,7 @@ import getpass
 import maclient_player
 import maclient_network
 import maclient_logging
-__version__=1.41
+__version__=1.46
 #CONSTS:
 EXPLORE_BATTLE,NORMAL_BATTLE,WAKE_BATTLE=0,1,2
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
@@ -949,11 +949,16 @@ class maClient():
         def fairy_floor():
             paramfl='check=1&serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
             resp,ct=self._dopost('exploration/fairy_floor',postdata=paramfl)
-            return XML2Dict().fromstring(ct).response.body.fairy_floor.explore.fairy
+            if resp['error']:
+                return None
+            else:
+                return XML2Dict().fromstring(ct).response.body.fairy_floor.explore.fairy
         if type==NORMAL_BATTLE: 
             #除了explore中碰到的妖精外，传入的fairy只有部分信息，因此客户端都会POST一个fairy_floor来取得完整信息
             #包含了发现者，小伙伴数量，剩余血量等等s
             fairy=fairy_floor()
+            if not fairy:
+                return False
         #已经挂了
         if fairy.hp=='0':
             logging.warning(du8('妖精已被消灭'))
@@ -982,6 +987,8 @@ class maClient():
         logging.debug('fairy_battle:carddeck result:%s'%(cardd))
         if (self.set_card(cardd)):
             fairy=fairy_floor()#设完卡组返回时
+            if not fairy:
+                return False
         #判断BC
         if self.check_strict_bc() or self.player.bc['current']<2:#strict BC或者BC不足
             logging.warning(du8('BC不够了TOT'))
@@ -1013,7 +1020,6 @@ class maClient():
                     return True
             try:
                 res=XML2Dict().fromstring(ct).response.body.battle_result
-                blist=XML2Dict().fromstring(ct).response.body.battle_battle.battle_action_list
             except KeyError:
                 logging.warning(du8('没有发现奖励，妖精已经挂了？'))
                 return False
@@ -1021,11 +1027,11 @@ class maClient():
             self.remoteHdl(method='FAIRY',fairy=fairy)
             #战斗结果
             need_refresh=False
+            #测试！
+            if os.path.exists('debug') and cardd!='min':
+                    open('debug/%slv%s_%s.xml'%(fairy.name,fairy.lv,fairy.serial_id),'w').write(ct)
             if res.winner=='1':#赢了
                 logging.info(du8('YOU WIN 233'))
-                #测试！
-                #if os.path.exists('debug'):
-                #    open('debug/%slv%s_%s.xml'%(fairy.name,fairy.lv,fairy.serial_id),'w').write(ct)
                 #自己的妖精设为死了
                 if type==EXPLORE_BATTLE:
                     self.player.fairy={'id':0,'alive':False}
@@ -1078,26 +1084,40 @@ class maClient():
             #     <attack_type>1</attack_type>
             #     <attack_damage>11967</attack_damage>
             # </battle_action_list>
-            fatk,matk,rnd=0,0,0
+            fatk,matk,satk,rnd=0,0,0,0
             skills=[]
+            cbos=[]
             skill_type=['0','ATK↑','HP↑','3','4','5']
+            blist=XML2Dict().fromstring(ct).response.body.battle_battle.battle_action_list
             for l in blist:
-                if 'attack_damage' in l:
-                    if l.action_player=='0':
-                        matk+=int(l.attack_damage)
-                    else:
-                        fatk+=int(l.attack_damage)
-                    rnd+=0.5
-                if 'skill_id' in l:
-                    #skillcnt+=1
-                    skills.append('[%d]%s.%s'%(
-                        math.ceil(rnd),skill_type[int(l.skill_type)],self.carddb[int(l.skill_card)][0])
-                    )
-            logging.info(du8('回合数:%d/%d 平均ATK:%.1f/%.1f %s %s'%
+                if 'turn' in l:#回合数
+                    rnd=float(l.turn)-0.5
+                else:
+                    if 'attack_damage' in l:
+                        if l.attack_type not in ['1','0']:#SUPER
+                            satk=int(l.attack_damage)
+                        else:#普通攻击
+                            if l.action_player=='0':#玩家攻击
+                                matk+=int(l.attack_damage)
+                            else:#妖精攻击
+                                fatk+=int(l.attack_damage)
+                                rnd+=0.5#妖精回合
+                    if 'skill_id' in l:
+                        #skillcnt+=1
+                        skills.append('[%d]%s.%s'%(
+                            math.ceil(rnd),skill_type[int(l.skill_type)],self.carddb[int(l.skill_card)][0])
+                        )
+                    if 'combo_name' in l:
+                        cbos.append('%s.%s'%(
+                            skill_type[int(l.combo_type)],l.combo_name)
+                        )
+            logging.info(du8('战斗详情:\nROUND:%d/%d 平均ATK:%.1f/%.1f%s %s %s %s'%
                 (math.ceil(rnd),math.floor(rnd),
                 matk/math.ceil(rnd), 0 if rnd<1 else fatk/math.floor(rnd),
+                ' SUPER:%d'%satk if satk>0 else '',
                 res.winner=='1' and '受到伤害:%d'%fatk or '总伤害:%d'%matk,
-                len(skills)>0 and '技能发动:%s'%(','.join(skills)) or '')
+                len(cbos)>0 and '\nCOMBO:%s'%(','.join(cbos)) or '',
+                len(skills)>0 and '\nSKILL:%s'%(','.join(skills)) or '')
             ))
             #记录截止时间，上次战斗时间，如果需要立即刷新，上次战斗时间为0.1
             self._write_config('fairy',fairy.serial_id,
@@ -1378,6 +1398,7 @@ class maClient():
                     if l.lake_id==str(sel_lake):
                         break
             if l.lake_id=='0':
+                l['event_id']='0'#补全参数
                 partids=[0]
             else:
                 partids=[i for i in xrange(1,10)]
