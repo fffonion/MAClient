@@ -117,6 +117,7 @@ class maClient():
         logging.debug(du8('system:初始化完成(%s)'%self.loc))
         self.lastposttime=0
         self.lastfairytime=0
+        self.errortimes=0
         self.player_initiated=False
 
     def load_config(self):
@@ -183,7 +184,7 @@ class maClient():
             resp.update({'error':False,'errno':0,'errmsg':''})
             if err.code!='0':
                 resp['errmsg']=err.message
-                #1050木有BC 1010卖了卡 8000无法进行当前操作
+                #1050木有BC 1010卖了卡 8000无法进行当前操作 1020维护
                 if not err.code in ['1050','1010']:
                     logging.error('code:%s msg:%s'%(err.code,err.message))
                     resp.update({'error':True,'errno':int(err.code)})
@@ -192,6 +193,9 @@ class maClient():
                     logging.info(du8('A一个新的小饼干……'))
                     self.login(fast=True)
                     return self._dopost(urikey,postdata,usecookie,setcookie,extraheader,checkerror,noencrypt)
+                elif err.code=='1020':
+                    logging.info(du8('因为服务器维护，休息约20分钟'))
+                    time.sleep(random.randint(18,22)*60)
             else:
                 resp.update({'error':False})
         else:
@@ -1346,7 +1350,8 @@ class maClient():
         resp,dec=self._dopost('battle/competition_parts?redirect_flg=1',noencrypt=True)
         if resp['error']:
             return 
-        lakes=XML2Dict().fromstring(dec).response.body.competition_parts.lake
+        cmp_parts=XML2Dict().fromstring(dec).response.body.competition_parts
+        lakes=cmp_parts.lake
         #only one
         if len(lakes)==1:
             lakes=[lakes]
@@ -1354,6 +1359,13 @@ class maClient():
         trycnt=self._read_config('system','try_factor_times')
         if trycnt=='0':
             trycnt='999'
+        #EVENT HANDLE
+        try:
+            logging.info(du8('BP:%s Rank:%s x%s %s:%s left.'%(
+                cmp_parts.event_point,cmp_parts.event_rank,cmp_parts.event_bonus_rate,
+                int(cmp_parts.event_bonus_end_time)/60,int(cmp_parts.event_bonus_end_time)%60)))
+        except KeyError:
+            pass
         #try loop
         for i in xrange(int(trycnt)):
             logging.debug(du8('factor_battle:因子战:第%d/%s次 寻找油腻的师姐'%(i+1,trycnt)))
@@ -1361,6 +1373,8 @@ class maClient():
                 l=random.choice(lakes)
             else:
                 for l in lakes:
+                    if 'lake_id' not in l:
+                        l['lake_id']=l.event_id
                     if l.lake_id==str(sel_lake):
                         break
             if l.lake_id=='0':
@@ -1373,8 +1387,11 @@ class maClient():
                 if self.player.bc['current']<=minbc:
                     logging.info(du8('BC已突破下限%d，退出o(*≧▽≦)ツ '%minbc))
                     return
-                logging.info(du8('选择因子 %s:%s, 碎片id %d'%(l.lake_id,l.lake_id=='0' and 'NONE' or l.title,partid)))
-                param='knight_id=%s&move=1&parts_id=%d'%(l.lake_id,partid)
+                logging.info(du8('选择因子 %s:%s, 碎片id %d'%(l.lake_id,(l.lake_id=='0' or 'event_id' in l) and 'NONE' or l.title,partid)))
+                if 'event_id' in l:#event
+                    param='event_id=%s&move=1'%(l.lake_id)
+                else:
+                    param='knight_id=%s&move=1&parts_id=%d'%(l.lake_id,partid)
                 resp,dec=self._dopost('battle/battle_userlist',postdata=param)
                 if resp['error']:
                     continue
@@ -1412,7 +1429,10 @@ class maClient():
                             ap=self.player.ap['current']
                             bc=self.player.bc['current']
                             logging.info('%s%s%s'%(du8('艹了一下一个叫 '),u.name,du8(' 的家伙')))
-                            fparam='lake_id=%s&parts_id=%d&user_id=%s'%(l.lake_id,partid,u.id)
+                            if 'event_id' in l:
+                                fparam='battle_type=0&event_id=%s&user_id=%s'%(l.event_id,u.id)
+                            else:
+                                fparam='lake_id=%s&parts_id=%d&user_id=%s'%(l.lake_id,partid,u.id)
                             resp,dec=self._dopost('battle/battle',postdata=fparam)
                             if resp['error']:
                                 continue
