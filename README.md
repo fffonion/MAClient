@@ -1,4 +1,8 @@
-﻿##说明
+﻿maClient是一个基于[有限状态机](http://zh.wikipedia.org/zh/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA)(好高端ww)的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服和国服全区。
+
+本脚本旨在完全模拟手机客户端的行为和玩家的逻辑，原则上不会增加服务器负载。
+
+##说明
 
 密钥已删除，请自行搜索
 
@@ -138,7 +142,7 @@ session不用管它
 
 ###tasker
 
-任务调度
+任务切换；Moore机
 
 可以建立多个任务表达式，每个表达式用|分割，单个任务用空格分割命令和参数，
 
@@ -158,6 +162,7 @@ session不用管它
     explore '明鏡月和島' in area.name #探索秘境名称包含'明鏡月和島' 
 	fcb l:1 70 或 fcb lake:1 70#因子战选择第一因子，下限BC70，因子默认为随机选择，BC下限默认为0
 
+各命令及参数的详细介绍见[COMMANDS文档](https://github.com/fffonion/maClient/blob/master/COMMANDS.md)
 
 ###condition
 指定满足什么条件时做什么事
