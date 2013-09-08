@@ -144,7 +144,7 @@ session不用管它
 
 可选：
 
-登陆login/l, 设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,刷列表中的妖精 fairy_battle/fyb,嗑药 red_tea/rt,嗑药 green_tea/gt,自动卖卡 sell_card/slc,设置账号类型 set_server/ss,好友相关 friend/f,转蛋gacha/g,分配点数point/p,礼物盒reward_box/rb,手动选择妖精战斗fairy_select/fs,重新登录relogin/rl,问好like/greet/gr
+登陆login/l, 设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,刷列表中的妖精 fairy_battle/fyb,嗑药 red_tea/rt,嗑药 green_tea/gt,自动卖卡 sell_card/slc,设置账号类型 set_server/ss,好友相关 friend/f,转蛋gacha/g,分配点数point/p,礼物盒reward_box/rb(可后跟参数 12345 分别表示 卡片 道具 金 绊点 蛋卷),手动选择妖精战斗fairy_select/fs,重新登录relogin/rl,问好like/greet/gr
 
 以t:开头可执行任务
 

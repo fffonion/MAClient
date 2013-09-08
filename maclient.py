@@ -341,7 +341,9 @@ class maClient():
                 elif task[0]=='point' or task[0]=='p':
                     self.point_setting()
                 elif task[0]=='rb' or task[0]=='reward_box':
-                    self.reward_box()
+                    if len(task)==2:
+                        task=[task[0],'12345']
+                    self.reward_box(task[1])
                 elif task[0]=='gacha' or task[0]=='g':
                     if len(task)==2:
                         task[1]=GACHA_FRIENNSHIP_POINT
@@ -522,6 +524,8 @@ class maClient():
             else:
                 if self._raw_input(du8('来一坨红茶？ y/n '))=='y':
                     res=self._use_item('2')
+                else:
+                    res=False
         if res:
             self.player.bc['current']=self.player.bc['max']
         return res
@@ -1095,7 +1099,7 @@ class maClient():
                     rnd=float(l.turn)-0.5
                 else:
                     if 'attack_damage' in l:
-                        if l.attack_type not in ['1','0']:#SUPER
+                        if l.attack_type not in ['1','2']:#SUPER
                             satk=int(l.attack_damage)
                         else:#普通攻击
                             if l.action_player=='0':#玩家攻击
@@ -1299,7 +1303,7 @@ class maClient():
                 logging.error(du8('木有这个选项哟0w0'))
             choice=''
 
-    def reward_box(self):
+    def reward_box(self,rw_type='12345'):
         if self._dopost('menu/menulist')[0]['error']:
             return False
         resp,ct=self._dopost('mainmenu')
@@ -1316,27 +1320,39 @@ class maClient():
             rwds=[rwds]
         strl=''
         nid=[]
-        #type 2:道具 3:4:绊点 金 5:蛋卷 1:卡片
+        #type 1:卡片 2:道具 3:金 4:绊点 5:蛋卷
         for r in rwds:
             strl+=('%s:'%r.content)
             if r.type=='1':
                 strl+='%s'%(self.carddb[int(r.card_id)][0])
+                if '1' in rw_type:
+                    nid.append(r.id)
             elif r.type=='2':
                 strl+='%sx%s'%(self.itemdb[int(r.item_id)],r.get_num)
+                if '2' in rw_type:
+                    nid.append(r.id)
             elif r.type=='3':
                 strl+='%sG'%r.point
+                if '3' in rw_type:
+                    nid.append(r.id)
             elif r.type=='4':
                 strl+='%sFP'%r.point
+                if '4' in rw_type:
+                   nid.append(r.id)
             elif r.type=='5':
                 strl+='%sx%s'%(du8('蛋蛋卷'),r.get_num)
+                if '5' in rw_type:
+                    nid.append(r.id)
             else:
                 strl+=r.type
-            strl+=', '
-            nid.append(r.id)
+            strl+=' , '
         logging.info(strl.rstrip(','))
-        res=self._get_rewards(nid)
-        if res[0]:
-            logging.info(res[1])
+        if nid==[]:
+            logging.info(du8('没有需要领取的奖励'))
+        else:
+            res=self._get_rewards(nid)
+            if res[0]:
+                logging.info(res[1])
 
 
     def point_setting(self):
