@@ -486,7 +486,6 @@ class maClient():
                 break
             if self._dopost('roundtable/edit',postdata='move=1')[0]['error']:
                 break
-            
             logging.sleep(du8('休息%d秒，假装在找卡'%t))
             time.sleep(t)
             postparam='C=%s&lr=%s'%(','.join(param),lc)
@@ -770,7 +769,7 @@ class maClient():
             card.mid=int(card.master_card_id)
             card.price=int(card.sale_price)
             card.sid=int(card.serial_id)
-            evalres=eval(self.evalstr_selcard) and not card.mid in [390,391,392]#切尔莉
+            evalres=eval(self.evalstr_selcard) and not card.mid in [390,391,392,404]#切尔莉
             if evalres:
                 if card.star>3:
                     warning_card.append(self.carddb[int(card.master_card_id)][0]+
@@ -1426,7 +1425,7 @@ class maClient():
                     logging.info(du8('BC已突破下限%d，退出o(*≧▽≦)ツ '%minbc))
                     return
                 logging.info(du8('选择因子 %s:%s, 碎片id %d'%(
-                    l.lake_id,l.lake_id=='0' and 'NONE' or l.title, 0 if ('event_id' in l) else partid)))
+                    l.lake_id,l.lake_id=='0' and 'NONE' or l.title, 0 if (l.event_id!='0') else partid)))
                 if l.event_id!='0':#event
                     param='event_id=%s&move=1'%(l.lake_id)
                 else:
@@ -1560,7 +1559,7 @@ if __name__=='__main__':
     #登陆
     #import profile
     #profile.run("maClient1.login()")
-    os._exit(0)
+    #os._exit(0)
     maClient1.login()
     dec=maClient1.login()
     maClient1.initplayer(dec)
