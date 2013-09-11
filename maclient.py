@@ -410,7 +410,7 @@ class maClient():
             self.stitle.start()
 
     def auto_check(self,doingwhat):
-        if not doingwhat in ['login','check_inspection','notification/post_devicetoken','card/exchange', 'trunk/sell','roundtable/edit','cardselect/savedeckcard']:
+        if not doingwhat in ['login','check_inspection','notification/post_devicetoken','card/exchange', 'trunk/sell','roundtable/edit','cardselect/savedeckcard','friend/like_user','comment/send']:
             if int(self.player.card.count) >=200:
                 if self.cfg_auto_sell:
                     logging.info(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))

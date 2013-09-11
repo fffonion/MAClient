@@ -104,8 +104,11 @@ class poster():
 
     def update_server(self,check_inspection_str):
         strs=check_inspection_str.split(',')
-        serv[self.servloc]=strs[3]
-        serv['%s_data'%self.servloc]=strs[2]
+        try:
+            serv[self.servloc]=strs[3]
+            serv['%s_data'%self.servloc]=strs[2]
+        except KeyError:
+            pass
 
     def post(self,uri,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},noencrypt=False,savetraffic=False):
             header={}

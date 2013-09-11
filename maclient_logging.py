@@ -23,6 +23,7 @@ class Logging(type(sys)):
         self.__set_error_color = lambda: None
         self.__set_warning_color = lambda: None
         self.__set_debug_color = lambda: None
+        self.__set_sleep_color = lambda: None
         self.__reset_color = lambda: None
         self.__convstr=lambda str: str.encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace')
         if self.isatty:

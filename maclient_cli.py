@@ -46,7 +46,10 @@ def getTerminalSize():
         else:
             return None
     else:
-        x,y=os.popen('stty size', 'r').read().split()
+        try:
+            x,y=os.popen('stty size', 'r').read().split()
+        except ValueError:
+            x,y=120,80
         return int(y),int(x)
 
 def deck_editor(maclient1):
