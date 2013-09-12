@@ -847,15 +847,15 @@ class maClient():
                     slptime=1.5
                 hour_last=hour_now
             logging.debug('fairy_battle_loop:%d/%d'%(l+1,looptime))
-            refresh=self.fairy_select(is_refresh=refresh)
-            if not refresh and looptime!=l+1:#没有立即刷新
+            self.fairy_select()
+            if looptime!=l+1:#没有立即刷新
                 s=random.randint(int(60*slptime*0.8*slpfactor),int(60*slptime*1.2*slpfactor))
                 logging.sleep(du8('%d秒后刷新……'%s))
                 time.sleep(s)
 
 
 
-    def fairy_select(self,cond='',is_refresh=False):
+    def fairy_select(self,cond=''):
         #走个形式
         resp,ct=self._dopost('menu/menulist')
         if resp['error']:
@@ -908,25 +908,22 @@ class maClient():
             ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
             fairy['not_battled']= ftime[0]==''
             #logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
-            if eval(evalstr) or is_refresh:
+            if eval(evalstr):
                 if time.time()-int(ftime[1] or '0') < 180:
                     logging.debug('fairy_select:sid %s battled in less than 3 min'%fairy.fairy.serial_id)
                     continue
                 fairies.append(fairy)
         logging.info(du8(len(fairies)==0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD'%len(fairies)))
-        instant_refresh=False
         #依次艹
         for f in fairies:
             logging.debug('fairy_select:select sid %s discoverer %s battled %s'%(f.fairy.serial_id,f.user.name,not f.not_battled))
             f.fairy.discoverer_id=f.user.id
-            if self._fairy_battle(f.fairy,type=NORMAL_BATTLE):
-                instant_refresh=True
+            self._fairy_battle(f.fairy,type=NORMAL_BATTLE)
             #走个形式
             resp,ct=self._dopost('menu/fairyselect')
             if resp['error']:
                 return
             time.sleep(1.25)
-        return instant_refresh
             #fairy.user.name,fairy.fairy.name,fairy.fairy.serial_id,fairy.fairy.lv,fairy.put_down
             #fairy.start_time,fairy.fairy.time_limit
 
@@ -942,10 +939,7 @@ class maClient():
             rwname.append(rw.item_name)
         logging.info(', '.join(rwname)+du8('  已获得'))
 
-    def _fairy_battle(self,fairy,type=NORMAL_BATTLE):
-        '''
-        Return bool 是否需要立即重刷列表
-        '''
+    def _fairy_battle(self,fairy,type=NORMAL_BATTLE,is_tail=False):
         while time.time()-self.lastfairytime<20:
             logging.sleep(du8('等待20s战斗冷却'))
             time.sleep(5)
@@ -1010,7 +1004,6 @@ class maClient():
         resp,ct=self._dopost('exploration/fairybattle',postdata=paramf,savetraffic=savet)
         if len(ct)==0:
             logging.info(du8('舔刀卡组，省流模式开启'))
-            need_refresh=False
         else:
             if resp['error']:
                 return
@@ -1030,10 +1023,10 @@ class maClient():
             #通知远程
             self.remoteHdl(method='FAIRY',fairy=fairy)
             #战斗结果
-            need_refresh=False
+            need_tail=False
             #测试！
-            if os.path.exists('debug') and cardd!='min':
-                    open('debug/%slv%s_%s.xml'%(fairy.name,fairy.lv,fairy.serial_id),'w').write(ct)
+            #if os.path.exists('debug') and cardd!='min':
+            #   open('debug/%slv%s_%s.xml'%(fairy.name,fairy.lv,fairy.serial_id),'w').write(ct)
             if res.winner=='1':#赢了
                 logging.info(du8('YOU WIN 233'))
                 #自己的妖精设为死了
@@ -1059,10 +1052,10 @@ class maClient():
             else:#输了
                 hpleft=int(XML2Dict().fromstring(ct).response.body.explore.fairy.hp)
                 logging.info(du8('YOU LOSE- - Fairy-HP:%d'%hpleft))
-                #立即尾刀触发
-                if self.cfg_fairy_final_kill_hp>=hpleft:
-                    logging.debug('_fairy_battle:instant refresh!')
-                    need_refresh=True
+                #立即尾刀触发,如果补刀一次还没打死，就不打了-v-
+                if self.cfg_fairy_final_kill_hp>=hpleft and not is_tail:
+                    need_tail=True
+            #金币以及经验
             logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
                 int(res.before_exp)-int(res.after_exp),
                 res.after_exp,
@@ -1088,52 +1081,59 @@ class maClient():
             #     <attack_type>1</attack_type>
             #     <attack_damage>11967</attack_damage>
             # </battle_action_list>
-            fatk,matk,satk,rnd=0,0,0,0
-            skills=[]
-            cbos=[]
-            skill_type=['0','ATK↑','HP↑','3','4','5']
-            blist=XML2Dict().fromstring(ct).response.body.battle_battle.battle_action_list
-            for l in blist:
-                if 'turn' in l:#回合数
-                    rnd=float(l.turn)-0.5
-                else:
-                    if 'attack_damage' in l:
-                        if l.attack_type not in ['1','2']:#SUPER
-                            satk=int(l.attack_damage)
-                        else:#普通攻击
-                            if l.action_player=='0':#玩家攻击
-                                matk+=int(l.attack_damage)
-                            else:#妖精攻击
-                                fatk+=int(l.attack_damage)
-                                rnd+=0.5#妖精回合
-                    if 'skill_id' in l:
-                        #skillcnt+=1
-                        skills.append('[%d]%s.%s'%(
-                            math.ceil(rnd),skill_type[int(l.skill_type)],self.carddb[int(l.skill_card)][0])
-                        )
-                    if 'combo_name' in l:
-                        cbos.append('%s.%s'%(
-                            skill_type[int(l.combo_type)],l.combo_name)
-                        )
-            logging.info(du8('战斗详情:\nROUND:%d/%d 平均ATK:%.1f/%.1f%s %s %s %s'%
-                (math.ceil(rnd),math.floor(rnd),
-                matk/math.ceil(rnd), 0 if rnd<1 else fatk/math.floor(rnd),
-                ' SUPER:%d'%satk if satk>0 else '',
-                res.winner=='1' and '受到伤害:%d'%fatk or '总伤害:%d'%matk,
-                len(cbos)>0 and '\nCOMBO:%s'%(','.join(cbos)) or '',
-                len(skills)>0 and '\nSKILL:%s'%(','.join(skills)) or '')
-            ))
+            if cardd!='min':
+                fatk,matk,satk,rnd=0,0,0,0
+                skills=[]
+                cbos=[]
+                skill_type=['0','ATK↑','HP↑','3','4','5']
+                blist=XML2Dict().fromstring(ct).response.body.battle_battle.battle_action_list
+                for l in blist:
+                    if 'turn' in l:#回合数
+                        rnd=float(l.turn)-0.5
+                    else:
+                        if 'attack_damage' in l:
+                            if l.attack_type not in ['1','2']:#SUPER
+                                satk=int(l.attack_damage)
+                            else:#普通攻击
+                                if l.action_player=='0':#玩家攻击
+                                    matk+=int(l.attack_damage)
+                                else:#妖精攻击
+                                    fatk+=int(l.attack_damage)
+                                    rnd+=0.5#妖精回合
+                        if 'skill_id' in l:
+                            #skillcnt+=1
+                            skills.append('[%d]%s.%s'%(
+                                math.ceil(rnd),skill_type[int(l.skill_type)],self.carddb[int(l.skill_card)][0])
+                            )
+                        if 'combo_name' in l:
+                            cbos.append('%s.%s'%(
+                                skill_type[int(l.combo_type)],l.combo_name)
+                            )
+                logging.info(du8('战斗详情:\nROUND:%d/%d 平均ATK:%.1f/%.1f%s %s %s %s'%
+                    (math.ceil(rnd),math.floor(rnd),
+                    matk/math.ceil(rnd), 0 if rnd<1 else fatk/math.floor(rnd),
+                    ' SUPER:%d'%satk if satk>0 else '',
+                    res.winner=='1' and '受到伤害:%d'%fatk or '总伤害:%d'%matk,
+                    len(cbos)>0 and '\nCOMBO:%s'%(','.join(cbos)) or '',
+                    len(skills)>0 and '\nSKILL:%s'%(','.join(skills)) or '')
+                ))
             #记录截止时间，上次战斗时间，如果需要立即刷新，上次战斗时间为0.1
             self._write_config('fairy',fairy.serial_id,
-                '%d,%.0f'%(int(fairy.time_limit)+int(float(time.time())),need_refresh and 0.1 or time.time()))
-            if not need_refresh:
-                #等着看结果
+                '%d,%.0f'%(int(fairy.time_limit)+int(float(time.time())),time.time()))
+            #等着看结果
+            if need_tail:
+                time.sleep(random.randint(4,10))
+            else:
                 time.sleep(random.randint(8,15))
         #领取收集品
         if nid!=[]:
             res=self._get_rewards(nid)
             if not res[0]:
                 logging.warning(res[1])
+        #立即尾刀
+        if need_tail:
+            logging.debug('_fairy_battle:tail battle!')
+            self._fairy_battle(fairy,type=type,is_tail=True)
         #接着打醒妖:
         if rare_fairy!=None:
             logging.warning('WARNING WARNING WARNING WARNING WARNING')
@@ -1142,7 +1142,6 @@ class maClient():
             time.sleep(3)
             self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
             self.like()
-        return need_refresh
 
     def like(self,words='你好！'):
         if words=='':
