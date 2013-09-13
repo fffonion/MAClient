@@ -227,7 +227,7 @@ eg.：
 
 属性：
 
-是我开的 IS_MINE,剩余时间 LIMIT(单位为秒),没打过 NOT_BATTLED,等级 lv,是否觉醒 IS_WAKE,自己的妖精是否还活着 STILL_ALIVE
+是我开的 IS_MINE,剩余时间 LIMIT(单位为秒),没打过 NOT_BATTLED,等级 lv,是否觉醒 IS_WAKE,是否稀有妖精 IS_WAKE_RARE,自己的妖精是否还活着 STILL_ALIVE
 
 eg.：
 

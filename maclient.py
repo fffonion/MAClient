@@ -26,7 +26,7 @@ EXPLORE_BATTLE,NORMAL_BATTLE,WAKE_BATTLE=0,1,2
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #eval dicts
-eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
+eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE':'wake','IS_WAKE_RARE':'wake_rare','STILL_ALIVE':"self.player.fairy['alive']"}
 eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE':'rare_flg=="1"','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
 eval_explore_area={'IS_EVENT':"area_type=='1'",'IS_DAILY_EVENT':"id.startswith('5')",'NOT_FINNISHED':"prog_area!='100'",\
             }
@@ -902,7 +902,7 @@ class maClient():
         #先置为已挂了
         fitemp= self.player.fairy['id']
         self.player.fairy={'alive':False,'id':0}
-        evalstr=(cond!='' and self._eval_gen(cond) or self.evalstr_fairy)
+        evalstr=(cond!='' and self._eval_gen(cond,eval_fairy_select) or self.evalstr_fairy)
         logging.debug('fairy_select:eval:%s'%(evalstr))
         fairies=[]
         for fairy in fairy_event:
@@ -915,8 +915,11 @@ class maClient():
                 self.player.fairy={'alive':True,'id':fairy.fairy.serial_id}
             fairy['time_limit']=int(fairy.fairy.time_limit)
             fairy['wake']=False
-            for k in ['觉醒','覺醒','禁書']:
+            fairy['wake_rare']=False
+            for k in ['觉醒','覺醒']:
                 fairy['wake']=fairy['wake'] or (k in fairy.fairy.name)
+            for k in ['禁書']:
+                fairy['wake_rare']=fairy['wake_rare'] or (k in fairy.fairy.name)
             ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
             fairy['not_battled']= ftime[0]==''
             #logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
