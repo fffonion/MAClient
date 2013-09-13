@@ -83,9 +83,9 @@ def decrypt_file(filein,fileout,ext='png'):
     else:
         pass
 class poster():
-    def __init__(self,mac,loc,logger,ua):
+    def __init__(self,loc,logger,ua):
         self.cookie=''
-        self.maClientInstance=mac
+        #self.maClientInstance=mac
         self.servloc=loc
         self.logger=logger
         self.header=headers_main
@@ -141,10 +141,10 @@ class poster():
                 else:
                     if int(resp['status'])<400:
                         break
-                    time.sleep(2.718281828)
                     self.logger.warning('post:POSTing %s, server returns code %s, retrying in %d times'%(uri,resp['status'],3-trytime))
                 resp,content={'status':'600'},''
                 trytime+=1
+                time.sleep(2.718281828*trytime)
             if not 'content-length' in resp:
                 resp['content-length']=str(len(content))
             #状态码判断
@@ -167,4 +167,4 @@ class poster():
             return resp,dec
 
 if __name__=="__main__":
-    print decode_param('battle_type=NzgOGTK08BvkZN5q8XvG6Q%3D%3D%0A&event_id=hYGYn%2F8IF6bxB5GwJ9cDDA%3D%3D%0A&user_id=%2FdVva%2BAr%2B8ZbrQm17v%2FtSw%3D%3D%0A')
+    print decode_param('S=l%2BSLkFbck3jK7ftUq4XEWUgdXcgDbKVDRxUYqRmWhpE%3D%0A&revision=NzgOGTK08BvkZN5q8XvG6Q%3D%3D%0A')

@@ -97,7 +97,7 @@ class maClient():
         ua=self._read_config('system','user-agent')
         if ua!='':
             logging.debug('system:ua changed to %s'%(ua))
-        self.poster=maclient_network.poster(self,self.loc,logging,ua)
+        self.poster=maclient_network.poster(self.loc,logging,ua)
         self.cookie=self._read_config('account_%s'%self.loc,'session')
         self.poster.set_cookie(self.cookie)
         if self.cfg_save_traffic:
@@ -179,27 +179,27 @@ class maClient():
             logging.debug('post:save traffic')
             self.lastposttime+=3#本来应该过一会才会收到所有信息的
             return resp,dec
+        resp.update({'error':False,'errno':0,'errmsg':''})
         if checkerror:
-            err=XML2Dict().fromstring(dec).response.header.error
-            resp.update({'error':False,'errno':0,'errmsg':''})
-            if err.code!='0':
-                resp['errmsg']=err.message
-                #1050木有BC 1010卖了卡 8000无法进行当前操作 1020维护
-                if not err.code in ['1050','1010']:
-                    logging.error('code:%s msg:%s'%(err.code,err.message))
-                    resp.update({'error':True,'errno':int(err.code)})
-                if err.code == '9000':
-                    self._write_config('account_%s'%self.loc,'session','')
-                    logging.info(du8('A一个新的小饼干……'))
-                    self.login(fast=True)
-                    return self._dopost(urikey,postdata,usecookie,setcookie,extraheader,checkerror,noencrypt)
-                elif err.code=='1020':
-                    logging.info(du8('因为服务器维护，休息约20分钟'))
-                    time.sleep(random.randint(18,22)*60)
+            try:
+                err=XML2Dict().fromstring(dec).response.header.error
+            except:
+                pass
             else:
-                resp.update({'error':False})
-        else:
-            resp.update({'error':False})
+                if err.code!='0':
+                    resp['errmsg']=err.message
+                    #1050木有BC 1010卖了卡 8000无法进行当前操作 1020维护
+                    if not err.code in ['1050','1010']:
+                        logging.error('code:%s msg:%s'%(err.code,err.message))
+                        resp.update({'error':True,'errno':int(err.code)})
+                    if err.code == '9000':
+                        self._write_config('account_%s'%self.loc,'session','')
+                        logging.info(du8('A一个新的小饼干……'))
+                        self.login(fast=True)
+                        return self._dopost(urikey,postdata,usecookie,setcookie,extraheader,checkerror,noencrypt)
+                    elif err.code=='1020':
+                        logging.info(du8('因为服务器维护，休息约20分钟'))
+                        time.sleep(random.randint(18,22)*60)
         if setcookie and 'set-cookie' in resp:
             self._write_config('account_%s'%self.loc,'session',resp['set-cookie'].split(',')[-1].rstrip('path=/').strip())
         if self.player_initiated :
@@ -672,8 +672,8 @@ class maClient():
                             except KeyError:
                                  logging.debug('explore:item not found?')
                         elif info.event_type=='4':
-                            logging.info(du8('获得了因子碎片 湖:%s 碎片:%s(已有%s片)'%(
-                                info.parts_one.lake_id,info.parts_one.parts.parts_num,info.parts_one.parts.parts_have)))
+                            logging.info(du8('获得了因子碎片 湖:%s 碎片:%s'%(
+                                info.parts_one.lake_id,info.parts_one.parts.parts_num)))
                     else:
                         logging.warning(du8('AP不够了TUT'))
                         if not self.green_tea(self.cfg_auto_explore):
@@ -751,6 +751,9 @@ class maClient():
             notice_id=notice_id[len(no_id):]
             param="notice_id=%s"%(','.join(no_id))
             resp,ct=self._dopost('menu/get_rewards',postdata=param)
+            if resp['errno']==8000:
+                hasgot=True
+                break
             if not resp['error']:
                 logging.debug('_get_rewards:get successfully.')
                 hasgot=True
@@ -1142,6 +1145,9 @@ class maClient():
             time.sleep(3)
             self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
             self.like()
+        #输了，回到妖精界面
+        if res.winner=='0':
+            fairy_floor()
 
     def like(self,words='你好！'):
         if words=='':
@@ -1402,15 +1408,17 @@ class maClient():
         except KeyError:
             pass
         #try loop
+        sel_lake=sel_lake.split(',')
         for i in xrange(int(trycnt)):
             logging.debug(du8('factor_battle:因子战:第%d/%s次 寻找油腻的师姐'%(i+1,trycnt)))
+            random.shuffle(lakes)
             if sel_lake==None:
-                l=random.choice(lakes)
+                l=lakes[0]
             else:
                 for l in lakes:
                     if 'lake_id' not in l:
                         l['lake_id']=l.event_id
-                    if l.lake_id==str(sel_lake):
+                    if l.lake_id in sel_lake:
                         break
             if l.lake_id=='0':
                 l['event_id']='0'#补全参数
