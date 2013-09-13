@@ -20,7 +20,7 @@ import getpass
 import maclient_player
 import maclient_network
 import maclient_logging
-__version__=1.46
+__version__=1.47
 #CONSTS:
 EXPLORE_BATTLE,NORMAL_BATTLE,WAKE_BATTLE=0,1,2
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
@@ -1011,6 +1011,8 @@ class maClient():
         #打
         nid=[]
         rare_fairy=None
+        need_tail=False
+        win=False
         paramf='serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
         savet=(cardd=='min')
         resp,ct=self._dopost('exploration/fairybattle',postdata=paramf,savetraffic=savet)
@@ -1035,11 +1037,11 @@ class maClient():
             #通知远程
             self.remoteHdl(method='FAIRY',fairy=fairy)
             #战斗结果
-            need_tail=False
             #测试！
             #if os.path.exists('debug') and cardd!='min':
             #   open('debug/%slv%s_%s.xml'%(fairy.name,fairy.lv,fairy.serial_id),'w').write(ct)
             if res.winner=='1':#赢了
+                win=True
                 logging.info(du8('YOU WIN 233'))
                 #自己的妖精设为死了
                 if type==EXPLORE_BATTLE:
@@ -1155,7 +1157,7 @@ class maClient():
             self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
             self.like()
         #输了，回到妖精界面
-        if res.winner=='0':
+        if win:
             fairy_floor()
 
     def like(self,words='你好！'):

@@ -191,7 +191,7 @@ eg:
     cid in [124,8,256] #队长卡片id为124,8或256：
 
 ####explore_area
-选择秘境满足的表达式
+选择秘境满足的表达式，支持多个条件，留空表示随机
 
 变量：area
 
@@ -203,9 +203,11 @@ eg.：
 
     area.IS_EVENT and area.NOT_FINNISHED　#想进入一个没完成的活动秘境
     area.name == ' 學校四樓教室' #进入 学校四楼教室
+	area.NOT_FINNISHED | area.IS_EVENT #进入没完成的秘境；如果不存在没完成的秘境，则选择一个活动秘境
+	area.NOT_FINNISHED | 进入没完成的秘境；如果不存在没完成的秘境，则选择任一秘境
 
 ####explore_floor
-选择地区满足的表达式
+选择地区满足的表达式，支持多个条件，留空表示随机
 
 变量：floor
 
@@ -216,6 +218,7 @@ eg.：
 eg.：
 
     floor.cost<6 and floor.NOT_FINNISHED #进没完成的且cost小于6的地区：
+	floor.cost<3 | #进cost<3的地区；如果没有则随机选择一个地区
 
 ####fairy_select
 妖精列表里的什么妖精要打
