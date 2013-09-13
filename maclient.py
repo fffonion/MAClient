@@ -269,7 +269,6 @@ class maClient():
         for i in repldict2:
             str=str.replace(i,repldict2[i])
         return str
-
     
     def _raw_input(self,str):
         return raw_input(du8(str).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
@@ -562,15 +561,20 @@ class maClient():
                 areasel=[areas[int(self._raw_input('选择： ') or '1')-1]]
             else:
                 logging.info(du8('自动选图www'))
-                evalstr= (cond!='' and self._eval_gen(cond) or self.evalstr_area)
                 areasel=[]
-                logging.debug('explore:eval:%s'%(evalstr))
-                for area in areas:
-                    if eval(evalstr) and not area.id in has_boss:
-                        areasel.append(area)
+                cond_area=(cond=='' and self.evalstr_area or self._eval_gen(cond,eval_explore_area)).split('|')
+                while len(cond_area)>0:
+                    if cond_area[0]=='':
+                        cond_area[0]='True'
+                    logging.debug('explore:eval:%s'%(cond_area[0]))
+                    for area in areas:
+                        if eval(cond_area[0]) and not area.id in has_boss:
+                            areasel.append(area)
+                    cond_area=cond_area[1:]
                 if areasel==[]:
                     logging.info(du8('没有符合条件的秘境www'))
                     return
+
             area=random.choice(areasel)
             logging.debug('explore:area id:%s'%area.id)
             logging.info(du8('选择了秘境 ')+area.name)
@@ -584,13 +588,18 @@ class maClient():
                 if 'found_item_list' in floors:
                     floors=[floors]#只有一个
                 nofloorselect=True
-                logging.debug('explore:eval:%s'%(self.evalstr_floor))
-                for floor in floors:
-                    floor.cost=int(floor.cost)
-                    floor.cost=int(floor.cost)
-                    if eval(self.evalstr_floor):
-                        nofloorselect=False
-                        break
+                cond_floor=self.evalstr_floor.split('|')
+                while len(cond_floor)>0:
+                    if cond_floor[0]=='':
+                        cond_floor[0]='True'
+                    logging.debug('explore:eval:%s'%(cond_floor[0]))
+                    for floor in floors:
+                        floor.cost=int(floor.cost)
+                        floor.cost=int(floor.cost)
+                        if eval(cond_floor[0]):
+                            nofloorselect=False
+                            break
+                    cond_floor=cond_floor[1:]
                 if nofloorselect:
                     break#更换秘境
                 if floor.type=='1':
@@ -906,7 +915,7 @@ class maClient():
                 self.player.fairy={'alive':True,'id':fairy.fairy.serial_id}
             fairy['time_limit']=int(fairy.fairy.time_limit)
             fairy['wake']=False
-            for k in ['觉醒','覺醒','護士','主任','教官','校長','雅熙','数理']:
+            for k in ['觉醒','覺醒','禁書']:
                 fairy['wake']=fairy['wake'] or (k in fairy.fairy.name)
             ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
             fairy['not_battled']= ftime[0]==''
@@ -946,7 +955,6 @@ class maClient():
         while time.time()-self.lastfairytime<20:
             logging.sleep(du8('等待20s战斗冷却'))
             time.sleep(5)
-        self.lastfairytime=time.time()
         def fairy_floor():
             paramfl='check=1&serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
             resp,ct=self._dopost('exploration/fairy_floor',postdata=paramfl)
@@ -964,6 +972,7 @@ class maClient():
         if fairy.hp=='0':
             logging.warning(du8('妖精已被消灭'))
             return False
+        self.lastfairytime=time.time()
         fairy['lv']=int(fairy.lv)
         fairy['hp']=int(fairy.hp)
         fairy['time_limit']=int(fairy.time_limit)
