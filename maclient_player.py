@@ -19,6 +19,7 @@ class player(object):
 		self.update_all(login_xml)
 		self.loc=loc
 		self.fairy={'id':0,'alive':False}
+		self.id='0'
 		object.__init__(self)
 
 	def update_all(self,xmldata):
@@ -42,8 +43,6 @@ class player(object):
 			xmlresp = XML2Dict().fromstring(xmldata).response
 			if 'login' in xmlresp.body:
 				self.id=xmlresp.body.login.user_id
-			else:
-				self.id='0'
 			self.playerdata=xmlresp.header.your_data
 		except:
 			return 'Profile no update',False

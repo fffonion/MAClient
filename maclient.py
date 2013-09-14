@@ -25,9 +25,12 @@ __version__=1.47
 EXPLORE_BATTLE,NORMAL_BATTLE,WAKE_BATTLE=0,1,2
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
+#
+NAME_WAKE=['觉醒','覺醒']
+NAME_WAKE_RARE=['禁書']
 #eval dicts
-eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE':'wake','IS_WAKE_RARE':'wake_rare','STILL_ALIVE':"self.player.fairy['alive']"}
-eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE':'rare_flg=="1"','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
+eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
+eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'rare_flg=="1"','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
 eval_explore_area={'IS_EVENT':"area_type=='1'",'IS_DAILY_EVENT':"id.startswith('5')",'NOT_FINNISHED':"prog_area!='100'",\
             }
 eval_explore_floor={'NOT_FINNISHED':'progress!="100"'}
@@ -290,7 +293,7 @@ class maClient():
             logging.debug('tasker:loop %d/%d'%(c+1,cnt)) 
             if cmd=='':
                 tasks=eval(taskeval)
-                logging.debug('tasker:eval:%s result:%s'%(taskeval,tasks))
+                logging.debug('tasker:eval result:%s'%(tasks))
             for task in tasks.split('|'):
                 task=(task+' ').split(' ')
                 logging.debug('tasker:%s'%task[0])
@@ -303,7 +306,7 @@ class maClient():
                 elif task[0]=='explore' or task[0]=='e':
                     self.explore(' '.join(task[1:]))
                 elif task[0]=='factor_battle' or task[0]=='fcb':
-                    arg_lake=None
+                    arg_lake=''
                     arg_minbc=0
                     if len(task)>2:
                         for i in range(len(task)-2):
@@ -351,6 +354,10 @@ class maClient():
                     self._gacha(gacha_type=task[1])
                 elif task[0] in ['greet','gr','like']:
                     self.like(words=task[1])
+                elif task[0] in ['sleep','slp']:
+                    slptime=float(task[1])
+                    logging.sleep(du8('睡觉%s分'%slptime))
+                    time.sleep(slptime*60)
                 else:
                     logging.warning('command "%s" not recognized.'%task[0])
                 if cnt!=1:
@@ -589,12 +596,11 @@ class maClient():
                     floors=[floors]#只有一个
                 nofloorselect=True
                 cond_floor=self.evalstr_floor.split('|')
-                while len(cond_floor)>0:
+                while len(cond_floor)>0 and nofloorselect:
                     if cond_floor[0]=='':
                         cond_floor[0]='True'
                     logging.debug('explore:eval:%s'%(cond_floor[0]))
                     for floor in floors:
-                        floor.cost=int(floor.cost)
                         floor.cost=int(floor.cost)
                         if eval(cond_floor[0]):
                             nofloorselect=False
@@ -916,9 +922,9 @@ class maClient():
             fairy['time_limit']=int(fairy.fairy.time_limit)
             fairy['wake']=False
             fairy['wake_rare']=False
-            for k in ['觉醒','覺醒']:
+            for k in NAME_WAKE:
                 fairy['wake']=fairy['wake'] or (k in fairy.fairy.name)
-            for k in ['禁書']:
+            for k in NAME_WAKE_RARE:
                 fairy['wake_rare']=fairy['wake_rare'] or (k in fairy.fairy.name)
             ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
             fairy['not_battled']= ftime[0]==''
@@ -979,6 +985,9 @@ class maClient():
         fairy['lv']=int(fairy.lv)
         fairy['hp']=int(fairy.hp)
         fairy['time_limit']=int(fairy.time_limit)
+        fairy['wake_rare']=False
+        for k in NAME_WAKE_RARE:
+            fairy.wake_rare=fairy.wake_rare or (k in fairy.name)
         if not 'attacker' in fairy.attacker_history:
             fairy.attacker_history.attacker=[]
         if fairy.attacker_history.attacker==[]:
@@ -1160,7 +1169,7 @@ class maClient():
             self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
             self.like()
         #输了，回到妖精界面
-        if win:
+        if not win:
             fairy_floor()
 
     def like(self,words='你好！'):
@@ -1399,7 +1408,7 @@ class maClient():
             return True
 
 
-    def factor_battle(self,minbc=0,sel_lake=None):
+    def factor_battle(self,minbc=0,sel_lake=''):
         minbc=int(minbc)
         self._dopost('battle/area',checkerror=False)
         resp,dec=self._dopost('battle/competition_parts?redirect_flg=1',noencrypt=True)
@@ -1426,7 +1435,7 @@ class maClient():
         for i in xrange(int(trycnt)):
             logging.debug(du8('factor_battle:因子战:第%d/%s次 寻找油腻的师姐'%(i+1,trycnt)))
             random.shuffle(lakes)
-            if sel_lake==None:
+            if sel_lake==['']:
                 l=lakes[0]
             else:
                 for l in lakes:
