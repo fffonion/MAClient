@@ -24,6 +24,7 @@ __version__=1.47
 #CONSTS:
 EXPLORE_BATTLE,NORMAL_BATTLE,WAKE_BATTLE=0,1,2
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
+EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_BC= -2,-1,0,1,2
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #
 NAME_WAKE=['觉醒','覺醒']
@@ -578,6 +579,8 @@ class maClient():
                         if eval(cond_area[0]) and not area.id in has_boss:
                             areasel.append(area)
                     cond_area=cond_area[1:]
+                    if areasel!=[]:
+                        break
                 if areasel==[]:
                     logging.info(du8('没有符合条件的秘境www'))
                     return
@@ -585,18 +588,35 @@ class maClient():
             area=random.choice(areasel)
             logging.debug('explore:area id:%s'%area.id)
             logging.info(du8('选择了秘境 ')+area.name)
-            while True:
+            next_floor='PLACE-HOLDER'
+            while next_floor:
+                next_floor,msg=self._explore_floor(area,next_floor)
+            if msg==EXPLORE_OK:#进入过秘境
+                #走形式
+                if self._dopost('exploration/floor',postdata='area_id=%s'%(area.id))[0]['error']:
+                    break 
+            elif msg==EXPLORE_NO_BC:
+                break
+            elif msg==EXPLORE_HAS_BOSS:
+                has_boss.append(area.id)
+            else:#NO_FLOOR or ERROR
+                break
+                
+
+    def _explore_floor(self,area,floor=None):
+        while True:
+            if floor==None or floor=='PLACE-HOLDER':#没有指定
                 #选择地区
                 param='area_id=%s'%(area.id)
                 resp,ct=self._dopost('exploration/floor',postdata=param)
                 if resp['error']:
-                    return
+                    return None,EXPLORE_ERROR
                 floors=XML2Dict().fromstring(ct).response.body.exploration_floor.floor_info_list.floor_info
                 if 'found_item_list' in floors:
                     floors=[floors]#只有一个
                 nofloorselect=True
                 cond_floor=self.evalstr_floor.split('|')
-                while len(cond_floor)>0 and nofloorselect:
+                while len(cond_floor)>0:
                     if cond_floor[0]=='':
                         cond_floor[0]='True'
                     logging.debug('explore:eval:%s'%(cond_floor[0]))
@@ -605,106 +625,111 @@ class maClient():
                         if eval(cond_floor[0]):
                             nofloorselect=False
                             break
+                    if not nofloorselect:
+                        break
                     cond_floor=cond_floor[1:]
                 if nofloorselect:
+                    msg=EXPLORE_NO_FLOOR
                     break#更换秘境
-                if floor.type=='1':
-                    logging.warning(du8('秘境守护者出现，请手动干掉之www；将忽略此秘境'))
-                    has_boss.append(area.id)
-                    break
-                logging.info(du8('进♂入地区 ')+floor.id)
-                #进入
-                param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
-                if self._dopost('exploration/get_floor',postdata=param)[0]['error']:
-                    return
-                #走路
-                param='area_id=%s&auto_build=1&floor_id=%s'%(area.id,floor.id)
-                while True:
-                    resp,ct=self._dopost('exploration/explore',postdata=param)
-                    if resp['error']:
-                        return
-                    info=XML2Dict().fromstring(ct).response.body.explore
-                    logging.debug('explore:event_type:'+info.event_type)
-                    if info.event_type!='6':
-                        logging.info(du8('获得:%sG %sEXP, 进度:%s, 升级剩余:%s'%(info.gold,info.get_exp,info.progress,info.next_exp)))
-                        #已记录1 2 3 4 5 12 13 15 19
-                        if info.event_type=='1':
-                            '''<fairy>
-                                    <serial_id>20840184</serial_id>
-                                    <master_boss_id>2043</master_boss_id>
-                                    <hp_max>753231</hp_max>
-                                    <time_limit>7200</time_limit>
-                                    <discoverer_id>532554</discoverer_id>
-                                    <attacker_history></attacker_history>
-                                    <rare_flg>0</rare_flg>
-                                    <event_chara_flg>0</event_chara_flg>
-                            </fairy>'''
-                            info.fairy.lv,info.fairy.hp=int(info.fairy.lv),int(info.fairy.hp)
-                            logging.info(du8('碰到只妖精:')+info.fairy.name+' lv%d hp%d'%(info.fairy.lv,info.fairy.hp))
-                            logging.debug('sid'+info.fairy.serial_id+' mid'+info.fairy.master_boss_id+' uid'+info.fairy.discoverer_id)
-                            self.player.fairy={'id':info.fairy.serial_id,'alive':True}
-                            #evalfight=self._eval_gen(self._read_config('condition','encounter_fairy'),\
-                            #    {'fairy':'info.fairy'})
-                            #logging.debug('eval:%s result:%s'%(evalfight,eval(evalfight)))
-                            #if eval(evalfight):
-                            logging.sleep(du8('3秒后开始战斗www'))
-                            time.sleep(3)
-                            self._fairy_battle(info.fairy,type=EXPLORE_BATTLE)
-                            time.sleep(5.5)
-                        elif info.event_type=='2':
-                            logging.info(du8('碰到个傻X：'+info.encounter.name+' -> '+info.message))
-                            time.sleep(1.5)
-                        elif info.event_type=='3':
-                            usercard=info.user_card
-                            logging.debug('explore:cid %s sid %s'%(usercard.master_card_id,usercard.serial_id))
-                            logging.info(du8('获得了 ')+self.carddb[int(usercard.master_card_id)][0]+
-                                (' %s☆')%(self.carddb[int(usercard.master_card_id)][1]))
-                        elif info.event_type=='15':
-                            compcard=info.autocomp_card[-1]
-                            logging.debug('explore:cid %s sid %s'%(
-                                compcard.master_card_id,
-                                compcard.serial_id))
-                            logging.info(du8('合成了 ')+self.carddb[int(compcard.master_card_id)][0]+
-                                (' lv%s exp%s nextexp%s')%(
-                                    compcard.lv,
-                                    compcard.exp,
-                                    compcard.next_exp))
-                        elif info.event_type=='5':
-                            logging.info(du8('AREA %s CLEAR -v-'%floor.id))
-                            time.sleep(2)
-                            break
-                        elif info.event_type=='12':
-                            logging.info(du8('AP回复~'))
-                        elif info.event_type=='13':
-                            logging.info(du8('BC回复~'))
-                        elif info.event_type=='19':
-                            try:
-                                itemid=info.special_item.item_id
-                                itembefore=int(info.special_item.before_count)
-                                itemnow=int(info.special_item.after_count)
-                                logging.debug('explore:itemid:%s'%(itemid))
-                                logging.info(du8('获得收集品[%s] x%d')%(self.itemdb[int(itemid)],itemnow-itembefore))
-                            except KeyError:
-                                 logging.debug('explore:item not found?')
-                        elif info.event_type=='4':
-                            logging.info(du8('获得了因子碎片 湖:%s 碎片:%s'%(
-                                info.parts_one.lake_id,info.parts_one.parts.parts_num)))
-                    else:
-                        logging.warning(du8('AP不够了TUT'))
-                        if not self.green_tea(self.cfg_auto_explore):
-                            logging.error(du8('不给喝，不走了o(￣ヘ￣o＃) '))
-                            return
-                        else:
-                            continue
-                    if info.lvup=='1':
-                        logging.info(du8('升级了：↑')+self.player.lv)
+            if floor.type=='1':
+                logging.warning(du8('秘境守护者出现，请手动干掉之www；将忽略此秘境'))
+                msg=EXPLORE_HAS_BOSS
+                break
+            logging.info(du8('进♂入地区 ')+floor.id)
+            #进入
+            param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
+            if self._dopost('exploration/get_floor',postdata=param)[0]['error']:
+                return None,EXPLORE_ERROR
+            #走路
+            param='area_id=%s&auto_build=1&floor_id=%s'%(area.id,floor.id)
+            while True:
+                resp,ct=self._dopost('exploration/explore',postdata=param)
+                if resp['error']:
+                    return None,EXPLORE_ERROR
+                info=XML2Dict().fromstring(ct).response.body.explore
+                logging.debug('explore:event_type:'+info.event_type)
+                if info.event_type!='6':
+                    logging.info(du8('获得:%sG %sEXP, 进度:%s, 升级剩余:%s'%(info.gold,info.get_exp,info.progress,info.next_exp)))
+                    #已记录1 2 3 4 5 12 13 15 19
+                    if info.event_type=='1':
+                        '''<fairy>
+                                <serial_id>20840184</serial_id>
+                                <master_boss_id>2043</master_boss_id>
+                                <hp_max>753231</hp_max>
+                                <time_limit>7200</time_limit>
+                                <discoverer_id>532554</discoverer_id>
+                                <attacker_history></attacker_history>
+                                <rare_flg>0</rare_flg>
+                                <event_chara_flg>0</event_chara_flg>
+                        </fairy>'''
+                        info.fairy.lv,info.fairy.hp=int(info.fairy.lv),int(info.fairy.hp)
+                        logging.info(du8('碰到只妖精:')+info.fairy.name+' lv%d hp%d'%(info.fairy.lv,info.fairy.hp))
+                        logging.debug('sid'+info.fairy.serial_id+' mid'+info.fairy.master_boss_id+' uid'+info.fairy.discoverer_id)
+                        self.player.fairy={'id':info.fairy.serial_id,'alive':True}
+                        #evalfight=self._eval_gen(self._read_config('condition','encounter_fairy'),\
+                        #    {'fairy':'info.fairy'})
+                        #logging.debug('eval:%s result:%s'%(evalfight,eval(evalfight)))
+                        #if eval(evalfight):
+                        logging.sleep(du8('3秒后开始战斗www'))
                         time.sleep(3)
-                    # if info.progress=='100':
-                    #     break
-                    time.sleep(int(self._read_config('system','explore_sleep')))
-
-                    #print '%s - %s%% cost%s'%\
-                        #(floors[i].id,floors[i].progress,floors[i].cost)
+                        self._fairy_battle(info.fairy,type=EXPLORE_BATTLE)
+                        time.sleep(5.5)
+                    elif info.event_type=='2':
+                        logging.info(du8('碰到个傻X：'+info.encounter.name+' -> '+info.message))
+                        time.sleep(1.5)
+                    elif info.event_type=='3':
+                        usercard=info.user_card
+                        logging.debug('explore:cid %s sid %s'%(usercard.master_card_id,usercard.serial_id))
+                        logging.info(du8('获得了 ')+self.carddb[int(usercard.master_card_id)][0]+
+                            (' %s☆')%(self.carddb[int(usercard.master_card_id)][1]))
+                    elif info.event_type=='15':
+                        compcard=info.autocomp_card[-1]
+                        logging.debug('explore:cid %s sid %s'%(
+                            compcard.master_card_id,
+                            compcard.serial_id))
+                        logging.info(du8('合成了 ')+self.carddb[int(compcard.master_card_id)][0]+
+                            (' lv%s exp%s nextexp%s')%(
+                                compcard.lv,
+                                compcard.exp,
+                                compcard.next_exp))
+                    elif info.event_type=='5':
+                        logging.info(du8('AREA %s CLEAR -v-'%floor.id))
+                        time.sleep(2)
+                        if 'next_floor' in info:
+                            next_floor=info.next_floor.floor_info
+                        return next_floor,EXPLORE_OK
+                    elif info.event_type=='12':
+                        logging.info(du8('AP回复~'))
+                    elif info.event_type=='13':
+                        logging.info(du8('BC回复~'))
+                    elif info.event_type=='19':
+                        try:
+                            itemid=info.special_item.item_id
+                            itembefore=int(info.special_item.before_count)
+                            itemnow=int(info.special_item.after_count)
+                            logging.debug('explore:itemid:%s'%(itemid))
+                            logging.info(du8('获得收集品[%s] x%d')%(self.itemdb[int(itemid)],itemnow-itembefore))
+                        except KeyError:
+                             logging.debug('explore:item not found?')
+                    elif info.event_type=='4':
+                        logging.info(du8('获得了因子碎片 湖:%s 碎片:%s'%(
+                            info.parts_one.lake_id,info.parts_one.parts.parts_num)))
+                else:
+                    logging.warning(du8('AP不够了TUT'))
+                    if not self.green_tea(self.cfg_auto_explore):
+                        logging.error(du8('不给喝，不走了o(￣ヘ￣o＃) '))
+                        return None,EXPLORE_NO_BC
+                    else:
+                        continue
+                if info.lvup=='1':
+                    logging.info(du8('升级了：↑')+self.player.lv)
+                    time.sleep(3)
+                # if info.progress=='100':
+                #     break
+                time.sleep(int(self._read_config('system','explore_sleep')))
+        return None,EXPLORE_OK
+                #print '%s - %s%% cost%s'%\
+                    #(floors[i].id,floors[i].progress,floors[i].cost)
    
     def _gacha(self,gacha_type=GACHA_FRIENNSHIP_POINT):
         if gacha_type==GACHA_FRIENNSHIP_POINT:
@@ -1485,12 +1510,12 @@ class maClient():
                             cid,
                             duowan[self.loc[:2]]%(base64.encodestring('{"no":"%d"}'%cid).strip('\n').replace('=','_3_')))))
                     else:
-                        logging.debug('factor_battle:eval:%s, result:%s, star:%s, cid:%d, deckrank:%d'%(
-                            self.evalstr_factor,
-                            eval(self.evalstr_factor),
+                        logging.debug('factor_battle: star:%s, cid:%d, deckrank:%d, cost:%d, result:%s'%(
                             star,
                             cid,
-                            deck_rank)
+                            deck_rank,
+                            cost,
+                            eval(self.evalstr_factor),)
                         )
                         if eval(self.evalstr_factor):
                             logging.debug('factor_battle:->%s @ %s'%(u.name,u.leader_card.master_card_id))
