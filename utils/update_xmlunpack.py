@@ -3,7 +3,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 from xml2dict import XML2Dict
-loc='tw'
+loc='cn'
 xml=open(r'z:\card.%s.xml'%loc,'r').read().replace('&','--').replace('--#','&#')
 print XML2Dict().fromstring(xml).response.header.revision.card_rev
 body=XML2Dict().fromstring(xml).response.body
@@ -20,3 +20,14 @@ for c in cards:
         c.skill_name,
         str(c.skill_description).replace('\n','\\n')))
 open(r'z:\card.%s.txt'%loc,'w').write('\n'.join(strs))
+xml=open(r'z:\item.%s.xml'%loc,'r').read().replace('&','--').replace('--#','&#')
+body=XML2Dict().fromstring(xml).response.body
+itmes=body.master_data.master_item_data.item_info
+strs=[]
+for c in itmes:
+    strs.append('%s,%s,%s'%(
+        c.item_id,
+        c.name,
+        c.explanation
+    ))
+open(r'z:\item.%s.txt'%loc,'w').write('\n'.join(strs))
