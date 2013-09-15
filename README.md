@@ -240,7 +240,7 @@ eg.：
 
 属性：
 
-lv,hp,name,IS_MINE,自己的妖精是否还活着 STILL_ALIVE, 剩余时间 TIME_LIMIT(单位为秒)
+lv,hp,name,IS_MINE,自己的妖精是否还活着 STILL_ALIVE, 剩余时间 TIME_LIMIT(单位为秒), 是否觉醒 IS_WAKE, 是否稀有妖精 IS_WAKE_RARE
 
 只能使用and or表达式 或if else表达式，可嵌套；卡组名称需加引号，需在carddeck中给出；可以使用'no_change'表示不更改卡组
 

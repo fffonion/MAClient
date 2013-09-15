@@ -27,8 +27,8 @@ GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
 EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_BC= -2,-1,0,1,2
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #
-NAME_WAKE=['觉醒','覺醒']
 NAME_WAKE_RARE=['禁書']
+NAME_WAKE=NAME_WAKE_RARE+['觉醒','覺醒']
 #eval dicts
 eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
 eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'rare_flg=="1"','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
@@ -143,6 +143,7 @@ class maClient():
         self.cfg_save_traffic=not self._read_config('system','save_traffic')=='0'
         self.cfg_greet_words=self._read_config('tactic','greet_words') or (
             self.loc=='tw' and random.choice(['大家好.','問好']) or random.choice(['你好！','你好！请多指教！']))
+        self.cfg_factor_getnew=not self._read_config('tactic','factor_getnew') == '0' 
         logging.basicConfig(level=self._read_config('system','loglevel'))
         logging.setlogfile('events_%s.log'%self.loc)
         self.cfg_delay=float(self._read_config('system','delay'))
@@ -697,7 +698,7 @@ class maClient():
                         time.sleep(2)
                         if 'next_floor' in info:
                             next_floor=info.next_floor.floor_info
-                        return next_floor,EXPLORE_OK
+                            return next_floor,EXPLORE_OK
                     elif info.event_type=='12':
                         logging.info(du8('AP回复~'))
                     elif info.event_type=='13':
@@ -1168,14 +1169,14 @@ class maClient():
                     len(cbos)>0 and '\nCOMBO:%s'%(','.join(cbos)) or '',
                     len(skills)>0 and '\nSKILL:%s'%(','.join(skills)) or '')
                 ))
-            #记录截止时间，上次战斗时间，如果需要立即刷新，上次战斗时间为0.1
-            self._write_config('fairy',fairy.serial_id,
-                '%d,%.0f'%(int(fairy.time_limit)+int(float(time.time())),time.time()))
-            #等着看结果
-            if need_tail:
-                time.sleep(random.randint(4,10))
-            else:
-                time.sleep(random.randint(8,15))
+        #记录截止时间，上次战斗时间，如果需要立即刷新，上次战斗时间为0.1
+        self._write_config('fairy',fairy.serial_id,
+            '%d,%.0f'%(int(fairy.time_limit)+int(float(time.time())),time.time()))
+        #等着看结果
+        if need_tail:
+            time.sleep(random.randint(4,10))
+        else:
+            time.sleep(random.randint(8,15))
         #领取收集品
         if nid!=[]:
             res=self._get_rewards(nid)
@@ -1435,30 +1436,28 @@ class maClient():
 
     def factor_battle(self,minbc=0,sel_lake=''):
         minbc=int(minbc)
-        self._dopost('battle/area',checkerror=False)
-        resp,dec=self._dopost('battle/competition_parts?redirect_flg=1',noencrypt=True)
-        if resp['error']:
-            return 
-        cmp_parts=XML2Dict().fromstring(dec).response.body.competition_parts
-        lakes=cmp_parts.lake
-        #only one
-        if len(lakes)==1:
-            lakes=[lakes]
         #try count
         trycnt=self._read_config('system','try_factor_times')
         if trycnt=='0':
             trycnt='999'
-        #EVENT HANDLE
-        try:
-            logging.info(du8('BP:%s Rank:%s x%s %s:%s left.'%(
-                cmp_parts.event_point,cmp_parts.event_rank,cmp_parts.event_bonus_rate,
-                int(cmp_parts.event_bonus_end_time)/60,int(cmp_parts.event_bonus_end_time)%60)))
-        except KeyError:
-            pass
-        #try loop
         sel_lake=sel_lake.split(',')
+        battle_win=1
+        self._dopost('battle/area',checkerror=False)
+        resp,cmp_parts_ct=self._dopost('battle/competition_parts?redirect_flg=1',noencrypt=True)
+        if resp['error']:
+            return
+        cmp_parts=XML2Dict().fromstring(cmp_parts_ct).response.body.competition_parts
         for i in xrange(int(trycnt)):
-            logging.debug(du8('factor_battle:因子战:第%d/%s次 寻找油腻的师姐'%(i+1,trycnt)))
+            logging.info(du8('factor_battle:因子战:第%d/%s次 寻找油腻的师姐'%(i+1,trycnt)))
+            lakes=cmp_parts.lake
+            #only one
+            if len(lakes)==1:
+                lakes=[lakes]
+            #EVENT HANDLE
+            if 'event_point' in cmp_parts:
+                logging.info(du8('BP:%s Rank:%s x%s %s:%s left.'%(
+                    cmp_parts.event_point,cmp_parts.event_rank,cmp_parts.event_bonus_rate,
+                    int(cmp_parts.event_bonus_end_time)/60,int(cmp_parts.event_bonus_end_time)%60)))
             random.shuffle(lakes)
             if sel_lake==['']:
                 l=lakes[0]
@@ -1468,19 +1467,32 @@ class maClient():
                         l['lake_id']=l.event_id
                     if l.lake_id in sel_lake:
                         break
-            if l.lake_id=='0':
-                l['event_id']='0'#补全参数
-                partids=[0]
-            else:
-                partids=[i for i in xrange(1,10)]
-            random.shuffle(partids)
+            if battle_win>0:#赢过至少一次则重新筛选
+                partids=[]
+                battle_win=0
+                if l.lake_id=='0':
+                    l['event_id']='0'#补全参数
+                    partids=[0]
+                else:
+                    #只打没有的碎片
+                    if self.cfg_factor_getnew:
+                        for p in l.parts_list.parts:
+                            if int(p.parts_have)==0:
+                                partids.append(int(p.parts_num))
+                    else:
+                        partids=[i for i in xrange(1,10)]
+                        random.shuffle(partids)
             #circulate part id
             for partid in partids:
                 if self.player.bc['current']<=minbc:
                     logging.info(du8('BC已突破下限%d，退出o(*≧▽≦)ツ '%minbc))
                     return
-                logging.info(du8('选择因子 %s:%s, 碎片id %d'%(
-                    l.lake_id,l.lake_id=='0' and 'NONE' or l.title, 0 if (l.event_id!='0') else partid)))
+                logging.info(du8('选择因子 %s:%s, 碎片id %d%s'%(
+                    l.lake_id,
+                    l.lake_id=='0' and 'NONE' or l.title,
+                    0 if (l.event_id!='0') else partid,
+                    ' 待选:%d'%(len(partids)-battle_win) if self.cfg_factor_getnew else ''
+                )))
                 if l.event_id!='0':#event
                     param='event_id=%s&move=1'%(l.lake_id)
                 else:
@@ -1552,9 +1564,13 @@ class maClient():
                                         self.player.bc['current']-bc,
                                         self.player.bc['current'],
                                         self.player.bc['max']) )
+                                
                                 time.sleep(8.62616513)
                                 self._dopost('battle/area',checkerror=False)
-                                resp,dec=self._dopost('battle/competition_parts?redirect_flg=1',noencrypt=True)
+                                resp,cmp_parts_ct=self._dopost('battle/competition_parts?redirect_flg=1',noencrypt=True)
+                                if result=='1':#赢过一次就置为真
+                                    battle_win+=1
+                                    cmp_parts=XML2Dict().fromstring(cmp_parts_ct).response.body.competition_parts
                                 break
                 time.sleep(int(self._read_config('system','factor_sleep')))
             logging.sleep(du8('换一个碎片……睡觉先，勿扰：-/'))
