@@ -15,7 +15,7 @@ import maclient_logging
 import maclient_network
 import maclient_remote
 import getpass
-__version__=1.47
+__version__=1.48
 du8=lambda str:str.decode('utf-8')
 def iter_printer(l,sep='\n'):
     cnt=1
@@ -225,31 +225,38 @@ sell_card_warning 卖卡提醒'''))
                         print(du8('已保存~'))
                         maclient1.load_config()
             elif ch =='6':
-                getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
-                 and sys.path[0].decode(sys.getfilesystemencoding()) \
-                 or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
-                rev=open(opath.join(getPATH0(),'db/revision.txt'),'r').read().strip('\n').split(',')
-                h={'User-Agent':'maclient/%f'%__version__}
-                upd=macs('/db/revision.txt')[1].strip('\n').split(',')
-                if upd[0]!=rev[0] or upd[1]!=rev[1]:
-                    if upd[1]!=rev[1]:
-                        print(du8('正在更新台服数据……'))
-                        c=macs('/db/card.tw.txt')[1]
-                        open(opath.join(getPATH0(),'db/card.tw.txt'),'w').write(c)
-                        print(du8('卡组更新成功XD'))
-                        c=macs('/db/item.tw.txt')[1]
-                        open(opath.join(getPATH0(),'db/item.tw.txt'),'w').write(c)
-                    if upd[0]!=rev[0]:
-                        print(du8('正在更新国服数据……'))
-                        c=macs('/db/card.cn.txt')[1]
-                        open(opath.join(getPATH0(),'db/card.cn.txt'),'w').write(c)
-                        print(du8('卡组更新成功XD'))
-                        c=macs('/db/item.cn.txt')[1]
-                        open(opath.join(getPATH0(),'db/item.cn.txt'),'w').write(c)
-                    print(du8('道具更新成功XD'))
-                    open(opath.join(getPATH0(),'db/revision.txt'),'w').write(','.join(upd))
-                else:
-                    print(du8('木有更新www'))
+                logging.info(du8('将强制重新从服务器下载数据……'))
+                import maclient_update
+                crev,irev=maclient_update.update_master(maclient1.loc,(True,True),maclient1.poster)
+                logging.info(du8('%s%s'%(
+                    '卡片数据更新为rev.%s'%crev if crev else '',
+                    '道具数据更新为rev.%s'%irev if irev else '') ))
+                # the following is deprecated
+                # getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
+                #  and sys.path[0].decode(sys.getfilesystemencoding()) \
+                #  or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
+                # rev=open(opath.join(getPATH0(),'db/revision.txt'),'r').read().strip('\n').split(',')
+                # h={'User-Agent':'maclient/%f'%__version__}
+                # upd=macs('/db/revision.txt')[1].strip('\n').split(',')
+                # if upd[0]!=rev[0] or upd[1]!=rev[1]:
+                #     if upd[1]!=rev[1]:
+                #         print(du8('正在更新台服数据……'))
+                #         c=macs('/db/card.tw.txt')[1]
+                #         open(opath.join(getPATH0(),'db/card.tw.txt'),'w').write(c)
+                #         print(du8('卡组更新成功XD'))
+                #         c=macs('/db/item.tw.txt')[1]
+                #         open(opath.join(getPATH0(),'db/item.tw.txt'),'w').write(c)
+                #     if upd[0]!=rev[0]:
+                #         print(du8('正在更新国服数据……'))
+                #         c=macs('/db/card.cn.txt')[1]
+                #         open(opath.join(getPATH0(),'db/card.cn.txt'),'w').write(c)
+                #         print(du8('卡组更新成功XD'))
+                #         c=macs('/db/item.cn.txt')[1]
+                #         open(opath.join(getPATH0(),'db/item.cn.txt'),'w').write(c)
+                #     print(du8('道具更新成功XD'))
+                #     open(opath.join(getPATH0(),'db/revision.txt'),'w').write(','.join(upd))
+                # else:
+                #     print(du8('木有更新www'))
                 
             elif ch =='7':
                 sys.exit(0)

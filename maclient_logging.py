@@ -44,6 +44,7 @@ class Logging(type(sys)):
                 self.__set_sleep_color = lambda: __write('\033[36m')
                 self.__set_bright_color = lambda: __write('\033[32m')
                 self.__reset_color = lambda: __write('\033[0m')
+        self.logfile=None
     def setlogfile(self,f):
         self.logfile=open(f,'a')
     @classmethod
@@ -64,7 +65,8 @@ class Logging(type(sys)):
         self.__reset_color()
     def info(self, fmt, *args, **kwargs):
         puretext=self.log('INFO', fmt, *args)
-        self.logfile.write(puretext)
+        if self.logfile:
+            self.logfile.write(puretext)
     def sleep(self, fmt, *args, **kwargs):
         self.__set_sleep_color()
         self.log('SLEEP', fmt, *args, **kwargs)

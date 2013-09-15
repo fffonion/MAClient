@@ -23,7 +23,7 @@ import getpass
 import maclient_player
 import maclient_network
 import maclient_logging
-__version__=1.47
+__version__=1.48
 #CONSTS:
 EXPLORE_BATTLE,NORMAL_BATTLE,WAKE_BATTLE=0,1,2
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
@@ -146,7 +146,8 @@ class maClient():
         self.cfg_save_traffic=not self._read_config('system','save_traffic')=='0'
         self.cfg_greet_words=self._read_config('tactic','greet_words') or (
             self.loc=='tw' and random.choice(['大家好.','問好']) or random.choice(['你好！','你好！请多指教！']))
-        self.cfg_factor_getnew=not self._read_config('tactic','factor_getnew') == '0' 
+        self.cfg_factor_getnew=not self._read_config('tactic','factor_getnew') == '0'
+        self.cfg_auto_update= not self._read_config('system','auto_update') == '0'
         logging.basicConfig(level=self._read_config('system','loglevel'))
         logging.setlogfile('events_%s.log'%self.loc)
         self.cfg_delay=float(self._read_config('system','delay'))
@@ -216,6 +217,20 @@ class maClient():
                 logging.error(du8('由于以上↑的原因，无法继续执行！'))
                 self._exit(1)
             update_dt=self.player.update_all(dec)
+            #check revision update
+            if self.player.need_update[0] or self.player.need_update[1]:
+                if self.cfg_auto_update:
+                    logging.info(du8('更新%s%s数据……'%(
+                        ' 卡片' if self.player.need_update[0] else '',
+                        ' 道具' if self.player.need_update[1] else '') ))
+                    import maclient_update
+                    crev,irev=maclient_update.update_master(self.loc,self.player.need_update,self.poster)
+                    logging.info(du8('%s%s'%(
+                        '卡片数据更新为rev.%s'%crev if crev else '',
+                        '道具数据更新为rev.%s'%irev if irev else '') ))
+                    self.player.need_update=False,False
+                else:
+                    logging.warning(du8('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库'))
             #update profile
             if not resp['error']:
                 self.remoteHdl(method='PROFILE')
@@ -679,9 +694,9 @@ class maClient():
                         self._fairy_battle(info.fairy,type=EXPLORE_BATTLE)
                         time.sleep(5.5)
                         #回到秘境界面
-                        param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
-                        if self._dopost('exploration/get_floor',postdata=param)[0]['error']:
-                            return None,EXPLORE_ERROR
+                        # param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
+                        # if self._dopost('exploration/get_floor',postdata=param)[0]['error']:
+                        #     return None,EXPLORE_ERROR
                     elif info.event_type=='2':
                         logging.info(du8('碰到个傻X：'+info.encounter.name+' -> '+info.message))
                         time.sleep(1.5)
