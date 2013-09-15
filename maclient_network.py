@@ -8,7 +8,10 @@ import time
 import base64
 import socket
 import urllib
-import httplib
+try:
+    import httplib
+except ImportError:
+    import http.client as httplib
 import httplib2
 
 key={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
@@ -126,7 +129,7 @@ class poster():
             while trytime<ttimes:
                 try:
                     resp,content=ht.request('%s%s%s'%(serv[self.servloc],uri,not noencrypt and '?cyt=1' or ''),method='POST',headers=header,body=postdata,callback_hook=callback_hook,chunk_size=None)
-                except socket.error,e:
+                except (socket.error,e):
                     if e.errno==None:
                         err='Timed out'
                     else:
@@ -167,4 +170,4 @@ class poster():
             return resp,dec
 
 if __name__=="__main__":
-    print decode_param('S=l%2BSLkFbck3jK7ftUq4XEWUgdXcgDbKVDRxUYqRmWhpE%3D%0A&revision=NzgOGTK08BvkZN5q8XvG6Q%3D%3D%0A')
+    print(decode_param('S=l%2BSLkFbck3jK7ftUq4XEWUgdXcgDbKVDRxUYqRmWhpE%3D%0A&revision=NzgOGTK08BvkZN5q8XvG6Q%3D%3D%0A'))

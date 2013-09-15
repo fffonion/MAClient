@@ -1,6 +1,7 @@
 """
 Thunder Chen<nkchenz@gmail.com> 2007.9.1
 """
+from __future__ import print_function
 try:
     import xml.etree.ElementTree as ET
 except:
@@ -83,7 +84,7 @@ class XML2Dict(object):
         """
         result = re.compile("\{(.*)\}(.*)").search(tag)
         if result:
-            print tag
+            print(tag)
             value.namespace, tag = result.groups()    
         return (tag, value)
 
@@ -113,9 +114,9 @@ if __name__ == '__main__':
     r = xml.fromstring(s)
     from pprint import pprint
     pprint(r)
-    print r.result.count.value
-    print r.result.count.n
+    print(r.result.count.value)
+    print(r.result.count.n)
 
     for data in r.result.data:
-        print data.id, data.name 
+        print(data.id, data.name)
     pprint(xml.parse('a'))

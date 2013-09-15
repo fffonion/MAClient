@@ -14,7 +14,10 @@ import locale
 import base64
 from xml2dict import XML2Dict
 import random
-import ConfigParser
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 import threading
 import getpass
 import maclient_player
@@ -675,6 +678,10 @@ class maClient():
                         time.sleep(3)
                         self._fairy_battle(info.fairy,type=EXPLORE_BATTLE)
                         time.sleep(5.5)
+                        #回到秘境界面
+                        param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
+                        if self._dopost('exploration/get_floor',postdata=param)[0]['error']:
+                            return None,EXPLORE_ERROR
                     elif info.event_type=='2':
                         logging.info(du8('碰到个傻X：'+info.encounter.name+' -> '+info.message))
                         time.sleep(1.5)
@@ -699,6 +706,8 @@ class maClient():
                         if 'next_floor' in info:
                             next_floor=info.next_floor.floor_info
                             return next_floor,EXPLORE_OK
+                        else:
+                            return None,EXPLORE_OK
                     elif info.event_type=='12':
                         logging.info(du8('AP回复~'))
                     elif info.event_type=='13':
@@ -990,8 +999,8 @@ class maClient():
         while time.time()-self.lastfairytime<20:
             logging.sleep(du8('等待20s战斗冷却'))
             time.sleep(5)
-        def fairy_floor():
-            paramfl='check=1&serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
+        def fairy_floor(f=fairy):
+            paramfl='check=1&serial_id=%s&user_id=%s'%(f.serial_id,f.discoverer_id)
             resp,ct=self._dopost('exploration/fairy_floor',postdata=paramfl)
             if resp['error']:
                 return None
@@ -1188,6 +1197,7 @@ class maClient():
             self._fairy_battle(fairy,type=type,is_tail=True)
         #接着打醒妖:
         if rare_fairy!=None:
+            rare_fairy=fairy_floor(f=rare_fairy)#
             logging.warning('WARNING WARNING WARNING WARNING WARNING')
             logging.info(du8('妖精真正的力量觉醒！'.center(39)))
             logging.warning('WARNING WARNING WARNING WARNING WARNING')
