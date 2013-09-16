@@ -1209,6 +1209,7 @@ class maClient():
         #立即尾刀
         if need_tail:
             logging.debug('_fairy_battle:tail battle!')
+            fairy=fairy_floor(f=fairy)
             self._fairy_battle(fairy,type=type,is_tail=True)
         #接着打醒妖:
         if rare_fairy!=None:
