@@ -6,6 +6,8 @@
 
 有关API，请参阅[API文档](https://github.com/fffonion/maClient/blob/master/API Document.md)
 
+你需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)
+
 ##运行
 
     maclient_cli.py
