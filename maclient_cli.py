@@ -264,8 +264,9 @@ sell_card_warning 卖卡提醒'''))
                 if ch.startswith('ss') or ch.startswith('set_server') or ch.startswith('l ') or ch.startswith('login'):
                     maclient1.tasker(cmd=ch)
                 else:
-                    dec=maclient1.login()
-                    maclient1.initplayer(dec)
+                    if not maclient1.player_initiated:
+                        dec=maclient1.login()
+                        maclient1.initplayer(dec)
                     if ch.startswith('t:'):
                         maclient1.tasker(taskname=ch[2:])
                     else:
