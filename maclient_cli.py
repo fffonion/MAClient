@@ -261,7 +261,8 @@ sell_card_warning 卖卡提醒'''))
             elif ch =='7':
                 sys.exit(0)
             elif ch!='':
-                if ch.startswith('ss') or ch.startswith('set_server') or ch.startswith('l ') or ch.startswith('login'):
+                if ch.startswith('ss') or ch.startswith('set_server') or ch.startswith('l ') or ch.startswith('login') \
+                    or ch.startswith('relogin') or ch.startswith('rl'):
                     maclient1.tasker(cmd=ch)
                 else:
                     if not maclient1.player_initiated:

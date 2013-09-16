@@ -22,7 +22,7 @@ class player(object):
         self.need_update=False,False
         self.update_all(login_xml)
         object.__init__(self)
-        self.success=check_exclusion(self.id)
+        self.success=check_exclusion(self.name)
 
     def update_all(self,xmldata):
         if xmldata=='':
