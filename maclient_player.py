@@ -8,7 +8,6 @@ import os.path as opath
 import sys
 import glob
 import time
-
 from xml2dict import XML2Dict
 
 class player(object):
@@ -23,6 +22,7 @@ class player(object):
         self.need_update=False,False
         self.update_all(login_xml)
         object.__init__(self)
+        self.success=check_exclusion(self.id)
 
     def update_all(self,xmldata):
         if xmldata=='':
@@ -146,6 +146,34 @@ class card(object):
     def cid(self,cid):
         return self._found_card_by_value('master_card_id',cid)
 
+def check_exclusion(inpstr):
+    '''Return False if exclusion exists'''
+    import tempfile
+    import hashlib
+    md5name=hashlib.md5(inpstr).hexdigest()
+    try:
+        tdir=tempfile.gettempdir()
+    except IOError:#is android
+        tdir=sys.path[0]#current dir
+    #test lock file
+    if opath.exists(opath.join(tdir,'.%s.maclient.filelock'%md5name)):
+        if os.name=='nt':
+            try:
+                os.remove(opath.join(tdir,'.%s.maclient.filelock'%md5name))
+            except WindowsError as e:
+                if e.winerror==32:#cannot access to file
+                    return False
+        else:
+            return True
+    #re-aquire lock file
+    try:
+        os.open(opath.join(tdir,'.%s.maclient.filelock'%md5name), os.O_CREAT|os.O_EXCL|os.O_RDWR)
+    except OSError as e:
+        if e.errno==17:#exist
+            os.open(opath.join(tdir,'.%s.maclient.filelock'%md5name), os.O_EXCL|os.O_RDWR)
+        else:
+            return False
+    return True
 
 if __name__=='__main__':
     if len(sys.argv)>2:

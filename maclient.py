@@ -422,6 +422,9 @@ class maClient():
         
     def initplayer(self,xml):
         self.player=maclient_player.player(xml,self.loc)
+        if not self.player.success:
+            logging.error(du8('当前登陆的用户(%s)已经运行了一个maClient'%(self.username)))
+            self._exit(2)
         self.carddb=self.player.card.db
         self.itemdb=self.player.item.name
         self.player_initiated=True
