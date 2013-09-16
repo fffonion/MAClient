@@ -4,7 +4,9 @@
 
 密钥已删除，请自行搜索
 
-有关API，请参阅[API文档](https://github.com/fffonion/maClient/blob/master/API Document.md)
+有关API，请参阅[二次开发文档](https://github.com/fffonion/maClient/wiki/%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3)
+
+有关在root过的android手机上运行maclient，请参阅[这篇wiki](https://github.com/fffonion/maClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8Cmaclient)
 
 你需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)
 
