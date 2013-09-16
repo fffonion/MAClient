@@ -5,14 +5,13 @@
 #      fffonion        <fffonion@gmail.com>
 import sys
 import time
-import httplib2
+#import httplib2
 import os
 import os.path as opath
 import threading
 import maclient
 import maclient_proxy
 import maclient_logging
-import maclient_network
 import maclient_remote
 import getpass
 __version__=1.48
@@ -104,7 +103,7 @@ if __name__=='__main__':
     logging = maclient_logging.Logging('logging')
     reload(sys)
     sys.setdefaultencoding('utf-8')
-    ht=httplib2.Http(timeout=30)
+    #ht=httplib2.Http(timeout=30)
     intro='v%s%s'%(__version__,os.name=='nt' and ' by fffonion' or '')
     print(du8('%s%s%s%s'%('='*((getTerminalSize()[0]-len(intro)-18)/2),'丧心病狂的MA客户端',intro,'='*((getTerminalSize()[0]-len(intro)-18)/2))))
     if len(sys.argv)>2:
@@ -182,6 +181,7 @@ if __name__=='__main__':
                     maclient1.login()
                 mod=(mod+1)%2
             elif ch =='4':
+                import maclient_network
                 cards=maclient_network.decode_param(read_proxy(work=1))
                 cdeck=cards.split('&')[0].split('=')[1].strip('%0A').rstrip(',empty')
                 decks=maclient1._list_option('carddeck')

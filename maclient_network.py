@@ -12,8 +12,11 @@ try:
     import httplib
 except ImportError:
     import http.client as httplib
-import httplib2
-
+try:
+    import httplib2
+except ImportError:
+    print('httplib2 not found on this machine. You can download it here. https://github.com/fffonion/httplib2-plus')
+    
 key={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
     }
 
@@ -112,6 +115,10 @@ class poster():
             serv['%s_data'%self.servloc]=strs[2]
         except KeyError:
             pass
+        except IndexError:
+            self.logger.error(du8('错误的密钥？'))
+            raw_input()
+            os._exit(1)
 
     def post(self,uri,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},noencrypt=False,savetraffic=False):
             header={}
@@ -129,7 +136,7 @@ class poster():
             while trytime<ttimes:
                 try:
                     resp,content=ht.request('%s%s%s'%(serv[self.servloc],uri,not noencrypt and '?cyt=1' or ''),method='POST',headers=header,body=postdata,callback_hook=callback_hook,chunk_size=None)
-                except (socket.error,e):
+                except socket.error,e:
                     if e.errno==None:
                         err='Timed out'
                     else:
