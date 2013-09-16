@@ -386,7 +386,6 @@ class maClient():
                     resp,ct=self._dopost('mainmenu')#初始化
 
     def login(self,uname='',pwd='',fast=False):
-
         sessionfile='.%s.session'%self.loc
         if os.path.exists(self.playerfile) and self._read_config('account_%s'%self.loc,'session')!='' and uname=='':
             logging.info(du8('加载了保存的账户XD'))
@@ -421,17 +420,20 @@ class maClient():
         return dec
         
     def initplayer(self,xml):
-        self.player=maclient_player.player(xml,self.loc)
-        if not self.player.success:
-            logging.error(du8('当前登陆的用户(%s)已经运行了一个maClient'%(self.username)))
-            self._exit(2)
-        self.carddb=self.player.card.db
-        self.itemdb=self.player.item.name
-        self.player_initiated=True
-        if self.player.id!='0':
-            self._write_config('account_%s'%self.loc,'user_id',self.player.id)
-        else:
-            self.player.id=self._read_config('account_%s'%self.loc,'user_id')
+        if self.player_initiated:#刷新
+            self.player.update_all(xml)
+        else:#第一次
+            self.player=maclient_player.player(xml,self.loc)
+            if not self.player.success:
+                logging.error(du8('当前登陆的用户(%s)已经运行了一个maClient'%(self.username)))
+                self._exit(2)
+            self.carddb=self.player.card.db
+            self.itemdb=self.player.item.name
+            self.player_initiated=True
+            if self.player.id!='0':
+                self._write_config('account_%s'%self.loc,'user_id',self.player.id)
+            else:
+                self.player.id=self._read_config('account_%s'%self.loc,'user_id')
         if self.settitle:
             #窗口标题线程
             self.stitle=set_title(self)
