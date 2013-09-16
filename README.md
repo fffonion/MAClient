@@ -6,12 +6,16 @@
 
 有关API，请参阅[API文档](https://github.com/fffonion/maClient/blob/master/API Document.md)
 
+你需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)
+
 ##运行
-
-    maclient_cli.py
-    maclient_cli.py [config file]
-    maclient_cli.py [config file] [task]/[commands]
-
+```shell
+git clone --recursive https://github.com/fffonion/maClient.git
+mv httplib2/httplib2/* httplib2
+maclient_cli.py
+maclient_cli.py [config file]
+maclient_cli.py [config file] [task]/[commands]
+```
 ##CONFIG.INI文件说明
 
 关于config.ini可以参考config_sample.ini
