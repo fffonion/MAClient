@@ -1,5 +1,6 @@
 ﻿maClient是一个基于有限状态机模型的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服和国服全区。
 
+[更新历史](https://github.com/fffonion/maClient/wiki/HISTORY)
 ##说明
 
 密钥已删除，请自行搜索
