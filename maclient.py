@@ -30,11 +30,11 @@ GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
 EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_BC= -2,-1,0,1,2
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #
-NAME_WAKE_RARE=['禁書']
+NAME_WAKE_RARE=['禁書目錄']
 NAME_WAKE=NAME_WAKE_RARE+['觉醒','覺醒']
 #eval dicts
 eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
-eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'rare_flg=="1"','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
+eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
 eval_explore_area={'IS_EVENT':"area_type=='1'",'IS_DAILY_EVENT':"id.startswith('5')",'NOT_FINNISHED':"prog_area!='100'",\
             }
 eval_explore_floor={'NOT_FINNISHED':'progress!="100"'}
@@ -980,7 +980,7 @@ class maClient():
             for k in NAME_WAKE:
                 fairy['wake']=fairy['wake'] or (k in fairy.fairy.name)
             for k in NAME_WAKE_RARE:
-                fairy['wake_rare']=fairy['wake_rare'] or (k in fairy.fairy.name)
+                fairy['wake_rare']=fairy['wake_rare'] or fairy.fairy.name.startswith(k)
             ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
             fairy['not_battled']= ftime[0]==''
             #logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
@@ -1042,7 +1042,8 @@ class maClient():
         fairy['time_limit']=int(fairy.time_limit)
         fairy['wake_rare']=False
         for k in NAME_WAKE_RARE:
-            fairy.wake_rare=fairy.wake_rare or (k in fairy.name)
+            fairy['wake_rare']=fairy['wake_rare'] or k in fairy.name
+        fairy['wake']= fairy.rare_flg=='1' or fairy['wake_rare']
         if not 'attacker' in fairy.attacker_history:
             fairy.attacker_history.attacker=[]
         if fairy.attacker_history.attacker==[]:
@@ -1059,7 +1060,7 @@ class maClient():
         logging.info('%s:%sLv%d hp:%d %s:%s %s:%d %s%s %s'%(
             du8('妖精'),fairy.name,fairy.lv,fairy.hp,du8('发现者'),disc_name,
             du8('小伙伴'),len(fairy.attacker_history.attacker),du8('剩余'),hms(fairy.time_limit),
-            fairy.rare_flg=='1' and 'WAKE!' or''))
+            fairy.wake and 'WAKE!' or''))
         cardd=eval(self.evalstr_fairy_select_carddeck)
         logging.debug('fairy_battle:carddeck result:%s'%(cardd))
         if (self.set_card(cardd)):

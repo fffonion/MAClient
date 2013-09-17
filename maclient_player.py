@@ -150,7 +150,7 @@ def check_exclusion(inpstr):
     '''Return False if exclusion exists'''
     import tempfile
     import hashlib
-    md5name=hashlib.md5(inpstr).hexdigest()
+    md5name=hashlib.md5(inpstr).hexdigest()[:6]
     try:
         tdir=tempfile.gettempdir()
     except IOError:#is android
