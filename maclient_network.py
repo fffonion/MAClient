@@ -16,46 +16,59 @@ try:
     import httplib2
 except ImportError:
     print('httplib2 not found on this machine. You can download it here. https://github.com/fffonion/httplib2-plus')
-    
-key={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
+#key_cntw={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
+#    }
+key_cntw={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
+    }
+key_jp={'res': 'A1dPUcrvur2CRQyl','helper':'A1dPUcrvur2CRQyl','crypt':'uH9JF2cHf6OppaC1'
     }
 
 serv={'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/','cn_data':'http://MA.webpatch.sdg-china.com/',
     'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/','cn2_data':'http://MA.webpatch.sdg-china.com/',
-    'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/','tw_data':'http://download.ma.mobimon.com.tw/'
+    'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/','tw_data':'http://download.ma.mobimon.com.tw/',
+    'jp':'http://web.million-arthurs.com/connect/app/','jp_data':''
     }
 
 headers_main={'User-Agent': 'Million/100 (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys','Connection': 'Keep-Alive','Accept-Encoding':'gzip,deflate'}
 headers_post={'Content-Type': 'application/x-www-form-urlencoded'}
-try:
-    from Crypto.Cipher import AES
-    cod_res = AES.new(key['res'], AES.MODE_ECB)
-    cod_data = AES.new(key['crypt'], AES.MODE_ECB)
-    slow=False
-except ImportError:
-    import pyaes
-    cod_res = pyaes.new(key['res'], pyaes.MODE_ECB)
-    cod_data = pyaes.new(key['crypt'], pyaes.MODE_ECB)
-    slow=True
+
+SLOW_MODE=False
+def init_cipher(loc='cn'):
+    if loc in ['cn','tw']:
+        _key=key_cntw
+    else:
+        _key=key_jp
+    try:
+        from Crypto.Cipher import AES
+        return AES.new(_key['res'], AES.MODE_ECB),\
+            AES.new(_key['crypt'], AES.MODE_ECB),\
+            False
+    except ImportError:
+        import pyaes
+        return pyaes.new(_key['res'], pyaes.MODE_ECB),\
+            pyaes.new(_key['crypt'], pyaes.MODE_ECB),\
+            True
+COD_RES,COD_DATA,SLOW_MODE=init_cipher()
+
 BS=16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
 unpad = lambda s : s[0:-ord(s[-1])]
 du8=lambda str:str.decode('utf-8')
 ht=httplib2.Http(timeout=15)
 def decode_res(bytein):
-    return cod_res.decrypt(bytein)
+    return COD_RES.decrypt(bytein)
 
 def decode_data(bytein):
     if len(bytein)==0:
         return ''
     else:
-        return unpad(cod_data.decrypt(bytein))
+        return unpad(COD_DATA.decrypt(bytein))
 
 def decode_data64(strin):
     return decode_data(base64.decodestring(urlescape(strin)))
 
 def encode_data(bytein):
-    return cod_data.encrypt(pad(bytein))
+    return COD_DATA.encrypt(pad(bytein))
 
 def encode_data64(bytein):
     return urlunescape(base64.encodestring(encode_data(bytein)).strip('\n'))
@@ -88,6 +101,7 @@ def decrypt_file(filein,fileout,ext='png'):
         print('skip',filein)
     else:
         pass
+
 class poster():
     def __init__(self,loc,logger,ua):
         self.cookie=''
@@ -96,9 +110,12 @@ class poster():
         self.logger=logger
         self.header=headers_main
         self.header.update(headers_post)
+        if loc in ['jp','kr']:
+            COD_RES,COD_DATA=init_cipher(loc=loc)[:2]
+            ua='Million/235 (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys GooglePlay'
         if ua:
             self.header['User-Agent']=ua
-        if slow:
+        if SLOW_MODE:
             self.logger.warning(du8('post:没有安装pycrypto库，可能将额外耗费大量时间'))
         self.issavetraffic=False
 
@@ -109,16 +126,17 @@ class poster():
         self.issavetraffic=True
 
     def update_server(self,check_inspection_str):
-        strs=check_inspection_str.split(',')
-        try:
-            serv[self.servloc]=strs[3]
-            serv['%s_data'%self.servloc]=strs[2]
-        except KeyError:
-            pass
-        except IndexError:
-            self.logger.error(du8('错误的密钥？'))
-            raw_input()
-            os._exit(1)
+        if check_inspection_str:
+            strs=check_inspection_str.split(',')
+            try:
+                serv[self.servloc]=strs[3]
+                serv['%s_data'%self.servloc]=strs[2]
+            except KeyError:
+                pass
+            except IndexError:
+                self.logger.error(du8('错误的密钥？'))
+                raw_input()
+                os._exit(1)
 
     def post(self,uri,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},noencrypt=False,savetraffic=False):
             header={}
@@ -136,7 +154,7 @@ class poster():
             while trytime<ttimes:
                 try:
                     resp,content=ht.request('%s%s%s'%(serv[self.servloc],uri,not noencrypt and '?cyt=1' or ''),method='POST',headers=header,body=postdata,callback_hook=callback_hook,chunk_size=None)
-                except socket.error,e:
+                except socket.error as e:
                     if e.errno==None:
                         err='Timed out'
                     else:
@@ -152,7 +170,7 @@ class poster():
                     if int(resp['status'])<400:
                         break
                     self.logger.warning('post:POSTing %s, server returns code %s, retrying in %d times'%(uri,resp['status'],3-trytime))
-                resp,content={'status':'600'},''
+                resp,content={'status':'0'},''
                 trytime+=1
                 time.sleep(2.718281828*trytime)
             if not 'content-length' in resp:
@@ -171,6 +189,7 @@ class poster():
             dec=decode_data(content)
             if os.path.exists('debug'):
                 open('debug/%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(dec)
+                open('debug/~%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(content)
             if setcookie and 'set-cookie' in resp:
                 self.cookie=resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
             #print self.cookie
