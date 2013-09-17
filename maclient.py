@@ -445,8 +445,7 @@ class maClient():
             if int(self.player.card.count) >=200:
                 if self.cfg_auto_sell:
                     logging.info(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))
-                    self.select_card_sell()
-                    return True
+                    return self.select_card_sell()
                 else:
                     logging.warning(du8('卡片已经放不下了，请自行卖卡www'))
                     return False
@@ -850,12 +849,16 @@ class maClient():
                 sid.append(card.serial_id)
                 cinfo.append(self.carddb[int(card.master_card_id)][0]+
                     du8(' lv%d ☆%s'%(card.lv_i,self.carddb[int(card.master_card_id)][1])))
-        logging.info(len(sid)==0 and du8('没有要贩卖的卡片') or du8('将要贩卖这些卡片：')+', '.join(cinfo))
+        if len(sid)==0:
+            logging.info(du8('没有要贩卖的卡片'))
+            return False
+        else:
+            logging.info(du8('将要贩卖这些卡片：')+', '.join(cinfo))
         if len(warning_card)>0:
             if self.cfg_sell_card_warning>=1:
                 logging.warning(du8('存在稀有以上卡片：')+', '.join(warning_card)+'\n真的要继续吗？y/n')
                 if raw_input('> ')=='y':
-                    self._sell_card(sid)
+                    return self._sell_card(sid)
                 else:
                     logging.debug('select_card:user aborted')
             else:
@@ -868,14 +871,15 @@ class maClient():
                 else:
                     logging.debug('select_card:user aborted')
             else:
-               self._sell_card(sid)
+               return self._sell_card(sid)
+        return False
 
     def _sell_card(self,serial_id):
         if serial_id==[]:
             logging.debug('sell_card:no cards selected')
-            return
+            return False
         if self._dopost('card/exchange',postdata='mode=1')[0]['error']:
-            return 0
+            return False
         while len(serial_id)>0:
             #>30张要分割
             if len(serial_id)>30:
@@ -892,6 +896,7 @@ class maClient():
             resp,ct=self._dopost('trunk/sell',postdata=paramsell)
             if not resp['error']:
                 logging.info(resp['errmsg']+du8('(%d张卡片)'%len(se_id)))
+        return True
 
 
     def fairy_battle_loop(self,ltime=None):
