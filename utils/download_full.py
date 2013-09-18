@@ -36,9 +36,9 @@ def fuckall():
         for i in clst:
             if int(i) in xrange(161,171):
                 continue 
-            if i in tlst:
-                print i
-                continue
+            # if i in tlst:
+            #     print i
+            #     continue
             j=random.choice([0,1,2,3])
             time=0
             print i,'->',j,
@@ -56,6 +56,6 @@ def fuckall():
                 continue
             dt=maclient_network.decode_res(a)
             open('%s%s-%s_%d.png'%(download_dir,cname[i][0].decode('utf-8'),i,j),'wb').write(dt)
-loc='cn'
-download_dir='e:\\ma\\cn\\'
+loc='tw'
+download_dir='e:\\ma\\'
 fuckall()
