@@ -209,6 +209,8 @@ class maClient():
                     elif err.code=='1020':
                         logging.info(du8('因为服务器维护，休息约20分钟'))
                         time.sleep(random.randint(18,22)*60)
+                        self.player.checked_update=False#置为未检查
+                        return resp,dec
         if setcookie and 'set-cookie' in resp:
             self._write_config('account_%s'%self.loc,'session',resp['set-cookie'].split(',')[-1].rstrip('path=/').strip())
         if self.player_initiated :
@@ -477,12 +479,17 @@ class maClient():
         if deckkey=='no_change':
             logging.debug('set_card:no_change!')
             return False
-        cardid=self._read_config('carddeck',deckkey)
+        print(deckkey)
+        try:
+            cardid=self._read_config('carddeck',deckkey)
+        except AttributeError:
+            logging.warning(du8('set_card:忘记加引号了？'))
+            return False
         if cardid==self._read_config('record','last_set_card'):
             logging.debug('set_card:card deck satisfied, not changing.')
             return False
         if cardid =='':
-            logging.warning('set_card:unset carddeck key?')
+            logging.warning(du8('set_card:不存在的卡组名？'))
             return False
         cardid=cardid.split(',')
         param=[]
@@ -743,6 +750,8 @@ class maClient():
                     elif info.event_type=='4':
                         logging.info(du8('获得了因子碎片 湖:%s 碎片:%s'%(
                             info.parts_one.lake_id,info.parts_one.parts.parts_num)))
+                        if len(ct)>10000:
+                            logging.indfo(du8('收集碎片合成了新的骑士卡片！'))
                 else:
                     logging.warning(du8('AP不够了TUT'))
                     if not self.green_tea(self.cfg_auto_explore):
@@ -1220,8 +1229,7 @@ class maClient():
         #立即尾刀
         if need_tail:
             logging.debug('_fairy_battle:tail battle!')
-            fairy=fairy_floor(f=fairy)
-            self._fairy_battle(fairy,type=type,is_tail=True)
+            self._fairy_battle(fairy,type=NORMAL_BATTLE,is_tail=True)
         #接着打醒妖:
         if rare_fairy!=None:
             rare_fairy=fairy_floor(f=rare_fairy)#
@@ -1231,8 +1239,8 @@ class maClient():
             time.sleep(3)
             self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
             self.like()
-        #输了，回到妖精界面
-        if not win:
+        #输了，回到妖精界面; 尾刀时是否回妖精界面由尾刀决定，父过程此处跳过
+        if not win and not need_tail:
             fairy_floor()
 
     def like(self,words='你好！'):
@@ -1500,10 +1508,12 @@ class maClient():
                 l=lakes[0]
             else:
                 for l in lakes:
-                    if 'lake_id' not in l:
-                        l['lake_id']=l.event_id
                     if l.lake_id in sel_lake:
                         break
+            if 'event_id' not in l:
+                l['event_id']='0'
+            if 'lake_id' not in l:
+                l['lake_id']=l.event_id
             if battle_win>0:#赢过至少一次则重新筛选
                 partids=[]
                 battle_win=0

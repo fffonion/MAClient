@@ -16,7 +16,7 @@ try:
     import httplib2
 except ImportError:
     print('httplib2 not found on this machine. You can download it here. https://github.com/fffonion/httplib2-plus')
-#key_cntw={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
+#key={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
 #    }
 key_cntw={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
     }
@@ -170,7 +170,7 @@ class poster():
                     if int(resp['status'])<400:
                         break
                     self.logger.warning('post:POSTing %s, server returns code %s, retrying in %d times'%(uri,resp['status'],3-trytime))
-                resp,content={'status':'0'},''
+                resp,content={'status':'600'},''
                 trytime+=1
                 time.sleep(2.718281828*trytime)
             if not 'content-length' in resp:
@@ -189,7 +189,7 @@ class poster():
             dec=decode_data(content)
             if os.path.exists('debug'):
                 open('debug/%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(dec)
-                open('debug/~%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(content)
+                #open('debug/~%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(content)
             if setcookie and 'set-cookie' in resp:
                 self.cookie=resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
             #print self.cookie
