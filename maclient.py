@@ -30,8 +30,8 @@ GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
 EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_BC= -2,-1,0,1,2
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #
-NAME_WAKE_RARE=['禁書目錄']
-NAME_WAKE=NAME_WAKE_RARE+['觉醒','覺醒']
+NAME_WAKE_RARE=['-NOTHING-']
+NAME_WAKE=NAME_WAKE_RARE+['觉醒','覺醒','超電磁砲','野生']
 #eval dicts
 eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
 eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
@@ -286,7 +286,7 @@ class maClient():
         self.cf.write(open(f, "w"))
 
     def _eval_gen(self,str,repldict={}):
-        repldict2={'hour':"int(time.strftime('%H',time.localtime(time.time())))",'minute':"int(time.strftime('%M',time.localtime(time.time())))",'BC':'self.player.bc["current"]','AP':'self.player.ap["current"]','G':'self.player.gold','FP':'self.friendship_point','FAIRY_ALIVE':'self.player.fairy["alive"]'}
+        repldict2={'hour':"int(time.strftime(\"%H\",time.localtime(time.time())))",'minute':"int(time.strftime(\"%M\",time.localtime(time.time())))",'BC':'self.player.bc["current"]','AP':'self.player.ap["current"]','G':'self.player.gold','FP':'self.friendship_point','FAIRY_ALIVE':'self.player.fairy["alive"]'}
         if str=='':
             return 'True'
         for i in repldict:
@@ -315,7 +315,10 @@ class maClient():
             logging.debug('tasker:loop %d/%d'%(c+1,cnt)) 
             if cmd=='':
                 tasks=eval(taskeval)
-                logging.debug('tasker:eval result:%s'%(tasks))
+                try:
+                    logging.debug('tasker:eval result:%s'%(tasks))
+                except TypeError:
+                    pass
             for task in tasks.split('|'):
                 task=(task+' ').split(' ')
                 logging.debug('tasker:%s'%task[0])
@@ -377,7 +380,7 @@ class maClient():
                 elif task[0] in ['greet','gr','like']:
                     self.like(words=task[1])
                 elif task[0] in ['sleep','slp']:
-                    slptime=float(task[1])
+                    slptime=float(eval(self._eval_gen(task[1])))
                     logging.sleep(du8('睡觉%s分'%slptime))
                     time.sleep(slptime*60)
                 else:
@@ -479,7 +482,6 @@ class maClient():
         if deckkey=='no_change':
             logging.debug('set_card:no_change!')
             return False
-        print(deckkey)
         try:
             cardid=self._read_config('carddeck',deckkey)
         except AttributeError:
@@ -1514,21 +1516,21 @@ class maClient():
                 l['event_id']='0'
             if 'lake_id' not in l:
                 l['lake_id']=l.event_id
-            if battle_win>0:#赢过至少一次则重新筛选
-                partids=[]
-                battle_win=0
-                if l.lake_id=='0':
-                    l['event_id']='0'#补全参数
-                    partids=[0]
+            #if battle_win>0:#赢过至少一次则重新筛选
+            partids=[]
+            battle_win=0
+            if l.lake_id=='0':
+                l['event_id']='0'#补全参数
+                partids=[0]
+            else:
+                #只打没有的碎片
+                if self.cfg_factor_getnew:
+                    for p in l.parts_list.parts:
+                        if int(p.parts_have)==0:
+                            partids.append(int(p.parts_num))
                 else:
-                    #只打没有的碎片
-                    if self.cfg_factor_getnew:
-                        for p in l.parts_list.parts:
-                            if int(p.parts_have)==0:
-                                partids.append(int(p.parts_num))
-                    else:
-                        partids=[i for i in xrange(1,10)]
-                        random.shuffle(partids)
+                    partids=[i for i in xrange(1,10)]
+                    random.shuffle(partids)
             #circulate part id
             for partid in partids:
                 if self.player.bc['current']<=minbc:
