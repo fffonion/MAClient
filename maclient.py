@@ -1087,11 +1087,12 @@ class maClient():
         if self.check_strict_bc() or self.player.bc['current']<2:#strict BC或者BC不足
             logging.warning(du8('BC不够了TOT'))
             autored=(self.cfg_auto_rt_level=='2') or (self.cfg_auto_rt_level=='1' and fairy.rare_flg=='1')
-            if not self.red_tea(autored):
-                logging.error(du8('那就不打了哟(*￣︶￣)y '))
-                return False
+            if auto_red:
+                if not self.red_tea(True):
+                    logging.error(du8('那就不打了哟(*￣︶￣)y '))
+                    return False
             else:
-                return True
+                return False
         #打
         nid=[]
         rare_fairy=None
@@ -1108,11 +1109,12 @@ class maClient():
             elif resp['errno']==1050:
                 logging.warning(du8('BC不够了TOT'))
                 autored=(self.cfg_auto_rt_level=='2') or (self.cfg_auto_rt_level=='1' and fairy.rare_flg=='1')
-                if not self.red_tea(autored):
-                    logging.error(du8('那就不打了哟(*￣︶￣)y '))
-                    return False
+                if autored:
+                    if not self.red_tea(autored):
+                        logging.error(du8('那就不打了哟(*￣︶￣)y '))
+                        return False
                 else:
-                    return True
+                    return False
             try:
                 res=XML2Dict().fromstring(ct).response.body.battle_result
             except KeyError:
