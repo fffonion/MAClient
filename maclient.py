@@ -743,12 +743,13 @@ class maClient():
                     elif info.event_type=='19':
                         try:
                             itemid=info.special_item.item_id
+                        except KeyError:
+                             logging.debug('explore:item not found?')
+                        else:
                             itembefore=int(info.special_item.before_count)
                             itemnow=int(info.special_item.after_count)
                             logging.debug('explore:itemid:%s'%(itemid))
                             logging.info(du8('获得收集品[%s] x%d')%(self.itemdb[int(itemid)],itemnow-itembefore))
-                        except KeyError:
-                             logging.debug('explore:item not found?')
                     elif info.event_type=='4':
                         logging.info(du8('获得了因子碎片 湖:%s 碎片:%s'%(
                             info.parts_one.lake_id,info.parts_one.parts.parts_num)))
@@ -1001,7 +1002,7 @@ class maClient():
             fairy['not_battled']= ftime[0]==''
             #logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
             if eval(evalstr):
-                if time.time()-int(ftime[1] or '0') < 180:
+                if time.time()-int(ftime[1] or '0') < 180 and cond=='':#若手动选择则不受3min限制
                     logging.debug('fairy_select:sid %s battled in less than 3 min'%fairy.fairy.serial_id)
                     continue
                 fairies.append(fairy)
@@ -1087,7 +1088,7 @@ class maClient():
         if self.check_strict_bc() or self.player.bc['current']<2:#strict BC或者BC不足
             logging.warning(du8('BC不够了TOT'))
             autored=(self.cfg_auto_rt_level=='2') or (self.cfg_auto_rt_level=='1' and fairy.rare_flg=='1')
-            if auto_red:
+            if autored:
                 if not self.red_tea(True):
                     logging.error(du8('那就不打了哟(*￣︶￣)y '))
                     return False
@@ -1110,7 +1111,7 @@ class maClient():
                 logging.warning(du8('BC不够了TOT'))
                 autored=(self.cfg_auto_rt_level=='2') or (self.cfg_auto_rt_level=='1' and fairy.rare_flg=='1')
                 if autored:
-                    if not self.red_tea(autored):
+                    if not self.red_tea(True):
                         logging.error(du8('那就不打了哟(*￣︶￣)y '))
                         return False
                 else:
