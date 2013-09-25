@@ -23,7 +23,8 @@ import getpass
 import maclient_player
 import maclient_network
 import maclient_logging
-__version__=1.48
+import maclient_smart
+__version__=1.49
 #CONSTS:
 EXPLORE_BATTLE,NORMAL_BATTLE,WAKE_BATTLE=0,1,2
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
@@ -31,7 +32,7 @@ EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_BC= -2,-1,
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #
 NAME_WAKE_RARE=['-NOTHING-']
-NAME_WAKE=NAME_WAKE_RARE+['觉醒','覺醒','超電磁砲','野生']
+NAME_WAKE=NAME_WAKE_RARE+['觉醒','覺醒','超電磁砲']
 #eval dicts
 eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
 eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
@@ -447,14 +448,14 @@ class maClient():
 
     def auto_check(self,doingwhat):
         if not doingwhat in ['login','check_inspection','notification/post_devicetoken','card/exchange', 'trunk/sell','roundtable/edit','cardselect/savedeckcard','friend/like_user','comment/send']:
-            if int(self.player.card.count) >=200:
+            if int(self.player.card.count) >= getattr(maclient_smart,'max_card_count_%s'%self.loc):
                 if self.cfg_auto_sell:
                     logging.info(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))
                     return self.select_card_sell()
                 else:
                     logging.warning(du8('卡片已经放不下了，请自行卖卡www'))
                     return False
-            if self.player.friendship_point>=9900 and \
+            if self.player.friendship_point>= getattr(maclient_smart,'max_fp_%s'%self.loc)*0.9 and \
                 not doingwhat in ['gacha/buy','gacha/select/getcontents']:
                 if self.cfg_auto_gacha:
                     logging.info(du8('绊点有点多，自动转蛋(*￣▽￣)y '))
@@ -634,6 +635,22 @@ class maClient():
             else:#NO_FLOOR or ERROR
                 break
                 
+    def _check_floor_eval(self,floors):
+        sel_floor=[]
+        cond_floor=self.evalstr_floor.split('|')
+        while len(cond_floor)>0:
+            if cond_floor[0]=='':
+                cond_floor[0]='True'
+            logging.debug('explore:eval:%s'%(cond_floor[0]))
+            for floor in floors:
+                floor.cost=int(floor.cost)
+                if eval(cond_floor[0]):
+                    nofloorselect=False
+                    sel_floor.append(floor)
+            if len(sel_floor)>0:#当前条件选出了地区
+                break
+            cond_floor=cond_floor[1:]#下一条件
+        return len(sel_floor)==0,sel_floor and random.choice(sel_floor) or None
 
     def _explore_floor(self,area,floor=None):
         while True:
@@ -644,22 +661,10 @@ class maClient():
                 if resp['error']:
                     return None,EXPLORE_ERROR
                 floors=XML2Dict().fromstring(ct).response.body.exploration_floor.floor_info_list.floor_info
-                if 'found_item_list' in floors:
-                    floors=[floors]#只有一个
-                nofloorselect=True
-                cond_floor=self.evalstr_floor.split('|')
-                while len(cond_floor)>0:
-                    if cond_floor[0]=='':
-                        cond_floor[0]='True'
-                    logging.debug('explore:eval:%s'%(cond_floor[0]))
-                    for floor in floors:
-                        floor.cost=int(floor.cost)
-                        if eval(cond_floor[0]):
-                            nofloorselect=False
-                            break
-                    if not nofloorselect:
-                        break
-                    cond_floor=cond_floor[1:]
+                if 'found_item_list' in floors:#只有一个
+                    floors=[floors]
+                #选择地区，结果在floor中
+                nofloorselect,floor=self._check_floor_eval(floors)
                 if nofloorselect:
                     msg=EXPLORE_NO_FLOOR
                     break#更换秘境
@@ -706,10 +711,13 @@ class maClient():
                         time.sleep(3)
                         self._fairy_battle(info.fairy,type=EXPLORE_BATTLE)
                         time.sleep(5.5)
-                        #回到秘境界面
-                        # param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
-                        # if self._dopost('exploration/get_floor',postdata=param)[0]['error']:
-                        #     return None,EXPLORE_ERROR
+                        if self._check_floor_eval([floor])[0]:#若已不符合条件
+                            return None,EXPLORE_OK
+                        #回到探索界面
+                        if self._dopost('exploration/get_floor',
+                            postdata='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
+                            )[0]['error']:
+                            return None,EXPLORE_ERROR
                     elif info.event_type=='2':
                         logging.info(du8('碰到个傻X：'+info.encounter.name+' -> '+info.message))
                         time.sleep(1.5)
@@ -955,6 +963,8 @@ class maClient():
         if resp['error']:
             return
         if XML2Dict().fromstring(ct).response.header.your_data.fairy_appearance!='1':#没有“妖精出现中”
+            if self.player.fairy['alive']:
+                self.player.fairy={'alive':False,'id':0}
             return
         time.sleep(2)
         resp,ct=self._dopost('menu/fairyselect')
@@ -1355,7 +1365,7 @@ class maClient():
                         i,user.name,user.town_level,user.last_login,user.friends,user.friend_max,user.cost
                     )
                     i+=1
-                logging.info(du8('申请列表:\n')+strf)
+                logging.info('%s%s'%(du8('申请列表:\n'),strf))
                 adduser=self._raw_input('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser!=['']:
                     for u in adduser:
@@ -1392,12 +1402,19 @@ class maClient():
                         i,user.name,user.town_level,user.last_login,user.friends,user.friend_max,user.cost
                     )
                     i+=1
-                logging.info(du8('搜索结果:\n')+strf)
-                u=self._raw_input('选择要添加的好友序号> ')
-                if u!='':
-                    if users[int(u)-1].friends==users[int(u)-1].friend_max:
-                        logging.warning(du8('无法成为好友ww'))
-                    param='dialog=1&user_id=%s'%users[int(u)-1].id
+                logging.info('%s%s'%(du8('搜索结果:\n'),strf))
+                usel=self._raw_input('选择要添加的好友序号, 空格分割多个，回车返回> ')
+                uids=[]
+                for u in usel.split(' '):
+                    if u!='':
+                        if int(u)>len(users):
+                            logging.error(du8('no.%s:下标越界XD'%u))
+                        elif users[int(u)-1].friends==users[int(u)-1].friend_max:
+                            logging.warning('%s %s'%(users[int(u)-1].name,du8('无法成为好友ww')))
+                        else:
+                            uids.append(users[int(u)-1].id)
+                if uids!=[]:
+                    param='dialog=1&user_id=%s'%(','.join(uids))
                     resp,dec=self._dopost('friend/approve_friend',postdata=param)
                     logging.info(resp['errmsg'])
             elif choice=='4':

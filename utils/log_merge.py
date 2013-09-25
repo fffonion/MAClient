@@ -15,7 +15,7 @@ try:
     files=sys.argv[1:]
     sys.argv[1]
 except IndexError:
-    print('Usage: log_merge.py logfile1 logfile2 ... \n\toutput will be write into "events_merge.log"')
+    print('Usage: log_merge.py logfile1 logfile2 ... \n\toutput will be written into "events_merge.log"')
     sys.exit(1)
 
 flines=[]
