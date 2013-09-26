@@ -135,7 +135,10 @@ if __name__=='__main__':
             if ch=='1' or ch =='':
                 dec=maclient1.login()
                 maclient1.initplayer(dec)
-                maclient1.tasker()
+                try:
+                    maclient1.tasker()
+                except KeyboardInterrupt:
+                    os._exit(1)
             elif ch=='h':
                 print(du8('登陆 login/l,设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,'
                     '刷列表中的妖精 fairy_battle/fyb,嗑药 red_tea/rt,嗑药 green_tea/gt,自动卖卡 sell_card/slc,'
@@ -268,10 +271,13 @@ sell_card_warning 卖卡提醒'''))
                     if not maclient1.player_initiated:
                         dec=maclient1.login()
                         maclient1.initplayer(dec)
-                    if ch.startswith('t:'):
-                        maclient1.tasker(taskname=ch[2:])
-                    else:
-                        maclient1.tasker(cmd=ch)
+                    try:
+                        if ch.startswith('t:'):
+                            maclient1.tasker(taskname=ch[2:])
+                        else:
+                            maclient1.tasker(cmd=ch)
+                    except KeyboardInterrupt:
+                        os._exit(1)
             else:
                 maclient.logging.error(du8('嗯-v-？'))
             print(' %s %s'%('-'*(getTerminalSize()[0]-2),'\n'))

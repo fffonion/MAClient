@@ -1140,8 +1140,8 @@ class maClient():
             if res.winner=='1':#赢了
                 win=True
                 logging.info(du8('YOU WIN 233'))
-                #自己的妖精设为死了
-                if type==EXPLORE_BATTLE:
+                #如果是自己的妖精则设为死了
+                if type==EXPLORE_BATTLE or type==WAKE_BATTLE:#探索中遇到的和打死变成觉醒后的
                     self.player.fairy={'id':0,'alive':False}
                 #觉醒
                 body=XML2Dict().fromstring(ct).response.body
@@ -1244,7 +1244,7 @@ class maClient():
         #立即尾刀
         if need_tail:
             logging.debug('_fairy_battle:tail battle!')
-            self._fairy_battle(fairy,type=NORMAL_BATTLE,is_tail=True)
+            self._fairy_battle(fairy,type=type,is_tail=True)
         #接着打醒妖:
         if rare_fairy!=None:
             rare_fairy=fairy_floor(f=rare_fairy)#
@@ -1252,6 +1252,7 @@ class maClient():
             logging.info(du8('妖精真正的力量觉醒！'.center(39)))
             logging.warning('WARNING WARNING WARNING WARNING WARNING')
             time.sleep(3)
+            self.player.fairy={'alive':True,'id':rare_fairy.id}
             self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
             self.like()
         #输了，回到妖精界面; 尾刀时是否回妖精界面由尾刀决定，父过程此处跳过
