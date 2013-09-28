@@ -26,13 +26,10 @@ import maclient_logging
 import maclient_smart
 __version__=1.49
 #CONSTS:
-EXPLORE_BATTLE,NORMAL_BATTLE,WAKE_BATTLE=0,1,2
+EXPLORE_BATTLE,NORMAL_BATTLE,TAIL_BATTLE,WAKE_BATTLE=0,1,2,3
 GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
 EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_BC= -2,-1,0,1,2
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
-#
-NAME_WAKE_RARE=['-NOTHING-']
-NAME_WAKE=NAME_WAKE_RARE+['觉醒','覺醒','超電磁砲']
 #eval dicts
 eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
 eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
@@ -149,7 +146,7 @@ class maClient():
             self.loc=='tw' and random.choice(['大家好.','問好']) or random.choice(['你好！','你好！请多指教！']))
         self.cfg_factor_getnew=not self._read_config('tactic','factor_getnew') == '0'
         self.cfg_auto_update= not self._read_config('system','auto_update') == '0'
-        logging.basicConfig(level=self._read_config('system','loglevel'))
+        logging.basicConfig(level=self._read_config('system','loglevel') or '2')
         logging.setlogfile('events_%s.log'%self.loc)
         self.cfg_delay=float(self._read_config('system','delay'))
         self.cfg_display_ani=(self._read_config('system','display_ani') or '1')=='1'
@@ -157,7 +154,7 @@ class maClient():
     def set_remote(self,remoteInstance):
         self.remote=remoteInstance
         self.remoteHdl=(self.remote ==None and (lambda method=None,fairy='':True) or self.remote_Hdl_())
-        if self.remote !=None:
+        if self.remote:
             res,msg=self.remote.login()
             if res:
                 logging.debug('remote_hdl:%s'%msg)
@@ -447,7 +444,7 @@ class maClient():
             self.stitle.start()
 
     def auto_check(self,doingwhat):
-        if not doingwhat in ['login','check_inspection','notification/post_devicetoken','card/exchange', 'trunk/sell','roundtable/edit','cardselect/savedeckcard','friend/like_user','comment/send']:
+        if doingwhat in ['exploration/fairybattle','exploration/explore','gacha/buy']:
             if int(self.player.card.count) >= getattr(maclient_smart,'max_card_count_%s'%self.loc):
                 if self.cfg_auto_sell:
                     logging.info(du8('卡片放满了，自动卖卡 v(￣▽￣*)'))
@@ -1004,9 +1001,9 @@ class maClient():
             fairy['time_limit']=int(fairy.fairy.time_limit)
             fairy['wake']=False
             fairy['wake_rare']=False
-            for k in NAME_WAKE:
+            for k in maclient_smart.name_wake:
                 fairy['wake']=fairy['wake'] or (k in fairy.fairy.name)
-            for k in NAME_WAKE_RARE:
+            for k in maclient_smart.name_wake_rare:
                 fairy['wake_rare']=fairy['wake_rare'] or fairy.fairy.name.startswith(k)
             ftime=(self._read_config('fairy',fairy.fairy.serial_id)+',,').split(',')
             fairy['not_battled']= ftime[0]==''
@@ -1042,7 +1039,7 @@ class maClient():
             rwname.append(rw.item_name)
         logging.info(', '.join(rwname)+du8('  已获得'))
 
-    def _fairy_battle(self,fairy,type=NORMAL_BATTLE,is_tail=False):
+    def _fairy_battle(self,fairy,type=NORMAL_BATTLE):
         while time.time()-self.lastfairytime<20:
             logging.sleep(du8('等待20s战斗冷却'))
             time.sleep(5)
@@ -1053,8 +1050,9 @@ class maClient():
                 return None
             else:
                 return XML2Dict().fromstring(ct).response.body.fairy_floor.explore.fairy
-        if type==NORMAL_BATTLE: 
-            #除了explore中碰到的妖精外，传入的fairy只有部分信息，因此客户端都会POST一个fairy_floor来取得完整信息
+        if type==NORMAL_BATTLE or type==TAIL_BATTLE: 
+            #列表打开时，传入的fairy只有部分信息，因此客户端都会POST一个fairy_floor来取得完整信息
+            #尾刀需要重新获得妖精血量等
             #包含了发现者，小伙伴数量，剩余血量等等s
             fairy=fairy_floor()
             if not fairy:
@@ -1063,12 +1061,11 @@ class maClient():
         if fairy.hp=='0':
             logging.warning(du8('妖精已被消灭'))
             return False
-        self.lastfairytime=time.time()
         fairy['lv']=int(fairy.lv)
         fairy['hp']=int(fairy.hp)
         fairy['time_limit']=int(fairy.time_limit)
         fairy['wake_rare']=False
-        for k in NAME_WAKE_RARE:
+        for k in maclient_smart.name_wake_rare:
             fairy['wake_rare']=fairy['wake_rare'] or k in fairy.name
         fairy['wake']= fairy.rare_flg=='1' or fairy['wake_rare']
         if not 'attacker' in fairy.attacker_history:
@@ -1109,8 +1106,9 @@ class maClient():
         rare_fairy=None
         need_tail=False
         win=False
-        paramf='serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
+        self.lastfairytime=time.time()
         savet=(cardd=='min')
+        paramf='serial_id=%s&user_id=%s'%(fairy.serial_id,fairy.discoverer_id)
         resp,ct=self._dopost('exploration/fairybattle',postdata=paramf,savetraffic=savet)
         if len(ct)==0:
             logging.info(du8('舔刀卡组，省流模式开启'))
@@ -1141,7 +1139,7 @@ class maClient():
                 win=True
                 logging.info(du8('YOU WIN 233'))
                 #如果是自己的妖精则设为死了
-                if type==EXPLORE_BATTLE or type==WAKE_BATTLE:#探索中遇到的和打死变成觉醒后的
+                if type!=NORMAL_BATTLE:#探索中遇到的、打死变成觉醒后的和尾刀的
                     self.player.fairy={'id':0,'alive':False}
                 #觉醒
                 body=XML2Dict().fromstring(ct).response.body
@@ -1164,7 +1162,7 @@ class maClient():
                 hpleft=int(XML2Dict().fromstring(ct).response.body.explore.fairy.hp)
                 logging.info(du8('YOU LOSE- - Fairy-HP:%d'%hpleft))
                 #立即尾刀触发,如果补刀一次还没打死，就不打了-v-
-                if self.cfg_fairy_final_kill_hp>=hpleft and not is_tail:
+                if self.cfg_fairy_final_kill_hp>=hpleft and not type==TAIL_BATTLE:
                     need_tail=True
             #金币以及经验
             logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
@@ -1244,7 +1242,7 @@ class maClient():
         #立即尾刀
         if need_tail:
             logging.debug('_fairy_battle:tail battle!')
-            self._fairy_battle(fairy,type=type,is_tail=True)
+            self._fairy_battle(fairy,type=TAIL_BATTLE)
         #接着打醒妖:
         if rare_fairy!=None:
             rare_fairy=fairy_floor(f=rare_fairy)#
@@ -1252,7 +1250,7 @@ class maClient():
             logging.info(du8('妖精真正的力量觉醒！'.center(39)))
             logging.warning('WARNING WARNING WARNING WARNING WARNING')
             time.sleep(3)
-            self.player.fairy={'alive':True,'id':rare_fairy.id}
+            self.player.fairy={'alive':True,'id':rare_fairy.serial_id}
             self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
             self.like()
         #输了，回到妖精界面; 尾刀时是否回妖精界面由尾刀决定，父过程此处跳过

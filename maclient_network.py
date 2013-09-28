@@ -8,6 +8,7 @@ import time
 import base64
 import socket
 import urllib
+import maclient_smart
 try:
     import httplib
 except ImportError:
@@ -15,13 +16,7 @@ except ImportError:
 try:
     import httplib2
 except ImportError:
-    print('httplib2 not found on this machine. You can download it here. https://github.com/fffonion/httplib2-plus')
-#key={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
-#    }
-key_cntw={'res': '*'*16,'helper':'*'*16,'crypt':'*'*16
-    }
-key_jp={'res': 'A1dPUcrvur2CRQyl','helper':'A1dPUcrvur2CRQyl','crypt':'uH9JF2cHf6OppaC1'
-    }
+    print('httplib2 not found in python libs. You can download it here: https://github.com/fffonion/httplib2-plus')
 
 serv={'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/','cn_data':'http://MA.webpatch.sdg-china.com/',
     'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/','cn2_data':'http://MA.webpatch.sdg-china.com/',
@@ -34,10 +29,7 @@ headers_post={'Content-Type': 'application/x-www-form-urlencoded'}
 
 SLOW_MODE=False
 def init_cipher(loc='cn'):
-    if loc in ['cn','tw']:
-        _key=key_cntw
-    else:
-        _key=key_jp
+    _key=getattr(maclient_smart,'key_%s'%loc)
     try:
         from Crypto.Cipher import AES
         return AES.new(_key['res'], AES.MODE_ECB),\
@@ -50,8 +42,7 @@ def init_cipher(loc='cn'):
             True
 COD_RES,COD_DATA,SLOW_MODE=init_cipher()
 
-BS=16
-pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
+pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
 unpad = lambda s : s[0:-ord(s[-1])]
 du8=lambda str:str.decode('utf-8')
 ht=httplib2.Http(timeout=15)
@@ -75,13 +66,13 @@ def encode_data64(bytein):
 
 def encode_param(param):
     p=param.split('&')
-    p_enc='%0A&'.join([p[i].split('=')[0]+'='+encode_data64(p[i].split('=')[1]) for i in xrange(len(p))])
+    p_enc='%0A&'.join(['%s=%s'%(p[i].split('=')[0],encode_data64(p[i].split('=')[1])) for i in xrange(len(p))])
     #print p_enc
     return p_enc.replace('\n','')
 
 def decode_param(param_enc):
     p_enc=param_enc.split('&')
-    p='%0A&'.join([p_enc[i].split('=')[0]+'='+decode_data64(p_enc[i].split('=')[1]) for i in xrange(len(p_enc))])
+    p='%0A&'.join(['%s=%s'%(p_enc[i].split('=')[0],decode_data64(p_enc[i].split('=')[1])) for i in xrange(len(p_enc))])
     return p
 
 def urlunescape(url):
@@ -166,6 +157,11 @@ class poster():
                     self.logger.warning('post:socket closed, retrying in %d times'%(ttimes-trytime))
                 except httplib2.ServerNotFoundError:
                     self.logger.warning('post:no internet, retrying in %d times'%(ttimes-trytime))
+                except TypeError:#使用了官方版的httplib2
+                    if savetraffic and self.issavetraffic:
+                        self.logger.warning(du8('你正在使用官方版的httplib2，因此省流模式将无法正常工作'))
+                    resp,content=ht.request('%s%s%s'%(serv[self.servloc],uri,not noencrypt and '?cyt=1' or ''),method='POST',headers=header,body=postdata)
+                    break
                 else:
                     if int(resp['status'])<400:
                         break
@@ -196,4 +192,4 @@ class poster():
             return resp,dec
 
 if __name__=="__main__":
-    print(decode_param('S=l%2BSLkFbck3jK7ftUq4XEWUgdXcgDbKVDRxUYqRmWhpE%3D%0A&revision=NzgOGTK08BvkZN5q8XvG6Q%3D%3D%0A'))
+    print(decode_param(''))

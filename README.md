@@ -3,7 +3,7 @@
 [更新历史](https://github.com/fffonion/maClient/wiki/HISTORY)
 ##说明
 
-密钥已删除，请自行搜索
+no hiding of AES keys any longer, enjoy :)
 
 有关API，请参阅[二次开发文档](https://github.com/fffonion/maClient/wiki/%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3)
 

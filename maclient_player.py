@@ -36,7 +36,9 @@ class player(object):
         #正常计算AP BC 变动
         for key in ['ap','bc']:
             if self.hasattr(key):
-                getattr(self,key)['current']+=(time.time()-int(getattr(self,key)['current_time']))/int(getattr(self,key)['interval_time'])
+                getattr(self,key)['current']+=(
+                    time.time()-int(getattr(self,key)['current_time']))/int(getattr(self,key)['interval_time'])
+                getattr(self,key)['current_time']=int(time.time())
                 if getattr(self,key)['current']>=getattr(self,key)['max']:
                     getattr(self,key)['current']=getattr(self,key)['max']
 
