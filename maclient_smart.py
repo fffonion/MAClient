@@ -5,14 +5,16 @@
 #      fffonion        <fffonion@gmail.com>
 import time
 #server specified configutaions
-max_card_count_cn=max_card_count_cn2=200
-max_card_count_tw=250
-max_fp_cn=max_fp_cn=10000
-max_fp_tw=1000000
-key_cn=key_tw={'res': 'A1dPUcrvur2CRQyl','helper':'A1dPUcrvur2CRQyl','crypt':'rBwj1MIAivVN222b'
+max_card_count_cn=max_card_count_kr=200
+max_card_count_tw=max_card_count_jp=250
+max_fp_cn=max_fp_kr=10000
+max_fp_tw=max_fp_jp=1000000
+key_cn=key_tw=key_kr={'res': 'A1dPUcrvur2CRQyl','helper':'A1dPUcrvur2CRQyl','crypt':'rBwj1MIAivVN222b'
     }
 key_jp={'res': 'A1dPUcrvur2CRQyl','helper':'A1dPUcrvur2CRQyl','crypt':'uH9JF2cHf6OppaC1'
     }
+app_ver_cn=app_ver_tw=app_ver_kr=100
+app_ver_jp=235
 #wake
 name_wake_rare=['-NOTHING-']
 name_wake=name_wake_rare+['觉醒','覺醒','超電磁砲']

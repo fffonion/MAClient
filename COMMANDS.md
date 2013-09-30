@@ -100,8 +100,11 @@ reward_box/rb
 fairy_select/fs
 
 	fairy_select fairy.lv<60
+	fairy_select fairy.lv<60 deck:min #选择lv60以下妖精，使用min卡组战斗
 
 筛选条件语法与condition中的fairy_select相同
+
+最后可跟deck:xxx表示强制使用该卡组战斗
 
 ###重新登录
 
