@@ -341,8 +341,8 @@ class maClient():
                 elif task[0]=='fairy_battle' or task[0]=='fyb':
                     self.fairy_battle_loop(task[1])
                 elif task[0]=='fairy_select' or task[0]=='fs':
-                    if task[-1].startswith('deck:'):
-                        self.fairy_select(cond=' '.join(task[1:-1]),carddeck=task[-1][5:])
+                    if task[-2].startswith('deck:'):#最后一个是""
+                        self.fairy_select(cond=' '.join(task[1:-2]),carddeck=task[-2][5:])
                     else:
                         self.fairy_select(cond=' '.join(task[1:]))
                 elif task[0]=='green_tea' or task[0]=='gt':
