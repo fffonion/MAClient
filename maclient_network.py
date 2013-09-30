@@ -24,7 +24,7 @@ serv={'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/','cn_data':'http://MA
     'jp':'http://web.million-arthurs.com/connect/app/','jp_data':''
     }
 
-headers_main={'User-Agent': 'Million/100 (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys','Connection': 'Keep-Alive','Accept-Encoding':'gzip,deflate'}
+headers_main={'User-Agent': 'Million/%d (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys','Connection': 'Keep-Alive','Accept-Encoding':'gzip,deflate'}
 headers_post={'Content-Type': 'application/x-www-form-urlencoded'}
 
 SLOW_MODE=False
@@ -97,15 +97,17 @@ class poster():
     def __init__(self,loc,logger,ua):
         self.cookie=''
         #self.maClientInstance=mac
-        self.servloc=loc
+        self.servloc=loc[:2]
         self.logger=logger
         self.header=headers_main
         self.header.update(headers_post)
         if loc in ['jp','kr']:
             COD_RES,COD_DATA=init_cipher(loc=loc)[:2]
-            ua='Million/235 (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys GooglePlay'
+
         if ua:
             self.header['User-Agent']=ua
+        else:
+            self.header['User-Agent']=self.header['User-Agent']%getattr(maclient_smart,'app_ver_%s'%loc)
         if SLOW_MODE:
             self.logger.warning(du8('post:没有安装pycrypto库，可能将额外耗费大量时间'))
         self.issavetraffic=False

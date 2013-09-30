@@ -262,7 +262,7 @@ sell_card_warning 卖卡提醒'''))
                 #     print(du8('木有更新www'))
                 
             elif ch =='7':
-                sys.exit(0)
+                maclient1._exit(0)
             elif ch!='':
                 if ch.startswith('ss') or ch.startswith('set_server') or ch.startswith('l ') or ch.startswith('login') \
                     or ch.startswith('relogin') or ch.startswith('rl'):
@@ -277,7 +277,7 @@ sell_card_warning 卖卡提醒'''))
                         else:
                             maclient1.tasker(cmd=ch)
                     except KeyboardInterrupt:
-                        os._exit(1)
+                        maclient1._exit(0)
             else:
                 maclient.logging.error(du8('嗯-v-？'))
             print(' %s %s'%('-'*(getTerminalSize()[0]-2),'\n'))

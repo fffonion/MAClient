@@ -341,7 +341,10 @@ class maClient():
                 elif task[0]=='fairy_battle' or task[0]=='fyb':
                     self.fairy_battle_loop(task[1])
                 elif task[0]=='fairy_select' or task[0]=='fs':
-                    self.fairy_select(cond=' '.join(task[1:]))
+                    if task[-1].startswith('deck:'):
+                        self.fairy_select(cond=' '.join(task[1:-1]),carddeck=task[-1][5:])
+                    else:
+                        self.fairy_select(cond=' '.join(task[1:]))
                 elif task[0]=='green_tea' or task[0]=='gt':
                     self.green_tea()
                 elif task[0]=='red_tea' or task[0]=='rt':
@@ -950,7 +953,7 @@ class maClient():
 
 
 
-    def fairy_select(self,cond=''):
+    def fairy_select(self,cond='',carddeck=None):
         #走个形式
         resp,ct=self._dopost('menu/menulist')
         if resp['error']:
@@ -1018,7 +1021,7 @@ class maClient():
         for f in fairies:
             logging.debug('fairy_select:select sid %s discoverer %s battled %s'%(f.fairy.serial_id,f.user.name,not f.not_battled))
             f.fairy.discoverer_id=f.user.id
-            self._fairy_battle(f.fairy,type=NORMAL_BATTLE)
+            self._fairy_battle(f.fairy,type=NORMAL_BATTLE,carddeck=carddeck)
             #走个形式
             resp,ct=self._dopost('menu/fairyselect')
             if resp['error']:
@@ -1039,7 +1042,7 @@ class maClient():
             rwname.append(rw.item_name)
         logging.info(', '.join(rwname)+du8('  已获得'))
 
-    def _fairy_battle(self,fairy,type=NORMAL_BATTLE):
+    def _fairy_battle(self,fairy,type=NORMAL_BATTLE,carddeck=None):
         while time.time()-self.lastfairytime<20:
             logging.sleep(du8('等待20s战斗冷却'))
             time.sleep(5)
@@ -1085,8 +1088,12 @@ class maClient():
             du8('妖精'),fairy.name,fairy.lv,fairy.hp,du8('发现者'),disc_name,
             du8('小伙伴'),len(fairy.attacker_history.attacker),du8('剩余'),hms(fairy.time_limit),
             fairy.wake and 'WAKE!' or''))
-        cardd=eval(self.evalstr_fairy_select_carddeck)
-        logging.debug('fairy_battle:carddeck result:%s'%(cardd))
+        if carddeck:
+            cardd=carddeck
+            logging.debug('fairy_battle:carddeck override:%s'%(cardd))
+        else:
+            cardd=eval(self.evalstr_fairy_select_carddeck)
+            logging.debug('fairy_battle:carddeck result:%s'%(cardd))
         if (self.set_card(cardd)):
             fairy=fairy_floor()#设完卡组返回时
             if not fairy:
@@ -1595,7 +1602,7 @@ class maClient():
                             cid,
                             deck_rank,
                             cost,
-                            eval(self.evalstr_factor),)
+                            eval(self.evalstr_factor))
                         )
                         if eval(self.evalstr_factor):
                             logging.debug('factor_battle:->%s @ %s'%(u.name,u.leader_card.master_card_id))
@@ -1677,7 +1684,9 @@ class maClient():
         # if self.settitle:
         #     self.stitle.flag=0
         #     self.stitle.join(0.1)
-        raw_input('THAT\'S THE END')
+        logging.logfile.flush()
+        if code>0:
+            raw_input('THAT\'S THE END')
         sys.exit(code)
 
 
