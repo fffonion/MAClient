@@ -4,6 +4,7 @@
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
 import os
+import sys
 import time
 import base64
 import socket
@@ -17,7 +18,6 @@ try:
     import httplib2
 except ImportError:
     print('httplib2 not found in python libs. You can download it here: https://github.com/fffonion/httplib2-plus')
-
 serv={'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/','cn_data':'http://MA.webpatch.sdg-china.com/',
     'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/','cn2_data':'http://MA.webpatch.sdg-china.com/',
     'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/','tw_data':'http://download.ma.mobimon.com.tw/',
@@ -44,7 +44,9 @@ COD_RES,COD_DATA,SLOW_MODE=init_cipher()
 
 pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
 unpad = lambda s : s[0:-ord(s[-1])]
-du8=lambda str:str.decode('utf-8')
+du8=sys.platform.startswith('cli') and \
+    (lambda str:str) or\
+    (lambda str:str.decode('utf-8'))
 ht=httplib2.Http(timeout=15)
 def decode_res(bytein):
     return COD_RES.decrypt(bytein)
@@ -101,6 +103,10 @@ class poster():
         self.logger=logger
         self.header=headers_main
         self.header.update(headers_post)
+        #ironpython版的httplib2的iri2uri中用utf-8代替了idna，因此手动变回来
+        self.rollback_utf8=sys.platform.startswith('cli') and \
+                (lambda dt:dt.decode('utf-8')) or\
+                (lambda dt:dt)
         if loc in ['jp','kr']:
             COD_RES,COD_DATA=init_cipher(loc=loc)[:2]
 
@@ -184,7 +190,7 @@ class poster():
             if savetraffic and self.issavetraffic:
                 return resp,content
             #否则解码
-            dec=decode_data(content)
+            dec=self.rollback_utf8(decode_data(content))
             if os.path.exists('debug'):
                 open('debug/%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(dec)
                 #open('debug/~%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(content)

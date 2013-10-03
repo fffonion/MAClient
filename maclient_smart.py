@@ -16,7 +16,7 @@ key_jp={'res': 'A1dPUcrvur2CRQyl','helper':'A1dPUcrvur2CRQyl','crypt':'uH9JF2cHf
 app_ver_cn=app_ver_tw=app_ver_kr=100
 app_ver_jp=235
 #wake
-name_wake_rare=['-NOTHING-']
+name_wake_rare=['俠客']
 name_wake=name_wake_rare+['觉醒','覺醒','超電磁砲']
 #snda gplus
 class snda_gplus():

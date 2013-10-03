@@ -8,12 +8,12 @@ import os.path as opath
 import sys
 from xml2dict import XML2Dict
 
-getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
+getPATH0=(opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli') \
      and sys.path[0].decode(sys.getfilesystemencoding()) \
      or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
 
 def get_revision(loc):
-    local_revs=open(opath.join(getPATH0(),'db/revision.txt')).read().split('\n')
+    local_revs=open(opath.join(getPATH0,'db/revision.txt')).read().split('\n')
     rev=None
     for r in local_revs:
         r=r.split(',')
@@ -22,10 +22,10 @@ def get_revision(loc):
             break
     if not rev:
         raise KeyError('No server revision data found for "%s"'%loc)
-    return rev
+    return rev[1:]
 
 def save_revision(loc,cardrev=None,itemrev=None):
-    rev_str=open(opath.join(getPATH0(),'db/revision.txt')).read()
+    rev_str=open(opath.join(getPATH0,'db/revision.txt')).read()
     local_revs=rev_str.split('\n')
     rev=None
     for r in local_revs:
@@ -40,12 +40,12 @@ def save_revision(loc,cardrev=None,itemrev=None):
     if itemrev:
         rev[2]=str(itemrev)
     rev_str=rev_str.replace(r,','.join(rev))
-    open(opath.join(getPATH0(),'db/revision.txt'),'w').write(rev_str)
+    open(opath.join(getPATH0,'db/revision.txt'),'w').write(rev_str)
 
 def check_revision(loc,rev_tuple):
     rev=get_revision(loc)
     if rev:
-        return rev_tuple[0]>float(rev[1]),rev_tuple[1]>float(rev[2])
+        return rev_tuple[0]>float(rev[0]),rev_tuple[1]>float(rev[1])
     else:
         return False,False
 
@@ -66,7 +66,7 @@ def update_master(loc,need_update,poster):
                 c.skill_kana,
                 c.skill_name,
                 str(c.skill_description).replace('\n','\\n')))
-        open(opath.join(getPATH0(),'db/card.%s.txt'%loc),'w').write('\n'.join(strs))
+        open(opath.join(getPATH0,'db/card.%s.txt'%loc),'w').write('\n'.join(strs))
         new_rev[0]=resp.header.revision.card_rev
         save_revision(loc,cardrev=new_rev[0])
     if need_update[1]:
@@ -80,7 +80,7 @@ def update_master(loc,need_update,poster):
                 c.name,
                 c.explanation
             ))
-        open(opath.join(getPATH0(),'db/item.%s.txt'%loc),'w').write('\n'.join(strs))
+        open(opath.join(getPATH0,'db/item.%s.txt'%loc),'w').write('\n'.join(strs))
         new_rev[1]=resp.header.revision.item_rev
         save_revision(loc,itemrev=new_rev[1])
     return new_rev    

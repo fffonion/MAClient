@@ -4,6 +4,9 @@
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
 import sys
+#for ironpython build
+import zipimport
+sys.path.append('python27.zip')
 import time
 #import httplib2
 import os
@@ -15,7 +18,10 @@ import maclient_logging
 import maclient_remote
 import getpass
 __version__=1.49
-du8=lambda str:str.decode('utf-8')
+#look out for ironpython
+du8=sys.platform.startswith('cli') and \
+    (lambda str:str) or\
+    (lambda str:str.decode('utf-8'))
 def iter_printer(l,sep='\n'):
     cnt=1
     str=''

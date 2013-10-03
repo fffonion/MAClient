@@ -40,9 +40,16 @@ eval_select_card={'lv':'lv_i','hp':'hp_i','atk':'atk_i'}
 eval_task={}
 duowan={'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html','tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 logging = maclient_logging.Logging('logging')#=sys.modules['logging']
-du8=lambda str:str.decode('utf-8')#.encode(locale.getdefaultlocale()[1], 'error')
+du8=sys.platform.startswith('cli') and \
+    (lambda str:str) or\
+    (lambda str:str.decode('utf-8'))
 def setT(strt):
-    os.system('TITLE %s'%strt.decode('utf-8').encode('gbk','ignore'))
+    strt=strt.decode('utf-8').encode('cp936','ignore')
+    if sys.platform=='cli':
+        import System.Console
+        System.Console.Title=strt
+    else:
+        os.system('TITLE %s'%strt)
 
 class set_title(threading.Thread):
     def __init__(self,maInstance):
@@ -81,15 +88,15 @@ class maClient():
     def __init__(self,configfile='',savesession=False):
         reload(sys)
         sys.setdefaultencoding('utf-8')
-        self.getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
-         and sys.path[0].decode(sys.getfilesystemencoding()) \
-         or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
+        self.getPATH0=(opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli') \
+             and sys.path[0].decode(sys.getfilesystemencoding()) \
+             or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
         self.cf=ConfigParser.ConfigParser()
         if configfile=='':
-            if not os.path.exists(self.getPATH0()+opath.sep+'config.ini'):
+            if not os.path.exists(self.getPATH0+opath.sep+'config.ini'):
                 print(du8('正在尝试以默认配置文件启动，但该文件(config.ini)不存在'))
                 self._exit(1)
-            self.configfile=self.getPATH0()+opath.sep+'config.ini'
+            self.configfile=self.getPATH0+opath.sep+'config.ini'
         else:
             self.configfile=configfile
         #configuration
@@ -260,7 +267,7 @@ class maClient():
             self.cf.add_section(sec) 
         if self.cf.has_option(sec, key):
             val=self.cf.get(sec, key)
-            if sys.platform=='win32':val=val.decode('cp936').encode('utf-8')
+            if sys.platform=='win32':val=val.decode('cp936')#.encode('utf-8')
         else:
             val=''
         if val=='':return ''
@@ -294,7 +301,7 @@ class maClient():
         return str
     
     def _raw_input(self,str):
-        return raw_input(du8(str).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+        return raw_input(du8(str))#.encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
     
     def tasker(self,taskname='',cmd=''):
         cnt=int(self._read_config('system','tasker_times') or '1')
@@ -395,7 +402,7 @@ class maClient():
         sessionfile='.%s.session'%self.loc
         if os.path.exists(self.playerfile) and self._read_config('account_%s'%self.loc,'session')!='' and uname=='':
             logging.info(du8('加载了保存的账户XD'))
-            dec=open(self.playerfile,'r').read()
+            dec=open(self.playerfile,'r').read().encode('utf-8')
         else:
             self.username= uname or self.username
             self.password= pwd or self.password
@@ -1161,7 +1168,7 @@ class maClient():
                         logging.info(du8('获得收集品[')+self.itemdb[int(b.item_id)]+'] x'+b.item_num)
                         nid.append(b.id)
                     else:
-                        logging.debug('fairy_battle:type:%s card_id %s holoflag %s'%(b.type,b.card_id,b.holo_flag))
+                        #logging.debug('fairy_battle:type:%s card_id %s holoflag %s'%(b.type,b.card_id,b.holo_flag))
                         logging.info(du8('获得卡片 ')+self.carddb[int(b.card_id)][0]+(b.holo_flag=='1' and du8('(闪)') or ''))
                 if fairy.serial_id==self.player.fairy['id']:
                     self.player.fairy={'id':0,'alive':False}
@@ -1684,7 +1691,10 @@ class maClient():
         # if self.settitle:
         #     self.stitle.flag=0
         #     self.stitle.join(0.1)
-        logging.logfile.flush()
+        try:
+            logging.logfile.flush()
+        except:
+            pass
         if code>0:
             raw_input('THAT\'S THE END')
         sys.exit(code)

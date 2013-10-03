@@ -9,7 +9,9 @@ import sys
 import glob
 import time
 from xml2dict import XML2Dict
-
+getPATH0=(opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli') \
+     and sys.path[0].decode(sys.getfilesystemencoding()) \
+     or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
 class player(object):
     def __init__(self,login_xml,loc):
         #[:2]可以让cn2变成cn以使用同一个卡组/道具数据
@@ -104,11 +106,11 @@ class player(object):
 
 class item(object):
     def __init__(self,loc):
-        self.getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
+        self.getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli'\
          and sys.path[0].decode(sys.getfilesystemencoding()) \
          or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
         self.name={}
-        for c in open(opath.join(self.getPATH0(),'db/item.%s.txt'%loc)).read().split('\n'):
+        for c in open(opath.join(getPATH0,'db/item.%s.txt'%loc)).read().split('\n'):
             c=c.split(',')
             if c!=['']:
                 self.name[int(c[0])]=c[1]
@@ -123,11 +125,11 @@ class item(object):
 
 class card(object):
     def __init__(self,loc):
-        self.getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
+        self.getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli'\
          and sys.path[0].decode(sys.getfilesystemencoding()) \
          or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
         self.db={}
-        for c in open(opath.join(self.getPATH0(),'db/card.%s.txt'%loc)).read().split('\n'):
+        for c in open(opath.join(getPATH0,'db/card.%s.txt'%loc)).read().split('\n'):
             c=c.split(',')
             if c!=['']:
                 self.db[int(c[0])]=[c[1],int(c[2]),int(c[3])]
