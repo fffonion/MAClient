@@ -1,5 +1,10 @@
 """
-Thunder Chen<nkchenz@gmail.com> 2007.9.1
+XML2Dict
+
+Thunder Chen<nkchenz#gmail.com> 2007.9.1
+
+revision131014 by fffonion <fffonion#gmail.com>
+optimize memory usage
 """
 from __future__ import print_function
 try:
@@ -12,7 +17,7 @@ import re
 """
 object_dict
 
-nkchenz@gmail.com 2007
+nkchenz#gmail.com 2007
 
 Provided as-is; use at your own risk; no warranty; no promises; enjoy!
 """
@@ -62,7 +67,7 @@ class XML2Dict(object):
             k,v = self._namespace_split(k, object_dict({'value':v}))
             node_tree[k] = v
         #Save childrens
-        for child in list(node):
+        for child in iter(node):
             tag, tree = self._namespace_split(child.tag, self._parse_node(child))
             if  tag not in node_tree: # the first time, so store it in dict
                 node_tree[tag] = tree
@@ -84,7 +89,7 @@ class XML2Dict(object):
         """
         result = re.compile("\{(.*)\}(.*)").search(tag)
         if result:
-            print(tag)
+            #print(tag)
             value.namespace, tag = result.groups()    
         return (tag, value)
 
@@ -119,4 +124,4 @@ if __name__ == '__main__':
 
     for data in r.result.data:
         print(data.id, data.name)
-    pprint(xml.parse('a'))
+    #pprint(xml.parse('a'))

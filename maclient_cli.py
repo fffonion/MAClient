@@ -137,7 +137,7 @@ if __name__=='__main__':
         mod=0
         while True:
             print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\t[快速通道]\n2.遥控器模式\t\te.刷秘境\n3.切换模式->%s\tfyb.刷妖精\n4.编辑卡组\t\tfcb.因子战\n5.编辑配置\t\tf.好友相关\n6.更新数据库\t\th.命令速查\n7.退出'%(mode[mod],maclient1._read_config('system','server'),mode[(mod+1)%2])))
-            ch=raw_input('Select> ')
+            ch=maclient1._raw_input('Select> ')
             if ch=='1' or ch =='':
                 dec=maclient1.login()
                 maclient1.initplayer(dec)

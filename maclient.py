@@ -202,8 +202,8 @@ class maClient():
             else:
                 if err.code!='0':
                     resp['errmsg']=err.message
-                    #1050木有BC 1010卖了卡 8000无法进行当前操作 1020维护
-                    if not err.code in ['1050','1010']:
+                    #1050木有BC 1010卖了卡或妖精已被消灭 8000基友点或卡满了 1020维护 1030有新版本
+                    if not err.code in ['1050','1010']:#,'8000']:
                         logging.error('code:%s msg:%s'%(err.code,err.message))
                         resp.update({'error':True,'errno':int(err.code)})
                     if err.code == '9000':
@@ -301,7 +301,7 @@ class maClient():
         return str
     
     def _raw_input(self,str):
-        return raw_input(du8(str))#.encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+        return raw_input(du8(str).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace')).decode(locale.getdefaultlocale()[1] or 'utf-8')
     
     def tasker(self,taskname='',cmd=''):
         cnt=int(self._read_config('system','tasker_times') or '1')
@@ -568,7 +568,7 @@ class maClient():
                 logging.debug('red_tea:auto mode, let it go~')
                 return False
             else:
-                if self._raw_input(du8('来一坨红茶？ y/n '))=='y':
+                if self._raw_input('来一坨红茶？ y/n ')=='y':
                     res=self._use_item('2')
                 else:
                     res=False
@@ -586,7 +586,7 @@ class maClient():
                 logging.debug('green_tea:auto mode, let it go~')
                 return False
             else:
-                if self._raw_input(du8('嗑一瓶绿茶？ y/n '))=='y':
+                if self._raw_input('嗑一瓶绿茶？ y/n ')=='y':
                     res=self._use_item('1')
                 else:
                     res=False
@@ -847,12 +847,11 @@ class maClient():
             notice_id=notice_id[len(no_id):]
             param="notice_id=%s"%(','.join(no_id))
             resp,ct=self._dopost('menu/get_rewards',postdata=param)
-            if resp['errno']==8000:
-                hasgot=True
-                break
             if not resp['error']:
                 logging.debug('_get_rewards:get successfully.')
                 hasgot=True
+            else:
+                break
         return hasgot,resp['errmsg']
 
     def select_card_sell(self,cond=''):
@@ -1041,13 +1040,17 @@ class maClient():
         resp,ct=self._dopost('menu/fairyrewards')
         if resp['error']:
             return
-        rws=XML2Dict().fromstring(ct).response.body.fairy_rewards.reward_details
-        if 'fairy' in rws:
-            rws=[rws]
-        rwname=[]
-        for rw in rws:
-            rwname.append(rw.item_name)
-        logging.info(', '.join(rwname)+du8('  已获得'))
+        if resp['error']==8000:
+            logging.warning(resp['errmsg'])
+        fw=XML2Dict().fromstring(ct).response.body.fairy_rewards
+        if 'reward_details' in fw:
+            rws=fw.reward_details
+            if 'fairy' in rws:#只有一个
+                rws=[rws]
+            rwname=[]
+            for rw in rws:
+                rwname.append(rw.item_name)
+            logging.info(', '.join(rwname)+du8('  已获得'))
 
     def _fairy_battle(self,fairy,type=NORMAL_BATTLE,carddeck=None):
         while time.time()-self.lastfairytime<20:
@@ -1070,6 +1073,8 @@ class maClient():
         #已经挂了
         if fairy.hp=='0':
             logging.warning(du8('妖精已被消灭'))
+            if fairy.serial_id==self.player.fairy['id']:
+                self.player.fairy={'id':0,'alive':False}
             return False
         fairy['lv']=int(fairy.lv)
         fairy['hp']=int(fairy.hp)
@@ -1142,6 +1147,8 @@ class maClient():
                 res=XML2Dict().fromstring(ct).response.body.battle_result
             except KeyError:
                 logging.warning(du8('没有发现奖励，妖精已经挂了？'))
+                if fairy.serial_id==self.player.fairy['id']:
+                    self.player.fairy={'id':0,'alive':False}
                 return False
             #通知远程
             self.remoteHdl(method='FAIRY',fairy=fairy)
@@ -1152,9 +1159,8 @@ class maClient():
             if res.winner=='1':#赢了
                 win=True
                 logging.info(du8('YOU WIN 233'))
-                #如果是自己的妖精则设为死了
-                if type!=NORMAL_BATTLE:#探索中遇到的、打死变成觉醒后的和尾刀的
-                    self.player.fairy={'id':0,'alive':False}
+                # if type!=NORMAL_BATTLE:#探索中遇到的、打死变成觉醒后的和尾刀的
+                #     self.player.fairy={'id':0,'alive':False}
                 #觉醒
                 body=XML2Dict().fromstring(ct).response.body
                 if 'rare_fairy' in body.explore:
@@ -1170,6 +1176,7 @@ class maClient():
                     else:
                         #logging.debug('fairy_battle:type:%s card_id %s holoflag %s'%(b.type,b.card_id,b.holo_flag))
                         logging.info(du8('获得卡片 ')+self.carddb[int(b.card_id)][0]+(b.holo_flag=='1' and du8('(闪)') or ''))
+                #如果是自己的妖精则设为死了
                 if fairy.serial_id==self.player.fairy['id']:
                     self.player.fairy={'id':0,'alive':False}
             else:#输了
@@ -1455,29 +1462,35 @@ class maClient():
         nid=[]
         #type 1:卡片 2:道具 3:金 4:绊点 5:蛋卷
         for r in rwds:
-            strl+=('%s:'%r.content)
             if r.type=='1':
-                strl+='%s'%(self.carddb[int(r.card_id)][0])
+                cname=self.carddb[int(r.card_id)][0]
+                if cname==r.content:#物品为卡片有时content是卡片名称（吧
+                    strl+=('%s:%s'%(r.title,r.content))
+                else:
+                    strl+=('%s:%s'%(r.content,cname))
+                #strl+='%s'%()
                 if '1' in rw_type:
                     nid.append(r.id)
-            elif r.type=='2':
-                strl+='%sx%s'%(self.itemdb[int(r.item_id)],r.get_num)
-                if '2' in rw_type:
-                    nid.append(r.id)
-            elif r.type=='3':
-                strl+='%sG'%r.point
-                if '3' in rw_type:
-                    nid.append(r.id)
-            elif r.type=='4':
-                strl+='%sFP'%r.point
-                if '4' in rw_type:
-                   nid.append(r.id)
-            elif r.type=='5':
-                strl+='%sx%s'%(du8('蛋蛋卷'),r.get_num)
-                if '5' in rw_type:
-                    nid.append(r.id)
             else:
-                strl+=r.type
+                strl+=('%s:'%r.content)
+                if r.type=='2':
+                    strl+='%sx%s'%(self.itemdb[int(r.item_id)],r.get_num)
+                    if '2' in rw_type:
+                        nid.append(r.id)
+                elif r.type=='3':
+                    strl+='%sG'%r.point
+                    if '3' in rw_type:
+                        nid.append(r.id)
+                elif r.type=='4':
+                    strl+='%sFP'%r.point
+                    if '4' in rw_type:
+                       nid.append(r.id)
+                elif r.type=='5':
+                    strl+='%sx%s'%(du8('蛋蛋卷'),r.get_num)
+                    if '5' in rw_type:
+                        nid.append(r.id)
+                else:
+                    strl+=r.type
             strl+=' , '
         logging.info(strl.rstrip(','))
         if nid==[]:

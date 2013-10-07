@@ -9,7 +9,6 @@
 import os
 import re
 import sys
-import time
 
 try:
     files=sys.argv[1:]
@@ -26,9 +25,30 @@ for f in files:
         print('file %s not found'%f)
         sys.exit(1)
 
-def get_time(str):
-    strtime=str[1:str.find(']')]
-    return time.strptime(strtime,'%b %d %X')
+cache_d={}
+def cache(func):
+    def __decorator(key):    #add parameter receive the user information
+        if key in cache_d:
+            return cache_d[key]
+        else:
+            r=func(key)
+            cache_d[key]=r
+            return r
+    return __decorator 
+
+mon='JanFebMarAprMayJunJulAugSepOctNovDec'
+def timefmt(t):
+    m=mon.find(t[:3])
+    return [m,t[4:6],t[7:9],t[10:12],t[13:]]
+
+@cache
+def get_time(strt):
+    if not strt.startswith('['):
+        strtime=strt[1:strt.find(']')]
+        return timefmt(strtime)
+    else:#没时间数据,返回一个最小的时间
+        return timefmt('Jan 01 00:00:01')
+        
 
 merge_lines=[]
 index=[0]*len(files)
@@ -37,20 +57,16 @@ while True:
     ind=0
     finish=True
     for i in range(len(files)):
-        if index[i]==len(flines[i]):
+        if index[i]==len(flines[i]):#EOF
             continue
         else:
             finish=False
-        try:
-            if get_time(flines[i][index[i]])<get_time(early):
+            if get_time(flines[i][index[i]])<=get_time(early):
                 early=flines[i][index[i]]
                 ind=i
-        except ValueError:#没时间数据，直接转移
-            early=flines[i][index[i]]
-            ind=i
     if finish:
         break
     index[ind]+=1
-    if early not in merge_lines:#重复检测
+    if early not in merge_lines or not early.startswith('['):#重复检测
         merge_lines.append(early)
 open('events_merge.log','w').write(''.join(merge_lines))
