@@ -143,7 +143,6 @@ class poster():
             header.update(extraheader)
             if usecookie:
                 header.update({'Cookie':self.cookie})
-            print postdata
             if not noencrypt and postdata!='':
                 postdata=encode_param(postdata)
             trytime=0
@@ -174,7 +173,6 @@ class poster():
                 else:
                     if int(resp['status'])<400:
                         break
-                    print len(content)
                     self.logger.warning('post:POSTing %s, server returns code %s, retrying in %d times'%(uri,resp['status'],3-trytime))
                 resp,content={'status':'600'},''
                 trytime+=1
