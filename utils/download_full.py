@@ -67,6 +67,6 @@ def fuckall():
                 dt=maclient_network.decode_res(a)
                 open('%s%s-%s_%d.png'%(download_dir,cname[i][0].decode('utf-8'),i,j),'wb').write(dt)
                 time.sleep(random.randint(1,3))
-loc='cn'
-download_dir='e:\\ma\\CN\\'
+loc='tw'
+download_dir='e:\\ma\\'
 fuckall()

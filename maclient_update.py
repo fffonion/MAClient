@@ -53,13 +53,13 @@ def update_master(loc,need_update,poster):
     new_rev=[None,None]
     if need_update[0]:
         a,b=poster.post('masterdata/card/update',postdata='%s&revision=0'%poster.cookie,noencrypt=True)
-        resp=XML2Dict().fromstring(b.replace('&','--').replace('--#','&#')).response
+        resp=XML2Dict().fromstring(b.replace('&','--').replace('--#','&#')).response#不替换会解析出错摔
         cards=resp.body.master_data.master_card_data.card
         strs=[]
         for c in cards:
             strs.append('%s,%s,%s,%s,%s,%s,%s,%s'%(
                 c.master_card_id,
-                c.name,
+                c.name.replace('--','&'),
                 c.rarity,
                 c.cost,
                 str(c.char_description).strip('\n').strip(' ').replace('\n','\\n'),

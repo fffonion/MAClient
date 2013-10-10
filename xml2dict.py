@@ -49,6 +49,10 @@ class object_dict(dict):
         else:
             return d
 
+    #def __iter__(self):
+    #    yield self
+    #    return
+
     def __setattr__(self, item, value):
         self.__setitem__(item, value)
 
