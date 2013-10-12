@@ -5,7 +5,7 @@
 
 no hiding of AES keys any longer, enjoy :)
 
-有关API，请参阅[二次开发文档](https://github.com/fffonion/maClient/wiki/%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E6%96%87%E6%A1%A3)
+插件什么的文档等我有空了会补上wwww
 
 有关在root过的android手机上运行maclient，请参阅[这篇wiki](https://github.com/fffonion/maClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8Cmaclient)
 
@@ -29,7 +29,7 @@ maclient_cli.py [config file] [task]/[commands]
 
 ###account_?
 
-?可选cn,cn2,tw分别对应国服1区，国服2区，台服
+?可选cn,cn2,cn3,tw分别对应国服1区，国服2区，国服3区，台服
 
 session不用管它
 

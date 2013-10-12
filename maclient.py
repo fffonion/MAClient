@@ -24,10 +24,11 @@ import maclient_player
 import maclient_network
 import maclient_logging
 import maclient_smart
-__version__=1.50
+import maclient_plugin
+__version__=1.60
 #CONSTS:
 EXPLORE_BATTLE,NORMAL_BATTLE,TAIL_BATTLE,WAKE_BATTLE=0,1,2,3
-GACHA_FRIENNSHIP_POINT,GACHA_GACHA_TICKET,GACHA_11=1,2,4
+GACHA_FRIENNSHIP_POINT,GACHAgacha_TICKET,GACHA_11=1,2,4
 EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_BC= -2,-1,0,1,2
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #eval dicts
@@ -85,6 +86,8 @@ class conn_ani(threading.Thread):
             time.sleep(0.15)
 
 class maClient():
+    global plugin
+    plugin=maclient_plugin.plugins(logging)
     def __init__(self,configfile='',savesession=False):
         reload(sys)
         sys.setdefaultencoding('utf-8')
@@ -105,7 +108,7 @@ class maClient():
         self.cfg_save_session=savesession
         self.settitle=os.name=='nt'
         self.posttime=0
-        self.set_remote(None)
+        #self.set_remote(None)
         ua=self._read_config('system','user-agent')
         if ua!='':
             logging.debug('system:ua changed to %s'%(ua))
@@ -116,7 +119,7 @@ class maClient():
         #eval
         etmp=self._read_config('condition','fairy_select') or 'True'
         self.evalstr_fairy=self._eval_gen(
-            '(%s) and fairy.put_down in ["0","1"]'%etmp,
+            '(%s) and fairy.put_down in "01"'%etmp,
             eval_fairy_select)#1战斗中 2胜利 3失败
         self.evalstr_area=self._eval_gen(self._read_config('condition','explore_area'),eval_explore_area)
         self.evalstr_floor=self._eval_gen(self._read_config('condition','explore_floor'),eval_explore_floor)
@@ -134,15 +137,16 @@ class maClient():
     def load_config(self):
         #configurations
         self.loc=self._read_config('system','server')
-        self.playerfile='.%s.playerdata'%self.loc
+        uid=self._read_config('account_%s'%self.loc,'user_id')
+        self.playerfile='.%s-%s.playerdata'%(self.loc,uid) if uid not in '0' else '--PLACE-HOLDER--'
         self.username=self._read_config('account_%s'%self.loc,'username')
         self.password=self._read_config('account_%s'%self.loc,'password')
         self.cfg_auto_explore=not self._read_config('tactic','auto_explore')=='0'
         self.cfg_auto_sell=not self._read_config('tactic','auto_sell_cards')=='0'
-        self.cfg_auto_gacha=not self._read_config('tactic','auto_fp_gacha')=='0'
+        self.cfg_autogacha=not self._read_config('tactic','auto_fpgacha')=='0'
         self.cfg_auto_fairy_rewards=not self._read_config('tactic','auto_fairy_rewards')=='0'
-        self.cfg_auto_build= self._read_config('tactic','auto_fp_gacha')=='1' and '1' or '0'
-        self.cfg_fp_gacha_buld=self._read_config('tactic','fp_gacha_bulk')=='1' and '1' or '0'
+        self.cfg_auto_build= self._read_config('tactic','auto_fpgacha')=='1' and '1' or '0'
+        self.cfg_fpgacha_buld=self._read_config('tactic','fpgacha_bulk')=='1' and '1' or '0'
         self.cfg_sell_card_warning=int(self._read_config('tactic','sell_card_warning') or '1')
         self.cfg_auto_rt_level=self._read_config('tactic','auto_red_tea_level')
         self.cfg_strict_bc=self._read_config('tactic','strict_bc')=='1'
@@ -156,25 +160,32 @@ class maClient():
         logging.setlogfile('events_%s.log'%self.loc)
         self.cfg_delay=float(self._read_config('system','delay'))
         self.cfg_display_ani=(self._read_config('system','display_ani') or '1')=='1'
+        global plugin
+        if (self._read_config('system','enable_plugin') or '1')=='1':
+            disabled_plugin=self._read_config('plugin','disabled').split(',')
+            plugin.set_disable(disabled_plugin)
+        else:
+            plugin.enable=False
+
     
     def load_cookie(self):
         self.cookie=self._read_config('account_%s'%self.loc,'session')
         self.poster.set_cookie(self.cookie)
 
-    def set_remote(self,remoteInstance):
-        self.remote=remoteInstance
-        self.remoteHdl=(self.remote ==None and (lambda method=None,fairy='':True) or self.remote_Hdl_())
-        if self.remote:
-            res,msg=self.remote.login()
-            if res:
-                logging.debug('remote_hdl:%s'%msg)
-                return True
-            else:
-                logging.warning('remote_hdl:%s'%msg)
-                return False  
+    # def set_remote(self,remoteInstance):
+    #     self.remote=remoteInstance
+    #     self.remoteHdl=(self.remote ==None and (lambda method=None,fairy='':True) or self.remote_Hdl_())
+    #     if self.remote:
+    #         res,msg=self.remote.login()
+    #         if res:
+    #             logging.debug('remote_hdl:%s'%msg)
+    #             return True
+    #         else:
+    #             logging.warning('remote_hdl:%s'%msg)
+    #             return False  
 
     def _dopost(self,urikey,postdata='',usecookie=True,setcookie=True,extraheader={'Cookie2': '$Version=1'},checkerror=True,noencrypt=False,savetraffic=False):
-        self.remoteHdl()
+        #self.remoteHdl()
         if self.cfg_display_ani:
             connani=conn_ani()
             connani.setDaemon(True)
@@ -243,7 +254,7 @@ class maClient():
                     logging.warning(du8('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库'))
             #update profile
             if not resp['error']:
-                self.remoteHdl(method='PROFILE')
+                #self.remoteHdl(method='PROFILE')
                 if self.settitle:
                     setT('[%s] AP:%d/%d BC:%d/%d G:%d FP:%d Cards:%d%s'%(
                         self.player.name,
@@ -312,6 +323,7 @@ class maClient():
         else:
             return obj
 
+    @plugin.func_hook
     def tasker(self,taskname='',cmd=''):
         cnt=int(self._read_config('system','tasker_times') or '1')
         if cnt==0:
@@ -393,7 +405,7 @@ class maClient():
                         task[1]=GACHA_FRIENNSHIP_POINT
                     else:
                         task[1]=int(task[1])
-                    self._gacha(gacha_type=task[1])
+                    self.gacha(gacha_type=task[1])
                 elif task[0] in ['greet','gr','like']:
                     self.like(words=task[1])
                 elif task[0] in ['sleep','slp']:
@@ -406,7 +418,7 @@ class maClient():
                     logging.sleep(du8('tasker:正在滚床单wwww'))
                     time.sleep(3.15616546511)
                     resp,ct=self._dopost('mainmenu')#初始化
-
+            
     def login(self,uname='',pwd='',fast=False):
         #sessionfile='.%s.session'%self.loc
         if os.path.exists(self.playerfile) and self._read_config('account_%s'%self.loc,'session')!='' and uname=='':
@@ -461,7 +473,8 @@ class maClient():
             self.stitle=set_title(self)
             self.stitle.setDaemon(True)
             self.stitle.start()
-
+            
+    @plugin.func_hook
     def auto_check(self,doingwhat):
         if doingwhat in ['exploration/fairybattle','exploration/explore','gacha/buy']:
             if int(self.player.card.count) >= getattr(maclient_smart,'max_card_count_%s'%self.loc):
@@ -473,15 +486,16 @@ class maClient():
                     return False
             if self.player.friendship_point>= getattr(maclient_smart,'max_fp_%s'%self.loc)*0.9 and \
                 not doingwhat in ['gacha/buy','gacha/select/getcontents']:
-                if self.cfg_auto_gacha:
+                if self.cfg_autogacha:
                     logging.info(du8('绊点有点多，自动转蛋(*￣▽￣)y '))
-                    self._gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
+                    self.gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
                     return True
                 else:
                     logging.warning(du8('绊点已经很多，请自行转蛋消耗www'))
                     return False
         return True
-
+            
+    @plugin.func_hook
     def check_strict_bc(self,refresh=False):
         if not self.cfg_strict_bc:
             return False
@@ -494,7 +508,7 @@ class maClient():
             logging.debug('strict_bc:nothing happened~')
             return False
 
-
+    @plugin.func_hook
     def set_card(self,deckkey):
         if deckkey=='no_change':
             logging.debug('set_card:no_change!')
@@ -556,7 +570,7 @@ class maClient():
         logging.info(du8('卡组没有改变'))
         return False
 
-
+            
     def _use_item(self,itemid):
         param='item_id=%s'%itemid
         resp,ct=self._dopost('item/use',postdata=param)
@@ -566,7 +580,8 @@ class maClient():
             logging.info(du8('使用了道具 ')+self.itemdb[int(itemid)])
             logging.debug('useitem:item %s : %s left'%(itemid,self.player.item.count[int(itemid)]))
             return True
-
+            
+    @plugin.func_hook
     def red_tea(self,silent=False):
         auto=int(self._read_config('tactic','auto_red_tea') or '0')
         if auto>0:
@@ -584,7 +599,8 @@ class maClient():
         if res:
             self.player.bc['current']=self.player.bc['max']
         return res
-
+            
+    @plugin.func_hook
     def green_tea(self,silent=False):
         auto=int(self._read_config('tactic','auto_green_tea') or '0')
         if auto>0:
@@ -603,6 +619,7 @@ class maClient():
             self.player.ap['current']=self.player.ap['max']
         return res
 
+    @plugin.func_hook
     def explore(self,cond=''):
         #选择秘境
         has_boss=[]
@@ -650,7 +667,7 @@ class maClient():
                 has_boss.append(area.id)
             else:#NO_FLOOR or ERROR
                 break
-                
+                            
     def _check_floor_eval(self,floors):
         sel_floor=[]
         cond_floor=self.evalstr_floor.split('|')
@@ -667,7 +684,8 @@ class maClient():
                 break
             cond_floor=cond_floor[1:]#下一条件
         return len(sel_floor)==0,sel_floor and random.choice(sel_floor) or None
-
+            
+    @plugin.func_hook
     def _explore_floor(self,area,floor=None):
         while True:
             if floor==None or floor=='PLACE-HOLDER':#没有指定
@@ -795,11 +813,12 @@ class maClient():
         return None,EXPLORE_OK
                 #print '%s - %s%% cost%s'%\
                     #(floors[i].id,floors[i].progress,floors[i].cost)
-   
-    def _gacha(self,gacha_type=GACHA_FRIENNSHIP_POINT):
+               
+    @plugin.func_hook
+    def gacha(self,gacha_type=GACHA_FRIENNSHIP_POINT):
         if gacha_type==GACHA_FRIENNSHIP_POINT:
             ab=self.cfg_auto_build
-            bulk=self.cfg_fp_gacha_buld
+            bulk=self.cfg_fpgacha_buld
         else:
             ab=self._read_config('tactic','auto_build')
             bulk='0'
@@ -844,7 +863,7 @@ class maClient():
             except:
                 logging.debug('gacha:no auto build')
         time.sleep(7.3890560964)
-
+            
     def _get_rewards(self,notice_id):
         hasgot=False
         while len(notice_id)>0:
@@ -863,7 +882,8 @@ class maClient():
             else:
                 break
         return hasgot,resp['errmsg']
-
+            
+    @plugin.func_hook
     def select_card_sell(self,cond=''):
         cinfo=[]
         sid=[]
@@ -934,7 +954,7 @@ class maClient():
                 logging.info(resp['errmsg']+du8('(%d张卡片)'%len(se_id)))
         return True
 
-
+    @plugin.func_hook
     def fairy_battle_loop(self,ltime=None):
         if ltime!=None and ltime!='':
             looptime=ltime
@@ -969,8 +989,7 @@ class maClient():
                 logging.sleep(du8('%d秒后刷新……'%s))
                 time.sleep(s)
 
-
-
+    @plugin.func_hook
     def fairy_select(self,cond='',carddeck=None):
         #走个形式
         resp,ct=self._dopost('menu/menulist')
@@ -1013,7 +1032,7 @@ class maClient():
         fairies=[]
         for fairy in fairy_event:
             #挂了
-            if fairy.put_down not in ['1','0']:
+            if fairy.put_down not in '01':
                 continue
             fairy.fairy.lv=int(fairy.fairy.lv)
             #检查自己的还活着不
@@ -1037,7 +1056,7 @@ class maClient():
         logging.info(du8(len(fairies)==0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD'%len(fairies)))
         #依次艹
         for f in fairies:
-            logging.debug('fairy_select:select sid %s discoverer %s battled %s'%(f.fairy.serial_id,f.user.name,not f.not_battled))
+            logging.debug('fairy_select:select sid %s battled %s'%(f.fairy.serial_id,not f.not_battled))
             f.fairy.discoverer_id=f.user.id
             self._fairy_battle(f.fairy,type=NORMAL_BATTLE,carddeck=carddeck)
             #走个形式
@@ -1047,7 +1066,7 @@ class maClient():
             time.sleep(1.25)
             #fairy.user.name,fairy.fairy.name,fairy.fairy.serial_id,fairy.fairy.lv,fairy.put_down
             #fairy.start_time,fairy.fairy.time_limit
-
+            
     def _fairy_rewards(self):
         resp,ct=self._dopost('menu/fairyrewards')
         if resp['errno']==8000:
@@ -1063,7 +1082,8 @@ class maClient():
             for rw in rws:
                 rwname.append(rw.item_name)
             logging.info(', '.join(rwname)+du8('  已获得'))
-
+            
+    @plugin.func_hook
     def _fairy_battle(self,fairy,type=NORMAL_BATTLE,carddeck=None):
         while time.time()-self.lastfairytime<20:
             logging.sleep(du8('等待20s战斗冷却'))
@@ -1163,7 +1183,7 @@ class maClient():
                     self.player.fairy={'id':0,'alive':False}
                 return False
             #通知远程
-            self.remoteHdl(method='FAIRY',fairy=fairy)
+            #self.remoteHdl(method='FAIRY',fairy=fairy)
             #战斗结果
             #测试！
             #if os.path.exists('debug') and cardd!='min':
@@ -1233,15 +1253,18 @@ class maClient():
                     if 'turn' in l:#回合数
                         rnd=float(l.turn)-0.5
                     else:
-                        if 'attack_damage' in l:
-                            if l.attack_type not in ['1','2']:#SUPER
-                                satk=int(l.attack_damage)
-                            else:#普通攻击
-                                if l.action_player=='0':#玩家攻击
-                                    matk+=int(l.attack_damage)
-                                else:#妖精攻击
-                                    fatk+=int(l.attack_damage)
-                                    rnd+=0.5#妖精回合
+                        if 'attack_damage' in l:#普通攻击
+                            if l.action_player=='0':#玩家攻击
+                                matk+=int(l.attack_damage)
+                            else:#妖精攻击
+                                fatk+=int(l.attack_damage)
+                                rnd+=0.5#妖精回合
+                            if l.attack_type not in '12':
+                                logging.debug('fairy_battle%satk_type%s'%(_for_debug,l.attack_type))
+                        if 'special_attack_damage' in l:#SUPER
+                            satk=int(l.special_attack_damage)
+                            if l.special_attack_id!='1':#和阵营有关？
+                                logging.debug('fairy_battle%ssatk_id%s dmg%s'%(_for_debug,l.special_attack_id,l.special_attack_damage))
                         if 'skill_id' in l:
                             #skillcnt+=1
                             skills.append('[%d]%s.%s'%(
@@ -1289,7 +1312,8 @@ class maClient():
         #输了，回到妖精界面; 尾刀时是否回妖精界面由尾刀决定，父过程此处跳过
         if not win and not need_tail:
             fairy_floor()
-
+            
+    @plugin.func_hook
     def like(self,words='你好！'):
         if words=='':
             words=self.cfg_greet_words
@@ -1321,7 +1345,8 @@ class maClient():
         resp,dec=self._dopost('menu/friendlist',postdata='move=0')
         resp,ct=self._dopost('menu/menulist')
         return True
-
+            
+    @plugin.func_hook
     def friends(self,choice='',autodel=False):
         delfriend=int(self._read_config('tactic','del_friend_day') or '5')
         loop=999
@@ -1447,14 +1472,15 @@ class maClient():
                             uids.append(users[int(u)-1].id)
                 if uids!=[]:
                     param='dialog=1&user_id=%s'%(','.join(uids))
-                    resp,dec=self._dopost('friend/approve_friend',postdata=param)
+                    resp,dec=self._dopost('friend/add_friend',postdata=param)
                     logging.info(resp['errmsg'])
             elif choice=='4':
                 return True
             else:
                 logging.error(du8('木有这个选项哟0w0'))
             choice=''
-
+            
+    @plugin.func_hook
     def reward_box(self,rw_type='12345'):
         if self._dopost('menu/menulist')[0]['error']:
             return False
@@ -1512,7 +1538,8 @@ class maClient():
             if res[0]:
                 logging.info(res[1])
 
-
+            
+    @plugin.func_hook
     def point_setting(self):
         if self._dopost('menu/menulist')[0]['error']:
             return
@@ -1537,8 +1564,8 @@ class maClient():
         if not self._dopost('town/pointsetting',postdata='ap=%s&bc=%s'%(ap,bc))[0]['error']:
             logging.info(du8('点数分配成功！'))
             return True
-
-
+            
+    @plugin.func_hook
     def factor_battle(self,minbc=0,sel_lake=''):
         minbc=int(minbc)
         #try count
@@ -1683,34 +1710,34 @@ class maClient():
             logging.sleep(du8('换一个碎片……睡觉先，勿扰：-/'))
             time.sleep(int(self._read_config('system','factor_sleep')))
 
-    def remote_Hdl_(self):
-        def do(method=None,fairy=''):
-            if method==None:
-                sleeped=False
-                while True:
-                    #print(self.remote.status,self.remote.STARTED)
-                    if self.remote.status==self.remote.STARTED:
-                        if self.remote.tasker!='':
-                            self.tasker(cmd=self.remote.get_task())
-                        break
-                    if not sleeped:
-                        logging.sleep(du8('remote_hdl:已被远程停止，等待开始信号ww'))
-                        sleeped=True
-                    time.sleep(30)
-            elif method=='PROFILE':
-                self.remote.set(
-                    {'ap_current':self.player.ap['current'],
-                    'ap_max':self.player.ap['max'],
-                    'bc_current':self.player.bc['current'],
-                    'bc_max':self.player.bc['max'],
-                    'gold':self.player.gold})
-            elif method=='FAIRY':
-                self.remote.fckfairy(fairy)
-            if self.remote.lastprofile!=0:
-                logging.debug('remote_hdl:profile has been uploaded %s seconds ago'%
-                    (int(time.time()-self.remote.lastprofile)))
-                self.remote.lastprofile=0
-        return do
+    # def remote_Hdl_(self):
+    #     def do(method=None,fairy=''):
+    #         if method==None:
+    #             sleeped=False
+    #             while True:
+    #                 #print(self.remote.status,self.remote.STARTED)
+    #                 if self.remote.status==self.remote.STARTED:
+    #                     if self.remote.tasker!='':
+    #                         self.tasker(cmd=self.remote.get_task())
+    #                     break
+    #                 if not sleeped:
+    #                     logging.sleep(du8('remote_hdl:已被远程停止，等待开始信号ww'))
+    #                     sleeped=True
+    #                 time.sleep(30)
+    #         elif method=='PROFILE':
+    #             self.remote.set(
+    #                 {'ap_current':self.player.ap['current'],
+    #                 'ap_max':self.player.ap['max'],
+    #                 'bc_current':self.player.bc['current'],
+    #                 'bc_max':self.player.bc['max'],
+    #                 'gold':self.player.gold})
+    #         elif method=='FAIRY':
+    #             self.remote.fckfairy(fairy)
+    #         if self.remote.lastprofile!=0:
+    #             logging.debug('remote_hdl:profile has been uploaded %s seconds ago'%
+    #                 (int(time.time()-self.remote.lastprofile)))
+    #             self.remote.lastprofile=0
+    #     return do
 
     def _exit(self,code=0):
         # if self.settitle:
@@ -1746,7 +1773,7 @@ if __name__=='__main__':
     maClient1.login()
     dec=maClient1.login()
     maClient1.initplayer(dec)
-    #maClient1._gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
+    #maClient1.gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
     #maClient1._sell_card(['59775010'])
     #maClient1.tasker()
     #maClient1.explore()

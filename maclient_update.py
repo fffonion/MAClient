@@ -13,6 +13,7 @@ getPATH0=(opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli') \
      or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
 
 def get_revision(loc):
+    loc=loc[:2]
     local_revs=open(opath.join(getPATH0,'db/revision.txt')).read().split('\n')
     rev=None
     for r in local_revs:
