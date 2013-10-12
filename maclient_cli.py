@@ -187,6 +187,7 @@ if __name__=='__main__':
                 if mod==0:
                     session=read_proxy(work=0)
                     maclient1._write_config('account_%s'%maclient1._read_config('system','server'),'session',session)
+                    maclient1.load_cookie()
                     maclient1.login()
                 mod=(mod+1)%2
             elif ch =='4':
