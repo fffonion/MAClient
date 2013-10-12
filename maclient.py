@@ -1095,15 +1095,14 @@ class maClient():
         for k in maclient_smart.name_wake_rare:
             fairy['wake_rare']=fairy['wake_rare'] or k in fairy.name
         fairy['wake']= fairy.rare_flg=='1' or fairy['wake_rare']
-        if 'attacker' not in fairy.attacker_history:
-            fairy.attacker_history.attacker=[]
-        if fairy.attacker_history.attacker==[]:
+        if 'attacker' not in fairy.attacker_history:#没人打过肯定是自己发现的
+            f_attackers=[]
             disc_name=self.player.name
         else:
+            f_attackers=self.tolist(fairy.attacker_history.attacker)
             ##只有一个的情况
             #if 'user_id' in fairy.attacker_history.attacker:
             #    fairy.attacker_history.attacker=[fairy.attacker_history.attacker]
-            f_attackers=self.tolist(fairy.attacker_history.attacker)
             for atk in f_attackers:
                 if atk.discoverer=='1':
                     disc_name=atk.user_name
