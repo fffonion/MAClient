@@ -187,6 +187,7 @@ if __name__=='__main__':
                 if mod==0:
                     session=read_proxy(work=0)
                     maclient1._write_config('account_%s'%maclient1._read_config('system','server'),'session',session)
+                    maclient1.load_cookie()
                     maclient1.login()
                 mod=(mod+1)%2
             elif ch =='4':
@@ -204,35 +205,38 @@ if __name__=='__main__':
                 maclient1._write_config('carddeck',name,cdeck)
                 print(du8('保存到了%s'%name))
             elif ch =='5':
-                print(du8('依次输入配置名，值；如设置自动嗑红茶3次 auto_red_tea 3\n输入h查看列表'))
-                inp=raw_input('> ')
-                if inp=='h':
-                    print(du8('''taskname需要程序执行的任务名称，|分割
-try_factor_time是刷因子战列表的次数，0为无限
-factor_sleep刷列表的间隔(秒)
-explore_sleep刷秘境的间隔(秒)
-fairy_battle_times刷妖精列表次数
-fairy_battle_sleep刷妖精列表间隔(分)
-auto_explore是否自动选择秘境,是为1
-auto_green_tea,auto_red_tea设置嗑药次数
-auto_sell_card 到≥200张了是否自动卖卡
-auto_fairy_rewards 自动领取妖精奖励
-sell_card_warning 卖卡提醒'''))
-                else:
-                    try:
-                        p1,p2=inp.split(' ')
-                    except:
-                        logging.error(du8('输入有误www'))
+                print(du8('依次输入配置名，值\n输入h查看常用配置,输入e退出'))
+                while True:
+                    inp=raw_input('> ')
+                    if inp=='h':
+                        print(du8('taskname需要程序执行的任务名称，|分割'
+                                '\ntry_factor_time是刷因子战列表的次数，0为无限'
+                                '\nfactor_sleep刷列表的间隔(秒)'
+                                '\nexplore_sleep刷秘境的间隔(秒)'
+                                '\nfairy_battle_times刷妖精列表次数'
+                                '\nfairy_battle_sleep刷妖精列表间隔(分)'
+                                '\nauto_explore是否自动选择秘境,是为1'
+                                '\nauto_green_tea,auto_red_tea设置嗑药次数'
+                                '\nauto_sell_card 到≥200张了是否自动卖卡'
+                                '\nauto_fairy_rewards 自动领取妖精奖励'
+                                '\nsell_card_warning 卖卡提醒'))
+                    elif inp=='e':
+                        break
                     else:
-                        if p1 in maclient1._list_option('system'):
-                            maclient1._write_config('system',p1,p2)
-                        elif p1 in maclient1._list_option('tactic'):
-                            maclient1._write_config('tactic',p1,p2)
+                        try:
+                            p1,p2=inp.split(' ')
+                        except:
+                            logging.error(du8('输入有误www'))
                         else:
-                            logging.error(du8('配置项不存在www'))
-                            continue
-                        print(du8('已保存~'))
-                        maclient1.load_config()
+                            if p1 in maclient1._list_option('system'):
+                                maclient1._write_config('system',p1,p2)
+                            elif p1 in maclient1._list_option('tactic'):
+                                maclient1._write_config('tactic',p1,p2)
+                            else:
+                                logging.error(du8('配置项不存在www'))
+                                continue
+                            print(du8('已保存~'))
+                            maclient1.load_config()
             elif ch =='6':
                 logging.info(du8('将强制重新从服务器下载数据……'))
                 import maclient_update
