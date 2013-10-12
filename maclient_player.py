@@ -45,7 +45,6 @@ class player(object):
                     getattr(self,key)['current']=getattr(self,key)['max']
 
     def _update_data(self,xmldata):
-        self.calc_ap_bc()
         try:
             xmlresp = XML2Dict().fromstring(xmldata).response
             if 'login' in xmlresp.body:
@@ -64,8 +63,8 @@ class player(object):
             self.lv=self.playerdata['town_level'].value
             self.leader_sid=self.playerdata['leader_serial_id'].value
             self.name=self.playerdata['name'].value
-        except KeyError:
-            pass
+        except KeyError:#没有就自己算
+            self.calc_ap_bc()
         if not self.checked_update:
             # try:
             cardrev=int(xmlresp.header.revision.card_rev)

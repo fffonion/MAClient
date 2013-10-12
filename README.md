@@ -29,7 +29,7 @@ maclient_cli.py [config file] [task]/[commands]
 
 ###account_?
 
-?可选cn,cn2,tw分别对应国服1区，国服2区，台服
+?可选cn,cn2,cn3,tw分别对应国服1区，国服2区，国服3区，台服
 
 session不用管它
 
