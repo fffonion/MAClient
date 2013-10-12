@@ -13,8 +13,9 @@ key_cn=key_tw=key_kr={'res': 'A1dPUcrvur2CRQyl','helper':'A1dPUcrvur2CRQyl','cry
     }
 key_jp={'res': 'A1dPUcrvur2CRQyl','helper':'A1dPUcrvur2CRQyl','crypt':'uH9JF2cHf6OppaC1'
     }
-app_ver_cn=app_ver_kr=100
+app_ver_cn=101
 app_ver_tw=102
+app_ver_kr=100
 app_ver_jp=236
 #wake
 name_wake_rare=['俠客']

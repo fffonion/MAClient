@@ -20,6 +20,7 @@ except ImportError:
     print('httplib2 not found in python libs. You can download it here: https://github.com/fffonion/httplib2-plus')
 serv={'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/','cn_data':'http://MA.webpatch.sdg-china.com/',
     'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/','cn2_data':'http://MA.webpatch.sdg-china.com/',
+    'cn3':'http://game3-CBT.ma.sdo.com:10001/connect/app/','cn2_data':'http://MA.webpatch.sdg-china.com/',
     'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/','tw_data':'http://download.ma.mobimon.com.tw/',
     'jp':'http://web.million-arthurs.com/connect/app/','jp_data':''
     }

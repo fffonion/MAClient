@@ -110,8 +110,7 @@ class maClient():
         if ua!='':
             logging.debug('system:ua changed to %s'%(ua))
         self.poster=maclient_network.poster(self.loc,logging,ua)
-        self.cookie=self._read_config('account_%s'%self.loc,'session')
-        self.poster.set_cookie(self.cookie)
+        self.load_cookie()
         if self.cfg_save_traffic:
             self.poster.enable_savetraffic()
         #eval
@@ -157,6 +156,10 @@ class maClient():
         logging.setlogfile('events_%s.log'%self.loc)
         self.cfg_delay=float(self._read_config('system','delay'))
         self.cfg_display_ani=(self._read_config('system','display_ani') or '1')=='1'
+    
+    def load_cookie(self):
+        self.cookie=self._read_config('account_%s'%self.loc,'session')
+        self.poster.set_cookie(self.cookie)
 
     def set_remote(self,remoteInstance):
         self.remote=remoteInstance
@@ -405,7 +408,7 @@ class maClient():
                     resp,ct=self._dopost('mainmenu')#初始化
 
     def login(self,uname='',pwd='',fast=False):
-        sessionfile='.%s.session'%self.loc
+        #sessionfile='.%s.session'%self.loc
         if os.path.exists(self.playerfile) and self._read_config('account_%s'%self.loc,'session')!='' and uname=='':
             logging.info(du8('加载了保存的账户XD'))
             dec=open(self.playerfile,'r').read().encode('utf-8')
@@ -818,7 +821,8 @@ class maClient():
                 rare=['R','R+','SR','SR+']
                 rare_str=' '+rare[self.carddb[int(mid)][1]-3]
             else:
-                rare_str=' '
+                rare=['','','','R+','SR','SR+']
+                rare_str=' %s'%(rare[self.carddb[int(mid)][1]-1])
             excname.append('[%s]%s%s'%(
                 self.carddb[int(mid)][0],
                 self.player.card.sid(card.serial_id).holography =='1' and '-HOLO' or '',
@@ -1091,22 +1095,22 @@ class maClient():
         for k in maclient_smart.name_wake_rare:
             fairy['wake_rare']=fairy['wake_rare'] or k in fairy.name
         fairy['wake']= fairy.rare_flg=='1' or fairy['wake_rare']
-        if 'attacker' not in fairy.attacker_history:
-            fairy.attacker_history.attacker=[]
-        if fairy.attacker_history.attacker==[]:
+        if 'attacker' not in fairy.attacker_history:#没人打过肯定是自己发现的
+            f_attackers=[]
             disc_name=self.player.name
         else:
+            f_attackers=self.tolist(fairy.attacker_history.attacker)
             ##只有一个的情况
             #if 'user_id' in fairy.attacker_history.attacker:
             #    fairy.attacker_history.attacker=[fairy.attacker_history.attacker]
-            for atk in self.tolist(fairy.attacker_history.attacker):
+            for atk in f_attackers:
                 if atk.discoverer=='1':
                     disc_name=atk.user_name
                     break
         hms=lambda x:x>=3600 and time.strftime('%H:%M:%S',time.localtime(x+16*3600)) or time.strftime('%M:%S',time.localtime(x))
         logging.info('%s:%sLv%d hp:%d %s:%s %s:%d %s%s %s'%(
             du8('妖精'),fairy.name,fairy.lv,fairy.hp,du8('发现者'),disc_name,
-            du8('小伙伴'),len(fairy.attacker_history.attacker),du8('剩余'),hms(fairy.time_limit),
+            du8('小伙伴'),len(f_attackers),du8('剩余'),hms(fairy.time_limit),
             fairy.wake and 'WAKE!' or''))
         if carddeck:
             cardd=carddeck
