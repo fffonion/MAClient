@@ -105,6 +105,10 @@ class maClient():
         #configuration
         self.cf.read(self.configfile)
         self.load_config()
+        #映射变量
+        plugin.set_maclient_val(self.__dict__)
+        #添加引用
+        self.plugin=plugin
         self.cfg_save_session=savesession
         self.settitle=os.name=='nt'
         self.posttime=0
@@ -145,8 +149,8 @@ class maClient():
         self.cfg_auto_sell=not self._read_config('tactic','auto_sell_cards')=='0'
         self.cfg_autogacha=not self._read_config('tactic','auto_fpgacha')=='0'
         self.cfg_auto_fairy_rewards=not self._read_config('tactic','auto_fairy_rewards')=='0'
-        self.cfg_auto_build= self._read_config('tactic','auto_fpgacha')=='1' and '1' or '0'
-        self.cfg_fpgacha_buld=self._read_config('tactic','fpgacha_bulk')=='1' and '1' or '0'
+        self.cfg_auto_build= self._read_config('tactic','auto_build')=='1' and '1' or '0'
+        self.cfg_fpgacha_buld=self._read_config('tactic','fp_gacha_bulk')=='1' and '1' or '0'
         self.cfg_sell_card_warning=int(self._read_config('tactic','sell_card_warning') or '1')
         self.cfg_auto_rt_level=self._read_config('tactic','auto_red_tea_level')
         self.cfg_strict_bc=self._read_config('tactic','strict_bc')=='1'
@@ -231,7 +235,8 @@ class maClient():
                         self.player.checked_update=False#置为未检查
                         return resp,dec
         if setcookie and 'set-cookie' in resp:
-            self._write_config('account_%s'%self.loc,'session',resp['set-cookie'].split(',')[-1].rstrip('path=/').strip())
+            self.cookie=resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
+            self._write_config('account_%s'%self.loc,'session',self.cookie)
         if self.player_initiated :
             #auto check cards and fp
             if not self.auto_check(urikey):
@@ -820,7 +825,7 @@ class maClient():
             ab=self.cfg_auto_build
             bulk=self.cfg_fpgacha_buld
         else:
-            ab=self._read_config('tactic','auto_build')
+            ab='0'
             bulk='0'
         if self._dopost('gacha/select/getcontents')[0]['error']:
             return

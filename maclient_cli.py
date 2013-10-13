@@ -136,7 +136,7 @@ if __name__=='__main__':
         mode=['普通','同时在线']
         mod=0
         while True:
-            print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\t[快速通道]\n2.遥控器模式\t\te.刷秘境\n3.切换模式->%s\tfyb.刷妖精\n4.编辑卡组\t\tfcb.因子战\n5.编辑配置\t\tf.好友相关\n6.更新数据库\t\th.命令速查\n7.退出'%(mode[mod],maclient1._read_config('system','server'),mode[(mod+1)%2])))
+            print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\t[快速通道]\n2.切换模式->%s\te.刷秘境\n3.编辑卡组\t\tfyb.刷妖精\n4.编辑配置\t\tfcb.因子战\n5.更新数据库\t\tf.好友相关\n6.退出\t\t\th.命令速查'%(mode[mod],maclient1._read_config('system','server'),mode[(mod+1)%2])))
             ch=maclient1._raw_input('Select> ')
             if ch=='1' or ch =='':
                 dec=maclient1.login()
@@ -153,7 +153,7 @@ if __name__=='__main__':
                     '| 分割多个，空格分隔命令与参数\n'
                     '以t:开头可执行任务\n'
                     'Contact:http://www.yooooo.us'))
-            elif ch=='2':
+            elif ch=='------':
                 print(du8('此功能暂停使用'))
                 continue
                 # import maclient_plugin_mengsky
@@ -183,14 +183,14 @@ if __name__=='__main__':
                 #     dec=maclient1.login()
                 #     maclient1.initplayer(dec)
                 #     maclient1.tasker()
-            elif ch=='3':
+            elif ch=='2':
                 if mod==0:
                     session=read_proxy(work=0)
                     maclient1._write_config('account_%s'%maclient1._read_config('system','server'),'session',session)
                     maclient1.load_cookie()
                     maclient1.login()
                 mod=(mod+1)%2
-            elif ch =='4':
+            elif ch =='3':
                 import maclient_network
                 cards=maclient_network.decode_param(read_proxy(work=1))
                 cdeck=cards.split('&')[0].split('=')[1].strip('%0A').rstrip(',empty')
@@ -204,22 +204,22 @@ if __name__=='__main__':
                     name=inp
                 maclient1._write_config('carddeck',name,cdeck)
                 print(du8('保存到了%s'%name))
-            elif ch =='5':
+            elif ch =='4':
                 print(du8('依次输入配置名，值\n输入h查看常用配置,输入e退出'))
                 while True:
                     inp=raw_input('> ')
                     if inp=='h':
-                        print(du8('taskname需要程序执行的任务名称，|分割'
-                                '\ntry_factor_time是刷因子战列表的次数，0为无限'
-                                '\nfactor_sleep刷列表的间隔(秒)'
-                                '\nexplore_sleep刷秘境的间隔(秒)'
-                                '\nfairy_battle_times刷妖精列表次数'
-                                '\nfairy_battle_sleep刷妖精列表间隔(分)'
-                                '\nauto_explore是否自动选择秘境,是为1'
-                                '\nauto_green_tea,auto_red_tea设置嗑药次数'
-                                '\nauto_sell_card 到≥200张了是否自动卖卡'
-                                '\nauto_fairy_rewards 自动领取妖精奖励'
-                                '\nsell_card_warning 卖卡提醒'))
+                        print(du8('taskname需要程序执行的任务名称，|分割\n'
+                                'try_factor_time是刷因子战列表的次数，0为无限\n'
+                                'factor_sleep刷列表的间隔(秒)\n'
+                                'explore_sleep刷秘境的间隔(秒)\n'
+                                'fairy_battle_times刷妖精列表次数\n'
+                                'fairy_battle_sleep刷妖精列表间隔(分)\n'
+                                'auto_explore是否自动选择秘境,是为1\n'
+                                'auto_green_tea,auto_red_tea设置嗑药次数\n'
+                                'auto_sell_card 到≥200张了是否自动卖卡\n'
+                                'auto_fairy_rewards 自动领取妖精奖励\n'
+                                'sell_card_warning 卖卡提醒'))
                     elif inp=='e':
                         break
                     else:
@@ -237,7 +237,7 @@ if __name__=='__main__':
                                 continue
                             print(du8('已保存~'))
                             maclient1.load_config()
-            elif ch =='6':
+            elif ch =='5':
                 logging.info(du8('将强制重新从服务器下载数据……'))
                 import maclient_update
                 crev,irev=maclient_update.update_master(maclient1.loc,(True,True),maclient1.poster)
@@ -271,8 +271,10 @@ if __name__=='__main__':
                 # else:
                 #     print(du8('木有更新www'))
                 
-            elif ch =='7':
+            elif ch =='6':
                 maclient1._exit(0)
+            elif ch in maclient1.plugin.extra_cmd:
+                maclient1.plugin.do_extra_cmd(ch)
             elif ch!='':
                 if ch.startswith('ss') or ch.startswith('set_server') or ch.startswith('l ') or ch.startswith('login') \
                     or ch.startswith('relogin') or ch.startswith('rl'):
@@ -291,4 +293,3 @@ if __name__=='__main__':
             else:
                 maclient.logging.error(du8('嗯-v-？'))
             print(' %s %s'%('-'*(getTerminalSize()[0]-2),'\n'))
-raw_input('THAT\'S THE END')
