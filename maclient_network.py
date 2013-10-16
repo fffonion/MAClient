@@ -186,7 +186,7 @@ class poster():
                 resp.update({'error':True,'errno':resp['status'],'errmsg':'Client or server error.'})
                 return resp,content
             else:
-                self.logger.debug('post:%s %s'%(uri,','.join([ ( i in resp and (i+':'+resp[i]) or '' )for i in ['status','content-length','set-cookie']])))
+                self.logger.debug('post:%s content-length:%s%s'%(uri,resp['content-length'],('set-cookie' in resp and (' set-cookie:%s'%resp['set-cookie']) or '')))
             #省流模式
             if savetraffic and self.issavetraffic:
                 return resp,content

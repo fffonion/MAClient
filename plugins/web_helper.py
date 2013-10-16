@@ -11,8 +11,7 @@ import _winreg as winreg
 #start meta
 __name__='web broswer helper'
 __author='fffonion'
-__version__=0.1
-#'ENTER_explore':1
+__version__=0.2
 hooks={}
 extra_cmd={'web':'start_webproxy','w':'start_webproxy'}
 #end meta
@@ -40,7 +39,7 @@ def start_webproxy(plugin_vals):
               '如果没有，请手动打开主页:\n'
               '%s\n'
               '对不使用IE代理的浏览器，请将代理设置为127.0.0.1:23301\n'
-              '按Ctrl+C关闭并回复无代理'
+              '按Ctrl+C关闭并恢复无代理'
             %homeurl).decode('utf-8'))
         webbrowser.open(homeurl)
         server = ThreadingHTTPServer(("", 23301) , Proxy) 
@@ -69,23 +68,29 @@ def disable_proxy():
     #winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyOverride')
     #winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyServer')
 #start simplest proxy
-opener =urllib2.build_opener(urllib2.ProxyHandler({}))
+opener =urllib2.build_opener(urllib2.ProxyHandler({}))#force no proxy
 class Proxy(BaseHTTPRequestHandler):
     def do_GET(self):
         req=urllib2.Request(self.path,headers=headers)
-        resp=opener.open(req).read()
-        try:
-            f = StringIO(resp)
-            gzipper = gzip.GzipFile(fileobj = f)
-            data = gzipper.read()
-        except:
-            data = resp
-        self.wfile.write(data)
+        resp=opener.open(req)
+        body=resp.read()
+        self.send_response(resp.getcode())
+        for h in resp.info().items():
+            self.send_header(h[0].encode('ascii'), h[1].encode('ascii'))
+        self.send_header('Content-Encoding'.encode('ascii'), 'indentity'.encode('ascii'))
+        self.end_headers()
+        # try:
+        #     f = StringIO(body)
+        #     gzipper = gzip.GzipFile(fileobj = f)
+        #     data = gzipper.read()
+        # except:
+        #     data = body
+        self.wfile.write(body)
 
 class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):   
     #address_family = socket.AF_INET6  
     address_family = socket.AF_INET
 
 if __name__=="__main__":
-    c=start_webproxy({'cookie':'','loc':'cn'})
+    c=start_webproxy({'cookie':'1=2','loc':'cn'})
     c()

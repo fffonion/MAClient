@@ -26,6 +26,10 @@ class player(object):
         object.__init__(self)
         self.success=check_exclusion(self.name)
 
+    def reload_db(self):
+        self.card.load_db(self.loc[:2])
+        self.item.load_db(self.loc[:2])
+
     def update_all(self,xmldata):
         if xmldata=='':
             return '',False
@@ -105,15 +109,16 @@ class player(object):
 
 class item(object):
     def __init__(self,loc):
-        self.getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli'\
-         and sys.path[0].decode(sys.getfilesystemencoding()) \
-         or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
         self.name={}
+        self.load_db(loc)
+        self.count={}
+
+    def load_db(self,loc):
         for c in open(opath.join(getPATH0,'db/item.%s.txt'%loc)).read().split('\n'):
             c=c.split(',')
             if c!=['']:
                 self.name[int(c[0])]=c[1]
-        self.count={}
+
     def update(self,itemdict):
         for it in itemdict:
             try:
@@ -124,16 +129,16 @@ class item(object):
 
 class card(object):
     def __init__(self,loc):
-        self.getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli'\
-         and sys.path[0].decode(sys.getfilesystemencoding()) \
-         or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
         self.db={}
+        self.load_db(loc)
+        self.count=0
+
+    def load_db(self,loc):
         for c in open(opath.join(getPATH0,'db/card.%s.txt'%loc)).read().split('\n'):
             c=c.split(',')
             if c!=['']:
                 self.db[int(c[0])]=[c[1],int(c[2]),int(c[3])]
-        self.count=0
-    
+
     def update(self,carddict):
         self.cards=carddict
         self.count=len(self.cards)

@@ -254,6 +254,7 @@ class maClient():
                     logging.info(du8('%s%s'%(
                         '卡片数据更新为rev.%s'%crev if crev else '',
                         '道具数据更新为rev.%s'%irev if irev else '') ))
+                    self.player.reload_db()
                     self.player.need_update=False,False
                 else:
                     logging.warning(du8('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库'))
@@ -1302,7 +1303,7 @@ class maClient():
                 logging.warning(res[1])
         #立即尾刀
         if need_tail:
-            logging.debug('_fairy_battle:tail battle!')
+            logging.debug('fairy_battle:tail battle!')
             self._fairy_battle(fairy,type=TAIL_BATTLE)
         #接着打醒妖:
         if rare_fairy!=None:

@@ -4,6 +4,7 @@
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
 import time
+import math
 #server specified configutaions
 max_card_count_cn=max_card_count_kr=200
 max_card_count_tw=max_card_count_jp=250
@@ -54,3 +55,44 @@ def carddeck_gen(player):
 #platform specified config enhancer
 class config_changer():
     pass
+
+class calc():
+    WAKE_FAIRY,NORMAL_FAIRY=True,False
+    NORMAL_FAIRY_1,NORMAL_FAIRY_2,WAKE_FAIRY,RARE_FAIRY=0,1,2,3
+
+    @classmethod
+    def items_get(cls,fairy_lv,is_wake=False,damage_hp=0):
+        '''
+        收集品获得量计算器
+        '''
+        fairy_lv=int(fairy_lv)
+        #计算妖精预测血量
+        fairy_hp=calc.fairy_hp(fairy_lv,is_wake)
+        #=0为一击打败
+        if damage_hp==0:
+            damage_hp=fairy_hp
+        #分两种情况
+        i=is_wake and ((1000+fairy_lv*40)*damage_hp/fairy_hp) or ((10*fairy_lv)*damage_hp/fairy_hp)
+        #向上取整，取10的倍数
+        return int(math.ceil(i/10.0)*10)
+
+    @classmethod
+    def fairy_hp(cls,lv,wake=False):
+        '''
+        妖精预测血量计算器
+        '''
+        return wake and 30618*(lv+25) or 7783*(lv+2)
+
+    @classmethod
+    def fairy_atk(cls,lv,type=0):
+        '''
+        妖精预测平均攻击计算器
+        '''
+        #data required
+        #普妖(一般)有两种，另外有醒妖和稀有妖
+        pass
+
+
+if __name__=='__main__':
+    print calc.fairy_hp(120,calc.NORMAL_FAIRY)
+    print calc.items_get(120,calc.NORMAL_FAIRY,1012928)
