@@ -749,7 +749,7 @@ class maClient():
                         #if eval(evalfight):
                         logging.sleep(du8('3秒后开始战斗www'))
                         time.sleep(3)
-                        self._fairy_battle(info.fairy,type=EXPLORE_BATTLE)
+                        self._fairy_battle(info.fairy,bt_type=EXPLORE_BATTLE)
                         time.sleep(5.5)
                         if self._check_floor_eval([floor])[0]:#若已不符合条件
                             return None,EXPLORE_OK
@@ -1064,7 +1064,7 @@ class maClient():
         for f in fairies:
             logging.debug('fairy_select:select sid %s battled %s'%(f.fairy.serial_id,not f.not_battled))
             f.fairy.discoverer_id=f.user.id
-            self._fairy_battle(f.fairy,type=NORMAL_BATTLE,carddeck=carddeck)
+            self._fairy_battle(f.fairy,bt_type=NORMAL_BATTLE,carddeck=carddeck)
             #走个形式
             resp,ct=self._dopost('menu/fairyselect')
             if resp['error']:
