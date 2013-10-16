@@ -19,8 +19,8 @@ app_ver_tw=102
 app_ver_kr=100
 app_ver_jp=236
 #wake
-name_wake_rare=['俠客']
-name_wake=name_wake_rare+['觉醒','覺醒','超電磁砲']
+name_wake_rare=['禁書目錄']
+name_wake=name_wake_rare+['觉醒','覺醒','雷蒂麗']
 #snda gplus
 class snda_gplus():
     #thanks to luw2007(https://github.com/luw2007/libMA/blob/master/push.py)
@@ -81,7 +81,8 @@ class calc():
         '''
         妖精预测血量计算器
         '''
-        return wake and 30618*(lv+25) or 7783*(lv+2)
+        return wake and 26662*(lv+25) or 7783*(lv+2)
+        #return wake and 30618*(lv+25) or 7783*(lv+2)
 
     @classmethod
     def fairy_atk(cls,lv,type=0):
@@ -94,5 +95,5 @@ class calc():
 
 
 if __name__=='__main__':
-    print calc.fairy_hp(120,calc.NORMAL_FAIRY)
-    print calc.items_get(120,calc.NORMAL_FAIRY,1012928)
+    print calc.fairy_hp(1,calc.NORMAL_FAIRY)
+    print calc.items_get(7,calc.WAKE_FAIRY,505956)
