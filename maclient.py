@@ -105,6 +105,10 @@ class maClient():
         #configuration
         self.cf.read(self.configfile)
         self.load_config()
+        #映射变量
+        plugin.set_maclient_val(self.__dict__)
+        #添加引用
+        self.plugin=plugin
         self.cfg_save_session=savesession
         self.settitle=os.name=='nt'
         self.posttime=0
@@ -145,8 +149,8 @@ class maClient():
         self.cfg_auto_sell=not self._read_config('tactic','auto_sell_cards')=='0'
         self.cfg_autogacha=not self._read_config('tactic','auto_fpgacha')=='0'
         self.cfg_auto_fairy_rewards=not self._read_config('tactic','auto_fairy_rewards')=='0'
-        self.cfg_auto_build= self._read_config('tactic','auto_fpgacha')=='1' and '1' or '0'
-        self.cfg_fpgacha_buld=self._read_config('tactic','fpgacha_bulk')=='1' and '1' or '0'
+        self.cfg_auto_build= self._read_config('tactic','auto_build')=='1' and '1' or '0'
+        self.cfg_fpgacha_buld=self._read_config('tactic','fp_gacha_bulk')=='1' and '1' or '0'
         self.cfg_sell_card_warning=int(self._read_config('tactic','sell_card_warning') or '1')
         self.cfg_auto_rt_level=self._read_config('tactic','auto_red_tea_level')
         self.cfg_strict_bc=self._read_config('tactic','strict_bc')=='1'
@@ -226,12 +230,13 @@ class maClient():
                         self.login(fast=True)
                         return self._dopost(urikey,postdata,usecookie,setcookie,extraheader,checkerror,noencrypt)
                     elif err.code=='1020':
-                        logging.info(du8('因为服务器维护，休息约20分钟'))
-                        time.sleep(random.randint(18,22)*60)
-                        self.player.checked_update=False#置为未检查
+                        logging.sleep(du8('因为服务器维护，休息约30分钟'))
+                        time.sleep(random.randint(28,32)*60)
+                        self.player.update_checked=False#置为未检查
                         return resp,dec
         if setcookie and 'set-cookie' in resp:
-            self._write_config('account_%s'%self.loc,'session',resp['set-cookie'].split(',')[-1].rstrip('path=/').strip())
+            self.cookie=resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
+            self._write_config('account_%s'%self.loc,'session',self.cookie)
         if self.player_initiated :
             #auto check cards and fp
             if not self.auto_check(urikey):
@@ -249,6 +254,7 @@ class maClient():
                     logging.info(du8('%s%s'%(
                         '卡片数据更新为rev.%s'%crev if crev else '',
                         '道具数据更新为rev.%s'%irev if irev else '') ))
+                    self.player.reload_db()
                     self.player.need_update=False,False
                 else:
                     logging.warning(du8('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库'))
@@ -820,7 +826,7 @@ class maClient():
             ab=self.cfg_auto_build
             bulk=self.cfg_fpgacha_buld
         else:
-            ab=self._read_config('tactic','auto_build')
+            ab='0'
             bulk='0'
         if self._dopost('gacha/select/getcontents')[0]['error']:
             return
@@ -1084,7 +1090,7 @@ class maClient():
             logging.info(', '.join(rwname)+du8('  已获得'))
             
     @plugin.func_hook
-    def _fairy_battle(self,fairy,type=NORMAL_BATTLE,carddeck=None):
+    def _fairy_battle(self,fairy,bt_type=NORMAL_BATTLE,carddeck=None):
         while time.time()-self.lastfairytime<20:
             logging.sleep(du8('等待20s战斗冷却'))
             time.sleep(5)
@@ -1095,7 +1101,7 @@ class maClient():
                 return None
             else:
                 return XML2Dict().fromstring(ct).response.body.fairy_floor.explore.fairy
-        if type==NORMAL_BATTLE or type==TAIL_BATTLE: 
+        if bt_type==NORMAL_BATTLE or bt_type==TAIL_BATTLE: 
             #列表打开时，传入的fairy只有部分信息，因此客户端都会POST一个fairy_floor来取得完整信息
             #尾刀需要重新获得妖精血量等
             #包含了发现者，小伙伴数量，剩余血量等等s
@@ -1191,7 +1197,7 @@ class maClient():
             if res.winner=='1':#赢了
                 win=True
                 logging.info(du8('YOU WIN 233'))
-                # if type!=NORMAL_BATTLE:#探索中遇到的、打死变成觉醒后的和尾刀的
+                # if bt_type!=NORMAL_BATTLE:#探索中遇到的、打死变成觉醒后的和尾刀的
                 #     self.player.fairy={'id':0,'alive':False}
                 #觉醒
                 body=XML2Dict().fromstring(ct).response.body
@@ -1215,7 +1221,7 @@ class maClient():
                 hpleft=int(XML2Dict().fromstring(ct).response.body.explore.fairy.hp)
                 logging.info(du8('YOU LOSE- - Fairy-HP:%d'%hpleft))
                 #立即尾刀触发,如果补刀一次还没打死，就不打了-v-
-                if self.cfg_fairy_final_kill_hp>=hpleft and not type==TAIL_BATTLE:
+                if self.cfg_fairy_final_kill_hp>=hpleft and not bt_type==TAIL_BATTLE:
                     need_tail=True
             #金币以及经验
             logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
@@ -1297,8 +1303,8 @@ class maClient():
                 logging.warning(res[1])
         #立即尾刀
         if need_tail:
-            logging.debug('_fairy_battle:tail battle!')
-            self._fairy_battle(fairy,type=TAIL_BATTLE)
+            logging.debug('fairy_battle:tail battle!')
+            self._fairy_battle(fairy,bt_type=TAIL_BATTLE)
         #接着打醒妖:
         if rare_fairy!=None:
             rare_fairy=fairy_floor(f=rare_fairy)#
@@ -1307,11 +1313,15 @@ class maClient():
             logging.warning('WARNING WARNING WARNING WARNING WARNING')
             time.sleep(3)
             self.player.fairy={'alive':True,'id':rare_fairy.serial_id}
-            self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
-            self.like()
-        #输了，回到妖精界面; 尾刀时是否回妖精界面由尾刀决定，父过程此处跳过
-        if not win and not need_tail:
-            fairy_floor()
+            self._fairy_battle(rare_fairy,bt_type=WAKE_BATTLE)
+        #输了，
+        if not win:
+            #回到妖精界面; 尾刀时是否回妖精界面由尾刀决定，父过程此处跳过
+            if not need_tail:
+                fairy_floor()
+             #如果是醒妖则问好
+            if bt_type==WAKE_BATTLE:
+                self.like()
             
     @plugin.func_hook
     def like(self,words='你好！'):
