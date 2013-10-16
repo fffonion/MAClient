@@ -230,9 +230,9 @@ class maClient():
                         self.login(fast=True)
                         return self._dopost(urikey,postdata,usecookie,setcookie,extraheader,checkerror,noencrypt)
                     elif err.code=='1020':
-                        logging.info(du8('因为服务器维护，休息约20分钟'))
-                        time.sleep(random.randint(18,22)*60)
-                        self.player.checked_update=False#置为未检查
+                        logging.sleep(du8('因为服务器维护，休息约30分钟'))
+                        time.sleep(random.randint(28,32)*60)
+                        self.player.update_checked=False#置为未检查
                         return resp,dec
         if setcookie and 'set-cookie' in resp:
             self.cookie=resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
@@ -749,7 +749,7 @@ class maClient():
                         #if eval(evalfight):
                         logging.sleep(du8('3秒后开始战斗www'))
                         time.sleep(3)
-                        self._fairy_battle(info.fairy,type=EXPLORE_BATTLE)
+                        self._fairy_battle(info.fairy,bt_type=EXPLORE_BATTLE)
                         time.sleep(5.5)
                         if self._check_floor_eval([floor])[0]:#若已不符合条件
                             return None,EXPLORE_OK
@@ -1064,7 +1064,7 @@ class maClient():
         for f in fairies:
             logging.debug('fairy_select:select sid %s battled %s'%(f.fairy.serial_id,not f.not_battled))
             f.fairy.discoverer_id=f.user.id
-            self._fairy_battle(f.fairy,type=NORMAL_BATTLE,carddeck=carddeck)
+            self._fairy_battle(f.fairy,bt_type=NORMAL_BATTLE,carddeck=carddeck)
             #走个形式
             resp,ct=self._dopost('menu/fairyselect')
             if resp['error']:
@@ -1090,7 +1090,7 @@ class maClient():
             logging.info(', '.join(rwname)+du8('  已获得'))
             
     @plugin.func_hook
-    def _fairy_battle(self,fairy,type=NORMAL_BATTLE,carddeck=None):
+    def _fairy_battle(self,fairy,bt_type=NORMAL_BATTLE,carddeck=None):
         while time.time()-self.lastfairytime<20:
             logging.sleep(du8('等待20s战斗冷却'))
             time.sleep(5)
@@ -1101,7 +1101,7 @@ class maClient():
                 return None
             else:
                 return XML2Dict().fromstring(ct).response.body.fairy_floor.explore.fairy
-        if type==NORMAL_BATTLE or type==TAIL_BATTLE: 
+        if bt_type==NORMAL_BATTLE or bt_type==TAIL_BATTLE: 
             #列表打开时，传入的fairy只有部分信息，因此客户端都会POST一个fairy_floor来取得完整信息
             #尾刀需要重新获得妖精血量等
             #包含了发现者，小伙伴数量，剩余血量等等s
@@ -1197,7 +1197,7 @@ class maClient():
             if res.winner=='1':#赢了
                 win=True
                 logging.info(du8('YOU WIN 233'))
-                # if type!=NORMAL_BATTLE:#探索中遇到的、打死变成觉醒后的和尾刀的
+                # if bt_type!=NORMAL_BATTLE:#探索中遇到的、打死变成觉醒后的和尾刀的
                 #     self.player.fairy={'id':0,'alive':False}
                 #觉醒
                 body=XML2Dict().fromstring(ct).response.body
@@ -1221,7 +1221,7 @@ class maClient():
                 hpleft=int(XML2Dict().fromstring(ct).response.body.explore.fairy.hp)
                 logging.info(du8('YOU LOSE- - Fairy-HP:%d'%hpleft))
                 #立即尾刀触发,如果补刀一次还没打死，就不打了-v-
-                if self.cfg_fairy_final_kill_hp>=hpleft and not type==TAIL_BATTLE:
+                if self.cfg_fairy_final_kill_hp>=hpleft and not bt_type==TAIL_BATTLE:
                     need_tail=True
             #金币以及经验
             logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
@@ -1304,7 +1304,7 @@ class maClient():
         #立即尾刀
         if need_tail:
             logging.debug('fairy_battle:tail battle!')
-            self._fairy_battle(fairy,type=TAIL_BATTLE)
+            self._fairy_battle(fairy,bt_type=TAIL_BATTLE)
         #接着打醒妖:
         if rare_fairy!=None:
             rare_fairy=fairy_floor(f=rare_fairy)#
@@ -1313,11 +1313,15 @@ class maClient():
             logging.warning('WARNING WARNING WARNING WARNING WARNING')
             time.sleep(3)
             self.player.fairy={'alive':True,'id':rare_fairy.serial_id}
-            self._fairy_battle(rare_fairy,type=WAKE_BATTLE)
-            self.like()
-        #输了，回到妖精界面; 尾刀时是否回妖精界面由尾刀决定，父过程此处跳过
-        if not win and not need_tail:
-            fairy_floor()
+            self._fairy_battle(rare_fairy,bt_type=WAKE_BATTLE)
+        #输了，
+        if not win:
+            #回到妖精界面; 尾刀时是否回妖精界面由尾刀决定，父过程此处跳过
+            if not need_tail:
+                fairy_floor()
+             #如果是醒妖则问好
+            if bt_type==WAKE_BATTLE:
+                self.like()
             
     @plugin.func_hook
     def like(self,words='你好！'):

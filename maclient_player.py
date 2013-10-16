@@ -20,7 +20,7 @@ class player(object):
         self.loc=loc
         self.fairy={'id':0,'alive':False}
         self.id='0'
-        self.checked_update=False
+        self.update_checked=False
         self.need_update=False,False
         self.update_all(login_xml)
         object.__init__(self)
@@ -69,7 +69,7 @@ class player(object):
             self.name=self.playerdata['name'].value
         except KeyError:#没有就自己算
             self.calc_ap_bc()
-        if not self.checked_update:
+        if not self.update_checked:
             # try:
             cardrev=int(xmlresp.header.revision.card_rev)
             itemrev=int(xmlresp.header.revision.item_rev)
@@ -78,7 +78,7 @@ class player(object):
             # else:
             import maclient_update
             self.need_update=maclient_update.check_revision(self.loc,(cardrev,itemrev))
-            self.checked_update=True#只检查一次
+            self.update_checked=True#只检查一次
         #print self.ap.current,self.bc.current
         return 'AP:%d/%d BC:%d/%d G:%d FP:%d'%(self.ap['current'],self.ap['max'],self.bc['current'],self.bc['max'],self.gold,self.friendship_point),True
 
