@@ -168,6 +168,7 @@ class maClient():
         if (self._read_config('system','enable_plugin') or '1')=='1':
             disabled_plugin=self._read_config('plugin','disabled').split(',')
             plugin.set_disable(disabled_plugin)
+            plugin.scan_hooks()
         else:
             plugin.enable=False
 

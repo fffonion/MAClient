@@ -20,14 +20,16 @@ PREF_EXIT='EXIT_'
 class plugins():
     def __init__(self,logger):
         self.logger=logger
-        #所有插件名称
-        self.plugins=[]
+        #所有插件模块对象
+        self.plugins={}
+        #所有插件模块中的plugin实例
+        self.plugins_instance={}
         #新增cli命令字典
         self.extra_cmd={}
         #从maclient实例映射的变量
         self.val_dict={}
         self.load_plugins()
-        self.scan_hooks()
+        #self.scan_hooks()
         self.enable=True
         
 
@@ -39,41 +41,46 @@ class plugins():
         #scan plugin hooks
         for p in self.plugins:
             #extra cmd
-            ecmd=self._get_plugin_meta(p,'extra_cmd')
+            ecmd=self._get_module_meta(p,'extra_cmd')
             for e in ecmd:
-                self.extra_cmd[e]=self._get_plugin_meta(p,ecmd[e])
+                self.extra_cmd[e]=self._get_module_meta(p,ecmd[e])
             #function hook
             for act in ALL_ACTIONS:
                 for method in [PREF_ENTER,PREF_EXIT]:#enter, exit
                     key='%s%s'%(method,act)
                     if key not in self.hook_reg:
                         self.hook_reg[key]={}
-                    if key in self._get_plugin_meta(p,'hooks'):#add to hook reg
-                        self.hook_reg[key][p]=self._get_plugin_meta(p,'hooks')[key]      
+                    if key in self._get_module_meta(p,'hooks'):#add to hook reg
+                        #priority record
+                        self.hook_reg[key][p]=self._get_module_meta(p,'hooks')[key]  
     # def set_enable(self,lst):
     #     pass
     def set_maclient_val(self,val_dict):
         self.val_dict=val_dict
 
     def do_extra_cmd(self,cmd):
-        return self.extra_cmd[cmd](self.val_dict)()
+        if self.enable:
+            return self.extra_cmd[cmd](self.val_dict)()
+        else:
+            self.logger.warning('Plugins not enabled.')
 
     def set_disable(self,lst):
         for p in lst:
             if p:
-                del(self.plugins[self.plugins.index(p)])
-        self.scan_hooks()
+                del(self.plugins[p])
 
-    def _get_plugin_meta(self,mod,key):
+    def _get_module_meta(self,mod,key):
+        #module.xxx
         try:
-           return getattr(globals()[mod],key)
+           return getattr(self.plugins[mod],key)
         except AttributeError:
-            self.logger.warning('No meta "%s" found in module "%s"'%(key,mod))
+            self.logger.warning('"%s" not found in module "%s"'%(key,mod))
             return []
 
     def _get_plugin_attr(self,mod,attr):
+        #module.plugin.xxx
         try:
-           getattr(globals()[mod].plugin(),attr)
+           return getattr(self.plugins_instance[mod],attr)
         except AttributeError:
             self.logger.warning('Get "%s" failed from "%s" '%(attr,mod))
             return []
@@ -101,8 +108,14 @@ class plugins():
             if m.startswith('_'):
                 continue
             if m not in self.plugins:
-                globals()[m]=__import__(m)
-                self.plugins.append(m)
+                #module object
+                self.plugins[m]=__import__(m)
+                #plugin instance
+                try:
+                    self.plugins_instance[m]=self.plugins[m].plugin()
+                except AttributeError:
+                    #no plugin() class
+                    self.plugins_instance[m]=None
 
     def _line_tracer(self):
         #originally from http://stackoverflow.com/questions/19227636/decorator-to-log-function-execution-line-by-line

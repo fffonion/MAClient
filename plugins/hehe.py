@@ -1,6 +1,6 @@
 from _prototype import plugin_prototype
 #start meta
-__name__='sample plugin'
+__plugin_name__='sample plugin'
 __author='fffonion'
 __version__=0.1
 #hooks={'ENTER/EXIT_ACTION':PRIORITY}
@@ -12,6 +12,8 @@ hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
 extra_cmd={}
 #end meta
 class plugin(plugin_prototype):
+    def __init__(self):
+        self.__name__=__plugin_name__
 
     def ENTER_explore(self,*args, **kwargs):
         print 'explore!'
