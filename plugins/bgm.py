@@ -15,7 +15,7 @@ __version__=0.1
 #eg:
 #hook on explore start with priority 1 (the bigger the higher):
 #'ENTER_explore':1
-hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1,'EXIT_explore':1,'ENTER_tasker':1,'EXIT_tasker':1}
+hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER__explore_floor':1,'EXIT__explore_floor':1,'ENTER_tasker':1,'EXIT_tasker':1}
 #extra cmd hook
 extra_cmd={'bgm on':'set_bgm_on','bgm off':'set_bgm_off'}
 #end meta
@@ -36,14 +36,16 @@ def set_bgm_on(plugin_vals):
     return do
 
 def fade_out(snd,duration=0.5):
-    for i in xrange(25):
-        snd.setVolume(65535*(24-i)/25)
-        time.sleep(duration/25.0)
+    if snd:
+        for i in xrange(25):
+            snd.setVolume(65535*(24-i)/25)
+            time.sleep(duration/25.0)
 
 def fade_in(snd,duration=0.5):
-    for i in xrange(25):
-        snd.setVolume(65535*(i+1)/25)
-        time.sleep(duration/25.0)
+    if snd:
+        for i in xrange(25):
+            snd.setVolume(65535*(i+1)/25)
+            time.sleep(duration/25.0)
 
 def play_sound_from_file(file_name):
     p=music_player(file_name)
@@ -59,12 +61,26 @@ class music_player(threading.Thread):
         threading.Thread.__init__(self)
         self.mfile=mfile
         self.stop=False
-    
+        self.pos=0
+        self.buf=None
+
+    def getbuff(self,csize=512):
+        #get buf loop so that playing can last long
+        if not self.buf:
+            f = open(self.mfile, 'rb')
+            self.buf=f.read()
+        if self.pos+csize>len(self.buf):
+            ret=self.buf[self.pos:]
+            self.pos=0
+        else:
+            ret=self.buf[self.pos:self.pos+csize]
+            self.pos+=csize
+        return ret
+
     def run(self):
         dm = muxer.Demuxer(str.split(self.mfile, '.')[-1].lower())
-        f = open(self.mfile, 'rb')
         self.snd = dec = None
-        s = f.read(32000)
+        s = self.getbuff()
         while len(s) and not self.stop:
             frames = dm.parse(s)
             if frames:
@@ -80,7 +96,7 @@ class music_player(threading.Thread):
                                 sound.AFMT_S16_LE)
                         data = r.data
                         self.snd.play(data)
-            s = f.read(512)
+            s = self.getbuff()
         #淡出
         fade_out(self.snd)
         #停止
@@ -98,11 +114,11 @@ class plugin(plugin_prototype):
         self.state_file=['plugins/bgm/bgm_common1.mp3','plugins/bgm/bgm_sarch1.mp3','plugins/bgm/bgm_event1.mp3']
 
     def _change_state(self,state):
+        #change state
+        self.last_state.append(self.state)#stack push
         if self.playing and state !=self.state:
             self.playing.stop=True
             self.playing.join()
-            #change state
-            self.last_state.append(self.state)#stack push
             self.state=state
             self.playing=play_sound_from_file(get_abs_path(self.state_file[state]))
             return True
@@ -121,14 +137,13 @@ class plugin(plugin_prototype):
     def ENTER_tasker(self,*args, **kwargs):
         self._change_state(0)
 
-    def ENTER_explore(self,*args, **kwargs):
+    def ENTER__explore_floor(self,*args, **kwargs):
         self._change_state(1)
-
 
     def ENTER__fairy_battle(self,*args, **kwargs):
         self._change_state(2)
 
-    EXIT__fairy_battle=EXIT_explore=EXIT_tasker=_rollback_state
+    EXIT__fairy_battle=EXIT__explore_floor=EXIT_tasker=_rollback_state
 
 
 if __name__=='__main__':
@@ -138,7 +153,7 @@ if __name__=='__main__':
     a.setval(1,2)
     a.ENTER_tasker()
     time.sleep(2)
-    a.ENTER_explore()
+    a.ENTER__explore_floor()
     time.sleep(2)
     snd = sound.Output(5,1,sound.AFMT_S16_LE) 
     snd.setVolume(0)
@@ -149,8 +164,8 @@ if __name__=='__main__':
     time.sleep(10)
     a.EXIT__fairy_battle()
     time.sleep(2)
-    a.EXIT_explore()
+    a.EXIT__explore_floor()
     time.sleep(2)
     a.EXIT_tasker()
     #a.ENTER_explore()
-    time.sleep(10)
+    time.sleep(120)

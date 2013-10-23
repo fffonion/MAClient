@@ -66,7 +66,7 @@ class plugins():
 
     def set_disable(self,lst):
         for p in lst:
-            if p:
+            if p and (p in self.plugins):
                 del(self.plugins[p])
 
     def _get_module_meta(self,mod,key):
@@ -139,6 +139,7 @@ class plugins():
         def do(*args, **kwargs):
             if self.enable:
                 ret=self._do_hook('%s%s'%(PREF_ENTER,func.__name__),*args, **kwargs)
+                args,kwargs=ret
                 ret=func(*args, **kwargs)
                 self._do_hook('%s%s'%(PREF_EXIT,func.__name__))
                 return ret

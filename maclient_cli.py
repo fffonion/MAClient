@@ -17,7 +17,7 @@ import maclient_proxy
 import maclient_logging
 import maclient_remote
 import getpass
-__version__=1.60
+__version__=1.61
 #look out for ironpython
 du8=sys.platform.startswith('cli') and \
     (lambda str:str) or\
