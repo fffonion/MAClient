@@ -363,7 +363,7 @@ class maClient():
                     else:
                         self.set_card(task[1])
                 elif task[0]=='autoset' or task[0]=='as':
-                    aim,fairy,maxline,testmode,delta,includes='MAX_CP',None,1,True,1,[]
+                    aim,fairy,maxline,testmode,delta,includes,infbc='MAX_CP',None,1,True,1,[],False
                     for arg in task[1:]:
                         if arg.startswith('aim:'):
                             aim=arg[4:]
@@ -379,12 +379,14 @@ class maClient():
                             maxline=int(arg[5:])
                         elif arg=='notest':
                             testmode=False
+                        elif arg=='infbc':
+                            infbc=True
                         elif arg.startswith('delta:'):
                             delta=float(arg[6:])
                         elif arg.startswith('incl:'):
                             includes=map(lambda x:int(x),arg[5:].split(','))
                     aim=getattr(maclient_smart,aim)
-                    self.invoke_autoset(aim=aim,fairy_info=fairy,maxline=maxline,testmode=testmode,delta=delta,includes=includes)
+                    self.invoke_autoset(aim=aim,fairy_info=fairy,maxline=maxline,testmode=testmode,delta=delta,includes=includes,infbc=infbc)
                 elif task[0]=='explore' or task[0]=='e':
                     self.explore(' '.join(task[1:]))
                 elif task[0]=='factor_battle' or task[0]=='fcb':
@@ -540,8 +542,8 @@ class maClient():
             return False
 
     @plugin.func_hook
-    def invoke_autoset(self,aim=maclient_smart.MAX_CP,includes=[],maxline=2,seleval='card.lv>45',fairy_info=None,delta=1,testmode=True):
-        return self.set_card('auto_set',aim=aim,includes=includes,maxline=maxline,seleval=seleval,fairy_info=fairy_info,delta=delta,testmode=testmode)
+    def invoke_autoset(self,aim=maclient_smart.MAX_CP,includes=[],maxline=2,seleval='card.lv>45',fairy_info=None,delta=1,testmode=True,infbc=False):
+        return self.set_card('auto_set',aim=aim,includes=includes,maxline=maxline,seleval=seleval,fairy_info=fairy_info,delta=delta,testmode=testmode,infbc=infbc)
 
     @plugin.func_hook
     def set_card(self,deckkey,**kwargs):
@@ -550,7 +552,8 @@ class maClient():
             return False
         elif deckkey=='auto_set':
             testmode=kwargs.pop('testmode')
-            res=maclient_smart.carddeck_gen(self.player.card,bclimit=testmode and 9999 or self.player.bc['current'],**kwargs)
+            infbc=kwargs.pop('infbc')
+            res=maclient_smart.carddeck_gen(self.player.card,bclimit=infbc and 9999 or self.player.bc['current'],**kwargs)
             if len(res)==5:
                 atk,hp,last_set_bc,sid,mid=res
                 param=map(lambda x:str(x),sid)
@@ -574,6 +577,7 @@ class maClient():
                     ))
             else:
                 logging.error(du8(res[0]))
+                return False
             if testmode:
                 return False
         else:

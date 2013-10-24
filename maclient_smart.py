@@ -149,7 +149,7 @@ def carddeck_gen(player_cards,aim=DEFEAT,bclimit=999,includes=[],maxline=2,selev
     range 允许误差（预测伤害相对于妖精血量）
     maxline 最大排数
     '''
-    print(aim,includes,maxline,seleval,fairy_info,delta)
+    #print(aim,bclimit,includes,maxline,seleval,fairy_info,delta)
     #只需要hp,atk,lv,cost,master_card_id,serial_id,object_dict->list节省20%时间
     _cards=[(
             card.hp,
