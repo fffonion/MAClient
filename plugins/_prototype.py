@@ -1,3 +1,4 @@
+#import dbm
 class plugin_prototype():
     def __init__(self):
         self.hooks={}
@@ -10,6 +11,9 @@ class plugin_prototype():
         new=list(ori_tuple)
         new[int(index)]=val
         return tuple(new)
+
+    def setval(self,key,val):
+        pass#print self.__name__
 
     # @classmethod
     # def __call__(self,func):

@@ -13,6 +13,7 @@ import time
 import locale
 import base64
 from xml2dict import XML2Dict
+from xml2dict import object_dict
 import random
 try:
     import ConfigParser
@@ -25,7 +26,7 @@ import maclient_network
 import maclient_logging
 import maclient_smart
 import maclient_plugin
-__version__=1.60
+__version__=1.61
 #CONSTS:
 EXPLORE_BATTLE,NORMAL_BATTLE,TAIL_BATTLE,WAKE_BATTLE=0,1,2,3
 GACHA_FRIENNSHIP_POINT,GACHAgacha_TICKET,GACHA_11=1,2,4
@@ -168,6 +169,7 @@ class maClient():
         if (self._read_config('system','enable_plugin') or '1')=='1':
             disabled_plugin=self._read_config('plugin','disabled').split(',')
             plugin.set_disable(disabled_plugin)
+            plugin.scan_hooks()
         else:
             plugin.enable=False
 
@@ -360,6 +362,31 @@ class maClient():
                         logging.error('set_card need 1 argument')
                     else:
                         self.set_card(task[1])
+                elif task[0]=='autoset' or task[0]=='as':
+                    aim,fairy,maxline,testmode,delta,includes,infbc='MAX_CP',None,1,True,1,[],False
+                    for arg in task[1:]:
+                        if arg.startswith('aim:'):
+                            aim=arg[4:]
+                        elif arg.startswith('fairy:'):
+                            fairy=object_dict()
+                            fairy.lv,fairy.hp,nothing=map(lambda x:int(x),(arg[6:]+',-325').split(','))
+                            if nothing!=-325:
+                                fairy.IS_WAKE=False
+                            else:
+                                fairy.IS_WAKE=True
+                            aim='DEFEAT'
+                        elif arg.startswith('line:'):
+                            maxline=int(arg[5:])
+                        elif arg=='notest':
+                            testmode=False
+                        elif arg=='infbc':
+                            infbc=True
+                        elif arg.startswith('delta:'):
+                            delta=float(arg[6:])
+                        elif arg.startswith('incl:'):
+                            includes=map(lambda x:int(x),arg[5:].split(','))
+                    aim=getattr(maclient_smart,aim)
+                    self.invoke_autoset(aim=aim,fairy_info=fairy,maxline=maxline,testmode=testmode,delta=delta,includes=includes,infbc=infbc)
                 elif task[0]=='explore' or task[0]=='e':
                     self.explore(' '.join(task[1:]))
                 elif task[0]=='factor_battle' or task[0]=='fcb':
@@ -515,44 +542,77 @@ class maClient():
             return False
 
     @plugin.func_hook
-    def set_card(self,deckkey):
+    def invoke_autoset(self,aim=maclient_smart.MAX_CP,includes=[],maxline=2,seleval='card.lv>45',fairy_info=None,delta=1,testmode=True,infbc=False):
+        return self.set_card('auto_set',aim=aim,includes=includes,maxline=maxline,seleval=seleval,fairy_info=fairy_info,delta=delta,testmode=testmode,infbc=infbc)
+
+    @plugin.func_hook
+    def set_card(self,deckkey,**kwargs):
         if deckkey=='no_change':
             logging.debug('set_card:no_change!')
             return False
-        try:
-            cardid=self._read_config('carddeck',deckkey)
-        except AttributeError:
-            logging.warning(du8('set_card:忘记加引号了？'))
-            return False
-        if cardid==self._read_config('record','last_set_card'):
-            logging.debug('set_card:card deck satisfied, not changing.')
-            return False
-        if cardid =='':
-            logging.warning(du8('set_card:不存在的卡组名？'))
-            return False
-        cardid=cardid.split(',')
-        param=[]
-        last_set_bc=0
-        leader_card=0
-        for i in xrange(len(cardid)):
-            if cardid[i]=='empty':
-                param.append('empty')
-                leader_card+=1
-            elif len(cardid[i])>3:
-                try:
-                    mid=self.player.card.sid(cardid[i]).master_card_id
-                except IndexError:
-                    logging.error(du8('你木有sid为 %s 的卡片'%(cardid[i])))
-                else:
-                    last_set_bc+=int(self.carddb[int(mid)][2])
-                    param.append(cardid[i])
+        elif deckkey=='auto_set':
+            testmode=kwargs.pop('testmode')
+            infbc=kwargs.pop('infbc')
+            res=maclient_smart.carddeck_gen(self.player.card,bclimit=infbc and 9999 or self.player.bc['current'],**kwargs)
+            if len(res)==5:
+                atk,hp,last_set_bc,sid,mid=res
+                param=map(lambda x:str(x),sid)
+                #别看比较好
+                print(du8('设置卡组为: ATK:%d HP:%d COST:%d\n%s'%(
+                    sum(atk),
+                    hp,
+                    last_set_bc,
+                        '\n'.join(
+                            map(lambda x,y: '%s\tATK:%-5d'%(x,y),
+                                ['|'.join(map(
+                                        lambda x:'   %-12s'%self.carddb[x][0],
+                                        mid[i:min(i+3,len(mid))]
+                                     )) 
+                                    for i in range(0,len(mid),3)
+                                ],#卡组分成一排排
+                                atk
+                                )
+                            )
+                        )
+                    ))
             else:
-                c=self.player.card.cid(cardid[i])
-                if c!=[]:
-                    param.append(c[-1].serial_id)
-                    last_set_bc+=int(self.carddb[int(cardid[i])][2])
+                logging.error(du8(res[0]))
+                return False
+            if testmode:
+                return False
+        else:
+            try:
+                cardid=self._read_config('carddeck',deckkey)
+            except AttributeError:
+                logging.warning(du8('set_card:忘记加引号了？'))
+                return False
+            if cardid==self._read_config('record','last_set_card'):
+                logging.debug('set_card:card deck satisfied, not changing.')
+                return False
+            if cardid =='':
+                logging.warning(du8('set_card:不存在的卡组名？'))
+                return False
+            cardid=cardid.split(',')
+            param=[]
+            last_set_bc=0
+            for i in xrange(len(cardid)):
+                if cardid[i]=='empty':
+                    param.append('empty')
+                elif len(cardid[i])>3:
+                    try:
+                        mid=self.player.card.sid(cardid[i]).master_card_id
+                    except IndexError:
+                        logging.error(du8('你木有sid为 %s 的卡片'%(cardid[i])))
+                    else:
+                        last_set_bc+=int(self.carddb[int(mid)][2])
+                        param.append(str(cardid[i]))
                 else:
-                    logging.error(du8('你木有id为 %s (%s)的卡片'%(cardid[i],self.carddb[int(cardid[i])][0])))
+                    c=self.player.card.cid(cardid[i])
+                    if c!=[]:
+                        param.append(str(c[-1].serial_id))
+                        last_set_bc+=int(self.carddb[int(cardid[i])][2])
+                    else:
+                        logging.error(du8('你木有id为 %s (%s)的卡片'%(cardid[i],self.carddb[int(cardid[i])][0])))
         noe=','.join(param).replace(',empty','').replace('empty,','').split(',')
         lc=random.choice(noe)
         t=5+random.random()*len(noe)*0.7
@@ -802,7 +862,7 @@ class maClient():
                         logging.info(du8('获得了因子碎片 湖:%s 碎片:%s'%(
                             info.parts_one.lake_id,info.parts_one.parts.parts_num)))
                         if len(ct)>10000:
-                            logging.indfo(du8('收集碎片合成了新的骑士卡片！'))
+                            logging.info(du8('收集碎片合成了新的骑士卡片！'))
                 else:
                     logging.warning(du8('AP不够了TUT'))
                     if not self.green_tea(self.cfg_auto_explore):
@@ -942,6 +1002,7 @@ class maClient():
             return False
         if self._dopost('card/exchange',postdata='mode=1')[0]['error']:
             return False
+        serial_id=map(lambda x:str(x),serial_id)#to string
         while len(serial_id)>0:
             #>30张要分割
             if len(serial_id)>30:
@@ -952,7 +1013,7 @@ class maClient():
             serial_id=serial_id[len(se_id):]
             #卖
             paramsell='serial_id=%s'%(','.join(se_id))
-            slp=random.random()*15+7
+            slp=random.random()*4+len(se_id)*0.6+2
             logging.sleep(du8('%f秒后卖卡……'%slp))
             time.sleep(slp)
             resp,ct=self._dopost('trunk/sell',postdata=paramsell)
@@ -1221,7 +1282,7 @@ class maClient():
                 hpleft=int(XML2Dict().fromstring(ct).response.body.explore.fairy.hp)
                 logging.info(du8('YOU LOSE- - Fairy-HP:%d'%hpleft))
                 #立即尾刀触发,如果补刀一次还没打死，就不打了-v-
-                if self.cfg_fairy_final_kill_hp>=hpleft and not bt_type==TAIL_BATTLE:
+                if self.cfg_fairy_final_kill_hp>=hpleft and (not bt_type==TAIL_BATTLE or hpleft<5000):
                     need_tail=True
             #金币以及经验
             logging.info(du8('EXP:+%d(%s) G:+%d(%s)'%(
@@ -1292,10 +1353,7 @@ class maClient():
         self._write_config('fairy',fairy.serial_id,
             '%d,%.0f'%(int(fairy.time_limit)+int(float(time.time())),time.time()))
         #等着看结果
-        if need_tail:
-            time.sleep(random.randint(4,10))
-        else:
-            time.sleep(random.randint(8,15))
+        time.sleep(random.randint(8,15))
         #领取收集品
         if nid!=[]:
             res=self._get_rewards(nid)

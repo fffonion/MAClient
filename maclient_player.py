@@ -140,19 +140,23 @@ class card(object):
                 self.db[int(c[0])]=[c[1],int(c[2]),int(c[3])]
 
     def update(self,carddict):
-        self.cards=carddict
+        self.cards=[]
+        for p in carddict:
+            self.cards.append(p)
+            for elem in p:#store as int
+                self.cards[-1][elem]=int(getattr(p,elem))
         self.count=len(self.cards)
         #print self.cid('124')
     def _found_card_by_value(self,key,value):
         res=[]
         for i in self.cards:
-            if i[key].value==value:
+            if i[key]==value:
                 res.append(i)
         return res
     def sid(self,sid):
-        return self._found_card_by_value('serial_id',sid)[0]
+        return self._found_card_by_value('serial_id',int(sid))[0]
     def cid(self,cid):
-        return self._found_card_by_value('master_card_id',cid)
+        return self._found_card_by_value('master_card_id',int(cid))
 
 def check_exclusion(inpstr):
     '''Return False if exclusion exists'''

@@ -9,7 +9,7 @@ import _webbrowser as webbrowser
 import urllib2
 import _winreg as winreg
 #start meta
-__name__='web broswer helper'
+__plugin_name__='web broswer helper'
 __author='fffonion'
 __version__=0.2
 hooks={}
