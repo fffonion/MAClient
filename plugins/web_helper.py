@@ -70,9 +70,13 @@ def disable_proxy():
 #start simplest proxy
 opener =urllib2.build_opener(urllib2.ProxyHandler({}))#force no proxy
 class Proxy(BaseHTTPRequestHandler):
-    def do_GET(self):
+    def do_HDL(self):
         req=urllib2.Request(self.path,headers=headers)
-        resp=opener.open(req)
+        if self.command == 'POST':
+            data= self.rfile.read(int(self.headers['Content-Length']))
+            resp=opener.open(req,data)
+        else:
+            resp=opener.open(req)
         body=resp.read()
         self.send_response(resp.getcode())
         for h in resp.info().items():
@@ -86,6 +90,7 @@ class Proxy(BaseHTTPRequestHandler):
         # except:
         #     data = body
         self.wfile.write(body)
+    do_GET=do_POST=do_HDL
 
 class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):   
     #address_family = socket.AF_INET6  

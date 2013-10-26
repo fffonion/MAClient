@@ -29,6 +29,7 @@ def iter_printer(l,sep='\n'):
         str+='%d.%-10s%s'%(cnt,e.strip('\n'),(cnt%3 and '' or sep))
         cnt+=1
     return str.decode('utf-8')
+    
 def getTerminalSize():
     #http://stackoverflow.com/questions/566746/how-to-get-console-window-width-in-python
     if os.name=='nt':
