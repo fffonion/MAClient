@@ -364,7 +364,7 @@ class maClient():
                     else:
                         self.set_card(task[1])
                 elif task[0]=='autoset' or task[0]=='as':
-                    aim,fairy,maxline,testmode,delta,includes,bclimit='MAX_CP',None,1,True,1,[],BC_LIMIT_CURRENT
+                    aim,fairy,maxline,testmode,delta,includes,bclimit='MAX_DMG',None,1,True,1,[],BC_LIMIT_CURRENT
                     for arg in task[1:]:
                         if arg.startswith('aim:'):
                             aim=arg[4:]
@@ -394,7 +394,10 @@ class maClient():
                             includes=map(lambda x:int(x),arg[5:].split(','))
                         elif arg!='':
                             logging.warning(du8('未识别的参数 %s'%arg))
-                    aim=getattr(maclient_smart,aim)
+                    try:
+                        aim=getattr(maclient_smart,aim.upper())
+                    except AttributeError:
+                        logging.warning(du8('未识别的目标 %s'%aim))
                     self.invoke_autoset(aim=aim,fairy_info=fairy,maxline=maxline,testmode=testmode,delta=delta,includes=includes,bclimit=bclimit)
                 elif task[0]=='explore' or task[0]=='e':
                     self.explore(' '.join(task[1:]))
@@ -783,7 +786,7 @@ class maClient():
                     break#更换秘境
             logging.info(du8('进♂入地区 ')+floor.id)
             if floor.type=='1':
-                logging.warning(du8('秘境守护者出现，将使用最大卡组干掉之'))
+                logging.info(du8('秘境守护者出现，将使用最大卡组干掉之'))
                 param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
                 if self._dopost('exploration/boss_floor',postdata=param)[0]['error']:
                     return None,EXPLORE_ERROR
