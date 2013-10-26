@@ -31,6 +31,7 @@ __version__=1.61
 EXPLORE_BATTLE,NORMAL_BATTLE,TAIL_BATTLE,WAKE_BATTLE=0,1,2,3
 GACHA_FRIENNSHIP_POINT,GACHAgacha_TICKET,GACHA_11=1,2,4
 EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_BC= -2,-1,0,1,2
+BC_LIMIT_MAX,BC_LIMIT_CURRENT=-2,-1
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #eval dicts
 eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
@@ -323,7 +324,7 @@ class maClient():
         return str
     
     def _raw_input(self,str):
-        return raw_input(du8(str).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace')).decode(locale.getdefaultlocale()[1] or 'utf-8')
+        return raw_input(du8(str).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace')).decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
 
     def tolist(self,obj):
         if not isinstance(obj, list):
@@ -363,7 +364,7 @@ class maClient():
                     else:
                         self.set_card(task[1])
                 elif task[0]=='autoset' or task[0]=='as':
-                    aim,fairy,maxline,testmode,delta,includes,infbc='MAX_CP',None,1,True,1,[],False
+                    aim,fairy,maxline,testmode,delta,includes,bclimit='MAX_CP',None,1,True,1,[],BC_LIMIT_CURRENT
                     for arg in task[1:]:
                         if arg.startswith('aim:'):
                             aim=arg[4:]
@@ -379,14 +380,22 @@ class maClient():
                             maxline=int(arg[5:])
                         elif arg=='notest':
                             testmode=False
-                        elif arg=='infbc':
-                            infbc=True
+                        elif arg.startswith('bc:'):
+                            _l=arg[3:]
+                            if _l=='max':
+                                bclimit=BC_LIMIT_MAX
+                            elif _l in ['cur','current']:
+                                bclimit=BC_LIMIT_CURRENT
+                            else:
+                               bclimit=int(_l) 
                         elif arg.startswith('delta:'):
                             delta=float(arg[6:])
                         elif arg.startswith('incl:'):
                             includes=map(lambda x:int(x),arg[5:].split(','))
+                        elif arg!='':
+                            logging.warning(du8('未识别的参数 %s'%arg))
                     aim=getattr(maclient_smart,aim)
-                    self.invoke_autoset(aim=aim,fairy_info=fairy,maxline=maxline,testmode=testmode,delta=delta,includes=includes,infbc=infbc)
+                    self.invoke_autoset(aim=aim,fairy_info=fairy,maxline=maxline,testmode=testmode,delta=delta,includes=includes,bclimit=bclimit)
                 elif task[0]=='explore' or task[0]=='e':
                     self.explore(' '.join(task[1:]))
                 elif task[0]=='factor_battle' or task[0]=='fcb':
@@ -542,8 +551,8 @@ class maClient():
             return False
 
     @plugin.func_hook
-    def invoke_autoset(self,aim=maclient_smart.MAX_CP,includes=[],maxline=2,seleval='card.lv>45',fairy_info=None,delta=1,testmode=True,infbc=False):
-        return self.set_card('auto_set',aim=aim,includes=includes,maxline=maxline,seleval=seleval,fairy_info=fairy_info,delta=delta,testmode=testmode,infbc=infbc)
+    def invoke_autoset(self,aim=maclient_smart.MAX_CP,includes=[],maxline=2,seleval='card.lv>45',fairy_info=None,delta=1,testmode=True,bclimit=BC_LIMIT_CURRENT):
+        return self.set_card('auto_set',aim=aim,includes=includes,maxline=maxline,seleval=seleval,fairy_info=fairy_info,delta=delta,testmode=testmode,bclimit=bclimit)
 
     @plugin.func_hook
     def set_card(self,deckkey,**kwargs):
@@ -552,8 +561,12 @@ class maClient():
             return False
         elif deckkey=='auto_set':
             testmode=kwargs.pop('testmode')
-            infbc=kwargs.pop('infbc')
-            res=maclient_smart.carddeck_gen(self.player.card,bclimit=infbc and 9999 or self.player.bc['current'],**kwargs)
+            bclimit=kwargs.pop('bclimit')
+            res=maclient_smart.carddeck_gen(
+                self.player.card,
+                bclimit=(bclimit==BC_LIMIT_MAX and self.player.bc['max'] or (
+                            bclimit==BC_LIMIT_CURRENT and self.player.bc['current'] or bclimit)),
+                **kwargs)
             if len(res)==5:
                 atk,hp,last_set_bc,sid,mid=res
                 param=map(lambda x:str(x),sid)
@@ -768,11 +781,15 @@ class maClient():
                 if nofloorselect:
                     msg=EXPLORE_NO_FLOOR
                     break#更换秘境
-            if floor.type=='1':
-                logging.warning(du8('秘境守护者出现，请手动干掉之www；将忽略此秘境'))
-                msg=EXPLORE_HAS_BOSS
-                break
             logging.info(du8('进♂入地区 ')+floor.id)
+            if floor.type=='1':
+                logging.warning(du8('秘境守护者出现，将使用最大卡组干掉之'))
+                param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
+                if self._dopost('exploration/boss_floor',postdata=param)[0]['error']:
+                    return None,EXPLORE_ERROR
+                self._boss_battle(area_id=area.id,floor_id=floor.id)
+                #退出秘境
+                break
             #进入
             param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
             if self._dopost('exploration/get_floor',postdata=param)[0]['error']:
@@ -879,7 +896,23 @@ class maClient():
         return None,EXPLORE_OK
                 #print '%s - %s%% cost%s'%\
                     #(floors[i].id,floors[i].progress,floors[i].cost)
-               
+    
+    @plugin.func_hook
+    def _boss_battle(self,area_id=None,floor_id=None):
+        if not (area_id and floor_id):
+            return False
+        self.invoke_autoset(aim=maclient_smart.MAX_CP,maxline=4,seleval='card.lv>45',testmode=False,bclimit=BC_LIMIT_MAX)
+        param="area_id=%s&floor_id=%s"%(area_id,floor_id)
+        resp,ct=self._dopost('exploration/battle',postdata=param)
+        if resp['error']:
+            return False
+        if XML2Dict().fromstring(ct).response.body.battle_result.winner=='1':
+            logging.info(du8('战斗胜利o(*￣▽￣*)o '))
+            return True
+        else:
+            logging.info(du8('输了呢Σ( ° △ °|||)︴ '))
+            return False
+        
     @plugin.func_hook
     def gacha(self,gacha_type=GACHA_FRIENNSHIP_POINT):
         if gacha_type==GACHA_FRIENNSHIP_POINT:
@@ -1385,11 +1418,13 @@ class maClient():
     def like(self,words='你好！'):
         if words=='':
             words=self.cfg_greet_words
+        words=words.encode('utf-8')
+        #os._exit(0)
         resp,dec=self._dopost('menu/friendlist',postdata='move=0')
         if resp['error']:
             return
         uids=[]
-        for u in XML2Dict().fromstring(dec).response.body.friend_list.user:
+        for u in self.tolist(XML2Dict().fromstring(dec).response.body.friend_list.user):
             uids.append(u.id)
         resp,dec=self._dopost('friend/like_user',postdata=('dialog=1&user_id=%s' % ','.join(uids)))
         if resp['error']:
@@ -1400,9 +1435,12 @@ class maClient():
             return
         else:
             logging.info(body.friend_act_res.message)
-        comment_ids=[]
-        for cmid in body.friend_comment_id.comment_id:
-            comment_ids.append(cmid.value)
+        if len(body.friend_comment_id.comment_id)==1:
+            comment_ids=[body.friend_comment_id.comment_id]
+        else:
+            comment_ids=[]
+            for cmid in body.friend_comment_id.comment_id:
+                comment_ids.append(cmid.value)
         resp,dec=self._dopost('comment/send',postdata=('comment_id=%s&like_message=%s&user_id=%s' %
             (','.join(comment_ids),words,','.join(uids))
             ))
@@ -1509,7 +1547,7 @@ class maClient():
                 if lastmove!=2:
                     resp,dec=self._dopost('menu/other_list')
                 lastmove=2
-                qry=self._raw_input('输入关键词> ').decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
+                qry=self._raw_input('输入关键词> ')#.decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
                 param='name=%s'%qry
                 resp,dec=self._dopost('menu/player_search',postdata=param)
                 if resp['error']:return
