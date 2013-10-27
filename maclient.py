@@ -363,7 +363,7 @@ class maClient():
                         logging.error('set_card need 1 argument')
                     else:
                         self.set_card(task[1])
-                elif task[0]=='autoset' or task[0]=='as':
+                elif task[0]=='auto_set' or task[0]=='as':
                     aim,fairy,maxline,testmode,delta,includes,bclimit='MAX_DMG',None,1,True,1,[],BC_LIMIT_CURRENT
                     for arg in task[1:]:
                         if arg.startswith('aim:'):
@@ -1696,20 +1696,20 @@ class maClient():
                 lakes=[lakes]
             #EVENT HANDLE
             if 'event_point' in cmp_parts:
-                logging.info(du8('BP:%s Rank:%s x%s %s:%s left.'%(
+                logging.info(du8('BP:%s Rank:%s x%s %s left.'%(
                     cmp_parts.event_point,cmp_parts.event_rank,cmp_parts.event_bonus_rate,
-                    int(cmp_parts.event_bonus_end_time)/60,int(cmp_parts.event_bonus_end_time)%60)))
+                    time.strftime('%M\'%S"',time.localtime(int(cmp_parts.event_bonus_end_time)/1000-time.time())))))
             random.shuffle(lakes)
             if sel_lake==['']:
                 l=lakes[0]
             else:
                 for l in lakes:
+                    if 'lake_id' not in l:
+                        l['lake_id']=l.event_id
                     if l.lake_id in sel_lake:
                         break
             if 'event_id' not in l:
                 l['event_id']='0'
-            if 'lake_id' not in l:
-                l['lake_id']=l.event_id
             #if battle_win>0:#赢过至少一次则重新筛选
             partids=[]
             battle_win=0
