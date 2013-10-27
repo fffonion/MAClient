@@ -137,7 +137,7 @@ def _carddeck_info(cards):
 
 #card_deck generator
 DEFEAT,MAX_DMG,MAX_CP=0,1,2
-def carddeck_gen(player_cards,aim=DEFEAT,bclimit=999,includes=[],maxline=2,seleval='True',fairy_info=None,delta=1):
+def carddeck_gen(player_cards,aim=DEFEAT,bclimit=999,includes=[],maxline=2,seleval='True',fairy_info=None,delta=1,fast_mode=False):
     '''
     自动配卡
     aim 目标
@@ -163,7 +163,7 @@ def carddeck_gen(player_cards,aim=DEFEAT,bclimit=999,includes=[],maxline=2,selev
     _sumup=lambda a,b:a+b
     atkpw=lambda d:d[HP]+d[ATK]
     cp=lambda d:1.0*(d[HP]+d[ATK])/player_cards.db[d[MID]][2]
-    resdict=[]
+    reslist=[]
     if aim==DEFEAT:
         if not fairy_info:
             return ['没有输入妖精信息']
@@ -183,12 +183,12 @@ def carddeck_gen(player_cards,aim=DEFEAT,bclimit=999,includes=[],maxline=2,selev
                 if dcalc(_atk,_hp,_rnd):#看能不能打败
                     sids=map(lambda d: d[SID],deck)
                     #print sids
-                    resdict.append([1.0*(sum(_atk)+_hp)/_cost,_atk,_hp,_cost,sids,mids])
+                    reslist.append([1.0*(sum(_atk)+_hp)/_cost,_atk,_hp,_cost,sids,mids])
                 else:
                     if last_failed<(sum(_atk)*_hp):
                         last_failed=(sum(_atk)*_hp)
             #若当前数量的卡组能满足要求，则不找更多的卡了
-            if resdict:
+            if reslist:
                 break
         #COST最小，其次看CP
         return_lambda=lambda x:(-x[3],x[0])
@@ -196,11 +196,14 @@ def carddeck_gen(player_cards,aim=DEFEAT,bclimit=999,includes=[],maxline=2,selev
         if aim==MAX_DMG:
             deckcnts=[i*3 for i in range(maxline,0,-1)]
             return_lambda=lambda x:(sum(x[0])*x[1])
-            _cards=sorted(_cards,key=lambda x:x[ATK]*x[HP],reverse=True)[:min(3*maxline+3,len(_cards))]
+            _cards=sorted(_cards,key=lambda x:x[ATK]*x[HP],reverse=True)#[:min(3*maxline+3,len(_cards))]
+            #_cards=sorted(_cards,key=lambda x:x[ATK]*x[HP]/player_cards.db[x[MID]][2],reverse=True)[:len(_cards)/2]
         else:
             deckcnts=[1,2]+[i*3 for i in range(1,maxline+1)]
             return_lambda=lambda x:(1.0*(x[1]*sum(x[0]))/x[2])
-            _cards=sorted(_cards,key=lambda x:x[ATK]*x[HP]/player_cards.db[x[MID]][2],reverse=True)[:min(3*maxline+3,len(_cards))]
+            _cards=sorted(_cards,key=lambda x:x[ATK]*x[HP]/player_cards.db[x[MID]][2],reverse=True)#[:min(3*maxline+3,len(_cards))]
+        if fast_mode:
+            _cards=_cards[:min(3*maxline*2,len(_cards))]
         for deckcnt in deckcnts:
             for deck in _iter_gen(deckcnt):
                 mids=map(lambda d: d[MID],deck)
@@ -208,31 +211,21 @@ def carddeck_gen(player_cards,aim=DEFEAT,bclimit=999,includes=[],maxline=2,selev
                 if bclimit>=_cost:
                     _atk,_hp,_rnd=_carddeck_info(deck)
                     sids=map(lambda d: d[SID],deck)
-                    resdict.append([_atk,_hp,_cost,sids,mids])
-    # for r in resdict:
+                    reslist.append([_atk,_hp,_cost,sids,mids])
+            if reslist:
+                break
+    # for r in reslist:
     #     print r,','.join(map(lambda e: player_cards.db[e][0],r[2]))
     #返回cost,sid，mid
     #错误时返回[errmsg]
-    if resdict:
-        print ('Found %d suitable carddeck(s).'%len(resdict))
-        r=max(resdict,key=return_lambda)
+    if reslist:
+        print ('Found %d suitable carddeck(s).'%len(reslist))
+        r=max(reslist,key=return_lambda)
         return r[-5:]
     else:
         return ['未能选出符合条件的卡组']
     
 
 if __name__=='__main__':
-    #print calc.fairy_hp(1,calc.NORMAL_FAIRY)
-    #print calc.items_get(7,calc.WAKE_FAIRY,505956)
-    import maclient
-    from xml2dict import object_dict
-    import time
-    fairy=object_dict()
-    fairy.lv,fairy.hp,fairy.IS_WAKE=20,200000,False
-    mac=maclient.maClient(configfile=r'D:\Dev\Python\Workspace\maClient\_mine\config_tw.ini')
-    mac.initplayer(open(r'D:\Dev\Python\Workspace\maClient\.tw-532554.playerdata','r').read())
-    #t1=0
-    t2=time.time()
-    print carddeck_gen(mac.player.card,aim=MAX_DMG,maxline=1,bclimit=250,fairy_info=fairy,seleval='card.lv>45 or card.master_card_id in [124,59,8]')
-    #print t2',time.time()-t2
-    #raw_input()
+    print calc.fairy_hp(1,calc.NORMAL_FAIRY)
+    print calc.items_get(7,calc.WAKE_FAIRY,505956)

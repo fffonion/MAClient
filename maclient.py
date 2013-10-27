@@ -363,8 +363,8 @@ class maClient():
                         logging.error('set_card need 1 argument')
                     else:
                         self.set_card(task[1])
-                elif task[0]=='autoset' or task[0]=='as':
-                    aim,fairy,maxline,testmode,delta,includes,bclimit='MAX_CP',None,1,True,1,[],BC_LIMIT_CURRENT
+                elif task[0]=='auto_set' or task[0]=='as':
+                    aim,fairy,maxline,testmode,delta,includes,bclimit='MAX_DMG',None,1,True,1,[],BC_LIMIT_CURRENT
                     for arg in task[1:]:
                         if arg.startswith('aim:'):
                             aim=arg[4:]
@@ -394,7 +394,10 @@ class maClient():
                             includes=map(lambda x:int(x),arg[5:].split(','))
                         elif arg!='':
                             logging.warning(du8('未识别的参数 %s'%arg))
-                    aim=getattr(maclient_smart,aim)
+                    try:
+                        aim=getattr(maclient_smart,aim.upper())
+                    except AttributeError:
+                        logging.warning(du8('未识别的目标 %s'%aim))
                     self.invoke_autoset(aim=aim,fairy_info=fairy,maxline=maxline,testmode=testmode,delta=delta,includes=includes,bclimit=bclimit)
                 elif task[0]=='explore' or task[0]=='e':
                     self.explore(' '.join(task[1:]))
@@ -783,7 +786,7 @@ class maClient():
                     break#更换秘境
             logging.info(du8('进♂入地区 ')+floor.id)
             if floor.type=='1':
-                logging.warning(du8('秘境守护者出现，将使用最大卡组干掉之'))
+                logging.info(du8('秘境守护者出现，将使用最大卡组干掉之'))
                 param='area_id=%s&check=1&floor_id=%s'%(area.id,floor.id)
                 if self._dopost('exploration/boss_floor',postdata=param)[0]['error']:
                     return None,EXPLORE_ERROR
@@ -1693,20 +1696,20 @@ class maClient():
                 lakes=[lakes]
             #EVENT HANDLE
             if 'event_point' in cmp_parts:
-                logging.info(du8('BP:%s Rank:%s x%s %s:%s left.'%(
+                logging.info(du8('BP:%s Rank:%s x%s %s left.'%(
                     cmp_parts.event_point,cmp_parts.event_rank,cmp_parts.event_bonus_rate,
-                    int(cmp_parts.event_bonus_end_time)/60,int(cmp_parts.event_bonus_end_time)%60)))
+                    time.strftime('%M\'%S"',time.localtime(int(cmp_parts.event_bonus_end_time)/1000-time.time())))))
             random.shuffle(lakes)
             if sel_lake==['']:
                 l=lakes[0]
             else:
                 for l in lakes:
+                    if 'lake_id' not in l:
+                        l['lake_id']=l.event_id
                     if l.lake_id in sel_lake:
                         break
             if 'event_id' not in l:
                 l['event_id']='0'
-            if 'lake_id' not in l:
-                l['lake_id']=l.event_id
             #if battle_win>0:#赢过至少一次则重新筛选
             partids=[]
             battle_win=0

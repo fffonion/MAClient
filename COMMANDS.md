@@ -16,6 +16,25 @@ set_card/sc
     set_card card_deck_key
 
 card_deck_key为card_deck中已定义的项
+
+###自动配卡
+
+auto_set/as
+
+	#所有参数均为可选参数
+	#aim 目标，可选 max_dmg最大攻击输出(默认)，max_cp最大CP，defeatT打败指定妖精
+	#line 卡组排数，可选1(默认),2,3,4；若目标为DEFEAT，建议排数为1，时间复杂度太高了
+	#fairy 如果目标是DEFEAT，则必须输入妖精信息，(默认为空)
+	#	fairy:15,300000 15级的剩余血量30w的妖精
+	#	fairy:15,300000,WAKE 15级的剩余血量30w的醒妖
+	#delta 妖精血量误差(默认为1，即无误差)
+	#bc 可选max 玩家最大BC，cur 当前剩余bc(默认)，或输入一个数值
+	#notest 选出卡组后保存(无此参数时默认不保存)
+	#incl 包含某些卡片(默认为无) (现在还不能用)
+	auto_set #选出一排当前剩余BC下最大攻击的卡组
+	auto_set line:2 bc:max notest #选出两排不限BC的最大攻击卡组，并保存
+	auto_set aim:defeat line:1 bc:cur fairy:30,263215 notest #选出一排能打死Lv30剩余hp263215的普妖的卡组，并保存
+	auto_set aim:max_dmg line:1 bc:cur incl:124 #选出当前BC下一排最大攻击输出卡组，包括小狼女，不保存
     
 ###因子战
 

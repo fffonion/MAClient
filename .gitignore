@@ -50,5 +50,5 @@ release
 *.log
 *.bat
 *.saved.*
-testxml.py
+test*.py
 desktop.ini

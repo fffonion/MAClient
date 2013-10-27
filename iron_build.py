@@ -60,7 +60,7 @@ gb.append("/out:StdLib")
 #pyc.Main(["/target:dll"]+gb)
 
 #Build EXE
-gb=["/main:maclient_cli.py","xml2dict.py","maclient.py","maclient_network.py","maclient_smart.py","maclient_player.py","maclient_proxy.py","maclient_remote.py","maclient_update.py","maclient_logging.py","pyaes.py","/target:exe","/out:maclient_cli"]
+gb=["/main:maclient_cli.py","xml2dict.py","maclient.py","maclient_network.py","maclient_smart.py","maclient_player.py","maclient_proxy.py","maclient_remote.py","maclient_update.py","maclient_logging.py","maclient_plugin.py","pyaes.py","/target:exe","/out:maclient_cli"]
 pyc.Main(gb)
 
 
