@@ -134,6 +134,7 @@ class maClient():
             eval_fairy_select_carddeck)
         self.evalstr_factor=self._eval_gen(self._read_config('condition','factor'),{})
         #tasker须动态生成#self.evalstr_task=self._eval_gen(self._read_config('system','tasker'),{})
+        logging.debug(du8('system:知识库版本 %s'%maclient_smart.__version__))
         logging.debug(du8('system:初始化完成(%s)'%self.loc))
         self.lastposttime=0
         self.lastfairytime=0
@@ -364,7 +365,7 @@ class maClient():
                     else:
                         self.set_card(task[1])
                 elif task[0]=='auto_set' or task[0]=='as':
-                    aim,fairy,maxline,testmode,delta,includes,bclimit='MAX_DMG',None,1,True,1,[],BC_LIMIT_CURRENT
+                    aim,fairy,maxline,testmode,delta,includes,bclimit,fast_mode='MAX_DMG',None,1,True,1,[],BC_LIMIT_CURRENT,True
                     for arg in task[1:]:
                         if arg.startswith('aim:'):
                             aim=arg[4:]
@@ -390,6 +391,8 @@ class maClient():
                                bclimit=int(_l) 
                         elif arg.startswith('delta:'):
                             delta=float(arg[6:])
+                        elif arg.startswith('nofast'):
+                            fast_mode=False
                         elif arg.startswith('incl:'):
                             includes=map(lambda x:int(x),arg[5:].split(','))
                         elif arg!='':
@@ -398,7 +401,7 @@ class maClient():
                         aim=getattr(maclient_smart,aim.upper())
                     except AttributeError:
                         logging.warning(du8('未识别的目标 %s'%aim))
-                    self.invoke_autoset(aim=aim,fairy_info=fairy,maxline=maxline,testmode=testmode,delta=delta,includes=includes,bclimit=bclimit)
+                    self.invoke_autoset(aim=aim,fairy_info=fairy,maxline=maxline,testmode=testmode,delta=delta,includes=includes,bclimit=bclimit,fast_mode=fast_mode)
                 elif task[0]=='explore' or task[0]=='e':
                     self.explore(' '.join(task[1:]))
                 elif task[0]=='factor_battle' or task[0]=='fcb':
@@ -554,8 +557,8 @@ class maClient():
             return False
 
     @plugin.func_hook
-    def invoke_autoset(self,aim=maclient_smart.MAX_CP,includes=[],maxline=2,seleval='card.lv>45',fairy_info=None,delta=1,testmode=True,bclimit=BC_LIMIT_CURRENT):
-        return self.set_card('auto_set',aim=aim,includes=includes,maxline=maxline,seleval=seleval,fairy_info=fairy_info,delta=delta,testmode=testmode,bclimit=bclimit)
+    def invoke_autoset(self,aim=maclient_smart.MAX_CP,includes=[],maxline=2,seleval='card.lv>45',fairy_info=None,delta=1,testmode=True,bclimit=BC_LIMIT_CURRENT,fast_mode=True):
+        return self.set_card('auto_set',aim=aim,includes=includes,maxline=maxline,seleval=seleval,fairy_info=fairy_info,delta=delta,testmode=testmode,bclimit=bclimit,fast_mode=fast_mode)
 
     @plugin.func_hook
     def set_card(self,deckkey,**kwargs):
@@ -904,7 +907,7 @@ class maClient():
     def _boss_battle(self,area_id=None,floor_id=None):
         if not (area_id and floor_id):
             return False
-        self.invoke_autoset(aim=maclient_smart.MAX_CP,maxline=4,seleval='card.lv>45',testmode=False,bclimit=BC_LIMIT_MAX)
+        self.invoke_autoset(aim=maclient_smart.MAX_DMG,maxline=4,seleval='card.lv>45',testmode=False,bclimit=BC_LIMIT_MAX,fast_mode=True)
         param="area_id=%s&floor_id=%s"%(area_id,floor_id)
         resp,ct=self._dopost('exploration/battle',postdata=param)
         if resp['error']:
@@ -1494,7 +1497,7 @@ class maClient():
                             user.logintime=31
                         else :
                             user.logintime=0
-                    if user.logintime>delfriend and user.logintime>maxlogintime:
+                    if user.logintime>=delfriend and user.logintime>=maxlogintime:
                         deluser=user
                         maxlogintime=user.logintime
                     i+=1
@@ -1698,7 +1701,7 @@ class maClient():
             if 'event_point' in cmp_parts:
                 logging.info(du8('BP:%s Rank:%s x%s %s left.'%(
                     cmp_parts.event_point,cmp_parts.event_rank,cmp_parts.event_bonus_rate,
-                    time.strftime('%M\'%S"',time.localtime(int(cmp_parts.event_bonus_end_time)/1000-time.time())))))
+                    time.strftime('%M\'%S"',time.localtime(int(cmp_parts.event_bonus_end_time)/1000-time.time())) if cmp_parts.event_bonus_end_time!='0' else '0')))
             random.shuffle(lakes)
             if sel_lake==['']:
                 l=lakes[0]

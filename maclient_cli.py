@@ -111,8 +111,7 @@ if __name__=='__main__':
     reload(sys)
     sys.setdefaultencoding('utf-8')
     #ht=httplib2.Http(timeout=30)
-    intro='v%s%s'%(__version__,os.name=='nt' and ' by fffonion' or '')
-    print(du8('%s%s%s%s'%('='*((getTerminalSize()[0]-len(intro)-18)/2),'丧心病狂的MA客户端',intro,'='*((getTerminalSize()[0]-len(intro)-18)/2))))
+    print(du8('%s%sv%s%s'%('='*((getTerminalSize()[0]-5-18)/2),'丧心病狂的MA客户端',__version__,'='*((getTerminalSize()[0]-5-18)/2))))
     if len(sys.argv)>2:
         maclient1=maclient.maClient(configfile=sys.argv[1],savesession=True)
         #auth()
@@ -145,7 +144,7 @@ if __name__=='__main__':
                 try:
                     maclient1.tasker()
                 except KeyboardInterrupt:
-                    os._exit(1)
+                    continue
             elif ch=='h':
                 print(du8('登陆 login/l,设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,'
                     '刷列表中的妖精 fairy_battle/fyb,嗑药 red_tea/rt,嗑药 green_tea/gt,自动卖卡 sell_card/slc,'
@@ -290,7 +289,7 @@ if __name__=='__main__':
                         else:
                             maclient1.tasker(cmd=ch)
                     except KeyboardInterrupt:
-                        maclient1._exit(0)
+                        continue
             else:
                 maclient.logging.error(du8('嗯-v-？'))
             print(' %s %s'%('-'*(getTerminalSize()[0]-2),'\n'))
