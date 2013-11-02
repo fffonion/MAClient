@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__='1.0-build20131030'
+__version__='1.0-build20131101'
 #server specified configutaions
 max_card_count_cn=max_card_count_kr=200
 max_card_count_tw=max_card_count_jp=250
@@ -22,7 +22,7 @@ app_ver_kr=100
 app_ver_jp=236
 #wake
 name_wake_rare=['逆迴十六夜']
-name_wake=name_wake_rare+['觉醒','覺醒','妖刀']
+name_wake=name_wake_rare+['觉醒','覺醒','妖刀','魅影']
 #snda gplus, not working
 class snda_gplus():
     #thanks to luw2007(https://github.com/luw2007/libMA/blob/master/push.py)

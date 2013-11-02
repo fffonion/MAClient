@@ -15,7 +15,6 @@ import threading
 import maclient
 import maclient_proxy
 import maclient_logging
-import maclient_remote
 import getpass
 __version__=1.61
 #look out for ironpython

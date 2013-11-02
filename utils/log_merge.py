@@ -43,11 +43,14 @@ def timefmt(t):
 
 @cache
 def get_time(strt):
-    if not strt.startswith('['):
-        strtime=strt[1:strt.find(']')]
+    if strt.startswith('['):
+        if strt.find(']')!=16:#malformed
+            end=strt.find(']')
+            strt=strt[end-15:end]
+        strtime=strt[1:16]
         return timefmt(strtime)
     else:#没时间数据,返回一个最小的时间
-        return timefmt('Jan 01 00:00:01')
+        return [0,'01','00','00','01']
         
 
 merge_lines=[]
@@ -62,6 +65,8 @@ while True:
         else:
             finish=False
             if get_time(flines[i][index[i]])<=get_time(early):
+                #print get_time(flines[i][index[i]]),get_time(early),i
+                #raw_input()
                 early=flines[i][index[i]]
                 ind=i
     if finish:

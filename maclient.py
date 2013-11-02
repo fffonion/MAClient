@@ -34,13 +34,12 @@ EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_BC= -2,-1,
 BC_LIMIT_MAX,BC_LIMIT_CURRENT=-2,-1
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #eval dicts
-eval_fairy_select={'LIMIT':'time_limit','NOT_BATTLED':'not_battled','.lv':'.fairy.lv','IS_MINE':'user.id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']"}
-eval_fairy_select_carddeck={'IS_MINE':'discoverer_id == self.player.id','IS_WAKE_RARE':'wake_rare','IS_WAKE':'wake','STILL_ALIVE':"self.player.fairy['alive']",'LIMIT':'time_limit'}
-eval_explore_area={'IS_EVENT':"area_type=='1'",'IS_DAILY_EVENT':"id.startswith('5')",'NOT_FINNISHED':"prog_area!='100'",\
-            }
-eval_explore_floor={'NOT_FINNISHED':'progress!="100"'}
-eval_select_card={'lv':'lv_i','hp':'hp_i','atk':'atk_i'}
-eval_task={}
+eval_fairy_select=[('LIMIT','time_limit'),('NOT_BATTLED','not_battled'),('.lv','.fairy.lv'),('IS_MINE','user.id == self.player.id'),('IS_WAKE_RARE','wake_rare'),('IS_WAKE','wake'),('STILL_ALIVE',"self.player.fairy['alive']")]
+eval_fairy_select_carddeck=[('IS_MINE','discoverer_id == self.player.id'),('IS_WAKE_RARE','wake_rare'),('IS_WAKE','wake'),('STILL_ALIVE',"self.player.fairy['alive']"),('LIMIT','time_limit')]
+eval_explore_area=[('IS_EVENT',"area_type=='1'"),('IS_DAILY_EVENT',"id.startswith('5')"),('NOT_FINNISHED',"prog_area!='100'")]
+eval_explore_floor=[('NOT_FINNISHED','progress!="100"')]
+eval_select_card=[('lv','lv_i'),('hp','hp_i'),('atk','atk_i')]
+eval_task=[]
 duowan={'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html','tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 logging = maclient_logging.Logging('logging')#=sys.modules['logging']
 du8=sys.platform.startswith('cli') and \
@@ -132,9 +131,9 @@ class maClient():
         self.evalstr_selcard=self._eval_gen(self._read_config('condition','select_card_to_sell'),eval_select_card)
         self.evalstr_fairy_select_carddeck=self._eval_gen(self._read_config('condition','fairy_select_carddeck'),
             eval_fairy_select_carddeck)
-        self.evalstr_factor=self._eval_gen(self._read_config('condition','factor'),{})
-        #tasker须动态生成#self.evalstr_task=self._eval_gen(self._read_config('system','tasker'),{})
-        logging.debug(du8('system:知识库版本 %s'%maclient_smart.__version__))
+        self.evalstr_factor=self._eval_gen(self._read_config('condition','factor'),[])
+        #tasker须动态生成#self.evalstr_task=self._eval_gen(self._read_config('system','tasker'),[])
+        logging.debug(du8('system:知识库版本 %s%s'%(maclient_smart.__version__,str(maclient_smart).endswith('pyd\'>') and ' C-Extension' or '')))
         logging.debug(du8('system:初始化完成(%s)'%self.loc))
         self.lastposttime=0
         self.lastfairytime=0
@@ -314,15 +313,13 @@ class maClient():
         self.cf.remove_option(sec, key)
         self.cf.write(open(f, "w"))
 
-    def _eval_gen(self,str,repldict={}):
-        repldict2={'hour':"int(time.strftime(\"%H\",time.localtime(time.time())))",'minute':"int(time.strftime(\"%M\",time.localtime(time.time())))",'BC':'self.player.bc["current"]','AP':'self.player.ap["current"]','G':'self.player.gold','FP':'self.friendship_point','FAIRY_ALIVE':'self.player.fairy["alive"]'}
-        if str=='':
+    def _eval_gen(self,streval,repllst=[]):
+        repllst2=[('hour',"int(time.strftime(\"%H\",time.localtime(time.time())))"),('minute',"int(time.strftime(\"%M\",time.localtime(time.time())))"),('BC','self.player.bc["current"]'),('AP','self.player.ap["current"]'),('G','self.player.gold'),('FP','self.friendship_point'),('FAIRY_ALIVE','self.player.fairy["alive"]')]
+        if streval=='':
             return 'True'
-        for i in repldict:
-            str=str.replace(i,repldict[i])
-        for i in repldict2:
-            str=str.replace(i,repldict2[i])
-        return str
+        for (i,j) in repllst+repllst2:
+            streval=streval.replace(i,j)
+        return streval
     
     def _raw_input(self,str):
         return raw_input(du8(str).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace')).decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
@@ -1501,7 +1498,7 @@ class maClient():
                         deluser=user
                         maxlogintime=user.logintime
                     i+=1
-                logging.info(strf)
+                print(strf)
                 if deluser!=None:
                     doit=False
                     if not autodel:
@@ -1534,7 +1531,7 @@ class maClient():
                         i,user.name,user.town_level,user.last_login,user.friends,user.friend_max,user.cost
                     )
                     i+=1
-                logging.info('%s%s'%(du8('申请列表:\n'),strf))
+                print('%s%s'%(du8('申请列表:\n'),strf))
                 adduser=self._raw_input('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser!=['']:
                     for u in adduser:
@@ -1571,7 +1568,7 @@ class maClient():
                         i,user.name,user.town_level,user.last_login,user.friends,user.friend_max,user.cost
                     )
                     i+=1
-                logging.info('%s%s'%(du8('搜索结果:\n'),strf))
+                print('%s%s'%(du8('搜索结果:\n'),strf))
                 usel=self._raw_input('选择要添加的好友序号, 空格分割多个，回车返回> ')
                 uids=[]
                 for u in usel.split(' '):
@@ -1605,7 +1602,7 @@ class maClient():
         resp,ct=self._dopost('menu/rewardbox')
         if resp['error']:
             return False
-        rwds=self.tolist(XML2Dict().fromstring(ct).response.body.rewardbox_list.rewardbox)
+        rwds=self.tolist(XML2Dict().fromstring(ct.replace('&','--')).response.body.rewardbox_list.rewardbox)
         #if 'id' in rwds:#只有一个
         #    rwds=[rwds]
         strl=''
@@ -1642,7 +1639,7 @@ class maClient():
                 else:
                     strl+=r.type
             strl+=' , '
-        logging.info(strl.rstrip(','))
+        logging.info(strl.rstrip(',').replace('--','&'))
         if nid==[]:
             logging.info(du8('没有需要领取的奖励'))
         else:
