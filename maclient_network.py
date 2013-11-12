@@ -110,9 +110,11 @@ class poster():
                 (lambda dt:dt)
         if loc in ['jp','kr']:
             COD_RES,COD_DATA=init_cipher(loc=loc)[:2]
-
         if ua:
-            self.header['User-Agent']=ua
+            if '%d' in ua:#formatted ua
+                self.header['User-Agent']=self.header['User-Agent']%getattr(maclient_smart,'app_ver_%s'%loc)
+            else:
+                self.header['User-Agent']=ua
         else:
             self.header['User-Agent']=self.header['User-Agent']%getattr(maclient_smart,'app_ver_%s'%loc)
         if SLOW_MODE:

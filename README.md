@@ -1,9 +1,7 @@
-﻿maClient是一个基于有限状态机模型的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服和国服全区。
+﻿maClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服和国服全区。
 
 [更新历史](https://github.com/fffonion/maClient/wiki/HISTORY)
 ##说明
-
-no hiding of AES keys any longer, enjoy :)
 
 插件什么的文档等我有空了会补上wwww
 
@@ -23,7 +21,7 @@ maclient_cli.py [config file] [task]/[commands]
 
 关于config.ini可以参考config_sample.ini
 
-图形化配置工具maClientGUI可以从[这里下载](http://mac.yooooo.us/maClientGUI.zip)
+图形化配置工具maClientGUI可以从[这里下载](http://mac.yooooo.us/maClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/maClient/tree/gui)
 
 ***
 
