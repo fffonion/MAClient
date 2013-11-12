@@ -21,7 +21,7 @@ while True:
     po.post('check_inspection')
     po.post('notification/post_devicetoken',postdata='S=nosessionid&login_id=&password=&app=and&token=')
     #s=raw_input('session: ').lstrip('S=').strip()
-    print po.cookie
+    #print po.cookie
     while True:
         uname,pwd='',''
         while len(uname)<4 or len(uname)>14:

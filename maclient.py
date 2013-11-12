@@ -115,9 +115,9 @@ class maClient():
         self.posttime=0
         #self.set_remote(None)
         ua=self._read_config('system','user-agent')
-        if ua!='':
-            logging.debug('system:ua changed to %s'%(ua))
         self.poster=maclient_network.poster(self.loc,logging,ua)
+        if ua:
+            logging.debug('system:ua changed to %s'%(self.poster.header['User-Agent']))
         self.load_cookie()
         if self.cfg_save_traffic:
             self.poster.enable_savetraffic()
@@ -134,7 +134,7 @@ class maClient():
         self.evalstr_factor=self._eval_gen(self._read_config('condition','factor'),[])
         #tasker须动态生成#self.evalstr_task=self._eval_gen(self._read_config('system','tasker'),[])
         logging.debug(du8('system:知识库版本 %s%s'%(maclient_smart.__version__,str(maclient_smart).endswith('pyd\'>') and ' C-Extension' or '')))
-        logging.debug(du8('system:初始化完成(%s)'%self.loc))
+        logging.debug(du8('system:初始化完成(服务器:%s)'%self.loc))
         self.lastposttime=0
         self.lastfairytime=0
         self.errortimes=0
