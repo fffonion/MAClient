@@ -3,6 +3,7 @@
 # maclient command line interface
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
+from __future__ import print_function
 import sys
 #for ironpython build
 import zipimport
@@ -136,11 +137,16 @@ if __name__=='__main__':
         mod=0
         while True:
             print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\t[快速通道]\n2.切换模式->%s\te.刷秘境\n3.编辑卡组\t\tfyb.刷妖精\n4.编辑配置\t\tfcb.因子战\n5.更新数据库\t\tf.好友相关\n6.退出\t\t\th.命令速查'%(mode[mod],maclient1._read_config('system','server'),mode[(mod+1)%2])))
-            ch=maclient1._raw_input('Select> ')
+            print('Select> ',end='')
+            ch=sys.stdin.readline().rstrip('\n')
+            try:
+                print(' \b')
+            except KeyboardInterrupt:
+                maclient1._exit()
             if ch=='1' or ch =='':
-                dec=maclient1.login()
-                maclient1.initplayer(dec)
                 try:
+                    dec=maclient1.login()
+                    maclient1.initplayer(dec)
                     maclient1.tasker()
                 except KeyboardInterrupt:
                     continue

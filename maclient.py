@@ -322,7 +322,9 @@ class maClient():
         return streval
     
     def _raw_input(self,str):
-        return raw_input(du8(str).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace')).decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
+        ret=raw_input(du8(str).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace')).decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
+        return ret
+
 
     def tolist(self,obj):
         if not isinstance(obj, list):
@@ -946,7 +948,7 @@ class maClient():
                 rare_str=' %s'%(rare[self.carddb[int(mid)][1]-1])
             excname.append('[%s]%s%s'%(
                 self.carddb[int(mid)][0],
-                self.player.card.sid(card.serial_id).holography =='1' and '-HOLO' or '',
+                self.player.card.sid(card.serial_id).holography =='1' and '(闪)' or '',
                 rare_str
             ))
         
@@ -1703,11 +1705,16 @@ class maClient():
             if sel_lake==['']:
                 l=lakes[0]
             else:
+                not_set=True
                 for l in lakes:
                     if 'lake_id' not in l:
                         l['lake_id']=l.event_id
                     if l.lake_id in sel_lake:
+                        not_set=False
                         break
+                if not_set:
+                    logging.warning(du8('筛选条件 %s 未能选出符合的湖，将随机选择'%','.join(sel_lake)))
+                    l=random.choice(lakes)
             if 'event_id' not in l:
                 l['event_id']='0'
             #if battle_win>0:#赢过至少一次则重新筛选
