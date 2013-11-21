@@ -50,11 +50,11 @@ class player(object):
 
     def _update_data(self,xmldata):
         try:
-            xmlresp = XML2Dict().fromstring(xmldata).response
-            if 'login' in xmlresp.body:
-                self.id=xmlresp.body.login.user_id
-            self.playerdata=xmlresp.header.your_data
-        except:
+            #xmlresp = XML2Dict().fromstring(xmldata).response
+            if 'login' in xmldata.body:
+                self.id=xmldata.body.login.user_id
+            self.playerdata=xmldata.header.your_data
+        except KeyError:
             return 'Profile no update',False
         try:
             for key in ['ap','bc']:
@@ -71,8 +71,8 @@ class player(object):
             self.calc_ap_bc()
         if not self.update_checked:
             # try:
-            cardrev=int(xmlresp.header.revision.card_rev)
-            itemrev=int(xmlresp.header.revision.item_rev)
+            cardrev=int(xmldata.header.revision.card_rev)
+            itemrev=int(xmldata.header.revision.item_rev)
             # except KeyError:
             #     pass
             # else:
@@ -84,19 +84,18 @@ class player(object):
 
     def _update_card(self,xmldata):
         try:
-            xml = XML2Dict().fromstring(xmldata)
-            self.card.update(xml.response.header.your_data.owner_card_list.user_card)
+            self.card.update(xmldata.header.your_data.owner_card_list.user_card)
             return 'CARDs:%d'%self.card.count,True
-        except :
+        except KeyError:
             return '',False
 
     def _update_item(self,xmldata):
         try:
-            xml = XML2Dict().fromstring(xmldata)
-            self.item.update(xml.response.header.your_data.itemlist)
+            self.item.update(xmldata.header.your_data.itemlist)
             return 'Items updated',True
-        except:
+        except KeyError:
             return '',False
+
     def hasattr(self,key):
         try:
             getattr(self,key)
@@ -147,14 +146,17 @@ class card(object):
                 self.cards[-1][elem]=int(getattr(p,elem))
         self.count=len(self.cards)
         #print self.cid('124')
+
     def _found_card_by_value(self,key,value):
         res=[]
         for i in self.cards:
             if i[key]==value:
                 res.append(i)
         return res
+
     def sid(self,sid):
         return self._found_card_by_value('serial_id',int(sid))[0]
+        
     def cid(self,cid):
         return self._found_card_by_value('master_card_id',int(cid))
 

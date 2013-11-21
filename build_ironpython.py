@@ -4,6 +4,8 @@ sys.path.append(r'C:\Program Files (x86)\IronPython 2.7')
 sys.path.append(r'C:\Program Files (x86)\IronPython 2.7\tools\Scripts')
 import clr
 
+clr.AddReference('IronPyCrypto')
+
 clr.AddReference('IronPython')
 clr.AddReference('IronPython.Modules')
 clr.AddReference('Microsoft.Scripting.Metadata')
@@ -60,9 +62,8 @@ gb.append("/out:StdLib")
 #pyc.Main(["/target:dll"]+gb)
 
 #Build EXE
-gb=["/main:maclient_cli.py","xml2dict.py","maclient.py","maclient_network.py","maclient_smart.py","maclient_player.py","maclient_proxy.py","maclient_remote.py","maclient_update.py","maclient_logging.py","maclient_plugin.py","pyaes.py","/target:exe","/out:maclient_cli"]
+gb=["/main:maclient_cli.py","xml2dict.py","maclient.py","maclient_network.py","maclient_smart.py","maclient_player.py","maclient_proxy.py","maclient_update.py","maclient_logging.py","maclient_plugin.py","pyaes.py","D:\Dev\Python\Python27\Lib\__future__.py","/target:exe","/out:maclient_cli","/platform:x64"]
 pyc.Main(gb)
-
 
 #CopyFiles to Release Directory
 #doscopy("StdLib.dll")

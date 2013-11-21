@@ -12,6 +12,7 @@ import sys
 import time
 import locale
 import base64
+import datetime
 from xml2dict import XML2Dict
 from xml2dict import object_dict
 import random
@@ -314,7 +315,7 @@ class maClient():
         self.cf.write(open(f, "w"))
 
     def _eval_gen(self,streval,repllst=[]):
-        repllst2=[('hour',"int(time.strftime(\"%H\",time.localtime(time.time())))"),('minute',"int(time.strftime(\"%M\",time.localtime(time.time())))"),('BC','self.player.bc["current"]'),('AP','self.player.ap["current"]'),('G','self.player.gold'),('FP','self.friendship_point'),('FAIRY_ALIVE','self.player.fairy["alive"]')]
+        repllst2=[('hour',"datetime.datetime.now().hour"),('minute',"datetime.datetime.now().minute"),('BC','self.player.bc["current"]'),('AP','self.player.ap["current"]'),('G','self.player.gold'),('FP','self.friendship_point'),('FAIRY_ALIVE','self.player.fairy["alive"]')]
         if streval=='':
             return 'True'
         for (i,j) in repllst+repllst2:
@@ -350,10 +351,7 @@ class maClient():
             logging.debug('tasker:loop %d/%d'%(c+1,cnt)) 
             if cmd=='':
                 tasks=eval(taskeval)
-                try:
-                    logging.debug('tasker:eval result:%s'%(tasks))
-                except TypeError:
-                    pass
+                logging.debug('tasker:eval result:%s'%(tasks))
             for task in tasks.split('|'):
                 task=(task+' ').split(' ')
                 logging.debug('tasker:%s'%task[0])
@@ -429,14 +427,14 @@ class maClient():
                 elif task[0]=='set_server' or task[0]=='ss':
                     self._write_config('system','server',task[1])
                     self.loc=task[1]
+                    self.poster.servloc=self.loc
                 elif task[0]=='relogin' or task[0]=='rl':
                     self._write_config('account_%s'%self.loc,'session','')
                     self.login()
                 elif task[0]=='login' or task[0]=='l':
                     if len(task)==2:
                         task.append('')
-                    dec=self.login(uname=task[1],pwd=task[2])
-                    self.initplayer(dec)
+                    self.initplayer(self.login(uname=task[1],pwd=task[2]))
                 elif task[0]=='friend' or task[0]=='f':
                     if len(task)==2:
                         task=[task[0],'','']
@@ -485,7 +483,7 @@ class maClient():
             'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
             if not fast:
                 ct=self._dopost('check_inspection',checkerror=False,extraheader={},usecookie=False)[1]
-                self.poster.update_server(ct)
+                #self.poster.update_server(ct)
                 self._dopost('notification/post_devicetoken',postdata='S=%s&login_id=%s&password=%s&app=and&token=%s'%('nosessionid',self.username,self.password,token),checkerror=False)
             
             resp,dec=self._dopost('login',postdata='login_id=%s&password=%s'%(self.username,self.password))
@@ -1075,7 +1073,7 @@ class maClient():
         hour_last=25
         refresh=False
         for l in xrange(looptime):
-            hour_now=int(time.strftime('%H',time.localtime(time.time())))
+            hour_now=datetime.datetime.now().hour
             if hour_now!=hour_last:
                 slptime=1.5
                 for s in secs:
