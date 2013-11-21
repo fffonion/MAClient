@@ -31,6 +31,9 @@ headers_post={'Content-Type': 'application/x-www-form-urlencoded'}
 SLOW_MODE=False
 def init_cipher(loc='cn'):
     _key=getattr(maclient_smart,'key_%s'%loc)
+    if sys.platform=='cli':
+        import clr
+        clr.AddReference("IronPyCrypto.dll")
     try:
         from Crypto.Cipher import AES
         return AES.new(_key['res'], AES.MODE_ECB),\
