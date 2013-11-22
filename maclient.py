@@ -116,7 +116,7 @@ class maClient():
         self.posttime=0
         #self.set_remote(None)
         ua=self._read_config('system','user-agent')
-        self.poster=maclient_network.poster(self.loc,logging,ua)
+        self.poster=maclient_network.poster(self.loc,logging,ua,uid=uid)
         if ua:
             logging.debug('system:ua changed to %s'%(self.poster.header['User-Agent']))
         self.load_cookie()
@@ -241,54 +241,55 @@ class maClient():
                         time.sleep(random.randint(28,32)*60)
                         self.player.update_checked=False#置为未检查
                         return resp,ct
+            if not self.player_initiated :
+                open(self.playerfile,'w').write(_dec)
+            else:
+                #auto check cards and fp
+                if not self.auto_check(urikey):
+                    logging.error(du8('由于以上↑的原因，无法继续执行！'))
+                    self._exit(1)
+                update_dt=self.player.update_all(dec)
+                #check revision update
+                if self.player.need_update[0] or self.player.need_update[1]:
+                    if self.cfg_auto_update:
+                        logging.info(du8('更新%s%s数据……'%(
+                            ' 卡片' if self.player.need_update[0] else '',
+                            ' 道具' if self.player.need_update[1] else '') ))
+                        import maclient_update
+                        crev,irev=maclient_update.update_master(self.loc,self.player.need_update,self.poster)
+                        logging.info(du8('%s%s'%(
+                            '卡片数据更新为rev.%s'%crev if crev else '',
+                            '道具数据更新为rev.%s'%irev if irev else '') ))
+                        self.player.reload_db()
+                        self.player.need_update=False,False
+                    else:
+                        logging.warning(du8('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库'))
+                #update profile
+                if not resp['error']:
+                    #self.remoteHdl(method='PROFILE')
+                    if self.settitle:
+                        setT('[%s] AP:%d/%d BC:%d/%d G:%d FP:%d Cards:%d%s'%(
+                            self.player.name,
+                            self.player.ap['current'],self.player.ap['max'],
+                            self.player.bc['current'],self.player.bc['max'],
+                            self.player.gold,self.player.friendship_point,self.player.card.count,
+                            self.player.fairy['alive'] and ' FAIRY_ALIVE' or ''))
+                    else:
+                        if self.posttime==5:
+                            logging.sleep(du8('汇报')+' AP:%d/%d BC:%d/%d G:%d FP:%d %s'%(
+                                self.player.ap['current'],self.player.ap['max'],
+                                self.player.bc['current'],self.player.bc['max'],
+                                self.player.gold,self.player.friendship_point,
+                                self.player.fairy['alive'] and 'FAIRY_ALIVE' or ''))
+                        self.posttime=(self.posttime+1)%6
+                    if update_dt[1]:
+                        logging.debug(update_dt[0])
+                        open(self.playerfile,'w').write(_dec)
+                        logging.debug('post:master cards saved.')
         if setcookie and 'set-cookie' in resp:
             self.cookie=resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
             self._write_config('account_%s'%self.loc,'session',self.cookie)
-        if not self.player_initiated :
-            open(self.playerfile,'w').write(_dec)
-        else:
-            #auto check cards and fp
-            if not self.auto_check(urikey):
-                logging.error(du8('由于以上↑的原因，无法继续执行！'))
-                self._exit(1)
-            update_dt=self.player.update_all(dec)
-            #check revision update
-            if self.player.need_update[0] or self.player.need_update[1]:
-                if self.cfg_auto_update:
-                    logging.info(du8('更新%s%s数据……'%(
-                        ' 卡片' if self.player.need_update[0] else '',
-                        ' 道具' if self.player.need_update[1] else '') ))
-                    import maclient_update
-                    crev,irev=maclient_update.update_master(self.loc,self.player.need_update,self.poster)
-                    logging.info(du8('%s%s'%(
-                        '卡片数据更新为rev.%s'%crev if crev else '',
-                        '道具数据更新为rev.%s'%irev if irev else '') ))
-                    self.player.reload_db()
-                    self.player.need_update=False,False
-                else:
-                    logging.warning(du8('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库'))
-            #update profile
-            if not resp['error']:
-                #self.remoteHdl(method='PROFILE')
-                if self.settitle:
-                    setT('[%s] AP:%d/%d BC:%d/%d G:%d FP:%d Cards:%d%s'%(
-                        self.player.name,
-                        self.player.ap['current'],self.player.ap['max'],
-                        self.player.bc['current'],self.player.bc['max'],
-                        self.player.gold,self.player.friendship_point,self.player.card.count,
-                        self.player.fairy['alive'] and ' FAIRY_ALIVE' or ''))
-                else:
-                    if self.posttime==5:
-                        logging.sleep(du8('汇报')+' AP:%d/%d BC:%d/%d G:%d FP:%d %s'%(
-                            self.player.ap['current'],self.player.ap['max'],
-                            self.player.bc['current'],self.player.bc['max'],
-                            self.player.gold,self.player.friendship_point,
-                            self.player.fairy['alive'] and 'FAIRY_ALIVE' or ''))
-                    self.posttime=(self.posttime+1)%6
-                if update_dt[1]:
-                    logging.debug(update_dt[0])
-                    open(self.playerfile,'w').write(_dec)
-                    logging.debug('post:master cards saved.')
+        
         return resp,dec
 
     def _read_config(self,sec,key):
@@ -524,7 +525,7 @@ class maClient():
 
     @plugin.func_hook
     def invoke_autoset(self,autoset_str):
-        aim,fairy,maxline,test_mode,delta,includes,bclimit,fast_mode,sel='MAX_DMG',None,1,True,1,[],BC_LIMIT_CURRENT,True,'True'
+        aim,fairy,maxline,test_mode,delta,includes,bclimit,fast_mode,sel='MAX_DMG',None,1,True,1,[],BC_LIMIT_CURRENT,True,'card.lv>45'
         for arg in autoset_str.split(' '):
             if arg.startswith('aim:'):
                 aim=arg[4:]
@@ -539,8 +540,8 @@ class maClient():
             elif arg.startswith('line:'):
                 maxline=int(arg[5:])
             elif arg=='notest':
-                testmode=False
-            elif arg=='sel':
+                test_mode=False
+            elif arg.startswith('sel'):
                 sel=arg[4:]
             elif arg.startswith('bc:'):
                 _l=arg[3:]
@@ -1609,10 +1610,10 @@ class maClient():
         if ct.body.mainmenu.rewards=='0':
             logging.info(du8('木有礼物盒wwww'))
             return False
-        resp,ct=self._dopost('menu/rewardbox')
-        if resp['error']:
-            return False
-        rwds=self.tolist(ct.body.rewardbox_list.rewardbox)#.replace('&','--')
+        resp,ct=self._dopost('menu/rewardbox',xmlresp=False)#只能额外处理
+        #if resp['error']:
+        #    return False
+        rwds=self.tolist(XML2Dict().fromstring(ct.replace('&','--')).response.body.rewardbox_list.rewardbox)#.replace('&','--')
         #if 'id' in rwds:#只有一个
         #    rwds=[rwds]
         strl=''
