@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__='1.0-build20131101'
+__version__='1.0-build20131122'
 #server specified configutaions
 max_card_count_cn=max_card_count_kr=200
 max_card_count_tw=max_card_count_jp=250
@@ -200,7 +200,7 @@ def carddeck_gen(player_cards,aim=DEFEAT,bclimit=999,includes=[],maxline=2,selev
             _cards=sorted(_cards,key=lambda x:x[ATK]*x[HP],reverse=True)#[:min(3*maxline+3,len(_cards))]
             #_cards=sorted(_cards,key=lambda x:x[ATK]*x[HP]/player_cards.db[x[MID]][2],reverse=True)[:len(_cards)/2]
         else:
-            deckcnts=[1,2]+[i*3 for i in range(1,maxline+1)]
+            deckcnts=[i*3 for i in range(1,maxline+1)]+[1,2]
             return_lambda=lambda x:(1.0*(x[1]*sum(x[0]))/x[2])
             _cards=sorted(_cards,key=lambda x:x[ATK]*x[HP]/player_cards.db[x[MID]][2],reverse=True)#[:min(3*maxline+3,len(_cards))]
         if fast_mode:

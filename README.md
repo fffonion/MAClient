@@ -9,6 +9,8 @@
 
 你需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)
 
+Windows用户可以从[这里](http://pan.baidu.com/s/19qI4m)获得二进制文件，或者从(release)[https://github.com/fffonion/maClient/releases]下载
+
 ##运行
 ```shell
 git clone --recursive https://github.com/fffonion/maClient.git
