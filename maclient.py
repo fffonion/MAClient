@@ -116,7 +116,7 @@ class maClient():
         self.posttime=0
         #self.set_remote(None)
         ua=self._read_config('system','user-agent')
-        self.poster=maclient_network.poster(self.loc,logging,ua,uid=uid)
+        self.poster=maclient_network.poster(self.loc,logging,ua,uid=self.uid)
         if ua:
             logging.debug('system:ua changed to %s'%(self.poster.header['User-Agent']))
         self.load_cookie()
@@ -144,8 +144,8 @@ class maClient():
     def load_config(self):
         #configurations
         self.loc=self._read_config('system','server')
-        uid=self._read_config('account_%s'%self.loc,'user_id')
-        self.playerfile='.%s-%s.playerdata'%(self.loc,uid) if uid not in '0' else '--PLACE-HOLDER--'
+        self.uid=self._read_config('account_%s'%self.loc,'user_id')
+        self.playerfile='.%s-%s.playerdata'%(self.loc,self.uid) if self.uid not in '0' else '--PLACE-HOLDER--'
         self.username=self._read_config('account_%s'%self.loc,'username')
         self.password=self._read_config('account_%s'%self.loc,'password')
         self.cfg_auto_explore=not self._read_config('tactic','auto_explore')=='0'
@@ -240,7 +240,7 @@ class maClient():
                         logging.sleep(du8('因为服务器维护，休息约30分钟'))
                         time.sleep(random.randint(28,32)*60)
                         self.player.update_checked=False#置为未检查
-                        return resp,ct
+                        return resp,dec
             if not self.player_initiated :
                 open(self.playerfile,'w').write(_dec)
             else:
@@ -915,7 +915,7 @@ class maClient():
     def _boss_battle(self,area_id=None,floor_id=None):
         if not (area_id and floor_id):
             return False
-        self.set_card('auto_set',aim=maclient_smart.MAX_DMG,maxline=4,seleval='card.lv>45',testmode=False,bclimit=BC_LIMIT_MAX,fast_mode=True)
+        self.set_card('auto_set',aim=maclient_smart.MAX_DMG,maxline=4,seleval='card.lv>45',test_mode=False,bclimit=BC_LIMIT_MAX,fast_mode=True)
         param="area_id=%s&floor_id=%s"%(area_id,floor_id)
         resp,ct=self._dopost('exploration/battle',postdata=param)
         if resp['error']:
@@ -1510,20 +1510,33 @@ class maClient():
                         maxlogintime=user.logintime
                     i+=1
                 print(strf)
+                confirm=False
                 if deluser!=None:
-                    doit=False
                     if not autodel:
                         logging.warning(du8('即将删除%d天以上没上线的：'%delfriend)+'%s 最后上线:%s ID:%s'%(
                             deluser.name,deluser.last_login,deluser.id
                         ))
                         if self._raw_input('y/n >')=='y':
-                            doit=True
-                    if autodel or doit:
-                        param='dialog=1&user_id=%s'%deluser.id
-                        resp,ct=self._dopost('friend/remove_friend',postdata=param)
-                        logging.info(resp['errmsg'])
+                            confirm=True
                 else:
-                    logging.debug(du8('没有要删除的好友'))
+                    u=self._raw_input('没有要删除的好友\n输入序号可以手动删除好友，按回车返回> ')
+                    try:
+                        int(u)
+                    except ValueError:
+                        if u:
+                            logging.warning(du8('输入"%s"非数字'%u))
+                    else:
+                        deluser=users[int(u)-1]
+                        if not autodel:
+                            logging.warning(du8('即将删除：%s 最后上线:%s ID:%s'%(
+                                deluser.name,deluser.last_login,deluser.id
+                            )))
+                            if self._raw_input('y/n >')=='y':
+                                confirm=True
+                if autodel or confirm:
+                    param='dialog=1&user_id=%s'%deluser.id
+                    resp,ct=self._dopost('friend/remove_friend',postdata=param)
+                    logging.info(resp['errmsg'])                    
             elif choice=='3':
                 lastmove=3
                 resp,ct=self._dopost('menu/friend_notice',postdata='move=0')
@@ -1546,6 +1559,11 @@ class maClient():
                 adduser=self._raw_input('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser!=['']:
                     for u in adduser:
+                        try:
+                            int(u)
+                        except ValueError:
+                            logging.warning(du8('输入"%s"非数字'%u))
+                            continue
                         if u.startswith('-'):
                             u=u[1:]
                             param='dialog=1&user_id=%s'%users[int(u)-1].id
@@ -1584,6 +1602,11 @@ class maClient():
                 uids=[]
                 for u in usel.split(' '):
                     if u!='':
+                        try:
+                            int(u)
+                        except ValueError:
+                            logging.warning(du8('输入"%s"非数字'%u))
+                            continue
                         if int(u)>len(users):
                             logging.error(du8('no.%s:下标越界XD'%u))
                         elif users[int(u)-1].friends==users[int(u)-1].friend_max:
