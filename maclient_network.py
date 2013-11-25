@@ -29,8 +29,11 @@ headers_main={'User-Agent': 'Million/%d (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I
 headers_post={'Content-Type': 'application/x-www-form-urlencoded'}
 
 SLOW_MODE=False
-def init_cipher(loc='cn'):
+def init_cipher(loc='cn',uid=None):
     _key=getattr(maclient_smart,'key_%s'%loc)
+    if loc in ['jp']:
+        _key['crypt']='%s%s%s'%(_key['crypt'],uid,'0'*(32-len(_key['crypt']+uid)))
+        print _key['crypt']
     if sys.platform=='cli':
         import clr
         clr.AddReference("IronPyCrypto.dll")
@@ -52,6 +55,7 @@ du8=sys.platform.startswith('cli') and \
     (lambda str:str) or\
     (lambda str:str.decode('utf-8'))
 ht=httplib2.Http(timeout=15)
+
 def decode_res(bytein):
     return COD_RES.decrypt(bytein)
 
@@ -100,7 +104,7 @@ def decrypt_file(filein,fileout,ext='png'):
         pass
 
 class poster():
-    def __init__(self,loc,logger,ua):
+    def __init__(self,loc,logger,ua,uid=None):
         self.cookie=''
         #self.maClientInstance=mac
         self.servloc=loc[:2]
@@ -112,7 +116,8 @@ class poster():
                 (lambda dt:dt.decode('utf-8')) or\
                 (lambda dt:dt)
         if loc in ['jp','kr']:
-            COD_RES,COD_DATA=init_cipher(loc=loc)[:2]
+            global COD_RES,COD_DATA
+            COD_RES,COD_DATA=init_cipher(loc=loc,uid=uid)[:2]
         if ua:
             if '%d' in ua:#formatted ua
                 self.header['User-Agent']=self.header['User-Agent']%getattr(maclient_smart,'app_ver_%s'%loc)
@@ -206,4 +211,5 @@ class poster():
             return resp,dec
 
 if __name__=="__main__":
-    print(decode_param(''))
+    p=poster('jp',None,'',uid='50960')
+    print([decode_param('serial_id=HO2dCezOQmiIl9R898P5xw%3D%3D&user_id=MwGTW7UlW4/WhcOXGN6dlQ%3D%3D')])
