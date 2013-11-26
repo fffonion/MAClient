@@ -2,19 +2,19 @@ maClient Plugin Document
 ================
 本文档给出maclient插件制作的标准和一些参考
 
-*   [概述](#overview)
-*   [HOOK插件](#hook)
-    *   [示例](#hook_eg)
-    *   [结构](#hook_struc)
-    *   [事件名称](#hook_eventname)
-    *   [应用](#hook_app)
-*   [EXTRA_CMD插件](#extra_cmd)
-    *   [示例](#extra_cmd_eg)
-    *   [结构](#extra_cmd_struc)
-    *   [有用的变量](#extra_cmd_vals)
-    *   [应用](#extra_cmd_app)
+*   [概述](#概述)
+*   [HOOK插件](#HOOK插件)
+    *   [示例](#示例-1)
+    *   [结构](#结构-1)
+    *   [事件名称](#事件名称)
+    *   [应用](#应用-1)
+*   [EXTRA_CMD插件](#EXTRA_CMD插件)
+    *   [示例](#示例-2)
+    *   [结构](#结构-2)
+    *   [有用的变量](#有用的变量)
+    *   [应用](#应用-2)
 
-<h2 id="overview">概述</h2>
+##概述
 
 maclient1.50版本开始支持插件，通过在配置项中的“启用插件”功能(enable_plguins)和“禁用单个插件”选项(disabled)来控制插件的启用与否。
 
@@ -22,13 +22,13 @@ maclient1.50版本开始支持插件，通过在配置项中的“启用插件�
 
 插件分为两类，一类在指定的事件发生前和发生后作出响应(下称[hook插件](#hook))，另一类扩展命令行界面(cli)的可用命令数(下称[extra_cmd插件](#extra_cmd))；__两种类型可以存在于同一个文件内__。
 
-<h2 id="hook">HOOK插件</h2>
+##HOOK插件
 
-<h3 id="hook_eg">示例</h3>
+###示例
 
 [example_hook](plugins/_example_hook.py) [bgm](plugins/bgm.py)
 
-<h3 id="hook_struc">结构</h3>
+###结构
 
 下面以example_hook为例；在这个例子中，在开始攻击妖精 、 结束攻击妖精 和 进入探索 三个事件发生时分别在屏幕上打印一句话
 
@@ -45,7 +45,7 @@ __version__=0.1
 hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
 ```
 
-<h3 id="hook_eventname">可用事件名称</h3>
+###可用事件名称
 
     tasker 任务调度器
     auto_check 自动检查卡片、绊点是否已满 
@@ -108,18 +108,18 @@ class plugin(plugin_prototype):
 
 关于参数的具体内容可以 __参阅[maclient.py](maclient.py)__
 
-<h3 id="hook_app">应用</h3>
+###应用
 
 示例中的[bgm](plugins/bgm.py)插件，仅额外使用了一个栈结构就实现了bgm的切换
 
 
-<h2 id="extra_cmd">EXTRA_CMD插件</h2>
+##EXTRA_CMD插件
 
-<h3 id="extra_cmd_eg">示例</h3>
+###示例
 
 [web_helper](plugins/web_helper.py) [query_tool](plugins/query_tool.py)
 
-<h3 id="extra_cmd_struc">结构</h3>
+###结构
 
 meta部分与hook插件相同，区别仅在于extra_cmd字典中需填入扩展命令的值和内容
 
@@ -138,7 +138,7 @@ def start_webproxy(plugin_vals):
 
 在plugin_vals中传入了maclient在运行中的 __所有实例变量__
 
-<h3 id="extra_cmd_vals">有用的变量</h3>
+###有用的变量
 
     plugin_vals['poster'] maclient_network中的poster实例，可用于通信，返回已解密的内容
     plugin_vals['player'] 玩家实例
@@ -160,6 +160,6 @@ def start_webproxy(plugin_vals):
 
 其他变量请 __参阅[maclient.py](maclient.py)__，所有以self.开头的变量均可使用
 
-<h3 id="extra_cmd_app">应用</h3>
+###应用
 
 [web_helper](plugins/web_helper.py)借助小饼干和一个代理，实现了在电脑浏览器上查看活动信息等
