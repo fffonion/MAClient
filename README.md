@@ -1,15 +1,14 @@
 ﻿maClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服和国服全区。
 
-[更新历史](https://github.com/fffonion/maClient/wiki/HISTORY)
-##说明
+[更新历史](wiki/HISTORY)
 
-插件什么的文档等我有空了会补上wwww
+[插件制作文档](PLUGIN_DOCUMENT.md)
 
-有关在root过的android手机上运行maclient，请参阅[这篇wiki](https://github.com/fffonion/maClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8Cmaclient)
+[在root过的android手机上运行maclient](wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8Cmaclient)
 
-你需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)
+Windows用户可以从[这里](http://pan.baidu.com/s/19qI4m)获得二进制文件，或者从[release](releases)下载
 
-Windows用户可以从[这里](http://pan.baidu.com/s/19qI4m)获得二进制文件，或者从[release](https://github.com/fffonion/maClient/releases)下载
+其他平台用户：需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)，选择安装PyCrypto库
 
 ##运行
 ```shell
@@ -23,7 +22,7 @@ maclient_cli.py [config file] [task]/[commands]
 
 关于config.ini可以参考config_sample.ini
 
-图形化配置工具maClientGUI可以从[这里下载](http://mac.yooooo.us/maClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/maClient/tree/gui)
+图形化配置工具maClientGUI可以从[这里下载](http://mac.yooooo.us/maClientGUI.zip)，相关源代码可以从[这里获得](tree/gui)
 
 ***
 
@@ -170,7 +169,7 @@ session不用管它
     explore '明鏡月和島' in area.name #探索秘境名称包含'明鏡月和島' 
 	fcb l:1 70 或 fcb lake:1 70#因子战选择第一因子，下限BC70，因子默认为随机选择，BC下限默认为0
 
-各命令及参数的详细介绍见[COMMANDS文档](https://github.com/fffonion/maClient/blob/master/COMMANDS.md)
+各命令及参数的详细介绍见[COMMANDS文档](COMMANDS.md)
 
 ###condition
 指定满足什么条件时做什么事
