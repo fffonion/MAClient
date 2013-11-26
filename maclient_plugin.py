@@ -37,7 +37,7 @@ class plugins():
         self.hook_reg={}
         ALL_ACTIONS=['tasker','auto_check','check_strict_bc','set_card','red_tea','green_tea',
                     'explore','_explore_floor','gacha','select_card_sell','fairy_battle_loop','fairy_select','_fairy_battle',
-                    'like','friends','reward_box','point_setting','factor_battle']
+                    'like','friends','reward_box','point_setting','factor_battle','invoke_autoset']
         #scan plugin hooks
         for p in self.plugins:
             #extra cmd
@@ -101,10 +101,11 @@ class plugins():
     def load_plugins(self):
         import glob
         plugin_dir=opath.abspath(opath.join(getPATH0,'plugins'))
-        mods=glob.glob(opath.join(plugin_dir,'*.py'))+\
+        mods=glob.glob(glob.glob(opath.join(plugin_dir,'*.pyd')+\
+            opath.join(plugin_dir,'*.py'))+\
             glob.glob(opath.join(plugin_dir,'*.pyc'))+\
-            glob.glob(opath.join(plugin_dir,'*.pyo'))+\
-            glob.glob(opath.join(plugin_dir,'*.pyd'))
+            glob.glob(opath.join(plugin_dir,'*.pyo'))
+            )
         for m in mods:
             m=opath.splitext(opath.split(m)[1])[0]
             if m.startswith('_'):

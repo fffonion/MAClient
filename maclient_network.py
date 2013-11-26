@@ -36,7 +36,7 @@ def init_cipher(loc='cn',uid=None):
         print _key['crypt']
     if sys.platform=='cli':
         import clr
-        clr.AddReference("IronPyCrypto.dll")
+        #clr.AddReference("IronPyCrypto.dll")
     try:
         from Crypto.Cipher import AES
         return AES.new(_key['res'], AES.MODE_ECB),\
