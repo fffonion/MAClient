@@ -4,11 +4,18 @@
 # modified from sogou proxy
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
+from maclient_compact import *
+if PYTHON3:
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+    from socketserver import ThreadingMixIn
+    from http.client import HTTPResponse 
+else:
+    from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+    from SocketServer import ThreadingMixIn
+    from httplib import HTTPResponse 
 from threading import Thread, Lock  
 from struct import unpack  
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer  
-from httplib import HTTPResponse  
-from SocketServer import ThreadingMixIn  
+ 
 import socket, os, select  
 import time, sys, random  
 import threading  

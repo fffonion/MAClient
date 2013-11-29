@@ -6,11 +6,12 @@
 import os,os.path as opath
 import sys
 import glob
+from maclient_compact import *
 #for plugin use
-import urllib2
-getPATH0=(opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli') \
-         and sys.path[0].decode(sys.getfilesystemencoding()) \
-         or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
+if PYTHON3:
+    import urllib.request as urllib2
+else:
+    import urllib2
 sys.path.append(opath.join(getPATH0,'plugins'))
 #os.chdir(opath.join(getPATH0(),'plugins'))
 #sys.path[0]=os.path.abspath(opath.join(getPATH0,'plugins'))
@@ -89,7 +90,7 @@ class plugins():
 
     def _do_hook(self,action,*args,**kwargs):
         if action in self.hook_reg:
-            for plugin in sorted(self.hook_reg[action].iteritems(), key=lambda d:d[1], reverse = True):#high priority first
+            for plugin in sorted(self.hook_reg[action].items(), key=lambda d:d[1], reverse = True):#high priority first
                 f=self._get_plugin_attr(plugin[0],action)
                 if f:
                     ret=f(*args, **kwargs)
@@ -101,11 +102,11 @@ class plugins():
     def load_plugins(self):
         import glob
         plugin_dir=opath.abspath(opath.join(getPATH0,'plugins'))
-        mods=glob.glob(glob.glob(opath.join(plugin_dir,'*.pyd')+\
-            opath.join(plugin_dir,'*.py'))+\
+        mods=glob.glob(opath.join(plugin_dir,'*.pyd'))+\
+            glob.glob(opath.join(plugin_dir,'*.py'))+\
             glob.glob(opath.join(plugin_dir,'*.pyc'))+\
             glob.glob(opath.join(plugin_dir,'*.pyo'))
-            )
+        #mods=[]
         for m in mods:
             m=opath.splitext(opath.split(m)[1])[0]
             if m.startswith('_'):
@@ -164,6 +165,6 @@ if __name__=='__main__':
     class a():
         @p.func_hook
         def explore(a,b,c,d=1):
-            print 1
+            print(1)
     aa=a()
     aa.explore(1,2,3,d=3)

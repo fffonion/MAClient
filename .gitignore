@@ -52,3 +52,4 @@ release
 *.saved.*
 test*.py
 desktop.ini
+verinfo.ini
