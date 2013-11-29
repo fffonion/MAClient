@@ -7,14 +7,11 @@ import os
 import os.path as opath
 import sys
 from xml2dict import XML2Dict
-
-getPATH0=(opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli') \
-     and sys.path[0].decode(sys.getfilesystemencoding()) \
-     or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
+from maclient_compact import *
 
 def get_revision(loc):
     loc=loc[:2]
-    local_revs=open(opath.join(getPATH0,'db/revision.txt')).read().split('\n')
+    local_revs=open(opath.join(getPATH0,'db/revision.txt')).readlines()
     rev=None
     for r in local_revs:
         r=r.split(',')
@@ -67,7 +64,10 @@ def update_master(loc,need_update,poster):
                 c.skill_kana,
                 c.skill_name,
                 str(c.skill_description).replace('\n','\\n')))
-        open(opath.join(getPATH0,'db/card.%s.txt'%loc),'w').write('\n'.join(strs))
+        if PYTHON3:
+            f=open(opath.join(getPATH0,'db/card.%s.txt'%loc),'w',encoding='utf-8').write('\n'.join(strs))
+        else:
+            f=open(opath.join(getPATH0,'db/card.%s.txt'%loc),'w').write('\n'.join(strs))
         new_rev[0]=resp.header.revision.card_rev
         save_revision(loc,cardrev=new_rev[0])
     if need_update[1]:
@@ -81,7 +81,10 @@ def update_master(loc,need_update,poster):
                 c.name,
                 c.explanation
             ))
-        open(opath.join(getPATH0,'db/item.%s.txt'%loc),'w').write('\n'.join(strs))
+        if PYTHON3:
+            open(opath.join(getPATH0,'db/item.%s.txt'%loc),'w',encoding='utf-8').write('\n'.join(strs))
+        else:
+            open(opath.join(getPATH0,'db/item.%s.txt'%loc),'w').write('\n'.join(strs))
         new_rev[1]=resp.header.revision.item_rev
         save_revision(loc,itemrev=new_rev[1])
     return new_rev    

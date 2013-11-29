@@ -9,9 +9,11 @@ import sys
 import glob
 import time
 from xml2dict import XML2Dict
-getPATH0=(opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli') \
-     and sys.path[0].decode(sys.getfilesystemencoding()) \
-     or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
+from maclient_compact import *
+if PYTHON3:
+    _split=lambda x,y=',':list(map(lambda x:x.decode('utf-8'),x.encode(encoding='utf-8').split(y.encode('utf-8'))))
+else:
+    _split=lambda x,y=',':x.split(y)
 class player(object):
     def __init__(self,login_xml,loc):
         #[:2]可以让cn2变成cn以使用同一个卡组/道具数据
@@ -113,8 +115,12 @@ class item(object):
         self.count={}
 
     def load_db(self,loc):
-        for c in open(opath.join(getPATH0,'db/item.%s.txt'%loc)).read().split('\n'):
-            c=c.split(',')
+        if PYTHON3:
+            f=open(opath.join(getPATH0,'db/item.%s.txt'%loc),encoding='utf8')
+        else:
+            f=open(opath.join(getPATH0,'db/item.%s.txt'%loc))
+        for c in f.readlines():
+            c=_split(c)
             if c!=['']:
                 self.name[int(c[0])]=c[1]
 
@@ -133,8 +139,13 @@ class card(object):
         self.count=0
 
     def load_db(self,loc):
-        for c in open(opath.join(getPATH0,'db/card.%s.txt'%loc)).read().split('\n'):
-            c=c.split(',')
+        #print(open(opath.join(getPATH0,'db/card.%s.txt'%loc),encoding='utf8').read().encode(encoding="utf-8"))
+        if PYTHON3:
+            f=open(opath.join(getPATH0,'db/card.%s.txt'%loc),encoding='utf8')
+        else:
+            f=open(opath.join(getPATH0,'db/card.%s.txt'%loc))
+        for c in f.readlines():
+            c=_split(c)
             if c!=['']:
                 self.db[int(c[0])]=[c[1],int(c[2]),int(c[3])]
 
@@ -164,6 +175,8 @@ def check_exclusion(inpstr):
     '''Return False if exclusion exists'''
     import tempfile
     import hashlib
+    if PYTHON3:
+        inpstr=inpstr.encode(encoding='utf-8')
     md5name=hashlib.md5(inpstr).hexdigest()[:6]
     try:
         tdir=tempfile.gettempdir()

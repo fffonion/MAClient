@@ -16,12 +16,10 @@ import threading
 import maclient
 import maclient_proxy
 import maclient_logging
+from maclient_compact import *
 import getpass
-__version__=1.61
 #look out for ironpython
-du8=sys.platform.startswith('cli') and \
-    (lambda str:str) or\
-    (lambda str:str.decode('utf-8'))
+
 def iter_printer(l,sep='\n'):
     cnt=1
     str=''
@@ -98,7 +96,7 @@ def read_proxy(work=0):
         time.sleep(1)     
         
 def macs(uri,header={},body='',method='GET'):
-    header.update({'User-Agent':'maClient/%f'%__version__})
+    header.update({'User-Agent':'maClient/%f'%maclient.__version__})
     try:
         resp,ct=ht.request('%s/%s'%(server,uri),body=body,method=method,headers=header)
     except:
@@ -108,10 +106,11 @@ def macs(uri,header={},body='',method='GET'):
 
 if __name__=='__main__':
     logging = maclient_logging.Logging('logging')
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
+    if not PYTHON3:
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
     #ht=httplib2.Http(timeout=30)
-    print(du8('%s%sv%s%s'%('='*((getTerminalSize()[0]-5-18)/2),'丧心病狂的MA客户端',__version__,'='*((getTerminalSize()[0]-5-18)/2))))
+    print(du8('%s%sv%s%s'%('='*int((getTerminalSize()[0]-5-18)/2),'丧心病狂的MA客户端',maclient.__version__,'='*int((getTerminalSize()[0]-5-18)/2))))
     if len(sys.argv)>2:
         maclient1=maclient.maClient(configfile=sys.argv[1],savesession=True)
         #auth()
@@ -138,7 +137,10 @@ if __name__=='__main__':
         while True:
             print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\tas.自动配卡\n2.切换模式->%s\te.刷秘境\n3.编辑卡组\t\tfyb.刷妖精\n4.编辑配置\t\tfcb.因子战\n5.更新数据库\t\tf.好友相关\n6.退出\t\t\th.命令列表'%(mode[mod],maclient1._read_config('system','server'),mode[(mod+1)%2])))
             print('Select> ',end='')
-            ch=sys.stdin.readline().rstrip('\n')
+            if PYTHON3:
+                ch=input()
+            else:
+                ch=sys.stdin.readline().rstrip('\n')
             try:
                 print(' \b')
             except KeyboardInterrupt:

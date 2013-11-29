@@ -16,18 +16,21 @@ import datetime
 from xml2dict import XML2Dict
 from xml2dict import object_dict
 import random
-try:
-    import ConfigParser
-except ImportError:
-    import configparser as ConfigParser
 import threading
 import getpass
+from maclient_compact import *
+if PYTHON3:
+    import configparser as ConfigParser
+    xrange=range
+else:
+    import ConfigParser
 import maclient_player
 import maclient_network
 import maclient_logging
 import maclient_smart
 import maclient_plugin
-__version__=1.61
+
+__version__=1.62
 #CONSTS:
 EXPLORE_BATTLE,NORMAL_BATTLE,TAIL_BATTLE,WAKE_BATTLE=0,1,2,3
 GACHA_FRIENNSHIP_POINT,GACHAgacha_TICKET,GACHA_11=1,2,4
@@ -43,11 +46,10 @@ eval_select_card=[('lv','lv_i'),('hp','hp_i'),('atk','atk_i')]
 eval_task=[]
 duowan={'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html','tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 logging = maclient_logging.Logging('logging')#=sys.modules['logging']
-du8=sys.platform.startswith('cli') and \
-    (lambda str:str) or\
-    (lambda str:str.decode('utf-8'))
+
 def setT(strt):
-    strt=strt.decode('utf-8').encode('cp936','ignore')
+    if not PYTHON3:
+        strt=strt.decode('utf-8').encode('cp936','ignore')
     if sys.platform=='cli':
         import System.Console
         System.Console.Title=strt
@@ -91,18 +93,19 @@ class maClient():
     global plugin
     plugin=maclient_plugin.plugins(logging)
     def __init__(self,configfile='',savesession=False):
-        reload(sys)
-        sys.setdefaultencoding('utf-8')
-        self.getPATH0=(opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli') \
-             and sys.path[0].decode(sys.getfilesystemencoding()) \
-             or sys.path[1].decode(sys.getfilesystemencoding())#pyinstaller build
+        if not PYTHON3:
+            reload(sys)
+            sys.setdefaultencoding('utf-8')
         self.cf=ConfigParser.ConfigParser()
         if configfile=='':
-            if not os.path.exists(self.getPATH0+opath.sep+'config.ini'):
+            if not os.path.exists('%s%sconfig.ini'%(getPATH0,opath.sep)):
                 print(du8('正在尝试以默认配置文件启动，但该文件(config.ini)不存在'))
                 self._exit(1)
-            self.configfile=self.getPATH0+opath.sep+'config.ini'
+            self.configfile=getPATH0+opath.sep+'config.ini'
         else:
+            if not os.path.exists(configfile):
+                print(du8('正在尝试以配置文件(%s)启动，但该文件不存在'%configfile))
+                self._exit(1)
             self.configfile=configfile
         #configuration
         self.cf.read(self.configfile)
@@ -297,7 +300,8 @@ class maClient():
             self.cf.add_section(sec) 
         if self.cf.has_option(sec, key):
             val=self.cf.get(sec, key)
-            if sys.platform=='win32':val=val.decode('cp936')#.encode('utf-8')
+            if sys.platform=='win32' and not PYTHON3:
+                val=val.decode('cp936')#.encode('utf-8')
         else:
             val=''
         if val=='':return ''
@@ -327,11 +331,6 @@ class maClient():
         for (i,j) in repllst+repllst2:
             streval=streval.replace(i,j)
         return streval
-    
-    def _raw_input(self,str):
-        ret=raw_input(du8(str).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace')).decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
-        return ret
-
 
     def tolist(self,obj):
         if not isinstance(obj, list):
@@ -438,16 +437,16 @@ class maClient():
         #sessionfile='.%s.session'%self.loc
         if os.path.exists(self.playerfile) and self._read_config('account_%s'%self.loc,'session')!='' and uname=='':
             logging.info(du8('加载了保存的账户XD'))
-            dec=open(self.playerfile,'r').read().encode('utf-8')
+            dec=open(self.playerfile,'r').read()#.encode('utf-8')
             ct=xmldict=XML2Dict().fromstring(dec).response
         else:
             self.username= uname or self.username
             self.password= pwd or self.password
             if self.username=='':
-                self.username=self._raw_input('Username:')
+                self.username=raw_inputd('Username:')
             if self.password=='' or (uname!='' and pwd==''):
                 self.password=getpass.getpass('Password:')
-                if self._raw_input('是否保存密码(y/n)？')=='y':
+                if raw_inputd('是否保存密码(y/n)？')=='y':
                     self._write_config('account_%s'%self.loc,'password',self.password)
                     logging.warning(du8('保存的登录信息没有加密www'))
             token=self._read_config('system','device_token').replace('\\n','\n') or \
@@ -685,7 +684,7 @@ class maClient():
                 logging.debug('red_tea:auto mode, let it go~')
                 return False
             else:
-                if self._raw_input('来一坨红茶？ y/n ')=='y':
+                if raw_inputd('来一坨红茶？ y/n ')=='y':
                     res=self._use_item('2')
                 else:
                     res=False
@@ -704,7 +703,7 @@ class maClient():
                 logging.debug('green_tea:auto mode, let it go~')
                 return False
             else:
-                if self._raw_input('嗑一瓶绿茶？ y/n ')=='y':
+                if raw_inputd('嗑一瓶绿茶？ y/n ')=='y':
                     res=self._use_item('1')
                 else:
                     res=False
@@ -725,7 +724,7 @@ class maClient():
                 for i in xrange(len(areas)):
                     print('%d.%s(%s%%/%s%%) %s'%\
                         (i+1,areas[i].name,areas[i].prog_area,areas[i].prog_item,(areas[i].area_type=='1' and 'EVENT' or '')))
-                areasel=[areas[int(self._raw_input('选择： ') or '1')-1]]
+                areasel=[areas[int(raw_inputd('选择： ') or '1')-1]]
             else:
                 logging.info(du8('自动选图www'))
                 areasel=[]
@@ -1026,7 +1025,7 @@ class maClient():
         if len(warning_card)>0:
             if self.cfg_sell_card_warning>=1:
                 logging.warning(du8('存在稀有以上卡片：')+', '.join(warning_card)+'\n真的要继续吗？y/n')
-                if raw_input('> ')=='y':
+                if raw_inputd('> ')=='y':
                     return self._sell_card(sid)
                 else:
                     logging.debug('select_card:user aborted')
@@ -1035,7 +1034,7 @@ class maClient():
         else:
             if self.cfg_sell_card_warning==2:
                 logging.warning(du8('根据卖卡警告设置，需要亚瑟大人的确认\n真的要继续吗？y/n'))
-                if raw_input('> ')=='y':
+                if raw_inputd('> ')=='y':
                     self._sell_card(sid)
                 else:
                     logging.debug('select_card:user aborted')
@@ -1475,7 +1474,7 @@ class maClient():
             loop-=1
             if choice=='':
                 print(du8('选择操作\n1.删除好友\n2.查找添加好友\n3.处理好友邀请\n4.返回'))
-                choice= raw_input('> ')
+                choice= raw_inputd('> ')
             else:
                 loop=1
             if choice=='1':
@@ -1516,10 +1515,10 @@ class maClient():
                         logging.warning(du8('即将删除%d天以上没上线的：'%delfriend)+'%s 最后上线:%s ID:%s'%(
                             deluser.name,deluser.last_login,deluser.id
                         ))
-                        if self._raw_input('y/n >')=='y':
+                        if raw_inputd('y/n >')=='y':
                             confirm=True
                 else:
-                    u=self._raw_input('没有要删除的好友\n输入序号可以手动删除好友，按回车返回> ')
+                    u=raw_inputd('没有要删除的好友\n输入序号可以手动删除好友，按回车返回> ')
                     try:
                         int(u)
                     except ValueError:
@@ -1531,7 +1530,7 @@ class maClient():
                             logging.warning(du8('即将删除：%s 最后上线:%s ID:%s'%(
                                 deluser.name,deluser.last_login,deluser.id
                             )))
-                            if self._raw_input('y/n >')=='y':
+                            if raw_inputd('y/n >')=='y':
                                 confirm=True
                 if autodel or confirm:
                     param='dialog=1&user_id=%s'%deluser.id
@@ -1556,7 +1555,7 @@ class maClient():
                     )
                     i+=1
                 print('%s%s'%(du8('申请列表:\n'),strf))
-                adduser=self._raw_input('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
+                adduser=raw_inputd('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser!=['']:
                     for u in adduser:
                         try:
@@ -1579,7 +1578,7 @@ class maClient():
                 if lastmove!=2:
                     resp,ct=self._dopost('menu/other_list')
                 lastmove=2
-                qry=self._raw_input('输入关键词> ')#.decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
+                qry=raw_inputd('输入关键词> ')
                 param='name=%s'%qry
                 resp,ct=self._dopost('menu/player_search',postdata=param)
                 if resp['error']:return
@@ -1598,7 +1597,7 @@ class maClient():
                     )
                     i+=1
                 print('%s%s'%(du8('搜索结果:\n'),strf))
-                usel=self._raw_input('选择要添加的好友序号, 空格分割多个，回车返回> ')
+                usel=raw_inputd('选择要添加的好友序号, 空格分割多个，回车返回> ')
                 uids=[]
                 for u in usel.split(' '):
                     if u!='':
@@ -1699,7 +1698,7 @@ class maClient():
             logging.info(du8('还有%d点未分配点数'%free_points))
         while True:
             try:
-                ap,bc=self._raw_input('输入要分配给AP BC的点数，空格分隔> ').split(' ')
+                ap,bc=raw_inputd('输入要分配给AP BC的点数，空格分隔> ').split(' ')
             except ValueError:
                 logging.warning(du8('少输入了一个数或者多输了一个数吧'))
             else:
@@ -1896,15 +1895,15 @@ class maClient():
         except:
             pass
         if code>0:
-            raw_input('THAT\'S THE END')
+            raw_inputd('THAT\'S THE END')
         sys.exit(code)
 
 
 
 
 if __name__=='__main__':
-    '''cardid=int(raw_input('cardid > '))
-    level=raw_input('level > ')
+    '''cardid=int(raw_inputd('cardid > '))
+    level=raw_inputd('level > ')
     for j in level.split(','):
         dt=ma.decode_res(download_card(cardid,int(j),'tw'))
         open('Z:\\%d_%s.png'%(cardid,j),'wb').write(dt)'''

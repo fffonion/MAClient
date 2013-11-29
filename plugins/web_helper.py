@@ -1,13 +1,23 @@
 #coding:utf-8
 from _prototype import plugin_prototype
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer  
-from SocketServer import ThreadingMixIn
-from cStringIO import StringIO
+from maclient_compact import *
+if PYTHON3:
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+    from socketserver import ThreadingMixIn
+    from io import StringIO
+    import _webbrowser3 as webbrowser
+    import urllib.request as urllib2
+    import winreg
+else:
+    from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer  
+    from SocketServer import ThreadingMixIn
+    from cStringIO import StringIO
+    import _webbrowser as webbrowser
+    import urllib2
+    import _winreg as winreg
 import gzip
 import socket
-import _webbrowser as webbrowser
-import urllib2
-import _winreg as winreg
+
 #start meta
 __plugin_name__='web broswer helper'
 __author='fffonion'

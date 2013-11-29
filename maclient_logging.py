@@ -5,6 +5,7 @@ import time
 import locale
 import logging
 import logging.handlers
+from maclient_compact import *
 class Logging(type(sys)):
     #paste from goagent
     CRITICAL = 5
@@ -25,7 +26,7 @@ class Logging(type(sys)):
         self.__set_debug_color = lambda: None
         self.__set_sleep_color = lambda: None
         self.__reset_color = lambda: None
-        self.__convstr=sys.platform.startswith('cli') and \
+        self.__convstr=(sys.platform.startswith('cli') or PYTHON3)and \
             (lambda str: str) or \
             (lambda str: str.encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
         if self.isatty:

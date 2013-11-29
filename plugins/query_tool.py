@@ -1,6 +1,7 @@
 #coding:utf-8
 from _prototype import plugin_prototype
 import sys
+from maclient_compact import *
 #start meta
 __plugin_name__='query infomation of player'
 __author='fffonion'
@@ -8,10 +9,6 @@ __version__=0.1
 hooks={}
 extra_cmd={'query_item':'query_item','qi':'query_item','query_holo':'query_holo','qh':'query_holo'}
 #end meta
-
-du8=sys.platform.startswith('cli') and \
-    (lambda str:str) or\
-    (lambda str:str.decode('utf-8'))
     
 #query item count
 def query_item(plugin_vals):
@@ -28,7 +25,7 @@ def query_item(plugin_vals):
             l1=len(n)#ascii length
             n=du8(n)
             l2=len(n)#char count
-            print('%s%s%s'%(n,' '*(15-l2-(l1-l2)/2),j))
+            print('%s%s%s'%(n,' '*int(15-l2-(l1-l2)/2),j))
     return do
 
 #query holo cards

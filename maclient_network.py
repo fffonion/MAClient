@@ -10,10 +10,12 @@ import base64
 import socket
 import urllib
 import maclient_smart
-try:
-    import httplib
-except ImportError:
+from maclient_compact import *
+if PYTHON3:
     import http.client as httplib
+    xrange=range
+else:
+    import httplib   
 try:
     import httplib2
 except ImportError:
@@ -33,9 +35,9 @@ def init_cipher(loc='cn',uid=None):
     _key=getattr(maclient_smart,'key_%s'%loc)
     if loc in ['jp']:
         _key['crypt']='%s%s%s'%(_key['crypt'],uid,'0'*(32-len(_key['crypt']+uid)))
-        print _key['crypt']
+        print(_key['crypt'])
     if sys.platform=='cli':
-        import clr
+        pass#import clr
         #clr.AddReference("IronPyCrypto.dll")
     try:
         from Crypto.Cipher import AES
@@ -51,9 +53,7 @@ COD_RES,COD_DATA,SLOW_MODE=init_cipher()
 
 pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
 unpad = lambda s : s[0:-ord(s[-1])]
-du8=sys.platform.startswith('cli') and \
-    (lambda str:str) or\
-    (lambda str:str.decode('utf-8'))
+b2u=PYTHON3 and (lambda x:x.decode(encoding='utf-8')) or (lambda x:x)
 ht=httplib2.Http(timeout=15)
 
 def decode_res(bytein):
@@ -63,7 +63,7 @@ def decode_data(bytein):
     if len(bytein)==0:
         return ''
     else:
-        return unpad(COD_DATA.decrypt(bytein))
+        return unpad(b2u(COD_DATA.decrypt(bytein)))
 
 def decode_data64(strin):
     return decode_data(base64.decodestring(urlescape(strin)))
@@ -72,7 +72,7 @@ def encode_data(bytein):
     return COD_DATA.encrypt(pad(bytein))
 
 def encode_data64(bytein):
-    return urlunescape(base64.encodestring(encode_data(bytein)).strip('\n'))
+    return urlunescape(b2u(base64.encodestring(encode_data(bytein))).strip('\n'))
 
 def encode_param(param):
     p=param.split('&')
