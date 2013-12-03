@@ -55,20 +55,21 @@ class player(object):
             #xmlresp = XML2Dict().fromstring(xmldata).response
             if 'login' in xmldata.body:
                 self.id=xmldata.body.login.user_id
-            self.playerdata=xmldata.header.your_data
+            playerdata=xmldata.header.your_data
         except KeyError:
             return 'Profile no update',False
         try:
             for key in ['ap','bc']:
                 if not self.hasattr(key):
                     self.__setattr__(key,{})
-                for attr in self.playerdata[key]:
-                    getattr(self,key)[attr]=int(self.playerdata[key][attr].value)
+                for attr in playerdata[key]:
+                    getattr(self,key)[attr]=int(playerdata[key][attr].value)
             for key in ['gold','friendship_point']:
-                self.__setattr__(key,int(self.playerdata[key].value))
-            self.lv=self.playerdata['town_level'].value
-            self.leader_sid=self.playerdata['leader_serial_id'].value
-            self.name=self.playerdata['name'].value
+                self.__setattr__(key,int(playerdata[key].value))
+            self.lv=playerdata.town_level
+            self.leader_sid=playerdata.leader_serial_id
+            self.name=playerdata.name
+            self.ex_gauge=playerdata.ex_gauge
         except KeyError:#没有就自己算
             self.calc_ap_bc()
         if not self.update_checked:

@@ -1,5 +1,16 @@
 ﻿命令均以 “完整命令/缩写命令” 的形式给出，范例仅给出完整命令写法
 
+全局可用的量：
+
+    HH 当前(24小时制的)小时
+    MM 当前分钟
+    BC 剩余bc
+    AP 剩余ap
+    SUPER 累积的super值
+    G 金币
+    FP 友情点数
+    FAIRY_ALIVE 自己的妖精是否存活
+
 ###登陆
 
 login/l
@@ -14,8 +25,10 @@ login/l
 set_card/sc
 
     set_card card_deck_key
+    set_card auto_set(CONDITION)
 
-card_deck_key为card_deck中已定义的项
+card_deck_key为card_deck中已定义的项；当卡组名为auto_set时，此命令等效于auto_set CONDITION notest
+
 
 ###自动配卡
 
@@ -123,7 +136,7 @@ fairy_select/fs
 
 筛选条件语法与condition中的fairy_select相同
 
-最后可跟deck:xxx表示强制使用该卡组战斗
+最后可跟deck:xxx表示强制使用该卡组战斗；可以使用自动配卡，即deck:auto_set(CONDITION)
 
 ###重新登录
 

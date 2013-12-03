@@ -325,7 +325,7 @@ class maClient():
         self.cf.write(open(f, "w"))
 
     def _eval_gen(self,streval,repllst=[]):
-        repllst2=[('HH',"datetime.datetime.now().hour"),('MM',"datetime.datetime.now().minute"),('BC','self.player.bc["current"]'),('AP','self.player.ap["current"]'),('G','self.player.gold'),('FP','self.friendship_point'),('FAIRY_ALIVE','self.player.fairy["alive"]')]
+        repllst2=[('HH',"datetime.datetime.now().hour"),('MM',"datetime.datetime.now().minute"),('BC','self.player.bc["current"]'),('AP','self.player.ap["current"]'),('SUPER','self.player.ex_gauge'),('G','self.player.gold'),('FP','self.friendship_point'),('FAIRY_ALIVE','self.player.fairy["alive"]')]
         if streval=='':
             return 'True'
         for (i,j) in repllst+repllst2:
@@ -383,9 +383,11 @@ class maClient():
                 elif task[0]=='fairy_battle' or task[0]=='fyb':
                     self.fairy_battle_loop(task[1])
                 elif task[0]=='fairy_select' or task[0]=='fs':
-                    if task[-2].startswith('deck:'):#最后一个是""
-                        self.fairy_select(cond=' '.join(task[1:-2]),carddeck=task[-2][5:])
-                    else:
+                    for i in xrange(1,len(task)):
+                        if task[i].startswith('deck:'):
+                            self.fairy_select(cond=' '.join(task[1:i]),carddeck=' '.join(task[i:-1])[5:])
+                            break
+                    if i==len(task)-1:
                         self.fairy_select(cond=' '.join(task[1:]))
                 elif task[0]=='green_tea' or task[0]=='gt':
                     self.green_tea()
@@ -455,13 +457,25 @@ class maClient():
                 ct=self._dopost('check_inspection',xmlresp=False,extraheader={},usecookie=False)[1]
                 #self.poster.update_server(ct)
                 self._dopost('notification/post_devicetoken',postdata='S=%s&login_id=%s&password=%s&app=and&token=%s'%('nosessionid',self.username,self.password,token),xmlresp=False)
-            
             resp,ct=self._dopost('login',postdata='login_id=%s&password=%s'%(self.username,self.password))
             if resp['error']:
                 logging.info(du8('登录失败しました'))
                 self._exit(1)
             else:
-                logging.info(du8('[%s] 登录成功!'%self.username))
+                pdata=ct.header.your_data
+                logging.info(du8('[%s] 登录成功!\n'%self.username+\
+                    'AP:%s/%s BC:%s/%s 金:%s 基友点:%s %s\n'%(
+                        pdata.ap.current,pdata.ap.max,
+                        pdata.bc.current,pdata.bc.max,
+                        pdata.gold,pdata.friendship_point,
+                        pdata.fairy_appearance=='1' and '妖精出现中!!' or '')+
+                    '蛋蛋卷:%s 完成度:%s %s%s\n'%(
+                        pdata.gacha_ticket,
+                        pdata.percentage,
+                        pdata.free_ap_bc_point!='0' and '有未分配的点数yo~ ' or '',
+                        pdata.friends_invitations!='0' and '收到好友邀请了呢 ' or '')
+                    )
+                )
                 self._write_config('account_%s'%self.loc,'username',self.username)
                 self._write_config('record','last_set_card','')
                 self._write_config('record','last_set_bc','0')
@@ -473,7 +487,7 @@ class maClient():
         else:#第一次
             self.player=maclient_player.player(xmldict,self.loc)
             if not self.player.success:
-                logging.error(du8('当前登陆的用户(%s)已经运行了一个maClient'%(self.username)))
+                logging.error(du8('当前登录的用户(%s)已经运行了一个maClient'%(self.username)))
                 self._exit(2)
             self.carddb=self.player.card.db
             self.itemdb=self.player.item.name
@@ -571,7 +585,7 @@ class maClient():
             return False
         elif deckkey.startswith('auto_set'):
             if len(deckkey)>8:#raw string : auto_set(CONDITIONS)
-                return self.invoke_autoset(deckkey[10:-1])
+                return self.invoke_autoset(deckkey[9:-1])
             else:
                 test_mode=kwargs.pop('test_mode')
                 bclimit=kwargs.pop('bclimit')
@@ -1821,6 +1835,7 @@ class maClient():
                                 fparam='lake_id=%s&parts_id=%d&user_id=%s'%(l.lake_id,partid,u.id)
                             resp,ct=self._dopost('battle/battle',postdata=fparam)
                             if resp['error']:
+                                time.sleep('2')
                                 continue
                             elif resp['errno']==1050:
                                 logging.warning(du8('BC不够了TOT'))
