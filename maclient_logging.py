@@ -6,6 +6,9 @@ import locale
 import logging
 import logging.handlers
 from maclient_compact import *
+convstr=(sys.platform.startswith('cli') or PYTHON3)and \
+        (lambda str: str) or \
+        (lambda str: str.encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 class Logging(type(sys)):
     #paste from goagent
     CRITICAL = 5
@@ -26,9 +29,6 @@ class Logging(type(sys)):
         self.__set_debug_color = lambda: None
         self.__set_sleep_color = lambda: None
         self.__reset_color = lambda: None
-        self.__convstr=(sys.platform.startswith('cli') or PYTHON3)and \
-            (lambda str: str) or \
-            (lambda str: str.encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
         if self.isatty:
             if os.name == 'nt':
                 import ctypes
@@ -58,7 +58,8 @@ class Logging(type(sys)):
         if self.level > self.__class__.DEBUG:
             self.debug = self.dummy
     def log(self, level, fmt, *args, **kwargs):
-        self.__write(self.__convstr('%-5s - [%s] %s\n' % (level, time.strftime('%X',time.localtime()), fmt % args)))
+        #fmt=du8(fmt)
+        self.__write(convstr('%-5s - [%s] %s\n' % (level, time.strftime('%X',time.localtime()), fmt % args)))
         return '[%s] %s\n' % (time.strftime('%b %d %X',time.localtime()), fmt % args)
     def dummy(self, *args, **kwargs):
         pass

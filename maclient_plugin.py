@@ -107,6 +107,7 @@ class plugins():
             glob.glob(opath.join(plugin_dir,'*.pyc'))+\
             glob.glob(opath.join(plugin_dir,'*.pyo'))
         #mods=[]
+        modstr=''
         for m in mods:
             m=opath.splitext(opath.split(m)[1])[0]
             if m.startswith('_'):
@@ -117,6 +118,7 @@ class plugins():
                 #plugin instance
                 try:
                     self.plugins_instance[m]=self.plugins[m].plugin()
+                    modstr='%s,%s'%(modstr,m)
                 except AttributeError:
                     #no plugin() class
                     self.plugins_instance[m]=None

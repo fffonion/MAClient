@@ -140,7 +140,7 @@ if __name__=='__main__':
             if PYTHON3:
                 ch=input()
             else:
-                ch=sys.stdin.readline().rstrip('\n')
+                ch=sys.stdin.readline().rstrip('\n').decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
             try:
                 print(' \b')
             except KeyboardInterrupt:

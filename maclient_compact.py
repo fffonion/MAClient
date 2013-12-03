@@ -23,6 +23,6 @@ du8=(IRONPYTHON or PYTHON3) and \
     (lambda str:str.decode('utf-8'))
 
 raw_inputd= PYTHON3 and \
-        (lambda s:input(s.encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace')).encode('utf-8')) \
+        (lambda s:input(s)) \
     or \
         (lambda s:raw_input(du8(s).encode(locale.getdefaultlocale()[1] or 'utf-8')).decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8'))
