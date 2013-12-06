@@ -362,7 +362,9 @@ class maClient():
                 task=(task+' ').split(' ')
                 logging.debug('tasker:%s'%task[0])
                 task[0]=task[0].lower()
-                if task[0]=='set_card' or task[0]=='sc':
+                if task[0] in plugin.extra_cmd:
+                    plugin.do_extra_cmd(tasks)
+                elif task[0]=='set_card' or task[0]=='sc':
                     if task[1]=='':
                         logging.error('set_card need 1 argument')
                     else:
@@ -586,7 +588,7 @@ class maClient():
             return False
         elif deckkey.startswith('auto_set'):
             if len(deckkey)>8:#raw string : auto_set(CONDITIONS)
-                return self.invoke_autoset(deckkey[9:-1])
+                return self.invoke_autoset('%s notest'%deckkey[9:-1])
             else:
                 test_mode=kwargs.pop('test_mode')
                 bclimit=kwargs.pop('bclimit')
@@ -599,7 +601,7 @@ class maClient():
                     atk,hp,last_set_bc,sid,mid=res
                     param=map(lambda x:str(x),sid)
                     #别看比较好
-                    print('设置卡组为: ATK:%d HP:%d COST:%d\n%s'%(
+                    print(du8('设置卡组为: ATK:%d HP:%d COST:%d\n%s'%(
                         sum(atk),
                         hp,
                         last_set_bc,
@@ -615,7 +617,7 @@ class maClient():
                                     )
                                 )
                             )
-                        )
+                        ))
                 else:
                     logging.error(res[0])
                     return False
@@ -1024,6 +1026,7 @@ class maClient():
             card.mid=int(card.master_card_id)
             card.price=int(card.sale_price)
             card.sid=int(card.serial_id)
+            card.holo=card.holography=='1'
             evalres=eval(self.evalstr_selcard) and not card.mid in [390,391,392,404]#切尔莉
             if evalres:
                 if card.star>3:
@@ -1401,8 +1404,9 @@ class maClient():
                                 logging.debug('fairy_battle%ssatk_id%s dmg%s'%(_for_debug,l.special_attack_id,l.special_attack_damage))
                         if 'skill_id' in l:
                             #skillcnt+=1
-                            skills.append('[%d]%s.%s'%(
-                                math.ceil(rnd),skill_type[int(l.skill_type)],self.carddb[int(l.skill_card)][0])
+                            skill_var=l.skill_type=='1' and l.attack_damage or l.skill_hp_player
+                            skills.append('[%d]%s.%s(%s)'%(
+                                math.ceil(rnd),skill_type[int(l.skill_type)],self.carddb[int(l.skill_card)][0],skill_var)
                             )
                         if 'combo_name' in l:
                             cbos.append('%s.%s'%(
@@ -1533,9 +1537,9 @@ class maClient():
                 confirm=False
                 if deluser!=None:
                     if not autodel:
-                        logging.warning('即将删除%d天以上没上线的：'%delfriend)+'%s 最后上线:%s ID:%s'%(
-                            deluser.name,deluser.last_login,deluser.id
-                        )
+                        logging.warning('即将删除%d天以上没上线的：%s 最后上线:%s ID:%s'%(
+                            delfriend,deluser.name,deluser.last_login,deluser.id
+                        ))
                         if raw_inputd('y/n >')=='y':
                             confirm=True
                 else:
@@ -1842,7 +1846,7 @@ class maClient():
                                 fparam='lake_id=%s&parts_id=%d&user_id=%s'%(l.lake_id,partid,u.id)
                             resp,ct=self._dopost('battle/battle',postdata=fparam)
                             if resp['error']:
-                                time.sleep('2')
+                                time.sleep(2)
                                 continue
                             elif resp['errno']==1050:
                                 logging.warning('BC不够了TOT')
