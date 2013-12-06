@@ -25,13 +25,13 @@ getPATH0=(opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli') \
 
 def set_bgm_off(plugin_vals):
     snd = sound.Output(5,1,sound.AFMT_S16_LE)#whatever
-    def do():
+    def do(arg):
         fade_out(snd)
     return do
 
 def set_bgm_on(plugin_vals):
     snd = sound.Output(5,1,sound.AFMT_S16_LE) 
-    def do(): 
+    def do(arg): 
         fade_in(snd)
     return do
 

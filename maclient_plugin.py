@@ -62,8 +62,9 @@ class plugins():
         self.val_dict=val_dict
 
     def do_extra_cmd(self,cmd):
+        ops=cmd.split(' ')
         if self.enable:
-            return self.extra_cmd[cmd](self.val_dict)()
+            return self.extra_cmd[ops[0]](self.val_dict)(' '.join(ops[1:]))
         else:
             self.logger.warning('Plugins not enabled.')
 

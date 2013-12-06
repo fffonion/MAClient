@@ -20,7 +20,7 @@ __version__=0.1
 hooks={}
 extra_cmd={"reg":"reg_gen"}
 def reg_gen(plugin_vals):
-    def do():
+    def do(*args):
         loc=plugin_vals['loc']
         po=plugin_vals['poster']
         if 'player' not in plugin_vals:

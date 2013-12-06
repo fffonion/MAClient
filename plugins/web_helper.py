@@ -39,7 +39,7 @@ headers={'Pragma': 'no-cache',
     'Accept-Charset': 'utf-8, iso-8859-1, utf-16, *;q=0.7',}
     #'Accept-Encoding':'gzip,deflate'}
 def start_webproxy(plugin_vals):
-    def do(*args):
+    def do(args):
         headers['cookie']=plugin_vals['cookie']
         headers['User-Agent']=plugin_vals['poster'].header['User-Agent']
         headers['X-Requested-With']+=plugin_vals['loc']

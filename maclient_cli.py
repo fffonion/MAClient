@@ -280,8 +280,6 @@ if __name__=='__main__':
                 
             elif ch =='6':
                 maclient1._exit(0)
-            elif ch in maclient1.plugin.extra_cmd:
-                maclient1.plugin.do_extra_cmd(ch)
             elif ch!='':
                 if ch.startswith('ss') or ch.startswith('set_server') or ch.startswith('l ') or ch.startswith('login') \
                     or ch.startswith('relogin') or ch.startswith('rl'):
