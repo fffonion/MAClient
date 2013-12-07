@@ -42,7 +42,8 @@ eval_fairy_select=[('LIMIT','time_limit'),('NOT_BATTLED','not_battled'),('.lv','
 eval_fairy_select_carddeck=[('IS_MINE','discoverer_id == self.player.id'),('IS_WAKE_RARE','wake_rare'),('IS_WAKE','wake'),('STILL_ALIVE',"self.player.fairy['alive']"),('LIMIT','time_limit')]
 eval_explore_area=[('IS_EVENT',"area_type=='1'"),('IS_DAILY_EVENT',"id.startswith('5')"),('NOT_FINNISHED',"prog_area!='100'")]
 eval_explore_floor=[('NOT_FINNISHED','progress!="100"')]
-eval_select_card=[('lv','lv_i'),('hp','hp_i'),('atk','atk_i')]
+eval_select_card=[('atk','power'),('mid','master_card_id'),('price','sale_price'),('sid','serial_id'),('holo','holography==1')]
+
 eval_task=[]
 duowan={'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html','tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 logging = maclient_logging.Logging('logging')#=sys.modules['logging']
@@ -1020,30 +1021,23 @@ class maClient():
         logging.debug('select_card:eval:%s'%(self.evalstr_selcard))
         for card in self.player.card.cards:
             card.star=int(self.carddb[int(card.master_card_id)][1])
-            card.lv_i=int(card.lv)
-            card.hp_i=int(card.hp)
-            card.atk_i=int(card.power)
-            card.mid=int(card.master_card_id)
-            card.price=int(card.sale_price)
-            card.sid=int(card.serial_id)
-            card.holo=card.holography=='1'
-            evalres=eval(self.evalstr_selcard) and not card.mid in [390,391,392,404]#切尔莉
+            evalres=eval(self.evalstr_selcard) and not card.master_card_id in [390,391,392,404]#切尔莉
             if evalres:
                 if card.star>3:
                     warning_card.append('%s lv%d ☆%s'%(
                         self.carddb[int(card.master_card_id)][0],
-                        card.lv_i,
+                        card.lv,
                         self.carddb[int(card.master_card_id)][1])
                     )
                 sid.append(card.serial_id)
                 cinfo.append('%s lv%d ☆%s'%(
                     self.carddb[int(card.master_card_id)][0],
-                    card.lv_i,
+                    card.lv,
                     self.carddb[int(card.master_card_id)][1])
                 )
         if len(sid)==0:
             logging.info('没有要贩卖的卡片')
-            return False
+            print(self.player.card.cards[1])
         else:
             logging.info('将要贩卖这些卡片：%s'%(', '.join(cinfo)))
         if len(warning_card)>0:
@@ -1405,8 +1399,8 @@ class maClient():
                         if 'skill_id' in l:
                             #skillcnt+=1
                             skill_var=l.skill_type=='1' and l.attack_damage or l.skill_hp_player
-                            skills.append('[%d]%s.%s(%s)'%(
-                                math.ceil(rnd),skill_type[int(l.skill_type)],self.carddb[int(l.skill_card)][0],skill_var)
+                            skills.append('[%d]%s(%s).%s'%(
+                                math.ceil(rnd),skill_type[int(l.skill_type)],skill_var,self.carddb[int(l.skill_card)][0])
                             )
                         if 'combo_name' in l:
                             cbos.append('%s.%s'%(
