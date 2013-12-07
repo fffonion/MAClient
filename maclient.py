@@ -30,11 +30,11 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__=1.62
+__version__=1.63
 #CONSTS:
 EXPLORE_BATTLE,NORMAL_BATTLE,TAIL_BATTLE,WAKE_BATTLE=0,1,2,3
 GACHA_FRIENNSHIP_POINT,GACHAgacha_TICKET,GACHA_11=1,2,4
-EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_BC= -2,-1,0,1,2
+EXPLORE_HAS_BOSS,EXPLORE_NO_FLOOR,EXPLORE_OK,EXPLORE_ERROR,EXPLORE_NO_AP= -2,-1,0,1,2
 BC_LIMIT_MAX,BC_LIMIT_CURRENT=-2,-1
 SERV_CN,SERV_CN2,SERV_TW='cn','cn2','tw'
 #eval dicts
@@ -172,6 +172,7 @@ class maClient():
         self.cfg_delay=float(self._read_config('system','delay'))
         self.cfg_display_ani=(self._read_config('system','display_ani') or '1')=='1'
         global plugin
+        self.plugin=plugin
         if (self._read_config('system','enable_plugin') or '1')=='1':
             disabled_plugin=self._read_config('plugin','disabled').split(',')
             plugin.set_disable(disabled_plugin)
@@ -771,7 +772,7 @@ class maClient():
                 #走形式
                 if self._dopost('exploration/floor',postdata='area_id=%s'%(area.id))[0]['error']:
                     break 
-            elif msg==EXPLORE_NO_BC:
+            elif msg==EXPLORE_NO_AP:
                 break
             elif msg==EXPLORE_HAS_BOSS:
                 has_boss.append(area.id)
@@ -915,7 +916,7 @@ class maClient():
                     logging.warning('AP不够了TUT')
                     if not self.green_tea(self.cfg_auto_explore):
                         logging.error('不给喝，不走了o(￣ヘ￣o＃) ')
-                        return None,EXPLORE_NO_BC
+                        return None,EXPLORE_NO_AP
                     else:
                         continue
                 if info.lvup=='1':

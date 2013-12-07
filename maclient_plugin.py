@@ -19,8 +19,11 @@ sys.path.append(opath.join(getPATH0,'plugins'))
 PREF_ENTER='ENTER_'
 PREF_EXIT='EXIT_'
 class plugins():
-    def __init__(self,logger):
+    def __init__(self,logger,show_tip=True):
         self.logger=logger
+        #是否显示插件tip
+        self.show_tip=show_tip
+        self.has_shown_tips=False
         #所有插件模块对象
         self.plugins={}
         #所有插件模块中的plugin实例
@@ -32,7 +35,6 @@ class plugins():
         self.load_plugins()
         #self.scan_hooks()
         self.enable=True
-        
 
     def scan_hooks(self):
         self.hook_reg={}
@@ -41,6 +43,11 @@ class plugins():
                     'like','friends','reward_box','point_setting','factor_battle','invoke_autoset']
         #scan plugin hooks
         for p in self.plugins:
+            if self.show_tip and not self.has_shown_tips:
+                try:
+                    print('%s:%s'%(p,du8(self.plugins[p].__tip__)))
+                except AttributeError:
+                    pass
             #extra cmd
             ecmd=self._get_module_meta(p,'extra_cmd')
             for e in ecmd:
@@ -56,6 +63,8 @@ class plugins():
                     if key in self._get_module_meta(p,'hooks'):#add to hook reg
                         #priority record
                         self.hook_reg[key][p]=self._get_module_meta(p,'hooks')[key]  
+        self.has_shown_tips=True
+
     # def set_enable(self,lst):
     #     pass
     def set_maclient_val(self,val_dict):
@@ -148,7 +157,7 @@ class plugins():
                 ret=self._do_hook('%s%s'%(PREF_ENTER,func.__name__),*args, **kwargs)
                 args,kwargs=ret
                 ret=func(*args, **kwargs)
-                self._do_hook('%s%s'%(PREF_EXIT,func.__name__))
+                self._do_hook('%s%s'%(PREF_EXIT,func.__name__),*args, **kwargs)
                 return ret
             else:
                 return func(*args, **kwargs)#passby

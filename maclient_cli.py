@@ -135,7 +135,11 @@ if __name__=='__main__':
         mode=['普通','同时在线']
         mod=0
         while True:
-            print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\tas.自动配卡\n2.切换模式->%s\te.刷秘境\n3.编辑卡组\t\tfyb.刷妖精\n4.编辑配置\t\tfcb.因子战\n5.更新数据库\t\tf.好友相关\n6.退出\t\t\th.命令列表'%(mode[mod],maclient1._read_config('system','server'),mode[(mod+1)%2])))
+            print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\tas.自动配卡\n2.切换模式->%s\te.刷秘境\n3.编辑卡组\t\tfyb.刷妖精\n4.编辑配置\t\tfcb.因子战\n5.更新数据库\t\tf.好友相关\n6.退出\t\t\th.命令列表%s'%(
+                mode[mod],
+                maclient1._read_config('system','server'),
+                mode[(mod+1)%2],
+                maclient1.plugin.extra_cmd and '(+%d)'%len(maclient1.plugin.extra_cmd) or '')))
             print('Select> ',end='')
             if PYTHON3:
                 ch=input()
@@ -157,9 +161,10 @@ if __name__=='__main__':
                     '刷列表中的妖精 fairy_battle/fyb,嗑红 red_tea/rt,嗑绿 green_tea/gt,自动卖卡 sell_card/slc,'
                     '设置账号类型 set_server/ss,好友相关 friend/f,转蛋gacha/g,分配点数point/p,礼物盒reward_box/rb,'
                     '手动选择妖精战斗fairy_select/fs,重新登录relogin/rl,问好like/greet/gr,自动配卡as/auto_set; '
-                    '| 分割多个，空格分隔命令与参数\n'
+                    '\n| 分割多个，空格分隔命令与参数\n'
+                    '插件的附加命令:%s\n'
                     '以t:开头可执行任务\n'
-                    'http://www.yooooo.us/2013/maClient'))
+                    'http://www.yooooo.us/2013/maClient'%','.join(maclient1.plugin.extra_cmd.keys())))
             elif ch=='------':
                 print(du8('此功能暂停使用'))
                 continue
