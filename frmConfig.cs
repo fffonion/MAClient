@@ -294,7 +294,7 @@ namespace maClientGUI
         }
         private void button53_Click(object sender, EventArgs e)
         {
-            addTaskerCond("("+numericUpDown5.Value.ToString() + "," + numericUpDown4.Value.ToString()+")<(hour,minute)<("+
+            addTaskerCond("("+numericUpDown5.Value.ToString() + "," + numericUpDown4.Value.ToString()+")<(HH,MM)<("+
                 numericUpDown3.Value.ToString() + "," + numericUpDown2.Value.ToString()+")");
             button53.Enabled = false;
         }
