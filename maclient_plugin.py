@@ -124,14 +124,19 @@ class plugins():
                 continue
             if m not in self.plugins:
                 #module object
-                self.plugins[m]=__import__(m)
-                #plugin instance
                 try:
-                    self.plugins_instance[m]=self.plugins[m].plugin()
-                    modstr='%s,%s'%(modstr,m)
-                except AttributeError:
-                    #no plugin() class
+                    self.plugins[m]=__import__(m)
+                except ImportError:
                     self.plugins_instance[m]=None
+                    self.logger.warning('%s is disabled due to an Import Error'%m)
+                else:
+                    #plugin instance
+                    try:
+                        self.plugins_instance[m]=self.plugins[m].plugin()
+                        modstr='%s,%s'%(modstr,m)
+                    except AttributeError:
+                        #no plugin() class
+                        self.plugins_instance[m]=None
 
     def _line_tracer(self):
         #originally from http://stackoverflow.com/questions/19227636/decorator-to-log-function-execution-line-by-line

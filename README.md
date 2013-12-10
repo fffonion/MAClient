@@ -1,10 +1,10 @@
-﻿maClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服和国服全区。
+﻿maClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服、国服全区和韩服。
 
-[更新历史](wiki/HISTORY)
+[更新历史](https://github.com/fffonion/maClient/wiki/HISTORY)
 
 [插件制作文档](PLUGIN_DOCUMENT.md)
 
-[在root过的android手机上运行maclient](wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8Cmaclient)
+[在root过的android手机上运行maclient](https://github.com/fffonion/maClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8Cmaclient)
 
 Windows用户可以从[这里](http://pan.baidu.com/s/19qI4m)获得二进制文件，或者从[release](releases)下载
 
@@ -25,13 +25,13 @@ maclient_cli.py [config file] [task]/[commands]
 
 关于config.ini可以参考config_sample.ini
 
-图形化配置工具maClientGUI可以从[这里下载](http://mac.yooooo.us/maClientGUI.zip)，相关源代码可以从[这里获得](tree/gui)
+图形化配置工具maClientGUI可以从[这里下载](http://mac.yooooo.us/maClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/maClient/tree/gui)
 
 ***
 
 ###account_?
 
-?可选cn,cn2,cn3,tw分别对应国服1区，国服2区，国服3区，台服
+?可选cn,cn2,cn3,tw,kr分别对应国服1区，国服2区，国服3区，台服，韩服
 
 session不用管它
 

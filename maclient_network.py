@@ -24,7 +24,8 @@ serv={'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/','cn_data':'http://MA
     'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/','cn2_data':'http://MA.webpatch.sdg-china.com/',
     'cn3':'http://game3-CBT.ma.sdo.com:10001/connect/app/','cn2_data':'http://MA.webpatch.sdg-china.com/',
     'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/','tw_data':'http://download.ma.mobimon.com.tw/',
-    'jp':'http://web.million-arthurs.com/connect/app/','jp_data':''
+    'jp':'http://web.million-arthurs.com/connect/app/','jp_data':'',
+    'kr':'http://ma.actoz.com:10001/connect/app/','kr_data':''
     }
 
 headers_main={'User-Agent': 'Million/%d (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys','Connection': 'Keep-Alive','Accept-Encoding':'gzip,deflate'}
@@ -120,7 +121,7 @@ class poster():
             COD_RES,COD_DATA=init_cipher(loc=loc,uid=uid)[:2]
         if ua:
             if '%d' in ua:#formatted ua
-                self.header['User-Agent']=self.header['User-Agent']%getattr(maclient_smart,'app_ver_%s'%loc)
+                self.header['User-Agent']=ua%getattr(maclient_smart,'app_ver_%s'%loc)
             else:
                 self.header['User-Agent']=ua
         else:
@@ -211,5 +212,5 @@ class poster():
             return resp,dec
 
 if __name__=="__main__":
-    p=poster('jp',None,'',uid='50960')
-    print([decode_param('serial_id=HO2dCezOQmiIl9R898P5xw%3D%3D&user_id=MwGTW7UlW4/WhcOXGN6dlQ%3D%3D')])
+    p=poster('jp',None,'',uid='')
+    print([decode_param('')])

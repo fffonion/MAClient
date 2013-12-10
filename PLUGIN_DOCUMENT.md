@@ -76,7 +76,7 @@ hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
 extra_cmd={}
 ```
 
-类实例
+类示例
 ```Python
 class plugin(plugin_prototype):
     def __init__(self):
@@ -85,12 +85,10 @@ class plugin(plugin_prototype):
     def ENTER_explore(self,*args, **kwargs):
         print 'explore!'
         print args
-        #must return input vals. no matter you've changed it or not
         return args,kwargs
 
     def EXIT__fairy_battle(self,*args, **kwargs):
         print 'fairy_battle done!'
-        return args,kwargs
 
     def ENTER__fairy_battle(self,*args, **kwargs):
         print 'fairy_battle!'
