@@ -1,4 +1,4 @@
-﻿namespace maClientGUI
+﻿namespace MAClientGUI
 {
     partial class frmConfig
     {
@@ -3093,7 +3093,7 @@
             // 
             this.notifyIcon1.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
             this.notifyIcon1.BalloonTipText = "双击切换可见性、右键打开菜单\r\n";
-            this.notifyIcon1.BalloonTipTitle = "maClient GUI 正在后台运行(*￣︶￣)y";
+            this.notifyIcon1.BalloonTipTitle = "MAClient GUI 正在后台运行(*￣︶￣)y";
             this.notifyIcon1.ContextMenuStrip = this.dockMenu;
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "notifyIcon1";
@@ -3144,7 +3144,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmConfig";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "maClientGUI";
+            this.Text = "MAClientGUI";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmConfig_FormClosing);
             this.Load += new System.EventHandler(this.frmConfig_Load);
             this.Resize += new System.EventHandler(this.frmConfig_Resize);

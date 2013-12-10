@@ -1,4 +1,4 @@
-﻿namespace maClientGUI
+﻿namespace MAClientGUI
 {
     partial class ToolStripTextBoxEx
     {

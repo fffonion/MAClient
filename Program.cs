@@ -8,7 +8,7 @@ using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace maClientGUI
+namespace MAClientGUI
 {
     static class Program
     {

@@ -7,8 +7,8 @@
     <ProjectGuid>{9A7AFF7E-8E59-4B1A-97EB-E45C6B64E35B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>maClientGUI</RootNamespace>
-    <AssemblyName>maClientGUI</AssemblyName>
+    <RootNamespace>MAClientGUI</RootNamespace>
+    <AssemblyName>MAClientGUI</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -49,7 +49,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>maClientGUI.Program</StartupObject>
+    <StartupObject>MAClientGUI.Program</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
@@ -58,13 +58,13 @@
     <ManifestCertificateThumbprint>04FCFC47F4A3DF22E650BDBFE19ABE9D61B27F07</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>maClientGUI_cert.pfx</ManifestKeyFile>
+    <ManifestKeyFile>MAClientGUI_cert.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>maClientGUI_cert.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>MAClientGUI_cert.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -130,10 +130,10 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="ClassDiagram1.cd" />
-    <None Include="maClient.pfx" />
-    <None Include="maClientGUI_1_TemporaryKey.pfx" />
-    <None Include="maClientGUI_cert.pfx" />
-    <None Include="maClientGUI_TemporaryKey.pfx" />
+    <None Include="MAClient.pfx" />
+    <None Include="MAClientGUI_1_TemporaryKey.pfx" />
+    <None Include="MAClientGUI_cert.pfx" />
+    <None Include="MAClientGUI_TemporaryKey.pfx" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

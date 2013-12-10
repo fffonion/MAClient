@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace maClientGUI
+namespace MAClientGUI
 {
     public partial class ToolStripTextBoxEx : ToolStripControlHost
     {

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace maClientGUI
+namespace MAClientGUI
 {
    
     public partial class TextBoxEx : System.Windows.Forms.TextBox

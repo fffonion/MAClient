@@ -11,7 +11,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 
-namespace maClientGUI
+namespace MAClientGUI
 {
     public partial class frmConfig : Form
     {
@@ -188,7 +188,7 @@ namespace maClientGUI
         private void frmConfig_Load(object sender, EventArgs e)
         {
             //setToolTipText();
-            this.Text += (" v"+Application.ProductVersion +" (for maClient v1.63+)");
+            this.Text += (" v"+Application.ProductVersion +" (for MAClient v1.63+)");
             tabControl1.Enabled = false;
             DirectoryInfo folder = new DirectoryInfo(System.Environment.CurrentDirectory);
             foreach (FileInfo file in folder.GetFiles("*.ini"))
@@ -1075,7 +1075,7 @@ namespace maClientGUI
 
         private void repaint_menu()
         {
-            string txtnot = "maClient users";
+            string txtnot = "MAClient users";
             for (int i = 2; i < dockMenu.Items.Count-3;i+=5 ) 
             {
                 dockMenu.Items[i].Tag=WndHdl.refreshTitle((WndHdl.WndInfo)dockMenu.Items[i].Tag);
