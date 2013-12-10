@@ -63,6 +63,9 @@ namespace maClientGUI
                 case "tw":
                     cboServer.SelectedIndex =3;
                     break;
+                case "kr":
+                    cboServer.SelectedIndex = 4;
+                    break;
             }
             refreshAccount();
             cboLogLevel.SelectedIndex = cf.ReadInt("system", "loglevel");
@@ -185,7 +188,7 @@ namespace maClientGUI
         private void frmConfig_Load(object sender, EventArgs e)
         {
             //setToolTipText();
-            this.Text += (" v"+Application.ProductVersion +" (for maClient v1.61+)");
+            this.Text += (" v"+Application.ProductVersion +" (for maClient v1.63+)");
             tabControl1.Enabled = false;
             DirectoryInfo folder = new DirectoryInfo(System.Environment.CurrentDirectory);
             foreach (FileInfo file in folder.GetFiles("*.ini"))
@@ -210,7 +213,7 @@ namespace maClientGUI
 
         private void cboServer_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string[] slist={"cn","cn2","cn3","tw"};
+            string[] slist={"cn","cn2","cn3","tw","kr"};
             server = slist[cboServer.SelectedIndex];
             refreshAccount();
         }

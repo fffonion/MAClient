@@ -676,7 +676,8 @@
             "国服1区",
             "国服2区",
             "国服3区",
-            "台服"});
+            "台服",
+            "韩服"});
             this.cboServer.Location = new System.Drawing.Point(111, 23);
             this.cboServer.Name = "cboServer";
             this.cboServer.Size = new System.Drawing.Size(84, 28);
