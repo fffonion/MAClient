@@ -11,6 +11,7 @@ import os
 import sys
 import httplib2
 from maclient_compact import *
+import maclient_network
 if PYTHON3:
     raw_input=input
 from xml2dict import XML2Dict
@@ -23,8 +24,9 @@ def reg_gen(plugin_vals):
     def do(*args):
         loc=plugin_vals['loc']
         po=plugin_vals['poster']
+        logger=plugin_vals['logger']
         if 'player' not in plugin_vals:
-            po.logger.error(du8('玩家信息还没有初始化'))
+            logger.error(du8('玩家信息还没有初始化'))
             return
         invid=hex(int(plugin_vals['player'].id))[2:]
         cnt=0

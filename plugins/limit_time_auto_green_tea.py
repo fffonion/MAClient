@@ -18,7 +18,7 @@ class plugin(plugin_prototype):
 
     def ENTER__explore_floor(self,*args, **kwargs):
         #args self,area,eval
-        self.logger=args[0].poster.logger
+        self.logger=args[0].logger
         if '战争通道' in args[1].name:
             if args[1].prog_area=='100':
                 self.logger.info('plugin:限时秘境已探索完成www')
@@ -31,6 +31,6 @@ class plugin(plugin_prototype):
         if self.has_enter_limit_area:
             if self.mac_instance.player.ap['current']<5:
                 self.logger.info('plugin:AP用完了吗(剩余%d)？来一瓶吧'%self.mac_instance.player.ap['current'])
-                if not self.mac_instance.green_tea():#优先使用自动配额
+                if not self.mac_instance.green_tea(silent=True):#优先使用自动配额
                     self.mac_instance._use_item('1')
             self.has_enter_limit_area=False

@@ -120,7 +120,7 @@ class maClient():
         self.posttime=0
         #self.set_remote(None)
         ua=self._read_config('system','user-agent')
-        self.poster=maclient_network.poster(self.loc,logging,ua,uid=self.uid)
+        self.poster=maclient_network.poster(self.loc,logging,ua)
         if ua:
             logging.debug('system:ua changed to %s'%(self.poster.header['User-Agent']))
         self.load_cookie()
@@ -171,8 +171,9 @@ class maClient():
         logging.setlogfile('events_%s.log'%self.loc)
         self.cfg_delay=float(self._read_config('system','delay'))
         self.cfg_display_ani=(self._read_config('system','display_ani') or '1')=='1'
+        self.logger=logging#映射
         global plugin
-        self.plugin=plugin
+        self.plugin=plugin#映射
         if (self._read_config('system','enable_plugin') or '1')=='1':
             disabled_plugin=self._read_config('plugin','disabled').split(',')
             plugin.set_disable(disabled_plugin)
@@ -474,12 +475,13 @@ class maClient():
                         pdata.bc.current,pdata.bc.max,
                         pdata.gold,pdata.friendship_point,
                         pdata.fairy_appearance=='1' and '妖精出现中!!' or '')+
-                    '蛋蛋卷:%s 等级:%s 完成度:%s %s%s\n'%(
+                    '蛋蛋卷:%s 等级:%s 完成度:%s %s%s%s\n'%(
                         pdata.gacha_ticket,
                         pdata.town_level,
                         pdata.percentage,
                         pdata.free_ap_bc_point!='0' and '有未分配的点数yo~ ' or '',
-                        pdata.friends_invitations!='0' and '收到好友邀请了呢 ' or '')
+                        pdata.friends_invitations!='0' and '收到好友邀请了呢 ' or '',
+                        ct.body.mainmenu.rewards=='1' and '收到礼物了~' or '')
                 )
                 self._write_config('account_%s'%self.loc,'username',self.username)
                 self._write_config('record','last_set_card','')
@@ -501,6 +503,8 @@ class maClient():
                 self._write_config('account_%s'%self.loc,'user_id',self.player.id)
             else:
                 self.player.id=self._read_config('account_%s'%self.loc,'user_id')
+            #for jp server
+            self.poster.gen_2nd_key(self.player.id)
         if self.settitle:
             #窗口标题线程
             self.stitle=set_title(self)
@@ -1038,7 +1042,6 @@ class maClient():
                 )
         if len(sid)==0:
             logging.info('没有要贩卖的卡片')
-            print(self.player.card.cards[1])
         else:
             logging.info('将要贩卖这些卡片：%s'%(', '.join(cinfo)))
         if len(warning_card)>0:

@@ -154,7 +154,7 @@ def start_webproxy(plugin_vals):
     ├─.friendship_point / gold
     plugin_vals['loc'] 服务器名称
     plugin_vals['cookie'] 小饼干
-    plugin_vals['poster'].logger 输出日志用
+    plugin_vals['logger'] 输出日志用
 
 其他变量请 __参阅[maclient.py](maclient.py)__，所有以self.开头的变量均可使用
 

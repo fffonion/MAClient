@@ -15,7 +15,7 @@ lvdata=[(1, 0, 300, 100), (2, 100, 490, 160), (3, 260, 810, 220), (4, 480, 1230,
 def reverse_compound(plugin_vals):
     def do(args):
         args=args or 'card.star>4'
-        logger=plugin_vals['poster'].logger
+        logger=plugin_vals['logger']
         player_card=plugin_vals['player'].card
         compound_candidates={}
         material_candidates=[]

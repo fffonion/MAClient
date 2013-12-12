@@ -127,7 +127,6 @@ class plugins():
                 try:
                     self.plugins[m]=__import__(m)
                 except ImportError:
-                    self.plugins_instance[m]=None
                     self.logger.warning('%s is disabled due to an Import Error'%m)
                 else:
                     #plugin instance

@@ -1,23 +1,23 @@
-﻿maClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服、国服全区和韩服。
+﻿MAClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服、国服全区和韩服。
 
-[更新历史](https://github.com/fffonion/maClient/wiki/HISTORY)
+[更新历史](https://github.com/fffonion/MAlient/wiki/HISTORY)
 
 [插件制作文档](PLUGIN_DOCUMENT.md)
 
-[在root过的android手机上运行maclient](https://github.com/fffonion/maClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8Cmaclient)
+[在root过的android手机上运行MAClient](https://github.com/fffonion/MAClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8CMAClient)
 
 Windows用户可以从[这里](http://pan.baidu.com/s/19qI4m)获得二进制文件，或者从[release](releases)下载
 
 其他平台用户：需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)，选择安装PyCrypto库
 
 ##运行
-maclient可以在python2.x和3.x上运行
+MAClient可以在python2.x和3.x上运行
 ```shell
-git clone --recursive https://github.com/fffonion/maClient.git
+git clone --recursive https://github.com/fffonion/MAClient.git
 mv httplib2/httplib2/* httplib2
-maclient_cli.py
-maclient_cli.py [config file]
-maclient_cli.py [config file] [task]/[commands]
+MAClient_cli.py
+MAClient_cli.py [config file]
+MAClient_cli.py [config file] [task]/[commands]
 ```
 子模块为针对py2x的httplib2；对py3x，你需要下载[针对py3x的httplib2](https://github.com/fffonion/httplib2-plus/tree/python3)
 
@@ -25,7 +25,7 @@ maclient_cli.py [config file] [task]/[commands]
 
 关于config.ini可以参考config_sample.ini
 
-图形化配置工具maClientGUI可以从[这里下载](http://mac.yooooo.us/maClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/maClient/tree/gui)
+图形化配置工具MAClientGUI可以从[这里下载](http://mac.yooooo.us/MAClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/MAClient/tree/gui)
 
 ***
 
