@@ -68,11 +68,12 @@ class set_title(threading.Thread):
        # if os.name == 'nt':
         while self.flag==1:
             self.maInstance.player.calc_ap_bc()
-            strt='[%s] AP:%d/%d BC:%d/%d G:%d FP:%d Cards:%d%s'%(
+            strt='[%s] AP:%d/%d BC:%d/%d G:%d F:%d SP:%d Cards:%d%s'%(
                 self.maInstance.player.name,
                 self.maInstance.player.ap['current'],self.maInstance.player.ap['max'],
                 self.maInstance.player.bc['current'],self.maInstance.player.bc['max'],
-                self.maInstance.player.gold,self.maInstance.player.friendship_point,self.maInstance.player.card.count,
+                self.maInstance.player.gold,self.maInstance.player.friendship_point,
+                self.maInstance.player.ex_gauge,self.maInstance.player.card.count,
                 self.maInstance.player.fairy['alive'] and ' FAIRY_ALIVE' or '')
             setT(strt)
             time.sleep(28)
@@ -275,18 +276,19 @@ class maClient():
                 if not resp['error']:
                     #self.remoteHdl(method='PROFILE')
                     if self.settitle:
-                        setT('[%s] AP:%d/%d BC:%d/%d G:%d FP:%d Cards:%d%s'%(
+                        setT('[%s] AP:%d/%d BC:%d/%d G:%d F:%d SP:%d Cards:%d%s'%(
                             self.player.name,
                             self.player.ap['current'],self.player.ap['max'],
                             self.player.bc['current'],self.player.bc['max'],
-                            self.player.gold,self.player.friendship_point,self.player.card.count,
+                            self.player.gold,self.player.friendship_point,
+                            self.player.ex_gauge,self.player.card.count,
                             self.player.fairy['alive'] and ' FAIRY_ALIVE' or ''))
                     else:
                         if self.posttime==5:
-                            logging.sleep('汇报 AP:%d/%d BC:%d/%d G:%d FP:%d %s'%(
+                            logging.sleep('汇报 AP:%d/%d BC:%d/%d G:%d F:%d SP:%d %s'%(
                                 self.player.ap['current'],self.player.ap['max'],
                                 self.player.bc['current'],self.player.bc['max'],
-                                self.player.gold,self.player.friendship_point,
+                                self.player.gold,self.player.friendship_point,self.player.ex_gauge,
                                 self.player.fairy['alive'] and 'FAIRY_ALIVE' or ''))
                         self.posttime=(self.posttime+1)%6
                     if update_dt[1]:
@@ -546,8 +548,10 @@ class maClient():
             return False
 
     @plugin.func_hook
-    def invoke_autoset(self,autoset_str):
+    def invoke_autoset(self,autoset_str,cur_fairy=None):
         aim,fairy,maxline,test_mode,delta,includes,bclimit,fast_mode,sel='MAX_DMG',None,1,True,1,[],BC_LIMIT_CURRENT,True,'card.lv>45'
+        if cur_fairy:
+            fairy=cur_fairy
         for arg in autoset_str.split(' '):
             if arg.startswith('aim:'):
                 aim=arg[4:]
@@ -594,7 +598,11 @@ class maClient():
             return False
         elif deckkey.startswith('auto_set'):
             if len(deckkey)>8:#raw string : auto_set(CONDITIONS)
-                return self.invoke_autoset('%s notest'%deckkey[9:-1])
+                if 'cur_fairy' in kwargs:
+                    cf=kwargs.pop('cur_fairy')
+                else:
+                    cf=None
+                return self.invoke_autoset('%s notest'%deckkey[9:-1],cur_fairy=cf)
             else:
                 test_mode=kwargs.pop('test_mode')
                 bclimit=kwargs.pop('bclimit')
@@ -1130,7 +1138,7 @@ class maClient():
         resp,ct=self._dopost('menu/menulist')
         if resp['error']:
             return
-        time.sleep(2)
+        time.sleep(1.2)
         resp,ct=self._dopost('mainmenu')
         if resp['error']:
             return
@@ -1138,7 +1146,7 @@ class maClient():
             if self.player.fairy['alive']:
                 self.player.fairy={'alive':False,'id':0}
             return
-        time.sleep(2)
+        time.sleep(0.8)
         resp,ct=self._dopost('menu/fairyselect')
         if resp['error']:
             return
@@ -1273,7 +1281,7 @@ class maClient():
         else:
             cardd=eval(self.evalstr_fairy_select_carddeck)
             logging.debug('fairy_battle:carddeck result:%s'%(cardd))
-        if (self.set_card(cardd)):
+        if (self.set_card(cardd,cur_fairy=fairy)):
             fairy=fairy_floor()#设完卡组返回时
             if not fairy:
                 return False
@@ -1663,42 +1671,52 @@ class maClient():
         #    rwds=[rwds]
         strl=''
         nid=[]
+        try:
+            int(rw_type)
+        except ValueError:#real description match
+            real_desc_match=True
+        else:
+            real_desc_match=False
         #type 1:卡片 2:道具 3:金 4:绊点 5:蛋卷
         for r in rwds:
-            if r.type=='1':
-                cname=self.carddb[int(r.card_id)][0]
-                if cname==r.content:#物品为卡片有时content是卡片名称（吧
-                    strl+=('%s:%s'%(r.title,r.content))
-                else:
-                    strl+=('%s:%s'%(r.content,cname))
-                #strl+='%s'%()
-                if '1' in rw_type:
+            if real_desc_match:
+                if rw_type in r.content+r.title+(r.type=='1' and self.carddb[int(r.card_id)][0] or ''):
+                    strl+=('%s:%s , '%(r.title,r.content))
                     nid.append(r.id)
             else:
-                strl+=('%s:'%r.content)
-                if r.type=='2':
-                    strl+='%sx%s'%(self.itemdb[int(r.item_id)],r.get_num)
-                    if '2' in rw_type:
-                        nid.append(r.id)
-                elif r.type=='3':
-                    strl+='%sG'%r.point
-                    if '3' in rw_type:
-                        nid.append(r.id)
-                elif r.type=='4':
-                    strl+='%sFP'%r.point
-                    if '4' in rw_type:
-                       nid.append(r.id)
-                elif r.type=='5':
-                    strl+='%sx%s'%('蛋蛋卷',r.get_num)
-                    if '5' in rw_type:
+                if r.type=='1':
+                    cname=self.carddb[int(r.card_id)][0]
+                    if cname==r.content:#物品为卡片有时content是卡片名称（吧
+                        strl+=('%s:%s , '%(r.title,r.content))
+                    else:
+                        strl+=('%s:%s , '%(r.content,cname))
+                    #strl+='%s'%()
+                    if '1' in rw_type:
                         nid.append(r.id)
                 else:
-                    strl+=r.type
-            strl+=' , '
-        logging.info(strl.rstrip(',').replace('--','&'))
+                    strl+=('%s:'%r.content)
+                    if r.type=='2':
+                        strl+='%sx%s , '%(self.itemdb[int(r.item_id)],r.get_num)
+                        if '2' in rw_type:
+                            nid.append(r.id)
+                    elif r.type=='3':
+                        strl+='%sG , '%r.point
+                        if '3' in rw_type:
+                            nid.append(r.id)
+                    elif r.type=='4':
+                        strl+='%sFP , '%r.point
+                        if '4' in rw_type:
+                           nid.append(r.id)
+                    elif r.type=='5':
+                        strl+='%sx%s , '%('蛋蛋卷',r.get_num)
+                        if '5' in rw_type:
+                            nid.append(r.id)
+                    else:
+                        strl+=r.type
         if nid==[]:
-            logging.info('没有需要领取的奖励')
+            logging.info('没有符合筛选的奖励(%d)'%(len(rwds)))
         else:
+            logging.info(strl.rstrip(' , ').replace('--','&'))
             res=self._get_rewards(nid)
             if res[0]:
                 logging.info(res[1])

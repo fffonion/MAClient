@@ -69,7 +69,7 @@ class player(object):
             self.lv=playerdata.town_level
             self.leader_sid=playerdata.leader_serial_id
             self.name=playerdata.name
-            self.ex_gauge=playerdata.ex_gauge
+            self.ex_gauge=int(playerdata.ex_gauge)
         except KeyError:#没有就自己算
             self.calc_ap_bc()
         if not self.update_checked:
