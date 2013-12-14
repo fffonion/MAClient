@@ -74,7 +74,7 @@ class set_title(threading.Thread):
                 self.maInstance.player.bc['current'],self.maInstance.player.bc['max'],
                 self.maInstance.player.gold,self.maInstance.player.friendship_point,
                 self.maInstance.player.ex_gauge,self.maInstance.player.card.count,
-                self.maInstance.player.fairy['alive'] and ' FAIRY_ALIVE' or '')
+                self.maInstance.player.fairy['alive'] and ' 妖精存活' or '')
             setT(strt)
             time.sleep(28)
         #elif os.name == 'posix':
@@ -252,11 +252,6 @@ class maClient():
             if not self.player_initiated :
                 open(self.playerfile,'w').write(_dec)
             else:
-                #auto check cards and fp
-                if not self.auto_check(urikey):
-                    logging.error('由于以上↑的原因，无法继续执行！')
-                    self._exit(1)
-                update_dt=self.player.update_all(dec)
                 #check revision update
                 if self.player.need_update[0] or self.player.need_update[1]:
                     if self.cfg_auto_update:
@@ -272,8 +267,9 @@ class maClient():
                         self.player.need_update=False,False
                     else:
                         logging.warning('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库')
-                #update profile
                 if not resp['error']:
+                    #update profile
+                    update_dt=self.player.update_all(dec)
                     #self.remoteHdl(method='PROFILE')
                     if self.settitle:
                         setT('[%s] AP:%d/%d BC:%d/%d G:%d F:%d SP:%d Cards:%d%s'%(
@@ -282,7 +278,7 @@ class maClient():
                             self.player.bc['current'],self.player.bc['max'],
                             self.player.gold,self.player.friendship_point,
                             self.player.ex_gauge,self.player.card.count,
-                            self.player.fairy['alive'] and ' FAIRY_ALIVE' or ''))
+                            self.player.fairy['alive'] and ' 妖精存活' or ''))
                     else:
                         if self.posttime==5:
                             logging.sleep('汇报 AP:%d/%d BC:%d/%d G:%d F:%d SP:%d %s'%(
@@ -295,6 +291,10 @@ class maClient():
                         logging.debug(update_dt[0])
                         open(self.playerfile,'w').write(_dec)
                         logging.debug('post:master cards saved.')
+                    #auto check cards and fp
+                    if not self.auto_check(urikey):
+                        logging.error('由于以上↑的原因，无法继续执行！')
+                        self._exit(1)
         if setcookie and 'set-cookie' in resp:
             self.cookie=resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
             self._write_config('account_%s'%self.loc,'session',self.cookie)
@@ -523,7 +523,7 @@ class maClient():
                 else:
                     logging.warning('卡片已经放不下了，请自行卖卡www')
                     return False
-            if self.player.friendship_point>= getattr(maclient_smart,'max_fp_%s'%self.loc)*0.9 and \
+            if self.player.friendship_point> getattr(maclient_smart,'max_fp_%s'%self.loc)*0.9 and \
                 not doingwhat in ['gacha/buy','gacha/select/getcontents']:
                 if self.cfg_autogacha:
                     logging.info('绊点有点多，自动转蛋(*￣▽￣)y ')
@@ -655,7 +655,7 @@ class maClient():
             for i in xrange(len(cardid)):
                 if cardid[i]=='empty':
                     param.append('empty')
-                elif len(cardid[i])>3:
+                elif len(cardid[i])>4:
                     try:
                         mid=self.player.card.sid(cardid[i]).master_card_id
                     except IndexError:
@@ -880,7 +880,7 @@ class maClient():
                             )[0]['error']:
                             return None,EXPLORE_ERROR
                     elif info.event_type=='2':
-                        logging.info('碰到个傻X：%s -> %s'%(info.encounter.name,info.message))
+                        logging.info('碰到个傻X：{0} -> {1}'.format(info.encounter.name,info.message).replace('%','-'))
                         time.sleep(1.5)
                     elif info.event_type=='3':
                         usercard=info.user_card

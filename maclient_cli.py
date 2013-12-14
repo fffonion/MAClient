@@ -164,7 +164,7 @@ if __name__=='__main__':
                     '\n| 分割多个，空格分隔命令与参数\n'
                     '插件的附加命令:%s\n'
                     '以t:开头可执行任务\n'
-                    'http://www.yooooo.us/2013/maClient'%','.join(maclient1.plugin.extra_cmd.keys())))
+                    'http://www.yooooo.us/2013/maclient'%','.join(maclient1.plugin.extra_cmd.keys())))
             elif ch=='------':
                 print(du8('此功能暂停使用'))
                 continue
