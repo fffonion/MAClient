@@ -10,7 +10,7 @@ import sys
 import os
 import sys
 import httplib2
-from maclient_compact import *
+from cross_platform import *
 import maclient_network
 if PYTHON3:
     raw_input=input

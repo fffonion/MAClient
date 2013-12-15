@@ -9,7 +9,7 @@ import sys
 import glob
 import time
 from xml2dict import XML2Dict
-from maclient_compact import *
+from cross_platform import *
 if PYTHON3:
     _split=lambda x,y=',':list(map(lambda x:x.decode('utf-8'),x.encode(encoding='utf-8').split(y.encode('utf-8'))))
 else:

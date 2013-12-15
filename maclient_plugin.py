@@ -6,7 +6,7 @@
 import os,os.path as opath
 import sys
 import glob
-from maclient_compact import *
+from cross_platform import *
 #for plugin use
 if PYTHON3:
     import urllib.request as urllib2

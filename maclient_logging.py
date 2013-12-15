@@ -5,7 +5,7 @@ import time
 import locale
 import logging
 import logging.handlers
-from maclient_compact import *
+from cross_platform import *
 convstr=(sys.platform.startswith('cli') or PYTHON3)and \
         (lambda str: str) or \
         (lambda str: str.encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))

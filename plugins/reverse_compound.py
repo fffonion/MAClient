@@ -1,7 +1,7 @@
 #coding:utf-8
 from _prototype import plugin_prototype
 import sys
-from maclient_compact import *
+from cross_platform import *
 #start meta
 __plugin_name__='reverse compound assistant'
 __author='fffonion'

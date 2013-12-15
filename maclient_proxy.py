@@ -4,7 +4,7 @@
 # modified from sogou proxy
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
-from maclient_compact import *
+from cross_platform import *
 if PYTHON3:
     from http.server import BaseHTTPRequestHandler, HTTPServer
     from socketserver import ThreadingMixIn

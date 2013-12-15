@@ -18,7 +18,7 @@ from xml2dict import object_dict
 import random
 import threading
 import getpass
-from maclient_compact import *
+from cross_platform import *
 if PYTHON3:
     import configparser as ConfigParser
     xrange=range

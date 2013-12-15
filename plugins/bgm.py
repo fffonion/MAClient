@@ -17,23 +17,21 @@ __version__=0.1
 #'ENTER_explore':1
 hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER__explore_floor':1,'EXIT__explore_floor':1,'ENTER_tasker':1,'EXIT_tasker':1}
 #extra cmd hook
-extra_cmd={'bgm on':'set_bgm_on','bgm off':'set_bgm_off'}
+extra_cmd={'bgm':'set_bgm'}
 #end meta
 getPATH0=(opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform=='cli') \
          and sys.path[0].decode(sys.getfilesystemencoding()) \
          or sys.path[1].decode(sys.getfilesystemencoding())
 
-def set_bgm_off(plugin_vals):
+def set_bgm(plugin_vals):
     snd = sound.Output(5,1,sound.AFMT_S16_LE)#whatever
     def do(arg):
-        fade_out(snd)
+        if arg=='on':
+            fade_in(snd)
+        elif arg=='off':
+            fade_out(snd)
     return do
 
-def set_bgm_on(plugin_vals):
-    snd = sound.Output(5,1,sound.AFMT_S16_LE) 
-    def do(arg): 
-        fade_in(snd)
-    return do
 
 def fade_out(snd,duration=0.5):
     if snd:
@@ -127,7 +125,7 @@ class plugin(plugin_prototype):
         else:
             return False
 
-    def _rollback_state(self):
+    def _rollback_state(self,*args,**kwargs):
         #take this as simple "stack pop"
         if len(self.last_state)<1:
             self.last_state=[0]

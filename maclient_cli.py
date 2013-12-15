@@ -16,7 +16,7 @@ import threading
 import maclient
 import maclient_proxy
 import maclient_logging
-from maclient_compact import *
+from cross_platform import *
 import getpass
 #look out for ironpython
 

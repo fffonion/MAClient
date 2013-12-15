@@ -7,7 +7,7 @@ import os
 import os.path as opath
 import sys
 from xml2dict import XML2Dict
-from maclient_compact import *
+from cross_platform import *
 
 def get_revision(loc):
     loc=loc[:2]
