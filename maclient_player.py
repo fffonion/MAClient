@@ -111,11 +111,10 @@ class player(object):
 
 class item(object):
     def __init__(self,loc):
-        self.name={}
-        self.load_db(loc)
-        self.count={}
+        self.db={}
+        self.load_name(loc)
 
-    def load_db(self,loc):
+    def load_name(self,loc):
         if PYTHON3:
             f=open(opath.join(getPATH0,'db/item.%s.txt'%loc),encoding='utf8')
         else:
@@ -123,15 +122,20 @@ class item(object):
         for c in f.readlines():
             c=_split(c)
             if c!=['']:
-                self.name[int(c[0])]=c[1]
+                self.db[int(c[0])]=[c[1],0]
 
     def update(self,itemdict):
         for it in itemdict:
             try:
-                self.count[int(it.item_id)]=it.num
+                self.db[int(it.item_id)][1]=it.num
             except KeyError:
-                self.count[int(it.item_id)]='0'
+                self.db[int(it.item_id)][1]=0
 
+    def get_name(self,item_id):
+        return self.db[item_id][0]
+
+    def get_count(self,item_id):
+        return self.db[item_id][1]
 
 class card(object):
     def __init__(self,loc):

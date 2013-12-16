@@ -407,6 +407,7 @@ class maClient():
                     self._write_config('system','server',task[1])
                     self.loc=task[1]
                     self.poster.servloc=self.loc
+                    self.load_config()
                 elif task[0]=='relogin' or task[0]=='rl':
                     self._write_config('account_%s'%self.loc,'session','')
                     self.login()
@@ -499,7 +500,6 @@ class maClient():
                 logging.error('当前登录的用户(%s)已经运行了一个maClient'%(self.username))
                 self._exit(2)
             self.carddb=self.player.card.db
-            self.itemdb=self.player.item.name
             self.player_initiated=True
             if self.player.id!='0':
                 self._write_config('account_%s'%self.loc,'user_id',self.player.id)
@@ -700,8 +700,8 @@ class maClient():
         if resp['error']:
             return False
         else:
-            logging.info('使用了道具 %s'%self.itemdb[int(itemid)])
-            logging.debug('useitem:item %s : %s left'%(itemid,self.player.item.count[int(itemid)]))
+            logging.info('使用了道具 %s'%self.player.item.get_name(int(itemid)))
+            logging.debug('useitem:item %s : %s left'%(itemid,self.player.item.get_count(int(itemid))))
             return True
             
     @plugin.func_hook
@@ -880,7 +880,7 @@ class maClient():
                             )[0]['error']:
                             return None,EXPLORE_ERROR
                     elif info.event_type=='2':
-                        logging.info('碰到个傻X：{0} -> {1}'.format(info.encounter.name,info.message).replace('%','-'))
+                        logging.info('碰到个傻X：{0} -> {1}'.format(info.encounter.name,info.message).replace('%','%%'))
                         time.sleep(1.5)
                     elif info.event_type=='3':
                         usercard=info.user_card
@@ -918,7 +918,7 @@ class maClient():
                             itembefore=int(info.special_item.before_count)
                             itemnow=int(info.special_item.after_count)
                             logging.debug('explore:itemid:%s'%(itemid))
-                            logging.info('获得收集品[%s] x%d'%(self.itemdb[int(itemid)],itemnow-itembefore))
+                            logging.info('获得收集品[%s] x%d'%(self.player.item.get_name(int(itemid)),itemnow-itembefore))
                     elif info.event_type=='4':
                         logging.info('获得了因子碎片 湖:%s 碎片:%s'%(
                             info.parts_one.lake_id,info.parts_one.parts.parts_num))
@@ -1346,7 +1346,7 @@ class maClient():
                     if 'item_id' in b:
                         #收集品 情况1：要通过点击“立即领取”领取的，在sleep之后领取
                         #logging.debug('fairy_battle:type:%s item_id %s count %s'%(b.type,b.item_id,b.item_num))
-                        logging.info('获得收集品[%s] x%s'%(self.itemdb[int(b.item_id)],b.item_num))
+                        logging.info('获得收集品[%s] x%s'%(self.player.item.get_name(int(b.item_id)),b.item_num))
                         nid.append(b.id)
                     else:
                         #logging.debug('fairy_battle:type:%s card_id %s holoflag %s'%(b.type,b.card_id,b.holo_flag))
@@ -1374,7 +1374,7 @@ class maClient():
             if 'special_item' in res:
                 it=res.special_item
                 logging.info('收集品[%s]:+%d(%s)'%(\
-                    self.itemdb[int(it.item_id)],int(it.after_count)-int(it.before_count),it.after_count))
+                    self.player.item.get_name(int(it.item_id)),int(it.after_count)-int(it.before_count),it.after_count))
             #战斗详情分析
             # <battle_action_list>
             #     <action_player>0</action_player>
@@ -1696,7 +1696,7 @@ class maClient():
                 else:
                     strl+=('%s:'%r.content)
                     if r.type=='2':
-                        strl+='%sx%s , '%(self.itemdb[int(r.item_id)],r.get_num)
+                        strl+='%sx%s , '%(self.player.item.get_name(int(r.item_id)),r.get_num)
                         if '2' in rw_type:
                             nid.append(r.id)
                     elif r.type=='3':

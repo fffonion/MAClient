@@ -14,18 +14,18 @@ extra_cmd={'query_item':'query_item','qi':'query_item','query_holo':'query_holo'
 def query_item(plugin_vals):
     def do(*args):
         logger=plugin_vals['logger']
-        if 'player' not in plugin_vals or not plugin_vals['player'].item.count:
+        if 'player' not in plugin_vals or not plugin_vals['player'].item.db:
             logger.error(du8('玩家信息未初始化，请随便执行一个操作再试'))
             return
         print(du8('%-17s%s'%('物品','个数')))
         print('-'*30)
-        for (i,j) in plugin_vals['player'].item.count.items():
-            #calc utf-8 length
-            n=plugin_vals['player'].item.name[i]
-            l1=len(n)#ascii length
-            n=du8(n)
-            l2=len(n)#char count
-            print(du8('%s%s%s'%(n,' '*int(15-l2-(l1-l2)/2),j)))
+        for (i,[n,j]) in plugin_vals['player'].item.db.items():
+            if j>0:#has
+                #calc utf-8 length
+                l1=len(n)#ascii length
+                n=du8(n)
+                l2=len(n)#char count
+                print(du8('%s%s%s'%(n,' '*int(15-l2-(l1-l2)/2),j)))
     return do
 
 #query holo cards
