@@ -54,13 +54,13 @@ from array import array
 # http://www.python.org/dev/peps/pep-0272/
 MODE_ECB = 1
 MODE_CBC = 2
-#MODE_CTR = 6
+# MODE_CTR = 6
 
 block_size = 16
 # variable length key: 16, 24 or 32 bytes
 key_size = None
 
-def new(key, mode, IV=None):
+def new(key, mode, IV = None):
     if mode == MODE_ECB:
         return ECBMode(AES(key))
     elif mode == MODE_CBC:
@@ -141,7 +141,7 @@ class AES(object):
                 exkey.extend(word)
 
             # Last key expansion cycle always finishes here
-            if len(exkey) >= (self.rounds+1) * self.block_size:
+            if len(exkey) >= (self.rounds + 1) * self.block_size:
                 break
 
             # Special substitution step for 256-bit key
@@ -170,7 +170,7 @@ class AES(object):
         for i in xrange(16):
             block[i] ^= exkey[offset + i]
 
-        #print 'AddRoundKey:', block
+        # print 'AddRoundKey:', block
 
     def sub_bytes(self, block, sbox):
         """SubBytes step, apply S-box to all bytes
@@ -182,7 +182,7 @@ class AES(object):
         for i in xrange(16):
             block[i] = sbox[block[i]]
 
-        #print 'SubBytes   :', block
+        # print 'SubBytes   :', block
 
     def shift_rows(self, b):
         """ShiftRows step. Shifts 2nd row to left by 1, 3rd row by 2, 4th row by 3
@@ -200,7 +200,7 @@ class AES(object):
         b[2], b[6], b[10], b[14] = b[10], b[14], b[ 2], b[ 6]
         b[3], b[7], b[11], b[15] = b[15], b[ 3], b[ 7], b[11]
 
-        #print 'ShiftRows  :', b
+        # print 'ShiftRows  :', b
 
     def shift_rows_inv(self, b):
         """Similar to shift_rows above, but performed in inverse for decryption."""
@@ -209,7 +209,7 @@ class AES(object):
         b[10], b[14], b[ 2], b[ 6] = b[2], b[6], b[10], b[14]
         b[15], b[ 3], b[ 7], b[11] = b[3], b[7], b[11], b[15]
 
-        #print 'ShiftRows  :', b
+        # print 'ShiftRows  :', b
 
     def mix_columns(self, block):
         """MixColumns step. Mixes the values in each column"""
@@ -221,20 +221,20 @@ class AES(object):
         # Since we're dealing with a transposed matrix, columns are already
         # sequential
         for col in xrange(0, 16, 4):
-            v0, v1, v2, v3 = block[col : col+4]
+            v0, v1, v2, v3 = block[col : col + 4]
 
             block[col  ] = mul_by_2[v0] ^ v3 ^ v2 ^ mul_by_3[v1]
-            block[col+1] = mul_by_2[v1] ^ v0 ^ v3 ^ mul_by_3[v2]
-            block[col+2] = mul_by_2[v2] ^ v1 ^ v0 ^ mul_by_3[v3]
-            block[col+3] = mul_by_2[v3] ^ v2 ^ v1 ^ mul_by_3[v0]
+            block[col + 1] = mul_by_2[v1] ^ v0 ^ v3 ^ mul_by_3[v2]
+            block[col + 2] = mul_by_2[v2] ^ v1 ^ v0 ^ mul_by_3[v3]
+            block[col + 3] = mul_by_2[v3] ^ v2 ^ v1 ^ mul_by_3[v0]
 
-        #print 'MixColumns :', block
+        # print 'MixColumns :', block
 
     def mix_columns_inv(self, block):
         """Similar to mix_columns above, but performed in inverse for decryption."""
 
         # Cache global multiplication tables (see below)
-        mul_9  = gf_mul_by_9
+        mul_9 = gf_mul_by_9
         mul_11 = gf_mul_by_11
         mul_13 = gf_mul_by_13
         mul_14 = gf_mul_by_14
@@ -242,14 +242,14 @@ class AES(object):
         # Since we're dealing with a transposed matrix, columns are already
         # sequential
         for col in xrange(0, 16, 4):
-            v0, v1, v2, v3 = block[col : col+4]
+            v0, v1, v2, v3 = block[col : col + 4]
 
             block[col  ] = mul_14[v0] ^ mul_9[v3] ^ mul_13[v2] ^ mul_11[v1]
-            block[col+1] = mul_14[v1] ^ mul_9[v0] ^ mul_13[v3] ^ mul_11[v2]
-            block[col+2] = mul_14[v2] ^ mul_9[v1] ^ mul_13[v0] ^ mul_11[v3]
-            block[col+3] = mul_14[v3] ^ mul_9[v2] ^ mul_13[v1] ^ mul_11[v0]
+            block[col + 1] = mul_14[v1] ^ mul_9[v0] ^ mul_13[v3] ^ mul_11[v2]
+            block[col + 2] = mul_14[v2] ^ mul_9[v1] ^ mul_13[v0] ^ mul_11[v3]
+            block[col + 3] = mul_14[v3] ^ mul_9[v2] ^ mul_13[v1] ^ mul_11[v0]
 
-        #print 'MixColumns :', block
+        # print 'MixColumns :', block
 
     def encrypt_block(self, block):
         """Encrypts a single block. This is the main AES function"""
@@ -277,7 +277,7 @@ class AES(object):
         self.add_round_key(block, self.rounds)
 
         # count rounds down from (self.rounds) ... 1
-        for round in xrange(self.rounds-1, 0, -1):
+        for round in xrange(self.rounds - 1, 0, -1):
             self.shift_rows_inv(block)
             self.sub_bytes(block, aes_inv_sbox)
             self.add_round_key(block, round)
@@ -312,9 +312,9 @@ class ECBMode(object):
         data = array('B', data)
 
         for offset in xrange(0, len(data), block_size):
-            block = data[offset : offset+block_size]
+            block = data[offset : offset + block_size]
             block_func(block)
-            data[offset : offset+block_size] = block
+            data[offset : offset + block_size] = block
 
         return data.tostring()
 
@@ -356,14 +356,14 @@ class CBCMode(object):
         IV = self.IV
 
         for offset in xrange(0, len(data), block_size):
-            block = data[offset : offset+block_size]
+            block = data[offset : offset + block_size]
 
             # Perform CBC chaining
             for i in xrange(block_size):
                 block[i] ^= IV[i]
 
             self.cipher.encrypt_block(block)
-            data[offset : offset+block_size] = block
+            data[offset : offset + block_size] = block
             IV = block
 
         self.IV = IV
@@ -380,19 +380,19 @@ class CBCMode(object):
         IV = self.IV
 
         for offset in xrange(0, len(data), block_size):
-            ctext = data[offset : offset+block_size]
+            ctext = data[offset : offset + block_size]
             block = ctext[:]
             self.cipher.decrypt_block(block)
 
             # Perform CBC chaining
-            #for i in xrange(block_size):
+            # for i in xrange(block_size):
             #    data[offset + i] ^= IV[i]
             for i in xrange(block_size):
                 block[i] ^= IV[i]
-            data[offset : offset+block_size] = block
+            data[offset : offset + block_size] = block
 
             IV = ctext
-            #data[offset : offset+block_size] = block
+            # data[offset : offset+block_size] = block
 
         self.IV = IV
         return data.tostring()
@@ -413,10 +413,10 @@ def galois_multiply(a, b):
     return p & 0xff
 
 # Precompute the multiplication tables for encryption
-gf_mul_by_2  = array('B', [galois_multiply(x,  2) for x in range(256)])
-gf_mul_by_3  = array('B', [galois_multiply(x,  3) for x in range(256)])
+gf_mul_by_2 = array('B', [galois_multiply(x, 2) for x in range(256)])
+gf_mul_by_3 = array('B', [galois_multiply(x, 3) for x in range(256)])
 # ... for decryption
-gf_mul_by_9  = array('B', [galois_multiply(x,  9) for x in range(256)])
+gf_mul_by_9 = array('B', [galois_multiply(x, 9) for x in range(256)])
 gf_mul_by_11 = array('B', [galois_multiply(x, 11) for x in range(256)])
 gf_mul_by_13 = array('B', [galois_multiply(x, 13) for x in range(256)])
 gf_mul_by_14 = array('B', [galois_multiply(x, 14) for x in range(256)])

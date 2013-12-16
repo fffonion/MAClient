@@ -10,7 +10,7 @@ from __future__ import print_function
 try:
     import xml.etree.ElementTree as ET
 except:
-    import cElementTree as ET # for 2.4
+    import cElementTree as ET  # for 2.4
 
 import re
 
@@ -36,7 +36,7 @@ class object_dict(dict):
     >>> a.test, a.test2.name, a.test2.value
     (1, 'test2', 2)
     """
-    def __init__(self, initd=None):
+    def __init__(self, initd = None):
         if initd is None:
             initd = {}
         dict.__init__(self, initd)
@@ -49,7 +49,7 @@ class object_dict(dict):
         else:
             return d
 
-    #def __iter__(self):
+    # def __iter__(self):
     #    yield self
     #    return
 
@@ -67,20 +67,20 @@ class XML2Dict(object):
         # Save attrs and text, hope there will not be a child with same name
         if node.text:
             node_tree.value = node.text
-        for (k,v) in node.attrib.items():
-            k,v = self._namespace_split(k, object_dict({'value':v}))
+        for (k, v) in node.attrib.items():
+            k, v = self._namespace_split(k, object_dict({'value':v}))
             node_tree[k] = v
-        #Save childrens
+        # Save childrens
         for child in iter(node):
             tag, tree = self._namespace_split(child.tag, self._parse_node(child))
-            if  tag not in node_tree: # the first time, so store it in dict
+            if  tag not in node_tree:  # the first time, so store it in dict
                 node_tree[tag] = tree
                 continue
             old = node_tree[tag]
             if not isinstance(old, list):
                 node_tree.pop(tag)
-                node_tree[tag] = [old] # multi times, so change old dict to a list       
-            node_tree[tag].append(tree) # add the new one      
+                node_tree[tag] = [old]  # multi times, so change old dict to a list
+            node_tree[tag].append(tree)  # add the new one
 
         return  node_tree
 
@@ -93,14 +93,14 @@ class XML2Dict(object):
         """
         result = re.compile("\{(.*)\}(.*)").search(tag)
         if result:
-            #print(tag)
-            value.namespace, tag = result.groups()    
+            # print(tag)
+            value.namespace, tag = result.groups()
         return (tag, value)
 
     def parse(self, file):
         """parse a xml file to a dict"""
         f = open(file, 'r')
-        return self.fromstring(f.read()) 
+        return self.fromstring(f.read())
 
     def fromstring(self, s):
         """parse a string"""
@@ -128,4 +128,4 @@ if __name__ == '__main__':
 
     for data in r.result.data:
         print(data.id, data.name)
-    #pprint(xml.parse('a'))
+    # pprint(xml.parse('a'))

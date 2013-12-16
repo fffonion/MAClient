@@ -29,7 +29,7 @@ def doscopy(filename1):
 class GlobDirectoryWalker:
     # a forward iterator that traverses a directory tree
 
-    def __init__(self, directory, pattern="*"):
+    def __init__(self, directory, pattern = "*"):
         self.stack = [directory]
         self.pattern = pattern
         self.files = []
@@ -48,29 +48,29 @@ class GlobDirectoryWalker:
             else:
                 # got a filename
                 fullname = os.path.join(self.directory, file)
-                if os.path.isdir(fullname) and not os.path.islink(fullname) and fullname[-4:]<>'.svn':
+                if os.path.isdir(fullname) and not os.path.islink(fullname) and fullname[-4:] <> '.svn':
                     self.stack.append(fullname)
                 if fnmatch.fnmatch(file, self.pattern):
                     return fullname
 
-#Build StdLib.DLL
+# Build StdLib.DLL
 gb = glob.glob(r".\Lib\*.py")
-gb.append("/out:StdLib")    
+gb.append("/out:StdLib")
 
-#print ["/target:dll",]+gb
+# print ["/target:dll",]+gb
 
-#pyc.Main(["/target:dll"]+gb)
+# pyc.Main(["/target:dll"]+gb)
 
-#Build EXE
-gb=["/main:maclient_cli.py","xml2dict.py","maclient.py","maclient_network.py","maclient_smart.py","maclient_player.py","maclient_proxy.py","maclient_update.py","maclient_logging.py","maclient_plugin.py","cross_platform.py","pyaes.py","D:\Dev\Python\Python27\Lib\__future__.py","/target:exe","/out:maclient_cli","/platform:all","/embed"]
+# Build EXE
+gb = ["/main:maclient_cli.py", "xml2dict.py", "maclient.py", "maclient_network.py", "maclient_smart.py", "maclient_player.py", "maclient_proxy.py", "maclient_update.py", "maclient_logging.py", "maclient_plugin.py", "cross_platform.py", "pyaes.py", "D:\Dev\Python\Python27\Lib\__future__.py", "/target:exe", "/out:maclient_cli", "/platform:all", "/embed"]
 pyc.Main(gb)
 
-#CopyFiles to Release Directory
-#doscopy("StdLib.dll")
+# CopyFiles to Release Directory
+# doscopy("StdLib.dll")
 doscopy("maclient_cli.exe")
 
 
-#Copy DLLs to Release Directory
-fl = ["IronPython.dll","IronPython.Modules.dll","Microsoft.Dynamic.dll","Microsoft.Scripting.Debugging.dll","Microsoft.Scripting.dll","Microsoft.Scripting.ExtensionAttribute.dll","Microsoft.Scripting.Core.dll"]
-#for f in fl:
+# Copy DLLs to Release Directory
+fl = ["IronPython.dll", "IronPython.Modules.dll", "Microsoft.Dynamic.dll", "Microsoft.Scripting.Debugging.dll", "Microsoft.Scripting.dll", "Microsoft.Scripting.ExtensionAttribute.dll", "Microsoft.Scripting.Core.dll"]
+# for f in fl:
 #  doscopy(f)

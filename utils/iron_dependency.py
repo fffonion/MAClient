@@ -1,4 +1,4 @@
-mods='''BaseHTTPServer.py
+mods = '''BaseHTTPServer.py
 ConfigParser.py
 SocketServer.py
 StringIO.py
@@ -120,9 +120,9 @@ xml\etree\ElementPath.py
 xml\etree\ElementTree.py
 xml\parsers\__init__.py
 xml\parsers\expat.py'''
-libpath=r'D:\Dev\Python\Python27\Lib'
+libpath = r'D:\Dev\Python\Python27\Lib'
 import os
 if not os.path.exists('python27'):
     os.mkdir('python27')
 for m in mods.split('\n'):
-    os.system('xcopy /y %s\%s python27\%s'%(libpath,m,m))
+    os.system('xcopy /y %s\%s python27\%s' % (libpath, m, m))
