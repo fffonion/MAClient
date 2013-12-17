@@ -200,7 +200,7 @@ class maClient():
     #             logging.warning('remote_hdl:%s'%msg)
     #             return False
 
-    def _dopost(self, urikey, postdata = '', usecookie = True, setcookie = True, extraheader = {'Cookie2': '$Version=1'}, xmlresp = True, noencrypt = False, savetraffic = False):
+    def _dopost(self, urikey, postdata = '', usecookie = True, setcookie = True, extraheader = {'Cookie2': '$Version=1'}, xmlresp = True, noencrypt = False, savetraffic = False, no2ndkey=False ):
         # self.remoteHdl()
         if self.cfg_display_ani:
             connani = conn_ani()
@@ -212,7 +212,7 @@ class maClient():
             else:
                 logging.debug('post:slow down...')
                 time.sleep(random.randint(int(0.75 * self.cfg_delay), int(1.25 * self.cfg_delay)))
-        resp, _dec = self.poster.post(urikey, postdata, usecookie, setcookie, extraheader, noencrypt, savetraffic)
+        resp, _dec = self.poster.post(urikey, postdata, usecookie, setcookie, extraheader, noencrypt, savetraffic, no2ndkey)
         self.lastposttime = time.time()
         if self.cfg_display_ani:
             connani.flag = 0
@@ -463,7 +463,7 @@ class maClient():
             token = self._read_config('system', 'device_token').replace('\\n', '\n') or \
             'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
             if not fast:
-                ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False)[1]
+                ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
                 # self.poster.update_server(ct)
                 self._dopost('notification/post_devicetoken', postdata = 'S=%s&login_id=%s&password=%s&app=and&token=%s' % ('nosessionid', self.username, self.password, token), xmlresp = False)
             resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password))
@@ -505,8 +505,8 @@ class maClient():
                 self._write_config('account_%s' % self.loc, 'user_id', self.player.id)
             else:
                 self.player.id = self._read_config('account_%s' % self.loc, 'user_id')
-            # for jp server
-            self.poster.gen_2nd_key(self.player.id)
+            # for jp server, regenerate
+            self.poster.gen_2nd_key(self.player.id,self.loc)
         if self.settitle:
             # 窗口标题线程
             self.stitle = set_title(self)
