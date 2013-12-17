@@ -3,13 +3,13 @@
 # maclient network utility
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
+from M2Crypto import BIO, RSA
 import os
 import sys
 import time
 import base64
 import socket
 import urllib
-from M2Crypto import BIO, RSA
 import maclient_smart
 from cross_platform import *
 if PYTHON3:
@@ -43,13 +43,13 @@ headers_post = {'Content-Type': 'application/x-www-form-urlencoded'}
 pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
 unpad = lambda s : s[0:-ord(s[-1])]
 b2u = PYTHON3 and (lambda x:x.decode(encoding = 'utf-8')) or (lambda x:x)
-MOD_AES, MOD_AES_RANDOM, MOD_RSA = 1, 2, 0
+MOD_AES, MOD_AES_RANDOM, MOD_RSA_AES_RANDOM = 0, 1, 2
 class Crypt():
     def __init__(self,loc):
         self.init_cipher(loc=loc)
         self.random_cipher_plain=''
         if loc=='cn':
-            gen_rsa_pubkey()
+            self.gen_rsa_pubkey()
 
     def gen_cipher_with_uid(self,uid):
         pass
@@ -64,8 +64,9 @@ class Crypt():
         self.rsa = RSA.load_pub_key_bio(bio)
 
     def gen_random_cipher(self):
-        self.random_cipher_plain=os.urandom(16)
-        return self.random_cipher(self.random_cipher_plain)
+        #testingp
+        self.random_cipher_plain='mNeFY7CW00FPi75fVoszYA=='.decode('base64')
+        self.random_cipher = self._gen_cipher(self.random_cipher_plain)
 
     def _gen_cipher(self,plain):
         return AES.new(plain, AES.MODE_ECB)
@@ -98,18 +99,22 @@ class Crypt():
     def encode_data(self, bytein, mode):
         if mode==MOD_AES:
             return self.cipher_data.encrypt(pad(bytein))
-        elif mode==MOD_AES_RANDOM:
+        elif mode >= MOD_AES_RANDOM:
             return self.random_cipher.encrypt(pad(bytein))
-        elif mode==MOD_RSA:
-            rst=self.rsa.public_encrypt(message, RSA.pkcs1_padding)
-            return base64.encodestring(rst)
+
+    def encode_rsa(self, strin):
+        return self.rsa.public_encrypt(strin, RSA.pkcs1_padding)
 
     def encode_data64(self, bytein, mode):
         return self.urlunescape(b2u(base64.encodestring(self.encode_data(bytein, mode))).strip('\n'))
 
     def encode_param(self, param, mode=MOD_AES):
         p = param.split('&')
-        p_enc = '%0A&'.join(['%s=%s' % (p[i].split('=')[0], self.encode_data64(p[i].split('=')[1], mode)) for i in xrange(len(p))])
+        if mode == MOD_RSA_AES_RANDOM:
+            _m=self.encode_rsa
+        else:
+            _m=lambda x:x
+        p_enc = '%0A&'.join(['%s=%s' % (p[i].split('=')[0], _m(self.encode_data64(p[i].split('=')[1], mode))) for i in xrange(len(p))])
         # print p_enc
         return p_enc.replace('\n', '')
 
@@ -137,7 +142,7 @@ class Crypt():
         else:
             pass
 
-ht = httplib2.Http(timeout = 15)
+ht = httplib2.Http(timeout = 15,proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, "192.168.124.1", 23300))
 
 
 
@@ -196,16 +201,32 @@ class poster():
             header.update(extraheader)
             if usecookie:
                 header.update({'Cookie':self.cookie})
-            if not noencrypt and postdata != '':
+            if not noencrypt :
                 if self.servloc=='cn':#pass key to server
-                    self.crypt.gen_random_cipher()
-                    postdata='K=%s&%s'%(self.crypt.urlescape(base64.encodestring(self.crypt.random_cipher_plain)),postdata)
-                    if uri in ['login','regist']:
-                        postdata = encode_param(postdata, mode=MOD_RSA)
+                    #add sign to param
+                    sign='K=%s'%self.crypt.urlunescape(
+                        base64.encodestring(
+                            self.crypt.encode_rsa(
+                                base64.encodestring(
+                                    self.crypt.random_cipher_plain)))).rstrip('\n')
+                    if postdata:#has real stuff
+                        self.crypt.gen_random_cipher()
+                        #print(base64.encodestring(self.crypt.random_cipher_plain))
+                        print '-----'
+                        print postdata
+                        if uri in ['login','regist']:
+                            print('addtional rsa')
+                            postdata = self.crypt.encode_param(postdata, mode=MOD_RSA_AES_RANDOM)
+                        else:
+                            postdata = self.crypt.encode_param(postdata, mode=MOD_AES_RANDOM)
+                        postdata='&'.join([sign,postdata])
                     else:
-                        postdata = encode_param(postdata, mode=MOD_AES_RANDOM)
-                else:
-                    postdata = encode_param(postdata)
+                        postdata=sign
+                elif postdata != '':
+                    postdata = self.crypt.encode_param(postdata)
+                
+                    
+                
             trytime = 0
             ttimes = 3
             callback_hook = None
@@ -251,8 +272,8 @@ class poster():
             if savetraffic and self.issavetraffic:
                 return resp, content
             # 否则解码
-            #open('debug/%s--.xml' % uri.replace('/', '#').replace('?', '~'), 'w').write(content)
-            dec = self.rollback_utf8(decode_data(content))
+            open('debug/%s--.xml' % uri.replace('/', '#').replace('?', '~'), 'w').write(content)
+            dec = self.rollback_utf8(self.crypt.decode_data(content))
             # open(r'z:/debug/%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(dec)
             if os.path.exists('debug'):
                 open('debug/%s.xml' % uri.replace('/', '#').replace('?', '~'), 'w').write(dec)
@@ -263,8 +284,8 @@ class poster():
             return resp, dec
 
 if __name__ == "__main__":
-    p = Crypt('cn')
-    print([p.encode_param('knight_id=0%0A&move=1%0A&parts_id=0',mode=MOD_AES)])
+    p = Crypt('cn_')
+    print([p.encode_param('K=AAA&area_id=95063')])
     # K=eBkWIR2jQTMbtPT%2FVasX0RHVKgNVgeOfpRp4lNBxrX91LlYCoXWVVRj7vgAOXQXrPAsn5aeqmh15%0A5ywC8dL3bA%3D%3D%0A&
     #login_id=TZZjypZKsZ0T4mKpYH%2B1XODqornvgiBW%2B3P3Oe6gZ1WRtlKUMG6%2F5RYNzMJJAsTTV8nYsEW8BHab%0Aj70rlFd%2Fuw%3D%3D%0A&
     #password=SX7az60ooRS3thI64TG2lRUUE%2F6SdJ31tVEI1xZQVKvXeoirwyKYjfBflwkWPrtuOJlT%2BoEgx%2B%2BE%0AoF%2BIuzHHIA%3D%3D%0A
