@@ -3,7 +3,6 @@
 # maclient network utility
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
-from M2Crypto import BIO, RSA
 import os
 import sys
 import time
@@ -23,6 +22,8 @@ except ImportError:
     print('httplib2 not found in python libs. You can download it here: https://github.com/fffonion/httplib2-plus')
 try:
     from Crypto.Cipher import AES
+    from Crypto.PublicKey import RSA
+    from Crypto.Cipher import PKCS1_v1_5
     SLOW_MODE = False
 except ImportError:
     import pyaes as AES
@@ -60,8 +61,9 @@ class Crypt():
         pk = [pk[i:i+64] for i in range(0, len(pk), 64)]
         pk = '-----BEGIN PUBLIC KEY-----\n' + '\n'.join(pk) + '\n-----END PUBLIC KEY-----'
         #print pk
-        bio = BIO.MemoryBuffer(pk) # pk is ASCII, don't encode
-        self.rsa = RSA.load_pub_key_bio(bio)
+        self.rsa = PKCS1_v1_5.new(RSA.importKey(pk))
+        #bio = BIO.MemoryBuffer(pk) # pk is ASCII, don't encode
+        #self.rsa = RSA.load_pub_key_bio(bio)
 
     def gen_random_cipher(self):
         #testingp
@@ -103,7 +105,7 @@ class Crypt():
             return self.random_cipher.encrypt(pad(bytein))
 
     def encode_rsa_64(self, strin):
-        return base64.encodestring(self.rsa.public_encrypt(strin, RSA.pkcs1_padding))
+        return base64.encodestring(self.rsa.encrypt(strin))
 
     def encode_data64(self, bytein, mode):
         res=b2u(base64.encodestring(self.encode_data(bytein, mode))).strip('\n')
@@ -283,17 +285,4 @@ if __name__ == "__main__":
     p = Crypt('cn')
     p.gen_random_cipher()
     print([p.encode_param('login_id=15818616771&password=huwei1993',mode=MOD_RSA_AES_RANDOM)])
-    # K=eBkWIR2jQTMbtPT%2FVasX0RHVKgNVgeOfpRp4lNBxrX91LlYCoXWVVRj7vgAOXQXrPAsn5aeqmh15%0A5ywC8dL3bA%3D%3D%0A&
-    #login_id=TZZjypZKsZ0T4mKpYH%2B1XODqornvgiBW%2B3P3Oe6gZ1WRtlKUMG6%2F5RYNzMJJAsTTV8nYsEW8BHab%0Aj70rlFd%2Fuw%3D%3D%0A&
-    #password=SX7az60ooRS3thI64TG2lRUUE%2F6SdJ31tVEI1xZQVKvXeoirwyKYjfBflwkWPrtuOJlT%2BoEgx%2B%2BE%0AoF%2BIuzHHIA%3D%3D%0A
-    #K=PiLoUdWGIg%2BpYV5%2FK00XJWAQgjTvvvf2BjGnHxxrq5QTtb5iaXMRQ2hayBebGulyEOcG8%2F2wxMsM%0AJkLk7qaREA%3D%3D%0A&
-    #login_id=QkDURvtfZU0WHfBUWd5BtxnXmm85g%2Bz%2F91q2HCwbeAsqJEPymonu7D0I1K5fPqS2ZAjNI7rTWqfT%0AZ3GEmG0KzA%3D%3D%0A&
-    #password=GaEVZp6cHKMdDUw3xgSZwskELECVHme7pFWbkO1mwiDNLlDgHT6pWsstydniqWdj0rWPyq2ymbhL%0AA%2F%2FiYvhaUg%3D%3D%0A
-#RSA
-#MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAM5U06JAbYWdRBrnMdE2bEuDmWgUav7xNKm7i8s1Uy/fvpvfxLeoWowLGIBKz0kDLIvhuLV8Lv4XV0+aXdl2j4kCAwEAAQ==
-#AES KEY
-#MdWt7g87PkP0uXalsNinqg==
-#K=p7QZloUf3nFuyfErUyOW0DwdvYv%2BiDe8KGWUXpE92SPBIIAzu2LTAB0TJyRIAZnnsn0DMmTXnaeS%0AnDWi77bECg%3D%3D%0A
-#WO4YqkflLKIWJ3NWCnGpQQ==
-#K=EC%2Fys3i5dDM4%2B1oY%2Bkz8Oj38mwoH%2BGSiME%2FrQSFrcIgFrKpxUp%2Fn%2BuH46DRBJgcfPl6nbIZIUT7y%0AkD9LzDLuxw%3D%3D%0A
  

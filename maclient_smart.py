@@ -12,10 +12,7 @@ max_card_count_cn = max_card_count_kr = 200
 max_card_count_tw = max_card_count_jp = 250
 max_fp_cn = max_fp_kr = 10000
 max_fp_tw = max_fp_jp = 1000000
-#rBwj1MIAivVN222b
-#uYyfv0X3A9zW/OBl6FMHkA=='.decode('base64')
 key_tw = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'rBwj1MIAivVN222b'}
-key_cn_ = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'QuDtEDNOU+mWMKRTB+MjFw=='.decode('base64')}
 key_cn = key_kr = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'011218525486l6u1'}
 key_jp = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'uH9JF2cHf6OppaC1'}
 app_ver_cn = 102
