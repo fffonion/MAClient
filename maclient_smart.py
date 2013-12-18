@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.0-build20131212'
+__version__ = '1.1-build20131218'
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = 200
 max_card_count_tw = max_card_count_jp = 250

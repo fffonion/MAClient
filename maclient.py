@@ -1265,18 +1265,25 @@ class maClient():
         for k in maclient_smart.name_wake_rare:
             fairy['wake_rare'] = fairy['wake_rare'] or k in fairy.name
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
+        disc_name = ''
+        disc_id = fairy.discoverer_id
+        if int(disc_id) == self.player.id:
+            disc_name = self.player.name
         if 'attacker' not in fairy.attacker_history:  # 没人打过肯定是自己发现的
             f_attackers = []
-            disc_name = self.player.name
         else:
             f_attackers = self.tolist(fairy.attacker_history.attacker)
             # #只有一个的情况
             # if 'user_id' in fairy.attacker_history.attacker:
             #    fairy.attacker_history.attacker=[fairy.attacker_history.attacker]
-            for atk in f_attackers:
-                if atk.discoverer == '1':
-                    disc_name = atk.user_name
-                    break
+            if not disc_name:#不是我的
+                for atk in f_attackers:
+                    if atk.discoverer == '1' or atk.user_id == disc_id:#preserve for guild fairy
+                        disc_name = atk.user_name
+                        break
+            #if not disc_name and 'race_type' in fairy:
+            #    if fairy.race_type == '12':#找不到
+            #        disc_name = '公会妖精'
         hms = lambda x:x >= 3600 and time.strftime('%H:%M:%S', time.localtime(x + 16 * 3600)) or time.strftime('%M:%S', time.localtime(x))
         logging.info('妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s %s' % (
             fairy.name, fairy.lv, fairy.hp, disc_name,
