@@ -1760,6 +1760,13 @@ class maClient():
 
     @plugin.func_hook
     def factor_battle(self, minbc = 0, sel_lake = ''):
+        if self.loc =='tw':
+            def get_parts():
+                self._dopost('battle/area', xmlresp = False)
+                resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
+        else:
+            def get_parts():
+                resp, cmp_parts_ct = self._dopost('battle/area')
         minbc = int(minbc)
         # try count
         trycnt = self._read_config('system', 'try_factor_times')
@@ -1767,11 +1774,7 @@ class maClient():
             trycnt = '999'
         sel_lake = sel_lake.split(',')
         battle_win = 1
-        if self.loc =='tw':
-            self._dopost('battle/area', xmlresp = False)
-            resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
-        else:
-            resp, cmp_parts_ct = self._dopost('battle/area')
+        resp, cmp_parts_ct = get_parts()
         if resp['error']:
             return
         cmp_parts = cmp_parts_ct.body.competition_parts
@@ -1901,8 +1904,7 @@ class maClient():
                                         self.player.bc['current'],
                                         self.player.bc['max']))
                                 time.sleep(8.62616513)
-                                self._dopost('battle/area', xmlresp = False)
-                                resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
+                                resp, cmp_parts_ct = get_parts()
                                 if result == '1':  # 赢过一次就置为真
                                     battle_win += 1
                                     cmp_parts = cmp_parts_ct.body.competition_parts
