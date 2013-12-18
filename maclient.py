@@ -1767,8 +1767,11 @@ class maClient():
             trycnt = '999'
         sel_lake = sel_lake.split(',')
         battle_win = 1
-        self._dopost('battle/area', xmlresp = False)
-        resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
+        if self.loc =='tw':
+            self._dopost('battle/area', xmlresp = False)
+            resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
+        else:
+            resp, cmp_parts_ct = self._dopost('battle/area')
         if resp['error']:
             return
         cmp_parts = cmp_parts_ct.body.competition_parts
