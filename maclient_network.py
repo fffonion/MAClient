@@ -107,8 +107,8 @@ class Crypt():
 
     def encode_data64(self, bytein, mode):
         res=b2u(base64.encodestring(self.encode_data(bytein, mode))).strip('\n')
-        if mode != MOD_RSA_AES_RANDOM:
-            return self.urlunescape(res)
+        # if mode != MOD_RSA_AES_RANDOM:
+        #     return self.urlunescape(res)
         return res
 
     def encode_param(self, param, mode=MOD_AES):
@@ -180,11 +180,11 @@ class poster():
     def set_cookie(self, cookie):
         self.cookie = cookie
 
-    def gen_2nd_key(self, uid = 0, random_key="", loc = 'jp'):
-        pass
-
     def enable_savetraffic(self):
         self.issavetraffic = True
+
+    def gen_2nd_key(self, uid, loc='jp'):
+        pass
 
     def update_server(self, check_inspection_str):
         #not using
@@ -215,7 +215,6 @@ class poster():
                             base64.encodestring(
                                 self.crypt.random_cipher_plain))).rstrip('\n')
                     if postdata:#has real stuff
-                        print postdata
                         if uri in ['login','regist']:
                             postdata = self.crypt.encode_param(postdata.encode('utf-8'), mode=MOD_RSA_AES_RANDOM)
                         else:

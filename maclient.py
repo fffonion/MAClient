@@ -30,7 +30,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.63
+__version__ = 1.64
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
@@ -685,6 +685,8 @@ class maClient():
             logging.sleep('休息%d秒，假装在找卡' % t)
             time.sleep(t)
             postparam = 'C=%s&lr=%s' % (','.join(param), lc)
+            if self.loc != 'tw':#cn, jp, kr:
+                postparam = '%s&deck_id=1'%postparam
             if self._dopost('cardselect/savedeckcard', postdata = postparam)[0]['error']:
                 break
             logging.info('成功更换卡组为%s cost%d' % (deckkey, last_set_bc))
@@ -1235,7 +1237,9 @@ class maClient():
             logging.sleep('等待20s战斗冷却')
             time.sleep(5)
         def fairy_floor(f = fairy):
-            paramfl = 'check=1&serial_id=%s&user_id=%s' % (f.serial_id, f.discoverer_id)
+            paramfl = 'check=1&%sserial_id=%s&user_id=%s' % (
+                'race_type' in fairy and 'race_type=%s&' % fairy.race_type or '',
+                f.serial_id, f.discoverer_id)
             resp, ct = self._dopost('exploration/fairy_floor', postdata = paramfl)
             if resp['error']:
                 return None
@@ -1305,7 +1309,10 @@ class maClient():
         win = False
         self.lastfairytime = time.time()
         savet = (cardd == 'min')
-        paramf = 'serial_id=%s&user_id=%s' % (fairy.serial_id, fairy.discoverer_id)
+        #race_type?
+        paramf = '%sserial_id=%s&user_id=%s' % (
+            'race_type' in fairy and 'race_type=%s&'%fairy.race_type or '',
+            fairy.serial_id, fairy.discoverer_id)
         resp, ct = self._dopost('exploration/fairybattle', postdata = paramf, savetraffic = savet)
         if len(ct) == 0:
             logging.info('舔刀卡组，省流模式开启')
