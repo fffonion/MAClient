@@ -463,9 +463,12 @@ class maClient():
             token = self._read_config('system', 'device_token').replace('\\n', '\n') or \
             'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
             if not fast:
-                ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
+                #ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
                 # self.poster.update_server(ct)
-                self._dopost('notification/post_devicetoken', postdata = 'S=%s&login_id=%s&password=%s&app=and&token=%s' % ('nosessionid', self.username, self.password, token), xmlresp = False)
+                pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
+                if not self.loc=='cn':
+                     pdata='S=nosessionid&%s' % pdata
+                self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False)
             resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password))
             if resp['error']:
                 logging.info('登录失败しました')

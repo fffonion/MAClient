@@ -65,7 +65,7 @@ class Crypt():
 
     def gen_random_cipher(self):
         #testingp
-        self.random_cipher_plain='mNeFY7CW00FPi75fVoszYA=='.decode('base64')
+        self.random_cipher_plain=os.urandom(16)
         self.random_cipher = self._gen_cipher(self.random_cipher_plain)
 
     def _gen_cipher(self,plain):
@@ -102,19 +102,22 @@ class Crypt():
         elif mode >= MOD_AES_RANDOM:
             return self.random_cipher.encrypt(pad(bytein))
 
-    def encode_rsa(self, strin):
-        return self.rsa.public_encrypt(strin, RSA.pkcs1_padding)
+    def encode_rsa_64(self, strin):
+        return base64.encodestring(self.rsa.public_encrypt(strin, RSA.pkcs1_padding))
 
     def encode_data64(self, bytein, mode):
-        return self.urlunescape(b2u(base64.encodestring(self.encode_data(bytein, mode))).strip('\n'))
+        res=b2u(base64.encodestring(self.encode_data(bytein, mode))).strip('\n')
+        if mode != MOD_RSA_AES_RANDOM:
+            return self.urlunescape(res)
+        return res
 
     def encode_param(self, param, mode=MOD_AES):
         p = param.split('&')
         if mode == MOD_RSA_AES_RANDOM:
-            _m=self.encode_rsa
+            _m=self.encode_rsa_64
         else:
             _m=lambda x:x
-        p_enc = '%0A&'.join(['%s=%s' % (p[i].split('=')[0], _m(self.encode_data64(p[i].split('=')[1], mode))) for i in xrange(len(p))])
+        p_enc = '%0A&'.join(['%s=%s' % (p[i].split('=')[0], self.urlunescape(_m(self.encode_data64(p[i].split('=')[1], mode)))) for i in xrange(len(p))])
         # print p_enc
         return p_enc.replace('\n', '')
 
@@ -142,7 +145,8 @@ class Crypt():
         else:
             pass
 
-ht = httplib2.Http(timeout = 15,proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, "192.168.124.1", 23300))
+#ht = httplib2.Http(timeout = 15,proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, "192.168.124.1", 23300))
+ht = httplib2.Http(timeout = 15)
 
 
 
@@ -176,13 +180,14 @@ class poster():
     def set_cookie(self, cookie):
         self.cookie = cookie
 
-    def gen_2nd_key(self, uid = 0, random_key="", loc = 'cn'):
+    def gen_2nd_key(self, uid = 0, random_key="", loc = 'jp'):
         pass
 
     def enable_savetraffic(self):
         self.issavetraffic = True
 
     def update_server(self, check_inspection_str):
+        #not using
         if check_inspection_str:
             strs = check_inspection_str.split(',')
             try:
@@ -204,29 +209,22 @@ class poster():
             if not noencrypt :
                 if self.servloc=='cn':#pass key to server
                     #add sign to param
+                    self.crypt.gen_random_cipher()
                     sign='K=%s'%self.crypt.urlunescape(
-                        base64.encodestring(
-                            self.crypt.encode_rsa(
-                                base64.encodestring(
-                                    self.crypt.random_cipher_plain)))).rstrip('\n')
+                        self.crypt.encode_rsa_64(
+                            base64.encodestring(
+                                self.crypt.random_cipher_plain))).rstrip('\n')
                     if postdata:#has real stuff
-                        self.crypt.gen_random_cipher()
-                        #print(base64.encodestring(self.crypt.random_cipher_plain))
-                        print '-----'
                         print postdata
                         if uri in ['login','regist']:
-                            print('addtional rsa')
-                            postdata = self.crypt.encode_param(postdata, mode=MOD_RSA_AES_RANDOM)
+                            postdata = self.crypt.encode_param(postdata.encode('utf-8'), mode=MOD_RSA_AES_RANDOM)
                         else:
                             postdata = self.crypt.encode_param(postdata, mode=MOD_AES_RANDOM)
                         postdata='&'.join([sign,postdata])
                     else:
                         postdata=sign
                 elif postdata != '':
-                    postdata = self.crypt.encode_param(postdata)
-                
-                    
-                
+                    postdata = self.crypt.encode_param(postdata)  
             trytime = 0
             ttimes = 3
             callback_hook = None
@@ -272,7 +270,6 @@ class poster():
             if savetraffic and self.issavetraffic:
                 return resp, content
             # 否则解码
-            open('debug/%s--.xml' % uri.replace('/', '#').replace('?', '~'), 'w').write(content)
             dec = self.rollback_utf8(self.crypt.decode_data(content))
             # open(r'z:/debug/%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(dec)
             if os.path.exists('debug'):
@@ -284,8 +281,9 @@ class poster():
             return resp, dec
 
 if __name__ == "__main__":
-    p = Crypt('cn_')
-    print([p.encode_param('K=AAA&area_id=95063')])
+    p = Crypt('cn')
+    p.gen_random_cipher()
+    print([p.encode_param('login_id=15818616771&password=huwei1993',mode=MOD_RSA_AES_RANDOM)])
     # K=eBkWIR2jQTMbtPT%2FVasX0RHVKgNVgeOfpRp4lNBxrX91LlYCoXWVVRj7vgAOXQXrPAsn5aeqmh15%0A5ywC8dL3bA%3D%3D%0A&
     #login_id=TZZjypZKsZ0T4mKpYH%2B1XODqornvgiBW%2B3P3Oe6gZ1WRtlKUMG6%2F5RYNzMJJAsTTV8nYsEW8BHab%0Aj70rlFd%2Fuw%3D%3D%0A&
     #password=SX7az60ooRS3thI64TG2lRUUE%2F6SdJ31tVEI1xZQVKvXeoirwyKYjfBflwkWPrtuOJlT%2BoEgx%2B%2BE%0AoF%2BIuzHHIA%3D%3D%0A
@@ -299,4 +297,4 @@ if __name__ == "__main__":
 #K=p7QZloUf3nFuyfErUyOW0DwdvYv%2BiDe8KGWUXpE92SPBIIAzu2LTAB0TJyRIAZnnsn0DMmTXnaeS%0AnDWi77bECg%3D%3D%0A
 #WO4YqkflLKIWJ3NWCnGpQQ==
 #K=EC%2Fys3i5dDM4%2B1oY%2Bkz8Oj38mwoH%2BGSiME%2FrQSFrcIgFrKpxUp%2Fn%2BuH46DRBJgcfPl6nbIZIUT7y%0AkD9LzDLuxw%3D%3D%0A
-
+ 
