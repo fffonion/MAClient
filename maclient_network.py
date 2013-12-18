@@ -52,7 +52,7 @@ class Crypt():
         if loc=='cn':
             self.gen_rsa_pubkey()
 
-    def gen_cipher_with_uid(self,uid):
+    def gen_cipher_with_uid(self, uid, loc):
         pass
 
     def gen_rsa_pubkey(self):
@@ -149,8 +149,6 @@ class Crypt():
 #ht = httplib2.Http(timeout = 15,proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, "192.168.124.1", 23300))
 ht = httplib2.Http(timeout = 15)
 
-
-
 class poster():
     def __init__(self, loc, logger, ua):
         self.cookie = ''
@@ -185,7 +183,7 @@ class poster():
         self.issavetraffic = True
 
     def gen_2nd_key(self, uid, loc='jp'):
-        pass
+        self.crypt.gen_cipher_with_uid(uid, loc)
 
     def update_server(self, check_inspection_str):
         #not using
@@ -271,7 +269,6 @@ class poster():
                 return resp, content
             # 否则解码
             dec = self.rollback_utf8(self.crypt.decode_data(content))
-            # open(r'z:/debug/%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(dec)
             if os.path.exists('debug'):
                 open('debug/%s.xml' % uri.replace('/', '#').replace('?', '~'), 'w').write(dec)
                 # open('debug/~%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(content)
@@ -282,6 +279,4 @@ class poster():
 
 if __name__ == "__main__":
     p = Crypt('cn')
-    p.gen_random_cipher()
-    print([p.encode_param('login_id=15818616771&password=huwei1993',mode=MOD_RSA_AES_RANDOM)])
- 
+    p.gen_random_cipher() 

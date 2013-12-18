@@ -207,7 +207,7 @@ eg:
 
 属性：
 
-活动秘境 IS_EVENT, 每日秘境 IS_DAILY_EVENT,未刷完 NOT_FINNISHED,秘境名称 name
+活动秘境 IS_EVENT, 每日秘境 IS_DAILY_EVENT, 公会秘境 IS_GUILD, 未刷完 NOT_FINNISHED, 秘境名称 name
 
 eg.：
 
@@ -237,7 +237,7 @@ eg.：
 
 属性：
 
-是我开的 IS_MINE,剩余时间 LIMIT(单位为秒),没打过 NOT_BATTLED,等级 lv,是否觉醒 IS_WAKE,是否稀有妖精 IS_WAKE_RARE,自己的妖精是否还活着 STILL_ALIVE
+是我开的 IS_MINE,剩余时间 LIMIT(单位为秒),没打过 NOT_BATTLED,等级 lv,是否觉醒 IS_WAKE,是否稀有妖精 IS_WAKE_RARE,是否公会妖精 IS_GUILD,自己的妖精是否还活着 STILL_ALIVE
 
 eg.：
 
