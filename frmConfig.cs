@@ -422,6 +422,11 @@ namespace MAClientGUI
             addExploreCond("area.IS_EVENT");
         }
 
+        private void button61_Click(object sender, EventArgs e)
+        {
+            addExploreCond("area.IS_GUILD");
+        }
+
         private void button5_Click(object sender, EventArgs e)
         {
             if (textBox12.Text!="")
@@ -552,6 +557,7 @@ namespace MAClientGUI
             button46.Enabled = true;
             button27.Enabled = true;
             button56.Enabled = true;
+            button62.Enabled = true;
         }
 
         private void button26_Click(object sender, EventArgs e)
@@ -595,6 +601,12 @@ namespace MAClientGUI
             button56.Enabled = false;
         }
 
+        private void button62_Click(object sender, EventArgs e)
+        {
+            addFairyCond("fairy.IS_GUILD");
+            button62.Enabled = false;
+        }
+
         private void button56_Click(object sender, EventArgs e)
         {
             addFairyCond("fairy.IS_WAKE_RARE");
@@ -618,6 +630,7 @@ namespace MAClientGUI
             button46.Enabled = true;
             button27.Enabled = true;
             button56.Enabled = true;
+            button62.Enabled = true;
         }
         /// <summary>
         /// 卡组选项卡！
@@ -704,7 +717,12 @@ namespace MAClientGUI
             button58.Enabled = false;
         }
 
-        
+        private void button63_Click(object sender, EventArgs e)
+        {
+            addCarddeckCond("fairy.IS_GUILD");
+            button63.Enabled = false;
+        }
+
         private void button29_Click(object sender, EventArgs e)
         {
             if (lblCarddeckCache.Text != "")
@@ -738,6 +756,7 @@ namespace MAClientGUI
                 button48.Enabled = true;
                 button49.Enabled = true;
                 button58.Enabled = true;
+                button63.Enabled = true;
             }
         }
 
@@ -755,6 +774,7 @@ namespace MAClientGUI
             button48.Enabled = true;
             button49.Enabled = true;
             button58.Enabled = true;
+            button63.Enabled = true;
         }
 
         private void button20_Click(object sender, EventArgs e)
@@ -1068,9 +1088,9 @@ namespace MAClientGUI
             //int a;
             //WndHdl.GetWindowThreadProcessId(hwnd, out a);
             //MessageBox.Show(sb.ToString() + ";"+a);
-        } 
+        }
 
-        Regex fullsplt = new Regex(@"\[([^\[]+)\] AP\:([\d\/]+) BC\:([\d\/]+) G\:(\d+) FP\:(\d+) Cards\:(\d+)\s{0,1}(.*)");
+        Regex fullsplt = new Regex(@"\[([^\[]+)\] AP\:([\d\/]+) BC\:([\d\/]+) G\:(\d+) F\:(\d+) SP\:(\d+) Cards\:(\d+)\s{0,1}(.*)");
         Regex splt = new Regex(@"(\d+)\/(\d+)");
 
         private void repaint_menu()
@@ -1097,7 +1117,7 @@ namespace MAClientGUI
                     dockMenu.Items[i + j].Text = g[1 + j].ToString();
                 }
                 //+ g[4] + "  基:" + g[5]
-                dockMenu.Items[i + 3].Text = "金:" + g[4]  + "  卡片:" + g[6];
+                dockMenu.Items[i + 3].Text = "金:" + g[4] +" 卡片:" + g[7];
                 txtnot += Environment.NewLine + "❁" + g[1];
             }
             this.notifyIcon1.Text=txtnot;
@@ -1188,6 +1208,96 @@ namespace MAClientGUI
         button59_Click(sender, e);
       System.Environment.Exit(0);
     }
+
+
+    private void button60_Click_2(object sender, EventArgs e)
+    {
+        if (!groupBox11.Enabled)//左边group设为可用
+        {
+            textBox23.Text = "auto_set";
+            cboAim.SelectedIndex = cboAim.SelectedIndex == -1 ? 0 : cboAim.SelectedIndex;
+            cboBCLimit.SelectedIndex = cboBCLimit.SelectedIndex == -1 ? 0 : cboBCLimit.SelectedIndex;
+            cboLineCnt.SelectedIndex = cboLineCnt.SelectedIndex == -1 ? 0 : cboLineCnt.SelectedIndex;
+            button60.Text = "←←确认参数";
+        }
+        else//确认
+        {
+            textBox23.Text = "";
+            switch (cboBCLimit.SelectedIndex)
+            {
+                case 1:
+                    textBox23.Text += " bc:max";
+                    break;
+                case 2:
+                    textBox23.Text += " bc:"+txtBCLimit.Text;
+                    break;
+            }
+            if (cboLineCnt.SelectedIndex!=0)
+                textBox23.Text += " line:" + (cboLineCnt.SelectedIndex+1).ToString();
+            switch (cboAim.SelectedIndex)
+            {
+                case 1:
+                    textBox23.Text += " aim:MAX_CP";
+                    break;
+                case 2:
+                    textBox23.Text += " aim:DEFEAT";
+                    break;
+            }
+            if (!chkIsTest.Checked)
+                textBox23.Text += " notest";
+            if (!chkIsFast.Checked)
+                textBox23.Text += " nofast";
+            if (txtCardEval.Text!="card.lv>=45")
+                textBox23.Text += " sel:" + txtCardEval.Text;
+            if (txtCardIncl.Text != "")
+                textBox23.Text += " incl:" + txtCardIncl.Text;
+            textBox23.Text = "auto_set(" + textBox23.Text.Trim() +")";
+            button60.Text = "使用自动配卡";
+        }
+        groupBox11.Enabled = !groupBox11.Enabled;
+       
+    }
+
+    private void cboBCLimit_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (cboBCLimit.SelectedIndex == 2) txtBCLimit.Enabled = true;
+        else txtBCLimit.Enabled = false;
+    }
+
+    private void checkWarning()
+    {
+        if ((cboLineCnt.SelectedIndex > 0 && cboAim.SelectedIndex == 2) ||//超过一排，击败妖精
+                (cboLineCnt.SelectedIndex == 2 && !chkIsFast.Checked))//三排，非快速模式
+            lblLineWarning.Visible = true;
+        else lblLineWarning.Visible = false;
+    }
+
+    private void cboLineCnt_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        checkWarning();
+    }
+
+    private void chkIsTest_CheckedChanged(object sender, EventArgs e)
+    {
+        if (chkIsTest.Checked)
+            chkIsTest.ForeColor = Color.Red;
+        else
+            chkIsTest.ForeColor = Color.Black;
+    }
+
+    private void cboAim_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        checkWarning();
+    }
+
+    private void chkIsFast_CheckedChanged(object sender, EventArgs e)
+    {
+        checkWarning();
+    }
+
+
+
+
 
 
 
