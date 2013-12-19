@@ -1267,9 +1267,9 @@ class maClient():
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
         disc_name = ''
         disc_id = fairy.discoverer_id
-        if int(disc_id) == self.player.id:
+        if disc_id == self.player.id:
             disc_name = self.player.name
-        if 'attacker' not in fairy.attacker_history:  # 没人打过肯定是自己发现的
+        if 'attacker' not in fairy.attacker_history:  # 没人打过的
             f_attackers = []
         else:
             f_attackers = self.tolist(fairy.attacker_history.attacker)
