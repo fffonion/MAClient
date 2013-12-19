@@ -38,9 +38,9 @@ EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
 SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
-eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('STILL_ALIVE', "self.player.fairy['alive']")]
+eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "race_type=='12'"), ('STILL_ALIVE', "self.player.fairy['alive']")]
 eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('STILL_ALIVE', "self.player.fairy['alive']"), ('LIMIT', 'time_limit')]
-eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
+eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type=='12'"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"')]
 eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale_price'), ('sid', 'serial_id'), ('holo', 'holography==1')]
 
@@ -1265,18 +1265,25 @@ class maClient():
         for k in maclient_smart.name_wake_rare:
             fairy['wake_rare'] = fairy['wake_rare'] or k in fairy.name
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
-        if 'attacker' not in fairy.attacker_history:  # 没人打过肯定是自己发现的
-            f_attackers = []
+        disc_name = ''
+        disc_id = fairy.discoverer_id
+        if disc_id == self.player.id:
             disc_name = self.player.name
+        if 'attacker' not in fairy.attacker_history:  # 没人打过的
+            f_attackers = []
         else:
             f_attackers = self.tolist(fairy.attacker_history.attacker)
             # #只有一个的情况
             # if 'user_id' in fairy.attacker_history.attacker:
             #    fairy.attacker_history.attacker=[fairy.attacker_history.attacker]
-            for atk in f_attackers:
-                if atk.discoverer == '1':
-                    disc_name = atk.user_name
-                    break
+            if not disc_name:#不是我的
+                for atk in f_attackers:
+                    if atk.discoverer == '1' or atk.user_id == disc_id:#preserve for guild fairy
+                        disc_name = atk.user_name
+                        break
+            #if not disc_name and 'race_type' in fairy:
+            #    if fairy.race_type == '12':#找不到
+            #        disc_name = '公会妖精'
         hms = lambda x:x >= 3600 and time.strftime('%H:%M:%S', time.localtime(x + 16 * 3600)) or time.strftime('%M:%S', time.localtime(x))
         logging.info('妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s %s' % (
             fairy.name, fairy.lv, fairy.hp, disc_name,
@@ -1760,6 +1767,13 @@ class maClient():
 
     @plugin.func_hook
     def factor_battle(self, minbc = 0, sel_lake = ''):
+        if self.loc =='tw':
+            def get_parts():
+                self._dopost('battle/area', xmlresp = False)
+                return self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
+        else:
+            def get_parts():
+                return self._dopost('battle/area')
         minbc = int(minbc)
         # try count
         trycnt = self._read_config('system', 'try_factor_times')
@@ -1767,11 +1781,7 @@ class maClient():
             trycnt = '999'
         sel_lake = sel_lake.split(',')
         battle_win = 1
-        if self.loc =='tw':
-            self._dopost('battle/area', xmlresp = False)
-            resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
-        else:
-            resp, cmp_parts_ct = self._dopost('battle/area')
+        resp, cmp_parts_ct = get_parts()
         if resp['error']:
             return
         cmp_parts = cmp_parts_ct.body.competition_parts
@@ -1901,8 +1911,7 @@ class maClient():
                                         self.player.bc['current'],
                                         self.player.bc['max']))
                                 time.sleep(8.62616513)
-                                self._dopost('battle/area', xmlresp = False)
-                                resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
+                                resp, cmp_parts_ct = get_parts()
                                 if result == '1':  # 赢过一次就置为真
                                     battle_win += 1
                                     cmp_parts = cmp_parts_ct.body.competition_parts

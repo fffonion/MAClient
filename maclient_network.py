@@ -30,13 +30,13 @@ except ImportError:
     SLOW_MODE=True
 
 
-serv = {'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/', 'cn_data':'http://MA.webpatch.sdg-china.com/',
-    'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/', 'cn2_data':'http://MA.webpatch.sdg-china.com/',
-    'cn3':'http://game3-CBT.ma.sdo.com:10001/connect/app/', 'cn2_data':'http://MA.webpatch.sdg-china.com/',
-    'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/', 'tw_data':'http://download.ma.mobimon.com.tw/',
+serv = {'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/',
+    'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/', 
+    'cn3':'http://game3-CBT.ma.sdo.com:10001/connect/app/',
+    'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/',
     'jp':'http://web.million-arthurs.com/connect/app/', 'jp_data':'',
-    'kr':'http://ma.actoz.com:10001/connect/app/', 'kr_data':''
-    }
+    'kr':'http://ma.actoz.com:10001/connect/app/', 'kr_data':''}
+serv['cn_data'] = serv['cn2_data'] = serv['cn3_data'] = 'http://MA.webpatch.sdg-china.com/'
 
 headers_main = {'User-Agent': 'Million/%d (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys', 'Connection': 'Keep-Alive', 'Accept-Encoding':'gzip,deflate'}
 headers_post = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -52,11 +52,12 @@ class Crypt():
         if loc=='cn':
             self.gen_rsa_pubkey()
 
-    def gen_cipher_with_uid(self,uid):
+    def gen_cipher_with_uid(self, uid, loc):
         pass
 
     def gen_rsa_pubkey(self):
-        pk="""MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAM5U06JAbYWdRBrnMdE2bEuDmWgUav7xNKm7i8s1Uy/\nfvpvfxLeoWowLGIBKz0kDLIvhuLV8Lv4XV0+aXdl2j4kCAwEAAQ=="""
+        #pk="""MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAM5U06JAbYWdRBrnMdE2bEuDmWgUav7xNKm7i8s1Uy/\nfvpvfxLeoWowLGIBKz0kDLIvhuLV8Lv4XV0+aXdl2j4kCAwEAAQ=="""
+        pk = maclient_smart.key_rsa_pool[2]
         #pk = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A' + ''.join(pk[1:-2])
         pk = [pk[i:i+64] for i in range(0, len(pk), 64)]
         pk = '-----BEGIN PUBLIC KEY-----\n' + '\n'.join(pk) + '\n-----END PUBLIC KEY-----'
@@ -66,7 +67,6 @@ class Crypt():
         #self.rsa = RSA.load_pub_key_bio(bio)
 
     def gen_random_cipher(self):
-        #testingp
         self.random_cipher_plain=os.urandom(16)
         self.random_cipher = self._gen_cipher(self.random_cipher_plain)
 
@@ -150,8 +150,6 @@ class Crypt():
 #ht = httplib2.Http(timeout = 15,proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, "192.168.124.1", 23300))
 ht = httplib2.Http(timeout = 15)
 
-
-
 class poster():
     def __init__(self, loc, logger, ua):
         self.cookie = ''
@@ -186,7 +184,7 @@ class poster():
         self.issavetraffic = True
 
     def gen_2nd_key(self, uid, loc='jp'):
-        pass
+        self.crypt.gen_cipher_with_uid(uid, loc)
 
     def update_server(self, check_inspection_str):
         #not using
@@ -272,7 +270,6 @@ class poster():
                 return resp, content
             # 否则解码
             dec = self.rollback_utf8(self.crypt.decode_data(content))
-            # open(r'z:/debug/%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(dec)
             if os.path.exists('debug'):
                 open('debug/%s.xml' % uri.replace('/', '#').replace('?', '~'), 'w').write(dec)
                 # open('debug/~%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(content)
@@ -283,6 +280,4 @@ class poster():
 
 if __name__ == "__main__":
     p = Crypt('cn')
-    p.gen_random_cipher()
-    print([p.encode_param('login_id=15818616771&password=huwei1993',mode=MOD_RSA_AES_RANDOM)])
- 
+    p.gen_random_cipher() 
