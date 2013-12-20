@@ -32,7 +32,7 @@ def query_item(plugin_vals):
 def query_holo(plugin_vals):
     def do(*args):
         logger = plugin_vals['logger']
-        if 'player' not in plugin_vals or not plugin_vals['player'].item.count:
+        if 'player' not in plugin_vals or not plugin_vals['player'].item.db:
             logger.error(du8('玩家信息未初始化，请随便执行一个操作再试'))
             return
         print(du8('%s' % ('当前拥有以下闪卡')))
