@@ -7,9 +7,26 @@ import os
 import os.path as opath
 import sys
 import locale
+try:
+    import ZhConversion
+    useconv=True
+except ImportError:
+    useconv=false
 PYTHON3 = sys.version.startswith('3')
 IRONPYTHON = sys.platform == 'cli'
 EXEBUNDLE = opath.split(sys.argv[0])[1].find('py') == -1
+
+def init_convHans():
+    conv = lambda x:x
+    if useconv:
+        chans = ZhConversion.convHans()
+        if locale.getdefaultlocale()[0] == 'zh_TW':
+            conv = chans.toTW
+        elif locale.getdefaultlocale()[0] == 'zh_HK':
+            conv = chans.toHK
+    return conv
+
+convhans=init_convHans()
 
 getPATH0 = (not EXEBUNDLE or IRONPYTHON) and \
      (PYTHON3 and \
@@ -20,7 +37,7 @@ getPATH0 = (not EXEBUNDLE or IRONPYTHON) and \
 
 du8 = (IRONPYTHON or PYTHON3) and \
     (lambda str:str) or \
-    (lambda str:str.decode('utf-8'))
+    (lambda str:convhans(str).decode('utf-8'))
 
 raw_inputd = PYTHON3 and \
         (lambda s:input(s)) \
