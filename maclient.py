@@ -758,8 +758,8 @@ class maClient():
             areas = ct.body.exploration_area.area_info_list.area_info
             if not self.cfg_auto_explore:
                 for i in xrange(len(areas)):
-                    print('%d.%s(%s%%/%s%%) %s' % \
-                        (i + 1, areas[i].name, areas[i].prog_area, areas[i].prog_item, (areas[i].area_type == '1' and 'EVENT' or '')))
+                    print(du8('%d.%s(%s%%/%s%%) %s' % \
+                        (i + 1, areas[i].name, areas[i].prog_area, areas[i].prog_item, (areas[i].area_type == '1' and 'EVENT' or ''))))
                 areasel = [areas[int(raw_inputd('选择： ') or '1') - 1]]
             else:
                 logging.info('自动选图www')
@@ -1556,7 +1556,7 @@ class maClient():
                         deluser = user
                         maxlogintime = user.logintime
                     i += 1
-                print(strf)
+                print(du8(strf))
                 confirm = False
                 if deluser != None:
                     if not autodel:

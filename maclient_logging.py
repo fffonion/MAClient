@@ -6,9 +6,11 @@ import locale
 import logging
 import logging.handlers
 from cross_platform import *
+
 convstr = (sys.platform.startswith('cli') or PYTHON3)and \
         (lambda str: str) or \
-        (lambda str: str.encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+        (lambda str: str.decode('utf-8').encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+
 class Logging(type(sys)):
     # paste from goagent
     CRITICAL = 5
@@ -48,46 +50,59 @@ class Logging(type(sys)):
                 self.__set_bright_color = lambda: __write('\033[32m')
                 self.__reset_color = lambda: __write('\033[0m')
         self.logfile = None
+ 
     def setlogfile(self, f):
         self.logfile = open(f, 'a')
+
     @classmethod
     def getLogger(cls, *args, **kwargs):
         return cls(*args, **kwargs)
+
     def basicConfig(self, *args, **kwargs):
         self.level = int(kwargs.get('level', self.__class__.INFO))
         if self.level > self.__class__.DEBUG:
             self.debug = self.dummy
+
     def log(self, level, fmt, *args, **kwargs):
         # fmt=du8(fmt)
-        self.__write(convstr('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args)))
+        self.__write(convstr(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args))))
         return '[%s] %s\n' % (time.strftime('%b %d %X', time.localtime()), fmt % args)
+
     def dummy(self, *args, **kwargs):
         pass
+
     def debug(self, fmt, *args, **kwargs):
         self.__set_debug_color()
         self.log('DEBUG', fmt, *args, **kwargs)
         self.__reset_color()
+
     def info(self, fmt, *args, **kwargs):
         puretext = self.log('INFO', fmt, *args)
         if self.logfile:
             self.logfile.write(puretext)
+
     def sleep(self, fmt, *args, **kwargs):
         self.__set_sleep_color()
         self.log('SLEEP', fmt, *args, **kwargs)
         self.__reset_color()
+
     def warning(self, fmt, *args, **kwargs):
         self.__set_warning_color()
         self.log('WARNING', fmt, *args, **kwargs)
         self.__reset_color()
+
     def warn(self, fmt, *args, **kwargs):
         self.warning(fmt, *args, **kwargs)
+
     def error(self, fmt, *args, **kwargs):
         self.__set_error_color()
         self.log('ERROR', fmt, *args, **kwargs)
         self.__reset_color()
+
     def exception(self, fmt, *args, **kwargs):
         self.error(fmt, *args, **kwargs)
         traceback.print_exc(file = sys.stderr)
+
     def critical(self, fmt, *args, **kwargs):
         self.__set_error_color()
         self.log('CRITICAL', fmt, *args, **kwargs)

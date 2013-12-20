@@ -6,10 +6,9 @@
 import time
 import math
 import itertools
-__version__ = '1.1-build20131219'
+__version__ = '1.1-build20131220'
 # server specified configutaions
-max_card_count_cn = max_card_count_kr = 200
-max_card_count_tw = max_card_count_jp = 250
+max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = 250
 max_fp_cn = max_fp_kr = 50000
 max_fp_tw = max_fp_jp = 1000000
 key_tw = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'rBwj1MIAivVN222b'}
