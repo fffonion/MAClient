@@ -406,7 +406,7 @@ class maClient():
                 elif task[0] == 'set_server' or task[0] == 'ss':
                     self._write_config('system', 'server', task[1])
                     self.loc = task[1]
-                    self.poster.servloc = self.loc
+                    self.poster.load_svr(self.loc)
                     self.load_config()
                 elif task[0] == 'relogin' or task[0] == 'rl':
                     self._write_config('account_%s' % self.loc, 'session', '')
@@ -466,7 +466,7 @@ class maClient():
                 #ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
                 # self.poster.update_server(ct)
                 pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
-                if not self.loc=='cn':
+                if not self.loc[:2]=='cn':
                      pdata='S=nosessionid&%s' % pdata
                 self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False)
             resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password))

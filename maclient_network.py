@@ -154,28 +154,16 @@ class poster():
     def __init__(self, loc, logger, ua):
         self.cookie = ''
         # self.maClientInstance=mac
-        self.servloc = loc[:2]
-        self.logger = logger
-        self.header = headers_main
-        self.header.update(headers_post)
         # ironpython版的httplib2的iri2uri中用utf-8代替了idna，因此手动变回来
         self.rollback_utf8 = sys.platform.startswith('cli') and \
                 (lambda dt:dt.decode('utf-8')) or\
                 (lambda dt:dt)
-        if self.servloc in ['cn','kr']:
-            ht.add_credentials("iW7B5MWJ", "8KdtjVfX")
-        if ua:
-            if '%d' in ua:  # formatted ua
-                self.header['User-Agent'] = ua % getattr(maclient_smart, 'app_ver_%s' % self.servloc)
-            else:
-                self.header['User-Agent'] = ua
-        else:
-            self.header['User-Agent'] = self.header['User-Agent'] % getattr(maclient_smart, 'app_ver_%s' % self.servloc)
+        self.logger = logger
+        self.load_svr(loc, ua)
         if SLOW_MODE:
             self.logger.warning(du8('post:没有安装pycrypto库，可能将额外耗费大量时间'))
         self.issavetraffic = False
-        self.default_2ndkey = loc in ['jp','cn']
-        self.crypt=Crypt(loc)
+        
 
     def set_cookie(self, cookie):
         self.cookie = cookie
@@ -185,6 +173,23 @@ class poster():
 
     def gen_2nd_key(self, uid, loc='jp'):
         self.crypt.gen_cipher_with_uid(uid, loc)
+
+    def load_svr(self, loc, ua=''):
+        self.servloc = loc
+        self.shortloc = loc[:2]
+        self.header = dict(headers_main)
+        self.header.update(headers_post)
+        if self.shortloc in ['cn','kr']:
+            ht.add_credentials("iW7B5MWJ", "8KdtjVfX")
+        if ua != '':
+            if '%d' in ua:  # formatted ua
+                self.header['User-Agent'] = ua % getattr(maclient_smart, 'app_ver_%s' % self.shortloc)
+            else:
+                self.header['User-Agent'] = ua
+        else:
+            self.header['User-Agent'] = self.header['User-Agent'] % getattr(maclient_smart, 'app_ver_%s' % self.shortloc)
+        self.default_2ndkey = loc in ['jp','cn']
+        self.crypt=Crypt(self.shortloc)
 
     def update_server(self, check_inspection_str):
         #not using
@@ -207,7 +212,7 @@ class poster():
             if usecookie:
                 header.update({'Cookie':self.cookie})
             if not noencrypt :
-                if self.servloc=='cn':#pass key to server
+                if self.shortloc=='cn':#pass key to server
                     #add sign to param
                     self.crypt.gen_random_cipher()
                     sign='K=%s'%self.crypt.urlunescape(
