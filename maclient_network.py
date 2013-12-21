@@ -49,7 +49,7 @@ class Crypt():
     def __init__(self,loc):
         self.init_cipher(loc=loc)
         self.random_cipher_plain=''
-        if loc=='cn':
+        if loc[:2]=='cn':
             self.gen_rsa_pubkey()
 
     def gen_cipher_with_uid(self, uid, loc):
