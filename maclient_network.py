@@ -74,7 +74,7 @@ class Crypt():
         return AES.new(plain, AES.MODE_ECB)
 
     def init_cipher(self,loc = 'cn', uid = None):
-        _key = getattr(maclient_smart, 'key_%s' % loc)
+        _key = getattr(maclient_smart, 'key_%s' % loc[:2])
         if loc == 'jp':
             if not uid:
                 uid = '0'
