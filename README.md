@@ -1,6 +1,6 @@
 ﻿MAClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服、国服全区和韩服。
 
-[更新历史](https://github.com/fffonion/MAlient/wiki/HISTORY)
+[更新历史](https://github.com/fffonion/MAClient/wiki/HISTORY)
 
 [插件制作文档](PLUGIN_DOCUMENT.md)
 

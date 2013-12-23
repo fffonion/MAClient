@@ -519,14 +519,14 @@ class maClient():
     @plugin.func_hook
     def auto_check(self, doingwhat):
         if doingwhat in ['exploration/fairybattle', 'exploration/explore', 'gacha/buy']:
-            if int(self.player.card.count) >= getattr(maclient_smart, 'max_card_count_%s' % self.loc):
+            if int(self.player.card.count) >= getattr(maclient_smart, 'max_card_count_%s' % self.loc[:2]):
                 if self.cfg_auto_sell:
                     logging.info('卡片放满了，自动卖卡 v(￣▽￣*)')
                     return self.select_card_sell()
                 else:
                     logging.warning('卡片已经放不下了，请自行卖卡www')
                     return False
-            if self.player.friendship_point > getattr(maclient_smart, 'max_fp_%s' % self.loc) * 0.9 and \
+            if self.player.friendship_point > getattr(maclient_smart, 'max_fp_%s' % self.loc[:2]) * 0.9 and \
                 not doingwhat in ['gacha/buy', 'gacha/select/getcontents']:
                 if self.cfg_autogacha:
                     logging.info('绊点有点多，自动转蛋(*￣▽￣)y ')
