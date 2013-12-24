@@ -259,7 +259,7 @@ class maClient():
                             ' 卡片' if self.player.need_update[0] else '',
                             ' 道具' if self.player.need_update[1] else ''))
                         import maclient_update
-                        crev, irev = maclient_update.update_master(self.loc, self.player.need_update, self.poster)
+                        crev, irev = maclient_update.update_master(self.loc[:2], self.player.need_update, self.poster)
                         logging.info('%s%s' % (
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else ''))
@@ -526,7 +526,7 @@ class maClient():
                 else:
                     logging.warning('卡片已经放不下了，请自行卖卡www')
                     return False
-            if self.player.friendship_point > getattr(maclient_smart, 'max_fp_%s' % self.loc[:2]) * 0.9 and \
+            if self.player.friendship_point > getattr(maclient_smart, 'max_fp_%s' % self.loc[:2]) * 0.95 and \
                 not doingwhat in ['gacha/buy', 'gacha/select/getcontents']:
                 if self.cfg_autogacha:
                     logging.info('绊点有点多，自动转蛋(*￣▽￣)y ')
