@@ -259,7 +259,7 @@ class maClient():
                             ' 卡片' if self.player.need_update[0] else '',
                             ' 道具' if self.player.need_update[1] else ''))
                         import maclient_update
-                        crev, irev = maclient_update.update_master(self.loc, self.player.need_update, self.poster)
+                        crev, irev = maclient_update.update_master(self.loc[:2], self.player.need_update, self.poster)
                         logging.info('%s%s' % (
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else ''))
@@ -406,7 +406,7 @@ class maClient():
                 elif task[0] == 'set_server' or task[0] == 'ss':
                     self._write_config('system', 'server', task[1])
                     self.loc = task[1]
-                    self.poster.servloc = self.loc
+                    self.poster.load_svr(self.loc)
                     self.load_config()
                 elif task[0] == 'relogin' or task[0] == 'rl':
                     self._write_config('account_%s' % self.loc, 'session', '')
@@ -466,7 +466,7 @@ class maClient():
                 #ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
                 # self.poster.update_server(ct)
                 pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
-                if not self.loc=='cn':
+                if not self.loc[:2]=='cn':
                      pdata='S=nosessionid&%s' % pdata
                 self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False)
             resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password))
@@ -519,14 +519,14 @@ class maClient():
     @plugin.func_hook
     def auto_check(self, doingwhat):
         if doingwhat in ['exploration/fairybattle', 'exploration/explore', 'gacha/buy']:
-            if int(self.player.card.count) >= getattr(maclient_smart, 'max_card_count_%s' % self.loc):
+            if int(self.player.card.count) >= getattr(maclient_smart, 'max_card_count_%s' % self.loc[:2]):
                 if self.cfg_auto_sell:
                     logging.info('卡片放满了，自动卖卡 v(￣▽￣*)')
                     return self.select_card_sell()
                 else:
                     logging.warning('卡片已经放不下了，请自行卖卡www')
                     return False
-            if self.player.friendship_point > getattr(maclient_smart, 'max_fp_%s' % self.loc) * 0.9 and \
+            if self.player.friendship_point > getattr(maclient_smart, 'max_fp_%s' % self.loc[:2]) * 0.95 and \
                 not doingwhat in ['gacha/buy', 'gacha/select/getcontents']:
                 if self.cfg_autogacha:
                     logging.info('绊点有点多，自动转蛋(*￣▽￣)y ')

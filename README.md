@@ -1,6 +1,6 @@
 ﻿MAClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服、国服全区和韩服。
 
-[更新历史](https://github.com/fffonion/MAlient/wiki/HISTORY)
+[更新历史](https://github.com/fffonion/MAClient/wiki/HISTORY)
 
 [插件制作文档](PLUGIN_DOCUMENT.md)
 
@@ -66,6 +66,10 @@ session不用管它
 ####taskname
 
 表示需要程序执行的任务名称（tasker中），|分割
+
+####tasker_times
+
+表示要执行任务的次数，0为无限
 
 ####try_factor_time
 
