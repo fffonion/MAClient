@@ -67,6 +67,10 @@ session不用管它
 
 表示需要程序执行的任务名称（tasker中），|分割
 
+####tasker_times
+
+表示要执行任务的次数，0为无限
+
 ####try_factor_time
 
 是刷因子战列表的次数，0为无限
