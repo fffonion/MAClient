@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.1-build20131220'
+__version__ = '1.1-build20131226'
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = 250
 max_fp_cn = max_fp_kr = 50000
@@ -30,8 +30,8 @@ app_ver_tw = 102
 app_ver_kr = 105
 app_ver_jp = 236
 # wake
-name_wake_rare = ['NICE', '好船']
-name_wake = name_wake_rare + ['觉醒', '覺醒', '裏']
+name_wake_rare = ['神秘']
+name_wake = name_wake_rare + ['觉醒', '覺醒', '聖劍']
 # snda gplus, not working
 class snda_gplus():
     # thanks to luw2007(https://github.com/luw2007/libMA/blob/master/push.py)
