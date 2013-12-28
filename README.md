@@ -11,7 +11,7 @@ Windows用户可以从[这里](http://pan.baidu.com/s/19qI4m)获得二进制文�
 其他平台用户：需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)，选择安装PyCrypto库
 
 ##运行
-MAClient可以在支持websocket的浏览器上运行![Blog](http://ww1.sinaimg.cn/bmiddle/436919cbjw1ebx3ktnokkg200m00k741.gif)[炒鸡棒在线版](http://ma.mengsky.net/)
+MAClient可以在支持websocket的浏览器上运行![chaojibang](http://ww1.sinaimg.cn/bmiddle/436919cbjw1ebx3ktnokkg200m00k741.gif)[炒鸡棒在线版](http://ma.mengsky.net/)
 
 MAClient可以在python2.x和3.x上运行
 ```shell

@@ -243,6 +243,8 @@ class poster():
                     else:
                         err = e.errno
                     self.logger.warning('post:%s got socket error:%s, retrying in %d times' % (uri, err, ttimes - trytime))
+                except httplib.BadStatusLine:
+                    self.logger.warning('post:%s malformed response retrying in %d times' % (uri, ttimes - trytime))
                 except httplib.ResponseNotReady:
                     # socket重置，不计入重试次数
                     trytime -= 1
