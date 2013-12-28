@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.1-build20131220'
+__version__ = '1.1-build20131226'
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = 250
 max_fp_cn = max_fp_kr = 50000
@@ -14,7 +14,8 @@ max_fp_tw = max_fp_jp = 1000000
 key_tw = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'rBwj1MIAivVN222b'}
 key_cn = key_kr = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'011218525486l6u1'}
 key_jp = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'uH9JF2cHf6OppaC1'}
-key_rsa_pool = ["MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANV2ohKiVs/2cOiGN7TICmQ/NbkuellbTtcKbuDbIlBMocH+Eu0n2nBYZQ2xQbAv+E9na8K2FyMyVY4+RIYEJ+0CAwEAAQ==",
+key_rsa_pool = [
+"MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANV2ohKiVs/2cOiGN7TICmQ/NbkuellbTtcKbuDbIlBMocH+Eu0n2nBYZQ2xQbAv+E9na8K2FyMyVY4+RIYEJ+0CAwEAAQ==",
 "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAOLtTe70uQZ2BAneeTyNezMH/yn/uDu6qabQ3XHhmqqW8C4ZLxG7uW6bNmUdZQSUk8dO2+7ZTbN5lQw/u70Av2ECAwEAAQ==",
 "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAM5U06JAbYWdRBrnMdE2bEuDmWgUav7xNKm7i8s1Uy/fvpvfxLeoWowLGIBKz0kDLIvhuLV8Lv4XV0+aXdl2j4kCAwEAAQ==",
 "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAL1mnz5vCQEa1xPeyIUQ2WHIzKIsZp9PKAzJ6etXV2NpyxoGheqlDZ5rXQVLEY2JSY2nBlt/QBdo9xkp8XcFgUsCAwEAAQ==",
@@ -30,8 +31,8 @@ app_ver_tw = 102
 app_ver_kr = 105
 app_ver_jp = 236
 # wake
-name_wake_rare = ['NICE', '好船']
-name_wake = name_wake_rare + ['觉醒', '覺醒', '裏']
+name_wake_rare = ['神秘']
+name_wake = name_wake_rare + ['觉醒', '覺醒', '聖劍']
 # snda gplus, not working
 class snda_gplus():
     # thanks to luw2007(https://github.com/luw2007/libMA/blob/master/push.py)
@@ -47,7 +48,7 @@ class snda_gplus():
     push_beat = b'\x0200100007\x04'
     def __init__(self):
         import threading
-        from Crypto.Cipher import DES3
+        #from Crypto.Cipher import DES3
         pass
     def check_push(self):
         pass
