@@ -65,6 +65,8 @@ def websocket_app(environ, start_response):
         else:
             ws.send("offline enable.\n")
 
+        ws.send("http://ma.mengsky.net Nginx可能存在问题导致disconnect请更换 http://174.140.165.4:8000/\nwebbot created by fffonionbinuxmengskysama\n\n")
+
         ws.send("webbot created by fffonionbinuxmengskysama\n")
 
         if login_id+password in offline_bots:
@@ -104,6 +106,8 @@ def websocket_app(environ, start_response):
                     bot.ws.send('%s' % e)
                 except WebSocketError:
                     break
+                except Exception, e:
+                    print 'main loop throw a ex.!\n'
                 break
 
         if login_id+password in offline_bots:
