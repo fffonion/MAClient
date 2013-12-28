@@ -307,7 +307,7 @@ class maClient():
         if self.cf.has_option(sec, key):
             val = self.cf.get(sec, key)
             if sys.platform == 'win32' and not PYTHON3:
-                val = val.decode('cp936')  # .encode('utf-8')
+                val = val.decode(CODEPAGE)  # .encode('utf-8')
         else:
             val = ''
         if val == '':return ''
