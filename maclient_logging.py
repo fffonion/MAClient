@@ -68,6 +68,18 @@ class Logging(type(sys)):
         self.__write(convstr(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args))))
         return '[%s] %s\n' % (time.strftime('%b %d %X', time.localtime()), fmt % args)
 
+    def mac_log(self, mac, level, fmt, *args, **kwargs):
+        # fmt=du8(fmt)
+        _str = du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args))
+        if mac.shellbyweb:
+            if mac.ws != None or mac.offline == False:
+                #mac.ws == None mac.offline == False should throw a ex
+                mac.ws.send(_str)
+        else:
+            self.__write(convstr(_str))
+        #self.__write(convstr(_str))
+        return '[%s] %s\n' % (time.strftime('%b %d %X', time.localtime()), fmt % args)
+
     def dummy(self, *args, **kwargs):
         pass
 
@@ -76,10 +88,20 @@ class Logging(type(sys)):
         self.log('DEBUG', fmt, *args, **kwargs)
         self.__reset_color()
 
+    def mac_info(self, mac, fmt, *args, **kwargs):
+        puretext = self.mac_log(mac, 'INFO', fmt, *args)
+        if self.logfile:
+            self.logfile.write(puretext)
+
     def info(self, fmt, *args, **kwargs):
         puretext = self.log('INFO', fmt, *args)
         if self.logfile:
             self.logfile.write(puretext)
+
+    def mac_sleep(self, mac, fmt, *args, **kwargs):
+        self.__set_sleep_color()
+        self.mac_log(mac, 'SLEEP', fmt, *args, **kwargs)
+        self.__reset_color()
 
     def sleep(self, fmt, *args, **kwargs):
         self.__set_sleep_color()
@@ -97,6 +119,11 @@ class Logging(type(sys)):
     def error(self, fmt, *args, **kwargs):
         self.__set_error_color()
         self.log('ERROR', fmt, *args, **kwargs)
+        self.__reset_color()
+
+    def mac_error(self, mac, fmt, *args, **kwargs):
+        self.__set_error_color()
+        self.mac_log(mac, 'ERROR', fmt, *args, **kwargs)
         self.__reset_color()
 
     def exception(self, fmt, *args, **kwargs):

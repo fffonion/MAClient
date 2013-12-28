@@ -106,7 +106,8 @@ def _defeat(fairy, delta, show = False):
     def _detail(side):
         sides = ['FAIRY', 'YOU']
         print('%-5s:' % (sides[side]))
-    fatk = calc.fairy_atk(fairy.lv, type = fairy.IS_WAKE)
+    #fairy.IS_WAKE
+    fatk = calc.fairy_atk(fairy.lv, 0)
     fhp = fairy.hp
     if show:
         detail = _detail
