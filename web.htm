@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>MA Client</title>
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	<script src="http://codeorigin.jquery.com/jquery-2.0.3.min.js"></script>
+    <meta name="description" content="MA Client">
+    <meta name="author" content="binux">
+  </head>
+
+  <body>
+  <h1>MA Bot(v0.1偽)</h1>
+  离线模式保证在线时间:8小时 但不保证中途服务器或者程序爆掉什么的，重新登录后自动续期，饼干失效重试时间180秒，服务器当前负载:[connected]/[maxconnected]
+  <br>
+  可能进行维护时间为上海时间20点维护用户全清
+  <br>
+  server_cli = https://github.com/fffonion/MAClient
+  <br>
+  fairy_battle_sleep = 0,4,4|4,7,1|7,8,1|8,11,0.8|11,14,0.5|14,16,0.8|16,19,0.5|19,21,0.7|21,24,0.8
+  <br>
+  自动添怪，自动打怪BC>70，最小消耗，清怪自动上楼，AP>70自动上楼，自动买卡
+  <br><br>
+    <section id=login>
+      <form id=login_form onsubmit="return login(this);">
+        login_id: <input name=id />
+        password: <input type=password name=pwd />
+        server: <select name=serv>
+          <option selected>server</option>
+          <option value="cn">cn1</option>
+          <option value="cn2">cn2</option>
+          <option value="cn3">cn3</option>
+          <option value="tw">tw</option>
+          <option value="kr">kr</option>
+          <option value="jp">jp</option>
+        yourself http proxy for sd:
+        </select>
+        <input type=checkbox name=offline /> offline
+        <input id=submit type=submit value=login />
+      </form>
+    </section>
+
+<textarea id='log' name='log' readonly='readonly' style='border:1px solid #CCC;margin:0px;padding:0px;width:100%;height:500px;max-width:1300px;margin:auto'></textarea>
+
+  </body>
+
+  <script>
+    function log( text ) {
+        $log = $('#log');
+        //Add text to log
+        $log.append(($log.val()?"":'')+text);
+        //Autoscroll
+        $log[0].scrollTop = $log[0].scrollHeight - $log[0].clientHeight;
+    }
+
+    if (window.WebSocket === undefined) {
+      submit.disabled = true;
+      login_form.id.disabled = true;
+      login_form.pwd.disabled = true;
+      log("WebSocket not supported. Using Chrome!\n");
+    }
+
+
+    function login(form) {
+      if (window.ws) {
+        ws.close();
+      }
+      var login_id = form.id.value,
+          password = form.pwd.value,
+          serv = form.serv.value,
+          offline = form.offline.checked && "1" || "";
+      ws = new WebSocket("ws://"+location.host+"/bot?id="+login_id+"&password="+password+"&serv="+serv+"&offline="+offline);
+      ws.onopen = function() {
+        log("connected.\n");
+      };
+      ws.onclose = function() {
+        log("disconnected.\n");
+        setTimeout(function() { login(form); }, 60*1000);
+      };
+      ws.onmessage = function(event) {
+        if (event.data != ''){log(event.data);}
+      };
+      submit.disabled = true;
+      login_form.id.disabled = true;
+      login_form.pwd.disabled = true;
+      return false;
+    }
+  </script>
+</html>
+<!-- vim: set et sw=2 ts=2 sts=2 ff=unix fenc=utf8: -->

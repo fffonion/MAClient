@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 import time
 import socket
 import gevent
@@ -5,6 +7,7 @@ import gevent.monkey
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from webob import Request
+from cross_platform import *
 
 from maclient import maClient
 import maclient
@@ -65,9 +68,7 @@ def websocket_app(environ, start_response):
         else:
             ws.send("offline enable.\n")
 
-        ws.send("http://ma.mengsky.net Nginx¿ÉÄÜ´æÔÚÎÊÌâµ¼ÖÂdisconnectÇë¸ü»» http://174.140.165.4:8000/\nwebbot created by fffonionbinuxmengskysama\n\n")
-
-        ws.send("webbot created by fffonionbinuxmengskysama\n")
+        ws.send("http://ma.mengsky.net Nginxå¯èƒ½å­˜åœ¨é—®é¢˜å¯¼è‡´disconnectè¯·æ›´æ¢ http://174.140.165.4:8000/\nwebbot created by fffonionbinuxmengskysama\n\n")
 
         if login_id+password in offline_bots:
             ws.send("websocket client reconnected!\n")
