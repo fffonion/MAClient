@@ -87,7 +87,7 @@ class Crypt():
         self.cipher_res = self._gen_cipher(_key['res'])
 
     def decode_res(self, bytein):
-        return cipher.decrypt(bytein)
+        return self.cipher_res.decrypt(bytein)
 
     def decode_data(self, bytein):
         if len(bytein) == 0:
@@ -148,12 +148,12 @@ class Crypt():
             pass
 
 #ht = httplib2.Http(timeout = 15,proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, "192.168.124.1", 23300))
-ht = httplib2.Http(timeout = 15)
+
 
 class poster():
     def __init__(self, loc, logger, ua):
         self.cookie = ''
-        # self.maClientInstance=mac
+        self.ht = httplib2.Http(timeout = 15)
         # ironpython版的httplib2的iri2uri中用utf-8代替了idna，因此手动变回来
         self.rollback_utf8 = sys.platform.startswith('cli') and \
                 (lambda dt:dt.decode('utf-8')) or\
@@ -180,7 +180,7 @@ class poster():
         self.header = dict(headers_main)
         self.header.update(headers_post)
         if self.shortloc in ['cn','kr']:
-            ht.add_credentials("iW7B5MWJ", "8KdtjVfX")
+            self.ht.add_credentials("iW7B5MWJ", "8KdtjVfX")
         if ua != '':
             if '%d' in ua:  # formatted ua
                 self.header['User-Agent'] = ua % getattr(maclient_smart, 'app_ver_%s' % self.shortloc)
@@ -236,7 +236,7 @@ class poster():
                 callback_hook = lambda x:x
             while trytime < ttimes:
                 try:
-                    resp, content = ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata, callback_hook = callback_hook, chunk_size = None)
+                    resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata, callback_hook = callback_hook, chunk_size = None)
                 except socket.error as e:
                     if e.errno == None:
                         err = 'Timed out'
@@ -254,7 +254,7 @@ class poster():
                 except TypeError:  # 使用了官方版的httplib2
                     if savetraffic and self.issavetraffic:
                         self.logger.warning(du8('你正在使用官方版的httplib2，因此省流模式将无法正常工作'))
-                    resp, content = ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata)
+                    resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata)
                     break
                 else:
                     if int(resp['status']) < 400:

@@ -55,7 +55,7 @@ def setT(strt):
         import System.Console
         System.Console.Title = strt
     else:
-        os.system('TITLE %s' % strt)
+        os.system(convhans('TITLE %s' % strt))
 
 class set_title(threading.Thread):
     def __init__(self, maInstance):
@@ -1556,7 +1556,7 @@ class maClient():
                         deluser = user
                         maxlogintime = user.logintime
                     i += 1
-                print(du8(strf))
+                print(du8(strf).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
                 confirm = False
                 if deluser != None:
                     if not autodel:
@@ -1602,7 +1602,7 @@ class maClient():
                         i, user.name, user.town_level, user.last_login, user.friends, user.friend_max, user.cost
                     )
                     i += 1
-                print(du8('%s%s' % ('申请列表:\n', strf)))
+                print(du8('%s%s' % ('申请列表:\n', strf)).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
                 adduser = raw_inputd('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser != ['']:
                     for u in adduser:
@@ -1644,7 +1644,7 @@ class maClient():
                         i, user.name, user.town_level, user.last_login, user.friends, user.friend_max, user.cost
                     )
                     i += 1
-                print(du8('%s%s' % ('搜索结果:\n', strf)))
+                print(du8('%s%s' % ('搜索结果:\n', strf)).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
                 usel = raw_inputd('选择要添加的好友序号, 空格分割多个，回车返回> ')
                 uids = []
                 for u in usel.split(' '):
