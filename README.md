@@ -8,7 +8,7 @@
 
 Windows用户可以从[这里](http://pan.baidu.com/s/19qI4m)获得二进制文件，或者从[release](releases)下载
 
-其他平台用户：需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)，选择安装PyCrypto库
+其他平台用户：需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)，和PyCrypto库
 
 ##运行
 MAClient可以在支持websocket的浏览器上运行![chaojibang](http://ww1.sinaimg.cn/bmiddle/436919cbjw1ebx3ktnokkg200m00k741.gif)[炒鸡棒在线版](http://ma.mengsky.net/)
@@ -22,6 +22,8 @@ MAClient_cli.py [config file]
 MAClient_cli.py [config file] [task]/[commands]
 ```
 子模块为针对py2x的httplib2；对py3x，你需要下载[针对py3x的httplib2](https://github.com/fffonion/httplib2-plus/tree/python3)
+
+**使用打包的exe的windows用户注意**：路径不能包含中文，这是pyinstaller的缺陷
 
 ##CONFIG.INI文件说明
 
