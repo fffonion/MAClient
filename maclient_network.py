@@ -49,7 +49,7 @@ class Crypt():
     def __init__(self,loc):
         self.init_cipher(loc=loc)
         self.random_cipher_plain=''
-        if loc=='cn':
+        if loc in ['cn','tw']:
             self.gen_rsa_pubkey()
 
     def gen_cipher_with_uid(self, uid, loc):
@@ -212,7 +212,7 @@ class poster():
             if usecookie:
                 header.update({'Cookie':self.cookie})
             if not noencrypt :
-                if self.shortloc=='cn':#pass key to server
+                if self.shortloc in ['cn','tw']:#pass key to server
                     #add sign to param
                     self.crypt.gen_random_cipher()
                     sign='K=%s'%self.crypt.urlunescape(

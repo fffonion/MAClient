@@ -36,7 +36,7 @@ EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
 EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -2, -1, 0, 1, 2
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
-SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
+#SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
 eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "race_type=='12'"), ('STILL_ALIVE', "self.player.fairy['alive']")]
 eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('STILL_ALIVE', "self.player.fairy['alive']"), ('LIMIT', 'time_limit')]
@@ -466,7 +466,7 @@ class maClient():
                 #ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
                 # self.poster.update_server(ct)
                 pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
-                if not self.loc[:2]=='cn':
+                if self.loc[:2] not in ['cn','tw']:
                      pdata='S=nosessionid&%s' % pdata
                 self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False)
             resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password))
@@ -684,9 +684,8 @@ class maClient():
                 break
             logging.sleep('休息%d秒，假装在找卡' % t)
             time.sleep(t)
-            postparam = 'C=%s&lr=%s' % (','.join(param), lc)
-            if self.loc != 'tw':#cn, jp, kr:
-                postparam = '%s&deck_id=1'%postparam
+            postparam = 'C=%s&lr=%s&deck_id=1' % (','.join(param), lc)
+            #if self.loc != 'tw':#cn, jp, kr:
             if self._dopost('cardselect/savedeckcard', postdata = postparam)[0]['error']:
                 break
             logging.info('成功更换卡组为%s cost%d' % (deckkey, last_set_bc))
@@ -1767,13 +1766,11 @@ class maClient():
 
     @plugin.func_hook
     def factor_battle(self, minbc = 0, sel_lake = ''):
-        if self.loc =='tw':
-            def get_parts():
-                self._dopost('battle/area', xmlresp = False)
-                return self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
-        else:
-            def get_parts():
-                return self._dopost('battle/area')
+        # if self.loc =='tw':
+        #     def get_parts():
+        #         self._dopost('battle/area', xmlresp = False)
+        #         return self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
+        # else:
         minbc = int(minbc)
         # try count
         trycnt = self._read_config('system', 'try_factor_times')
@@ -1781,7 +1778,7 @@ class maClient():
             trycnt = '999'
         sel_lake = sel_lake.split(',')
         battle_win = 1
-        resp, cmp_parts_ct = get_parts()
+        resp, cmp_parts_ct = self._dopost('battle/area')
         if resp['error']:
             return
         cmp_parts = cmp_parts_ct.body.competition_parts
@@ -1911,7 +1908,7 @@ class maClient():
                                         self.player.bc['current'],
                                         self.player.bc['max']))
                                 time.sleep(8.62616513)
-                                resp, cmp_parts_ct = get_parts()
+                                resp, cmp_parts_ct = self._dopost('battle/area')
                                 if result == '1':  # 赢过一次就置为真
                                     battle_win += 1
                                     cmp_parts = cmp_parts_ct.body.competition_parts
