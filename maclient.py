@@ -49,13 +49,13 @@ duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db
 logging = maclient_logging.Logging('logging')  # =sys.modules['logging']
 
 def setT(strt):
-    if not PYTHON3:
-        strt = strt.decode('utf-8').encode('cp936', 'ignore')
+    #if not PYTHON3:
+    #    strt = strt.decode('utf-8').encode('cp936', 'ignore')
     if sys.platform == 'cli':
         import System.Console
         System.Console.Title = strt
     else:
-        os.system(convhans('TITLE %s' % strt))
+        os.system(du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 
 class set_title(threading.Thread):
     def __init__(self, maInstance):
