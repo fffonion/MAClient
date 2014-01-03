@@ -50,7 +50,7 @@ def check_revision(loc, rev_tuple):
 def update_master(loc, need_update, poster):
     new_rev = [None, None]
     if need_update[0]:
-        a, b = poster.post('masterdata/card/update', postdata = '%s&revision=0' % poster.cookie, noencrypt = loc=='tw')
+        a, b = poster.post('masterdata/card/update', postdata = '%s&revision=0' % poster.cookie)
         resp = XML2Dict().fromstring(b.replace('&', '--').replace('--#', '&#')).response  # 不替换会解析出错摔
         cards = resp.body.master_data.master_card_data.card
         strs = []
@@ -71,7 +71,7 @@ def update_master(loc, need_update, poster):
         new_rev[0] = resp.header.revision.card_rev
         save_revision(loc, cardrev = new_rev[0])
     if need_update[1]:
-        a, b = poster.post('masterdata/item/update', postdata = '%s&revision=0' % poster.cookie, noencrypt = loc=='tw')
+        a, b = poster.post('masterdata/item/update', postdata = '%s&revision=0' % poster.cookie)
         resp = XML2Dict().fromstring(b).response
         itmes = resp.body.master_data.master_item_data.item_info
         strs = []

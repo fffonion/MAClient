@@ -30,7 +30,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.64
+__version__ = 1.65
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
@@ -164,6 +164,7 @@ class maClient():
         self.cfg_strict_bc = self._read_config('tactic', 'strict_bc') == '1'
         self.cfg_fairy_final_kill_hp = int(self._read_config('tactic', 'fairy_final_kill_hp') or '20000')
         self.cfg_save_traffic = not self._read_config('system', 'save_traffic') == '0'
+        self.cfg_auto_greet = (self._read_config('tactic', 'auto_greet') or '1') == '1'
         self.cfg_greet_words = self._read_config('tactic', 'greet_words') or (
             self.loc == 'tw' and random.choice(['大家好.', '問好']) or random.choice(['你好！', '你好！请多指教！']))
         self.cfg_factor_getnew = not self._read_config('tactic', 'factor_getnew') == '0'
@@ -1471,7 +1472,7 @@ class maClient():
             if not need_tail:
                 fairy_floor()
              # 如果是醒妖则问好
-            if bt_type == WAKE_BATTLE:
+            if bt_type == WAKE_BATTLE and self.cfg_auto_greet:
                 self.like()
 
     @plugin.func_hook
