@@ -34,6 +34,10 @@
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.chkIsFast = new System.Windows.Forms.CheckBox();
             this.chkIsTest = new System.Windows.Forms.CheckBox();
+            this.button58 = new System.Windows.Forms.Button();
+            this.button48 = new System.Windows.Forms.Button();
+            this.button31 = new System.Windows.Forms.Button();
+            this.button63 = new System.Windows.Forms.Button();
             this.cboCfgFile = new System.Windows.Forms.ComboBox();
             this.grpSystem = new System.Windows.Forms.GroupBox();
             this.chkUsePlugins = new System.Windows.Forms.CheckBox();
@@ -113,8 +117,6 @@
             this.label61 = new System.Windows.Forms.Label();
             this.label59 = new System.Windows.Forms.Label();
             this.label60 = new System.Windows.Forms.Label();
-            this.button58 = new System.Windows.Forms.Button();
-            this.button48 = new System.Windows.Forms.Button();
             this.button49 = new System.Windows.Forms.Button();
             this.label35 = new System.Windows.Forms.Label();
             this.textBox32 = new System.Windows.Forms.TextBox();
@@ -123,7 +125,6 @@
             this.textBox30 = new System.Windows.Forms.TextBox();
             this.textBox31 = new System.Windows.Forms.TextBox();
             this.button30 = new System.Windows.Forms.Button();
-            this.button31 = new System.Windows.Forms.Button();
             this.button32 = new System.Windows.Forms.Button();
             this.button33 = new System.Windows.Forms.Button();
             this.button34 = new System.Windows.Forms.Button();
@@ -213,6 +214,7 @@
             this.button22 = new System.Windows.Forms.Button();
             this.lblFairyCache = new System.Windows.Forms.Label();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.button62 = new System.Windows.Forms.Button();
             this.button56 = new System.Windows.Forms.Button();
             this.button47 = new System.Windows.Forms.Button();
             this.button27 = new System.Windows.Forms.Button();
@@ -231,6 +233,7 @@
             this.txtCondExplore = new System.Windows.Forms.TextBox();
             this.button55 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.button61 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.textBox13 = new System.Windows.Forms.TextBox();
@@ -298,9 +301,7 @@
             this.dockMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dockMenu_head = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.button61 = new System.Windows.Forms.Button();
-            this.button62 = new System.Windows.Forms.Button();
-            this.button63 = new System.Windows.Forms.Button();
+            this.chkAutoGreet = new System.Windows.Forms.CheckBox();
             this.grpSystem.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFairySleepFactor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
@@ -389,6 +390,54 @@
             this.toolTip1.SetToolTip(this.chkIsTest, "只将结果打印在屏幕上而不保存");
             this.chkIsTest.UseVisualStyleBackColor = true;
             this.chkIsTest.CheckedChanged += new System.EventHandler(this.chkIsTest_CheckedChanged);
+            // 
+            // button58
+            // 
+            this.button58.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button58.Location = new System.Drawing.Point(193, 280);
+            this.button58.Name = "button58";
+            this.button58.Size = new System.Drawing.Size(30, 33);
+            this.button58.TabIndex = 23;
+            this.button58.Text = "稀";
+            this.toolTip1.SetToolTip(this.button58, "稀有妖精");
+            this.button58.UseVisualStyleBackColor = true;
+            this.button58.Click += new System.EventHandler(this.button58_Click);
+            // 
+            // button48
+            // 
+            this.button48.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button48.Location = new System.Drawing.Point(248, 280);
+            this.button48.Name = "button48";
+            this.button48.Size = new System.Drawing.Size(30, 33);
+            this.button48.TabIndex = 22;
+            this.button48.Text = "普";
+            this.toolTip1.SetToolTip(this.button48, "普妖");
+            this.button48.UseVisualStyleBackColor = true;
+            this.button48.Click += new System.EventHandler(this.button48_Click);
+            // 
+            // button31
+            // 
+            this.button31.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button31.Location = new System.Drawing.Point(220, 280);
+            this.button31.Name = "button31";
+            this.button31.Size = new System.Drawing.Size(30, 33);
+            this.button31.TabIndex = 13;
+            this.button31.Text = "醒";
+            this.toolTip1.SetToolTip(this.button31, "醒妖");
+            this.button31.UseVisualStyleBackColor = true;
+            this.button31.Click += new System.EventHandler(this.button31_Click);
+            // 
+            // button63
+            // 
+            this.button63.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button63.Location = new System.Drawing.Point(276, 280);
+            this.button63.Name = "button63";
+            this.button63.Size = new System.Drawing.Size(30, 33);
+            this.button63.TabIndex = 27;
+            this.button63.Text = "公";
+            this.toolTip1.SetToolTip(this.button63, "公会妖精");
+            this.button63.UseVisualStyleBackColor = true;
+            this.button63.Click += new System.EventHandler(this.button63_Click);
             // 
             // cboCfgFile
             // 
@@ -1202,6 +1251,7 @@
             // 
             // groupBox10
             // 
+            this.groupBox10.Controls.Add(this.chkAutoGreet);
             this.groupBox10.Controls.Add(this.chkFPGachaBulk);
             this.groupBox10.Controls.Add(this.chkNewFactor);
             this.groupBox10.Controls.Add(this.txtGreetWords);
@@ -1403,30 +1453,6 @@
             this.label60.TabIndex = 24;
             this.label60.Text = ":";
             // 
-            // button58
-            // 
-            this.button58.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button58.Location = new System.Drawing.Point(193, 280);
-            this.button58.Name = "button58";
-            this.button58.Size = new System.Drawing.Size(30, 33);
-            this.button58.TabIndex = 23;
-            this.button58.Text = "稀";
-            this.toolTip1.SetToolTip(this.button58, "稀有妖精");
-            this.button58.UseVisualStyleBackColor = true;
-            this.button58.Click += new System.EventHandler(this.button58_Click);
-            // 
-            // button48
-            // 
-            this.button48.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button48.Location = new System.Drawing.Point(248, 280);
-            this.button48.Name = "button48";
-            this.button48.Size = new System.Drawing.Size(30, 33);
-            this.button48.TabIndex = 22;
-            this.button48.Text = "普";
-            this.toolTip1.SetToolTip(this.button48, "普妖");
-            this.button48.UseVisualStyleBackColor = true;
-            this.button48.Click += new System.EventHandler(this.button48_Click);
-            // 
             // button49
             // 
             this.button49.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -1508,18 +1534,6 @@
             this.button30.Text = "剩余时间少于";
             this.button30.UseVisualStyleBackColor = true;
             this.button30.Click += new System.EventHandler(this.button30_Click);
-            // 
-            // button31
-            // 
-            this.button31.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button31.Location = new System.Drawing.Point(220, 280);
-            this.button31.Name = "button31";
-            this.button31.Size = new System.Drawing.Size(30, 33);
-            this.button31.TabIndex = 13;
-            this.button31.Text = "醒";
-            this.toolTip1.SetToolTip(this.button31, "醒妖");
-            this.button31.UseVisualStyleBackColor = true;
-            this.button31.Click += new System.EventHandler(this.button31_Click);
             // 
             // button32
             // 
@@ -2555,6 +2569,17 @@
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "打这些妖精";
             // 
+            // button62
+            // 
+            this.button62.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button62.Location = new System.Drawing.Point(386, 181);
+            this.button62.Name = "button62";
+            this.button62.Size = new System.Drawing.Size(121, 39);
+            this.button62.TabIndex = 16;
+            this.button62.Text = "是公会妖精";
+            this.button62.UseVisualStyleBackColor = true;
+            this.button62.Click += new System.EventHandler(this.button62_Click);
+            // 
             // button56
             // 
             this.button56.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -2758,6 +2783,17 @@
             this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "探索这些秘境";
+            // 
+            // button61
+            // 
+            this.button61.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button61.Location = new System.Drawing.Point(155, 135);
+            this.button61.Name = "button61";
+            this.button61.Size = new System.Drawing.Size(103, 39);
+            this.button61.TabIndex = 8;
+            this.button61.Text = "公会秘境";
+            this.button61.UseVisualStyleBackColor = true;
+            this.button61.Click += new System.EventHandler(this.button61_Click);
             // 
             // button9
             // 
@@ -3490,39 +3526,16 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(195, 6);
             // 
-            // button61
+            // chkAutoGreet
             // 
-            this.button61.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button61.Location = new System.Drawing.Point(155, 135);
-            this.button61.Name = "button61";
-            this.button61.Size = new System.Drawing.Size(103, 39);
-            this.button61.TabIndex = 8;
-            this.button61.Text = "公会秘境";
-            this.button61.UseVisualStyleBackColor = true;
-            this.button61.Click += new System.EventHandler(this.button61_Click);
-            // 
-            // button62
-            // 
-            this.button62.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button62.Location = new System.Drawing.Point(386, 181);
-            this.button62.Name = "button62";
-            this.button62.Size = new System.Drawing.Size(121, 39);
-            this.button62.TabIndex = 16;
-            this.button62.Text = "是公会妖精";
-            this.button62.UseVisualStyleBackColor = true;
-            this.button62.Click += new System.EventHandler(this.button62_Click);
-            // 
-            // button63
-            // 
-            this.button63.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button63.Location = new System.Drawing.Point(276, 280);
-            this.button63.Name = "button63";
-            this.button63.Size = new System.Drawing.Size(30, 33);
-            this.button63.TabIndex = 27;
-            this.button63.Text = "公";
-            this.toolTip1.SetToolTip(this.button63, "公会妖精");
-            this.button63.UseVisualStyleBackColor = true;
-            this.button63.Click += new System.EventHandler(this.button63_Click);
+            this.chkAutoGreet.AutoSize = true;
+            this.chkAutoGreet.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.chkAutoGreet.Location = new System.Drawing.Point(156, 173);
+            this.chkAutoGreet.Name = "chkAutoGreet";
+            this.chkAutoGreet.Size = new System.Drawing.Size(91, 24);
+            this.chkAutoGreet.TabIndex = 1053;
+            this.chkAutoGreet.Text = "自动问好";
+            this.chkAutoGreet.UseVisualStyleBackColor = true;
             // 
             // frmConfig
             // 
@@ -3892,6 +3905,7 @@
         private System.Windows.Forms.Button button61;
         private System.Windows.Forms.Button button62;
         private System.Windows.Forms.Button button63;
+        private System.Windows.Forms.CheckBox chkAutoGreet;
     }
 }
 

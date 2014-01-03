@@ -87,6 +87,7 @@ namespace MAClientGUI
             numAutoDelFriend.Value = cf.ReadInt("tactic", "del_friend_day");
 
             chkStirctBC.Checked = cf.ReadBool("tactic", "strict_bc");
+            chkAutoGreet.Checked = cf.ReadBool("tactic", "auto_greet");
             chkAutoExplore.Checked = cf.ReadBool("tactic", "auto_explore");
             chkAutoSellCard.Checked = cf.ReadBool("tactic", "auto_sell_card");
             chkAutoFPGacha.Checked = cf.ReadBool("tactic", "auto_fp_gacha");
@@ -141,6 +142,7 @@ namespace MAClientGUI
             cf.Write("tactic", "del_friend_day", numAutoDelFriend.Value);
 
             cf.Write("tactic", "strict_bc", chkStirctBC.Checked);
+            cf.Write("tactic", "auto_greet", chkAutoGreet.Checked);
             cf.Write("tactic", "auto_explore", chkAutoExplore.Checked);
             cf.Write("tactic", "auto_sell_card", chkAutoSellCard.Checked);
             cf.Write("tactic", "auto_fp_gacha", chkAutoFPGacha.Checked);
@@ -188,7 +190,7 @@ namespace MAClientGUI
         private void frmConfig_Load(object sender, EventArgs e)
         {
             //setToolTipText();
-            this.Text += (" v"+Application.ProductVersion +" (for MAClient v1.63+)");
+            this.Text += (" v"+Application.ProductVersion +" (for MAClient v1.65+)");
             tabControl1.Enabled = false;
             DirectoryInfo folder = new DirectoryInfo(System.Environment.CurrentDirectory);
             foreach (FileInfo file in folder.GetFiles("*.ini"))
@@ -280,13 +282,13 @@ namespace MAClientGUI
         private void btnTaskerBC_Click(object sender, EventArgs e)
         {
 
-            addTaskerCond(textBox1.Text + "<BC<" + textBox2.Text);
+            addTaskerCond(textBox1.Text + "<=BC<=" + textBox2.Text);
             btnTaskerBC.Enabled = false;
         }
 
         private void btnTaskerAP_Click(object sender, EventArgs e)
         {
-            addTaskerCond(textBox3.Text + "<AP<" + textBox4.Text);
+            addTaskerCond(textBox3.Text + "<=AP<=" + textBox4.Text);
             btnTaskerAP.Enabled = false;
         }
         private void button18_Click(object sender, EventArgs e)
@@ -347,6 +349,7 @@ namespace MAClientGUI
             chkUsePlugins.Checked = true;
 
             chkStirctBC.Checked = false;
+            chkAutoGreet.Checked = true;
             chkAutoExplore.Checked = true;
             chkAutoSellCard.Checked = true;
             chkAutoFPGacha.Checked = true;
@@ -461,17 +464,17 @@ namespace MAClientGUI
 
         private void btnSellStar_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox10.Text +"<card.star<" + textBox9.Text);
+            addSellCond(textBox10.Text +"<=card.star<=" + textBox9.Text);
         }
 
         private void btnSellLv_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox7.Text + "card.lv<" + textBox8.Text);
+            addSellCond(textBox7.Text + "<=card.lv<=" + textBox8.Text);
         }
 
         private void btnSellPrice_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox5.Text + "<card.price< "+ textBox6.Text);
+            addSellCond(textBox5.Text + "<=card.price<= "+ textBox6.Text);
         }
 
         private void btnsSellExclude_Click(object sender, EventArgs e)
@@ -512,7 +515,7 @@ namespace MAClientGUI
 
         private void button13_Click(object sender, EventArgs e)
         {
-            addFloorCond(textBox15.Text + "<floor.cost<" + textBox14.Text);
+            addFloorCond(textBox15.Text + "<=floor.cost<=" + textBox14.Text);
         }
         /// <summary>
         /// 因子战选项卡！
@@ -526,7 +529,7 @@ namespace MAClientGUI
 
         private void button19_Click(object sender, EventArgs e)
         {
-            addFactorCond(textBox22.Text + "<star<" +textBox21.Text);
+            addFactorCond(textBox22.Text + "<=star<=" +textBox21.Text);
         
         }
 
@@ -643,13 +646,13 @@ namespace MAClientGUI
         }
         private void button36_Click(object sender, EventArgs e)
         {
-            addCarddeckCond(textBox27.Text+"<fairy.lv<"+textBox26.Text);
+            addCarddeckCond(textBox27.Text+"<=fairy.lv<="+textBox26.Text);
             button36.Enabled = false;
         }
 
         private void button35_Click(object sender, EventArgs e)
         {
-            addCarddeckCond(textBox24.Text + "<fairy.hp<" + textBox25.Text);
+            addCarddeckCond(textBox24.Text + "<=fairy.hp<=" + textBox25.Text);
             button35.Enabled = false;
         }
 
