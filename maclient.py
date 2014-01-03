@@ -30,13 +30,13 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.64
+__version__ = 1.65
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
 EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -2, -1, 0, 1, 2
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
-SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
+#SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
 eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "race_type=='12'"), ('STILL_ALIVE', "self.player.fairy['alive']")]
 eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('STILL_ALIVE', "self.player.fairy['alive']"), ('LIMIT', 'time_limit')]
@@ -55,7 +55,7 @@ def setT(strt):
         import System.Console
         System.Console.Title = strt
     else:
-        os.system('TITLE %s' % strt)
+        os.system(convhans('TITLE %s' % strt))
 
 class set_title(threading.Thread):
     def __init__(self, maInstance):
@@ -164,6 +164,7 @@ class maClient():
         self.cfg_strict_bc = self._read_config('tactic', 'strict_bc') == '1'
         self.cfg_fairy_final_kill_hp = int(self._read_config('tactic', 'fairy_final_kill_hp') or '20000')
         self.cfg_save_traffic = not self._read_config('system', 'save_traffic') == '0'
+        self.cfg_auto_greet = (self._read_config('tactic', 'auto_greet') or '1') == '1'
         self.cfg_greet_words = self._read_config('tactic', 'greet_words') or (
             self.loc == 'tw' and random.choice(['大家好.', '問好']) or random.choice(['你好！', '你好！请多指教！']))
         self.cfg_factor_getnew = not self._read_config('tactic', 'factor_getnew') == '0'
@@ -307,7 +308,7 @@ class maClient():
         if self.cf.has_option(sec, key):
             val = self.cf.get(sec, key)
             if sys.platform == 'win32' and not PYTHON3:
-                val = val.decode('cp936')  # .encode('utf-8')
+                val = val.decode(CODEPAGE)  # .encode('utf-8')
         else:
             val = ''
         if val == '':return ''
@@ -466,7 +467,7 @@ class maClient():
                 #ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
                 # self.poster.update_server(ct)
                 pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
-                if not self.loc[:2]=='cn':
+                if self.loc[:2] not in ['cn','tw']:
                      pdata='S=nosessionid&%s' % pdata
                 self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False)
             resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password))
@@ -684,9 +685,8 @@ class maClient():
                 break
             logging.sleep('休息%d秒，假装在找卡' % t)
             time.sleep(t)
-            postparam = 'C=%s&lr=%s' % (','.join(param), lc)
-            if self.loc != 'tw':#cn, jp, kr:
-                postparam = '%s&deck_id=1'%postparam
+            postparam = 'C=%s&lr=%s&deck_id=1' % (','.join(param), lc)
+            #if self.loc != 'tw':#cn, jp, kr:
             if self._dopost('cardselect/savedeckcard', postdata = postparam)[0]['error']:
                 break
             logging.info('成功更换卡组为%s cost%d' % (deckkey, last_set_bc))
@@ -1472,7 +1472,7 @@ class maClient():
             if not need_tail:
                 fairy_floor()
              # 如果是醒妖则问好
-            if bt_type == WAKE_BATTLE:
+            if bt_type == WAKE_BATTLE and self.cfg_auto_greet:
                 self.like()
 
     @plugin.func_hook
@@ -1556,7 +1556,7 @@ class maClient():
                         deluser = user
                         maxlogintime = user.logintime
                     i += 1
-                print(du8(strf))
+                print(du8(strf).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
                 confirm = False
                 if deluser != None:
                     if not autodel:
@@ -1602,7 +1602,7 @@ class maClient():
                         i, user.name, user.town_level, user.last_login, user.friends, user.friend_max, user.cost
                     )
                     i += 1
-                print(du8('%s%s' % ('申请列表:\n', strf)))
+                print(du8('%s%s' % ('申请列表:\n', strf)).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
                 adduser = raw_inputd('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser != ['']:
                     for u in adduser:
@@ -1644,7 +1644,7 @@ class maClient():
                         i, user.name, user.town_level, user.last_login, user.friends, user.friend_max, user.cost
                     )
                     i += 1
-                print(du8('%s%s' % ('搜索结果:\n', strf)))
+                print(du8('%s%s' % ('搜索结果:\n', strf)).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
                 usel = raw_inputd('选择要添加的好友序号, 空格分割多个，回车返回> ')
                 uids = []
                 for u in usel.split(' '):
@@ -1767,13 +1767,11 @@ class maClient():
 
     @plugin.func_hook
     def factor_battle(self, minbc = 0, sel_lake = ''):
-        if self.loc =='tw':
-            def get_parts():
-                self._dopost('battle/area', xmlresp = False)
-                return self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
-        else:
-            def get_parts():
-                return self._dopost('battle/area')
+        # if self.loc =='tw':
+        #     def get_parts():
+        #         self._dopost('battle/area', xmlresp = False)
+        #         return self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
+        # else:
         minbc = int(minbc)
         # try count
         trycnt = self._read_config('system', 'try_factor_times')
@@ -1781,7 +1779,7 @@ class maClient():
             trycnt = '999'
         sel_lake = sel_lake.split(',')
         battle_win = 1
-        resp, cmp_parts_ct = get_parts()
+        resp, cmp_parts_ct = self._dopost('battle/area')
         if resp['error']:
             return
         cmp_parts = cmp_parts_ct.body.competition_parts
@@ -1911,7 +1909,7 @@ class maClient():
                                         self.player.bc['current'],
                                         self.player.bc['max']))
                                 time.sleep(8.62616513)
-                                resp, cmp_parts_ct = get_parts()
+                                resp, cmp_parts_ct = self._dopost('battle/area')
                                 if result == '1':  # 赢过一次就置为真
                                     battle_win += 1
                                     cmp_parts = cmp_parts_ct.body.competition_parts

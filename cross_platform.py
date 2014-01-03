@@ -10,7 +10,8 @@ import locale
 PYTHON3 = sys.version.startswith('3')
 IRONPYTHON = sys.platform == 'cli'
 EXEBUNDLE = opath.split(sys.argv[0])[1].find('py') == -1
-
+LOCALE = locale.getdefaultlocale()[0]
+CODEPAGE = locale.getdefaultlocale()[1]
 convhans = lambda x:x
 try:
     import ZhConversion
@@ -18,9 +19,9 @@ except ImportError:
     pass
 else:
     chans = ZhConversion.convHans()
-    if locale.getdefaultlocale()[0] == 'zh_TW':
+    if LOCALE == 'zh_TW':
         convhans = chans.toTW
-    elif locale.getdefaultlocale()[0] == 'zh_HK':
+    elif LOCALE == 'zh_HK':
         convhans = chans.toHK
 
 getPATH0 = (not EXEBUNDLE or IRONPYTHON) and \
@@ -37,4 +38,4 @@ du8 = (IRONPYTHON or PYTHON3) and \
 raw_inputd = PYTHON3 and \
         (lambda s:input(s)) \
     or \
-        (lambda s:raw_input(du8(s).encode(locale.getdefaultlocale()[1] or 'utf-8')).decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8'))
+        (lambda s:raw_input(du8(s).encode(CODEPAGE or 'utf-8')).decode(CODEPAGE or 'utf-8').encode('utf-8'))

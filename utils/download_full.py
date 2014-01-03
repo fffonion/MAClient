@@ -44,7 +44,7 @@ def download_card(cardid, level = CARD_NORM):
                 method = 'GET', headers = {'ua':'Million/%s' % getattr(maclient_smart, 'app_ver_%s' % loc),
                 'accept':'gzip', 'connection':'keep-alive'})
         return content
-
+ci=maclient_network.Crypt('cn')
 def fuckall(_loc = 'tw', download_dir = '.'):
     global loc
     loc = _loc
@@ -82,7 +82,7 @@ def fuckall(_loc = 'tw', download_dir = '.'):
                 skip.append('%d_%d' % (i, j))
                 print('error')
             else:
-                dt = maclient_network.decode_res(a)
+                dt = ci.decode_res(a)
                 open('%s/%s-%s_%d.png' % (download_dir, cname[i][0].decode('utf-8'), i, j), 'wb').write(dt)
                 time.sleep(random.randint(1, 3))
 
