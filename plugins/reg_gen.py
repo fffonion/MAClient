@@ -59,17 +59,17 @@ def reg_gen(plugin_vals):
             time.sleep(2.123123)
             po.post('tutorial/next', postdata = 'S=%s&step=%s' % (po.cookie, 7025))
             time.sleep(3.123123)
-            po.post('tutorial/next', postdata = 'S=%s&step=%s' % (po.cookie, 8000))
-            time.sleep(1.232131)
+            resp, ct = po.post('tutorial/next', postdata = 'S=%s&step=%s' % (po.cookie, 8000))
             # httplib2 doesn't follow redirection in POSTs
-            resp, ct = httplib2.Http().request(maclient_network.serv[loc] + 'mainmenu?fl=1', headers = GET_header)
-            if len(ct) > 10000:
+            #resp, ct = httplib2.Http().request(maclient_network.serv[loc] + 'mainmenu?fl=1', headers = GET_header)
+            if len(ct) > 8000:
                 cnt += 1
                 print('Success. (%d done)' % cnt)
             else:
                 print('Error occured.')
             time.sleep(2.232131)
             if raw_input('exit?(y/n)') == 'y':
+                print("Please relogin(rl) to refresh your playerdata!")
                 break
     return do
     # po.post('tutorial/next?step=100&resume_flg=1')

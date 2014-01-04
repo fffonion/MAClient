@@ -20,13 +20,13 @@ from cross_platform import *
 import getpass
 # look out for ironpython
 
-def iter_printer(l, sep = '\n'):
-    cnt = 1
-    str = ''
-    for e in l:
-        str += '%d.%-10s%s' % (cnt, e.strip('\n'), (cnt % 3 and '' or sep))
-        cnt += 1
-    return str.decode('utf-8')
+# def iter_printer(l, sep = '\n'):
+#     cnt = 1
+#     str = ''
+#     for e in l:
+#         str += '%d.%-10s%s' % (cnt, e.strip('\n'), (cnt % 3 and '' or sep))
+#         cnt += 1
+#     return str.decode('utf-8')
 
 def getTerminalSize():
     # http://stackoverflow.com/questions/566746/how-to-get-console-window-width-in-python
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         # 进入游戏
         # maclient1._dopost('post_token',postdata=ma.encode_param('S=nosessionid&login_id=%s&password=%s&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb'%(username,password)),usecookie=True,extraheader={'Cookie2': '$Version=1'})
         # 登陆
-        server = maclient1._read_config('remote', 'maCServer') or 'http://mac.yooooo.us'
+        #server = maclient1._read_config('remote', 'maCServer') or 'http://mac.yooooo.us'
         # auth()
         mode = ['普通', '同时在线']
         mod = 0
@@ -155,7 +155,7 @@ if __name__ == '__main__':
                     '\n| 分割多个，空格分隔命令与参数\n'
                     '插件的附加命令:%s\n'
                     '以t:开头可执行任务\n'
-                    'http://www.yooooo.us/2013/maclient' % ','.join(maclient1.plugin.extra_cmd.keys())))
+                    'http://yooooo.us/2013/maclient' % ','.join(maclient1.plugin.extra_cmd.keys())))
             elif ch == '------':
                 print(du8('此功能暂停使用'))
                 continue
@@ -194,19 +194,21 @@ if __name__ == '__main__':
                     maclient1.login()
                 mod = (mod + 1) % 2
             elif ch == '3':
-                import maclient_network
-                cards = maclient_network.decode_param(read_proxy(work = 1))
-                cdeck = cards.split('&')[0].split('=')[1].strip('%0A').rstrip(',empty')
-                decks = maclient1._list_option('carddeck')
-                print(du8('选择卡组，输入卡组名以添加新卡组'))
-                print(iter_printer(decks))
-                inp = raw_input("> ")
-                if inp in [str(i) for i in range(1, len(decks) + 1)]:
-                    name = decks[int(inp) - 1]
-                else:
-                    name = inp
-                maclient1._write_config('carddeck', name, cdeck)
-                print(du8('保存到了%s' % name))
+                print(du8('此功能已转移至插件carddeck_edit'))
+                print(du8('请到这里查看详细帮助https://github.com/fffonion/MAClient/wiki/carddeck_edit'))
+                # import maclient_network
+                # cards = maclient_network.decode_param(read_proxy(work = 1))
+                # cdeck = cards.split('&')[0].split('=')[1].strip('%0A').rstrip(',empty')
+                # decks = maclient1._list_option('carddeck')
+                # print(du8('选择卡组，输入卡组名以添加新卡组'))
+                # print(iter_printer(decks))
+                # inp = raw_input("> ")
+                # if inp in [str(i) for i in range(1, len(decks) + 1)]:
+                #     name = decks[int(inp) - 1]
+                # else:
+                #     name = inp
+                # maclient1._write_config('carddeck', name, cdeck)
+                # print(du8('保存到了%s' % name))
             elif ch == '4':
                 print(du8('依次输入配置名，值\n输入h查看常用配置,输入e退出'))
                 while True:

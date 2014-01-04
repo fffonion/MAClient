@@ -49,7 +49,7 @@ class Crypt():
     def __init__(self,loc):
         self.init_cipher(loc=loc)
         self.random_cipher_plain=''
-        if loc=='cn':
+        if loc in ['cn','tw']:
             self.gen_rsa_pubkey()
 
     def gen_cipher_with_uid(self, uid, loc):
@@ -87,7 +87,7 @@ class Crypt():
         self.cipher_res = self._gen_cipher(_key['res'])
 
     def decode_res(self, bytein):
-        return cipher.decrypt(bytein)
+        return self.cipher_res.decrypt(bytein)
 
     def decode_data(self, bytein):
         if len(bytein) == 0:
@@ -152,7 +152,7 @@ class Crypt():
 class poster():
     def __init__(self, loc, logger, ua):
         self.cookie = ''
-        # self.maClientInstance=mac
+        self.ht = httplib2.Http(timeout = 15)
         # ironpython版的httplib2的iri2uri中用utf-8代替了idna，因此手动变回来
         self.rollback_utf8 = sys.platform.startswith('cli') and \
                 (lambda dt:dt.decode('utf-8')) or\
@@ -212,7 +212,7 @@ class poster():
             if usecookie:
                 header.update({'Cookie':self.cookie})
             if not noencrypt :
-                if self.shortloc=='cn':#pass key to server
+                if self.shortloc in ['cn','tw']:#pass key to server
                     #add sign to param
                     self.crypt.gen_random_cipher()
                     sign='K=%s'%self.crypt.urlunescape(
