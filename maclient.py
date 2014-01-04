@@ -38,7 +38,7 @@ EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
-eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "race_type=='12'"), ('STILL_ALIVE', "self.player.fairy['alive']")]
+eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type=='12'"), ('STILL_ALIVE', "self.player.fairy['alive']")]
 eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('STILL_ALIVE', "self.player.fairy['alive']"), ('LIMIT', 'time_limit')]
 eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type=='12'"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"')]

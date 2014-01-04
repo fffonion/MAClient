@@ -17,11 +17,12 @@ else:
     import _winreg as winreg
 import gzip
 import socket
+import urllib
 
 # start meta
 __plugin_name__ = 'web broswer helper'
 __author = 'fffonion'
-__version__ = 0.2
+__version__ = 0.3
 hooks = {}
 extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy'}
 # end meta
@@ -79,8 +80,8 @@ def disable_proxy():
     winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyEnable', 0, winreg.REG_DWORD, 0)
     # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyOverride')
     # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyServer')
-# start simplest proxy
-opener = urllib2.build_opener(urllib2.ProxyHandler({}))  # force no proxy
+# opener
+opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.getproxies()))
 class Proxy(BaseHTTPRequestHandler):
     def do_HDL(self):
         req = urllib2.Request(self.path, headers = headers)
