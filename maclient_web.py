@@ -52,7 +52,7 @@ def websocket_app(environ, start_response):
         area = request.GET.get('area', None)
         offline = request.GET.get('offline', False)
         serv = request.GET.get('serv', 'cn')
-        servs = ['cn', 'cn1', 'cn2', 'jp', 'kr', 'tw']
+        servs = ['cn', 'cn2', 'cn3', 'jp', 'kr', 'tw']
         if serv not in servs:
             ws.send("undefine server.\n")
             return
@@ -80,7 +80,8 @@ def websocket_app(environ, start_response):
                 gevent.sleep(60)
                 try:
                     ws.send('')
-                except WebSocketError:
+                except Exception, e:
+                    print 'lost websocket client keep offline work\n'
                     return
 
         bot = WebSocketBot(ws, serv)
