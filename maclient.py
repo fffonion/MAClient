@@ -1849,9 +1849,7 @@ class maClient():
                     userlist = ct.body.battle_userlist.user_list.user
                 except KeyError:  # no user found
                     continue
-                if len(userlist) == 18:  # only 1 user
-                    userlist = [userlist]
-                for u in userlist:
+                for u in self.tolist(userlist):
                     cid = int(u.leader_card.master_card_id)
                     cost = int(u.cost)
                     friends = int(u.friends)
