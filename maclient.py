@@ -38,7 +38,7 @@ EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
-eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "race_type=='12'"), ('STILL_ALIVE', "self.player.fairy['alive']")]
+eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type=='12'"), ('STILL_ALIVE', "self.player.fairy['alive']")]
 eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('STILL_ALIVE', "self.player.fairy['alive']"), ('LIMIT', 'time_limit')]
 eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type=='12'"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"')]
@@ -49,13 +49,13 @@ duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db
 logging = maclient_logging.Logging('logging')  # =sys.modules['logging']
 
 def setT(strt):
-    if not PYTHON3:
-        strt = strt.decode('utf-8').encode('cp936', 'ignore')
+    #if not PYTHON3:
+    #    strt = strt.decode('utf-8').encode('cp936', 'ignore')
     if sys.platform == 'cli':
         import System.Console
         System.Console.Title = strt
     else:
-        os.system(convhans('TITLE %s' % strt))
+        os.system(du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 
 class set_title(threading.Thread):
     def __init__(self, maInstance):
@@ -369,7 +369,7 @@ class maClient():
                 logging.debug('tasker:%s' % task[0])
                 task[0] = task[0].lower()
                 if task[0] in plugin.extra_cmd:
-                    plugin.do_extra_cmd(tasks)
+                    plugin.do_extra_cmd(' '.join(task))
                 elif task[0] == 'set_card' or task[0] == 'sc':
                     if task[1] == '':
                         logging.error('set_card need 1 argument')
@@ -1733,7 +1733,7 @@ class maClient():
         if nid == []:
             logging.info('没有符合筛选的奖励(%d)' % (len(rwds)))
         else:
-            logging.info(strl.rstrip(' , ').replace('--', '&'))
+            logging.info(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' '))
             res = self._get_rewards(nid)
             if res[0]:
                 logging.info(res[1])
@@ -1849,9 +1849,7 @@ class maClient():
                     userlist = ct.body.battle_userlist.user_list.user
                 except KeyError:  # no user found
                     continue
-                if len(userlist) == 18:  # only 1 user
-                    userlist = [userlist]
-                for u in userlist:
+                for u in self.tolist(userlist):
                     cid = int(u.leader_card.master_card_id)
                     cost = int(u.cost)
                     friends = int(u.friends)
