@@ -369,7 +369,7 @@ class maClient():
                 logging.debug('tasker:%s' % task[0])
                 task[0] = task[0].lower()
                 if task[0] in plugin.extra_cmd:
-                    plugin.do_extra_cmd(tasks)
+                    plugin.do_extra_cmd(' '.join(task))
                 elif task[0] == 'set_card' or task[0] == 'sc':
                     if task[1] == '':
                         logging.error('set_card need 1 argument')
@@ -1733,7 +1733,7 @@ class maClient():
         if nid == []:
             logging.info('没有符合筛选的奖励(%d)' % (len(rwds)))
         else:
-            logging.info(strl.rstrip(' , ').replace('--', '&'))
+            logging.info(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' '))
             res = self._get_rewards(nid)
             if res[0]:
                 logging.info(res[1])
