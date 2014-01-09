@@ -985,10 +985,10 @@ class maClient():
         for card in excards:
             mid = self.player.card.sid(card.serial_id).master_card_id
             if gacha_type > GACHA_FRIENNSHIP_POINT:
-                rare = ['R', 'R+', 'SR', 'SR+']
+                rare = ['R', 'R+', 'SR', 'SR+','MR']
                 rare_str = ' ' + rare[self.carddb[int(mid)][1] - 3]
             else:
-                rare = ['', '', '', 'R+', 'SR', 'SR+']
+                rare = ['', '', '', 'R+', 'SR', 'SR+','MR']
                 rare_str = ' %s' % (rare[self.carddb[int(mid)][1] - 1])
             excname.append('[%s]%s%s' % (
                 self.carddb[int(mid)][0],
