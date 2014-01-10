@@ -2,6 +2,7 @@
 from _prototype import plugin_prototype
 import sys
 import os
+from subprocess import Popen, PIPE
 import re
 from cross_platform import *
 from xml2dict import XML2Dict
@@ -78,12 +79,14 @@ def scratch_carddeck(plugin_vals):
         os.system('adb logcat -c')
         #suppress all but D/CJH
         #btw CJH is...what?
-        logcat=os.popen('adb logcat CJH:D *:S')
+        logcat=Popen('adb logcat CJH:D *:S', stdout = PIPE)
         print(du8('=======Good!'))
         print(du8('请设置一次卡组，并保存\n你可以按Ctrl+C退出'))
         while(1):
             try:
-                line=logcat.readline()
+                line = logcat.stdout.readline()
+                if not line:
+                    break
                 C=re.findall('([\d|empty]+,[\d|empty]+,[\d|empty]+,[\d|empty]+,[\d|empty]+,[\d|empty]+,'
                               '[\d|empty]+,[\d|empty]+,[\d|empty]+,[\d|empty]+,[\d|empty]+,[\d|empty]+)',line)
                 if C!=[]:
@@ -104,7 +107,7 @@ def scratch_carddeck(plugin_vals):
             except KeyboardInterrupt:
                 break
             print(du8('请设置一次卡组，并保存\n你可以按Ctrl+C退出'))
-
+        os.system('adb kill-server')
     return do
 
 def check_debug(plugin_vals):

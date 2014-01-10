@@ -1,0 +1,2 @@
+./httplib2
+pycrypto==2.6
