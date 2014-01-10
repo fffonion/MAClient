@@ -5,9 +5,8 @@ import time
 # start meta
 __plugin_name__ = '狼娘无限舔公会妖'
 __author = 'fffonion'
-__version__ = 0.1
+__version__ = 0.2
 __tip__ = '插件已开启，如需关闭请移除plugins下的infinite_guild_fairy'
-import datetime
 hooks = {'EXIT__fairy_battle':10}
 # extra cmd hook
 extra_cmd = {}
@@ -27,7 +26,6 @@ class plugin(plugin_prototype):
             return ct.body.fairy_floor.explore.fairy
 
     def EXIT__fairy_battle(self, *args, **kwargs):
-        # args self,area,eval
         self.logger = args[0].logger
         fairy=args[1]
         if fairy.race_type == '12' and fairy.time_limit != '0':
@@ -36,7 +34,10 @@ class plugin(plugin_prototype):
             self.mac_instance.lastfairytime=0
             if self.mac_instance.player.bc['current']>=2:
                 time.sleep(5)
-                self.mac_instance._fairy_battle(self.fairy_floor(fairy), kwargs)
+                fairy=self.fairy_floor(fairy)
+                if fairy.hp == '0':
+                    return
+                self.mac_instance._fairy_battle(fairy, kwargs)
             else:
                 print(du8("BC<2，两分钟后再战ww"))
                 time.sleep(120)
