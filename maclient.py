@@ -211,7 +211,7 @@ class maClient():
             if  self.cfg_delay == 0:
                 logging.warning('post:NO DELAY!')
             else:
-                logging.debug('post:slow down...')
+                #logging.debug('post:slow down...')
                 time.sleep(random.randint(int(0.75 * self.cfg_delay), int(1.25 * self.cfg_delay)))
         resp, _dec = self.poster.post(urikey, postdata, usecookie, setcookie, extraheader, noencrypt, savetraffic, no2ndkey)
         self.lastposttime = time.time()
@@ -1233,7 +1233,7 @@ class maClient():
 
     @plugin.func_hook
     def _fairy_battle(self, fairy, bt_type = NORMAL_BATTLE, carddeck = None):
-        while time.time() - self.lastfairytime < 20:
+        while time.time() - self.lastfairytime < 20 and fairy.race_type != '12':
             logging.sleep('等待20s战斗冷却')
             time.sleep(5)
         def fairy_floor(f = fairy):
@@ -1285,10 +1285,10 @@ class maClient():
             #    if fairy.race_type == '12':#找不到
             #        disc_name = '公会妖精'
         hms = lambda x:x >= 3600 and time.strftime('%H:%M:%S', time.localtime(x + 16 * 3600)) or time.strftime('%M:%S', time.localtime(x))
-        logging.info('妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s %s%s' % (
+        logging.info('妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s%s%s' % (
             fairy.name, fairy.lv, fairy.hp, disc_name,
             len(f_attackers), hms(fairy.time_limit),
-            fairy.race_type == '12' and '公会' or '',
+            fairy.race_type == '12' and ' 公会' or '',
             fairy.wake and ' WAKE!' or ''))
         if carddeck:
             cardd = carddeck
