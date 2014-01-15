@@ -194,8 +194,6 @@ class poster():
         self.shortloc = loc[:2]
         self.header = dict(headers_main)
         self.header.update(headers_post)
-        if self.shortloc in ['cn','kr']:
-            self.ht.add_credentials("iW7B5MWJ", "8KdtjVfX")
         if ua != '':
             if '%d' in ua:  # formatted ua
                 self.header['User-Agent'] = ua % getattr(maclient_smart, 'app_ver_%s' % self.shortloc)
@@ -203,7 +201,13 @@ class poster():
                 self.header['User-Agent'] = ua
         else:
             self.header['User-Agent'] = self.header['User-Agent'] % getattr(maclient_smart, 'app_ver_%s' % self.shortloc)
-        self.default_2ndkey = loc in ['jp','cn']
+        if self.shortloc in ['cn','kr']:
+            self.ht.add_credentials("iW7B5MWJ", "8KdtjVfX")
+        elif self.servloc == 'jp':
+            self.ht.add_credentials("eWa25vrE", "2DbcAh3G")
+            if (not self.header['User-Agent'].endswith('GooglePlay')):
+                self.header['User-Agent'] += 'GooglePlay'
+        self.default_2ndkey = loc =='jp'
         self.crypt=Crypt(self.shortloc)
 
     def update_server(self, check_inspection_str):

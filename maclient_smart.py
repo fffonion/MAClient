@@ -30,7 +30,7 @@ key_rsa_pool = [
 app_ver_cn = 102
 app_ver_tw = 200
 app_ver_kr = 105
-app_ver_jp = 236
+app_ver_jp = 250
 # wake
 name_wake_rare = ['-PLACE-HOLDER-']
 name_wake = name_wake_rare + ['觉醒', '覺醒', '黑劍']
