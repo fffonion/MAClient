@@ -66,6 +66,9 @@ namespace MAClientGUI
                 case "kr":
                     cboServer.SelectedIndex = 4;
                     break;
+                case "jp":
+                    cboServer.SelectedIndex = 5;
+                    break;
             }
             refreshAccount();
             cboLogLevel.SelectedIndex = cf.ReadInt("system", "loglevel");
@@ -215,7 +218,7 @@ namespace MAClientGUI
 
         private void cboServer_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string[] slist={"cn","cn2","cn3","tw","kr"};
+            string[] slist={"cn","cn2","cn3","tw","kr","jp"};
             server = slist[cboServer.SelectedIndex];
             refreshAccount();
         }

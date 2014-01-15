@@ -104,6 +104,7 @@
             this.tabPage0 = new System.Windows.Forms.TabPage();
             this.btnDefault = new System.Windows.Forms.Button();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
+            this.chkAutoGreet = new System.Windows.Forms.CheckBox();
             this.chkNewFactor = new System.Windows.Forms.CheckBox();
             this.txtGreetWords = new System.Windows.Forms.TextBox();
             this.tabPage8 = new System.Windows.Forms.TabPage();
@@ -301,7 +302,6 @@
             this.dockMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dockMenu_head = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.chkAutoGreet = new System.Windows.Forms.CheckBox();
             this.grpSystem.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFairySleepFactor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
@@ -785,7 +785,8 @@
             "国服2区",
             "国服3区",
             "台服",
-            "韩服"});
+            "韩服",
+            "日服"});
             this.cboServer.Location = new System.Drawing.Point(111, 23);
             this.cboServer.Name = "cboServer";
             this.cboServer.Size = new System.Drawing.Size(84, 28);
@@ -1279,6 +1280,17 @@
             this.groupBox10.TabIndex = 1052;
             this.groupBox10.TabStop = false;
             this.groupBox10.Text = "策略";
+            // 
+            // chkAutoGreet
+            // 
+            this.chkAutoGreet.AutoSize = true;
+            this.chkAutoGreet.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.chkAutoGreet.Location = new System.Drawing.Point(156, 173);
+            this.chkAutoGreet.Name = "chkAutoGreet";
+            this.chkAutoGreet.Size = new System.Drawing.Size(91, 24);
+            this.chkAutoGreet.TabIndex = 1053;
+            this.chkAutoGreet.Text = "自动问好";
+            this.chkAutoGreet.UseVisualStyleBackColor = true;
             // 
             // chkNewFactor
             // 
@@ -3525,17 +3537,6 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(195, 6);
-            // 
-            // chkAutoGreet
-            // 
-            this.chkAutoGreet.AutoSize = true;
-            this.chkAutoGreet.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkAutoGreet.Location = new System.Drawing.Point(156, 173);
-            this.chkAutoGreet.Name = "chkAutoGreet";
-            this.chkAutoGreet.Size = new System.Drawing.Size(91, 24);
-            this.chkAutoGreet.TabIndex = 1053;
-            this.chkAutoGreet.Text = "自动问好";
-            this.chkAutoGreet.UseVisualStyleBackColor = true;
             // 
             // frmConfig
             // 
