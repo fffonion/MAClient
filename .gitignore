@@ -50,6 +50,7 @@ release
 *.log
 *.bat
 *.saved.*
+test.py
 test*.py
 desktop.ini
 verinfo.txt

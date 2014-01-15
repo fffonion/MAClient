@@ -180,7 +180,7 @@ class maClient():
             disabled_plugin = self._read_config('plugin', 'disabled').split(',')
             plugin.set_disable(disabled_plugin)
             plugin.scan_hooks()
-            logging.debug('plugin:loaded %s' % (','.join(plugin.plugins.keys())))
+            logging.debug('plugin:loaded %s' % (','.join(plugin.plugins.keys())) or 'NONE')
         else:
             plugin.enable = False
 
@@ -467,7 +467,7 @@ class maClient():
                 #ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
                 # self.poster.update_server(ct)
                 pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
-                if self.loc[:2] not in ['cn','tw']:
+                if self.loc == 'kr':
                      pdata='S=nosessionid&%s' % pdata
                 self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False)
             resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password))
@@ -510,7 +510,8 @@ class maClient():
             else:
                 self.player.id = self._read_config('account_%s' % self.loc, 'user_id')
             # for jp server, regenerate
-            self.poster.gen_2nd_key(self.player.id,self.loc)
+            if self.loc == 'jp':
+                self.poster.gen_2nd_key(self.username,self.loc)
         if self.settitle:
             # 窗口标题线程
             self.stitle = set_title(self)
@@ -1233,7 +1234,7 @@ class maClient():
 
     @plugin.func_hook
     def _fairy_battle(self, fairy, bt_type = NORMAL_BATTLE, carddeck = None):
-        while time.time() - self.lastfairytime < 20:
+        while time.time() - self.lastfairytime < 20 and fairy.race_type != '12':
             logging.sleep('等待20s战斗冷却')
             time.sleep(5)
         def fairy_floor(f = fairy):
