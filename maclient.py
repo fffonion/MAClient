@@ -510,7 +510,8 @@ class maClient():
             else:
                 self.player.id = self._read_config('account_%s' % self.loc, 'user_id')
             # for jp server, regenerate
-            self.poster.gen_2nd_key(self.player.id,self.loc)
+            if self.loc == 'jp':
+                self.poster.gen_2nd_key(self.username,self.loc)
         if self.settitle:
             # 窗口标题线程
             self.stitle = set_title(self)

@@ -54,7 +54,8 @@ class Crypt():
             self.gen_rsa_pubkey()
 
     def gen_cipher_with_uid(self, uid, loc):
-        pass
+        plain = '%s%s%s' % (getattr(maclient_smart, 'key_%s' % loc[:2])['crypt'][:16], uid, '0'*(16-len(uid)))
+        return self._gen_cipher(plain)
 
     def gen_rsa_pubkey(self):
         #pk="""MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAM5U06JAbYWdRBrnMdE2bEuDmWgUav7xNKm7i8s1Uy/\nfvpvfxLeoWowLGIBKz0kDLIvhuLV8Lv4XV0+aXdl2j4kCAwEAAQ=="""
@@ -77,10 +78,9 @@ class Crypt():
     def init_cipher(self,loc = 'cn', uid = None):
         _key = getattr(maclient_smart, 'key_%s' % loc[:2])
         if loc == 'jp':
-            if not uid:
-                uid = '0'
-            _key['crypt'] = '%s%s%s' % (_key['crypt'], uid, '0' * (32 - len(_key['crypt'] + uid)))
-            print(_key['crypt'])
+            #if not uid:
+            #    uid = '0'
+            _key['crypt'] = '%s%s' % (_key['crypt'], '0' * 16)
         if sys.platform == 'cli':
             pass  # import clr
             # clr.AddReference("IronPyCrypto.dll")
@@ -187,7 +187,7 @@ class poster():
         self.issavetraffic = True
 
     def gen_2nd_key(self, uid, loc='jp'):
-        self.crypt.gen_cipher_with_uid(uid, loc)
+        self.crypt.cipher_data = self.crypt.gen_cipher_with_uid(uid, loc)
 
     def load_svr(self, loc, ua=''):
         self.servloc = loc
