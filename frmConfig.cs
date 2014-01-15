@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace MAClientGUI
 {
@@ -22,9 +23,17 @@ namespace MAClientGUI
         {
             InitializeComponent();
         }
-        
+
         private void btnChooseCfg_Click(object sender, EventArgs e)
         {
+            if (cboCfgFile.Items.Count <= 0)
+                return;
+            cf = new configParser(cboCfgFile.Text);
+            tabControl1.Enabled = true;
+            refreshAll();
+            refreshCond();
+
+            /*
             OpenFileDialog fileDialog1 = new OpenFileDialog();
             fileDialog1.Filter = "配置文件(*.ini)|*.ini|所有文件(*.*)|*.*";
             fileDialog1.FilterIndex = 1;
@@ -40,8 +49,11 @@ namespace MAClientGUI
                 }
             }
 
+             */
+
+
         }
-      
+
         private void refreshAccount()
         {
             lblUsername.Text = cf.Read("account_" + server, "username");
@@ -50,18 +62,19 @@ namespace MAClientGUI
         private void refreshAll()
         {
             server = cf.Read("system", "server");
-            switch (server){
+            switch (server)
+            {
                 case "cn":
-                    cboServer.SelectedIndex =0;
+                    cboServer.SelectedIndex = 0;
                     break;
                 case "cn2":
-                    cboServer.SelectedIndex =1;
+                    cboServer.SelectedIndex = 1;
                     break;
                 case "cn3":
                     cboServer.SelectedIndex = 2;
                     break;
                 case "tw":
-                    cboServer.SelectedIndex =3;
+                    cboServer.SelectedIndex = 3;
                     break;
                 case "kr":
                     cboServer.SelectedIndex = 4;
@@ -69,7 +82,23 @@ namespace MAClientGUI
             }
             refreshAccount();
             cboLogLevel.SelectedIndex = cf.ReadInt("system", "loglevel");
-            txtTaskName.Text = cf.Read("system", "taskname");
+            //txtTaskName.Text = cf.Read("system", "taskname");
+            //add all task
+            cbTask.Items.Clear();
+            List<string> tsl = cf.EnumIniKey("tasker");
+
+            foreach (string ts in tsl)
+            {
+                cbTask.Items.Add(ts.Split('=')[0].Trim());
+
+            }
+
+            if (cbTask.Items.Count > 0)
+                    cbTask.SelectedIndex = 0;
+ 
+                
+
+
             numTaskTimes.Value = cf.ReadInt("system", "tasker_times");
             numFactorTimes.Value = cf.ReadInt("system", "try_factor_times");
             numFactorSleep.Value = cf.ReadInt("system", "factor_sleep");
@@ -94,11 +123,11 @@ namespace MAClientGUI
             chkGachaBuild.Checked = cf.ReadBool("tactic", "auto_build");
             chkFairyRewards.Checked = cf.ReadBool("tactic", "auto_fairy_rewards");
             chkFPGachaBulk.Checked = cf.ReadBool("tactic", "fp_gacha_bulk");
-            chkAni.Checked = cf.ReadBool("system", "display_ani") ;
+            chkAni.Checked = cf.ReadBool("system", "display_ani");
             chkSaveTraffic.Checked = cf.ReadBool("system", "save_traffic");
             chkNewFactor.Checked = cf.ReadBool("tactic", "factor_getnew");
             txtFairySleep.Text = cf.Read("system", "fairy_battle_sleep");
-            numFairySleepFactor.Value=(decimal)cf.ReadFloat("system","fairy_battle_sleep_factor");
+            numFairySleepFactor.Value = (decimal)cf.ReadFloat("system", "fairy_battle_sleep_factor");
             txtGreetWords.Text = cf.Read("tactic", "greet_words");
 
             label23.Text = "刷妖精战" + numFactorTimes.Value + "次";
@@ -107,7 +136,7 @@ namespace MAClientGUI
         }
         private void refreshCond()
         {
-            txtCondTasker.Text = cf.Read("tasker", txtTaskName.Text);
+            txtCondTasker.Text = cf.Read("tasker", cbTask.Items[cbTask.SelectedIndex].ToString());
             txtCondFairy.Text = cf.Read("condition", "fairy_select");
             txtCondExplore.Text = cf.Read("condition", "explore_area");
             txtCondFloor.Text = cf.Read("condition", "explore_floor");
@@ -119,12 +148,13 @@ namespace MAClientGUI
             txtCondSell.Text = cf.Read("condition", "select_card_to_sell");
         }
 
-        private void saveAll() {
+        private void saveAll()
+        {
             cf.Write("account_" + server, "username", lblUsername.Text);
             cf.Write("account_" + server, "password", lblPswd.Tag.ToString());
             cf.Write("system", "server", server);
-            cf.Write("system", "loglevel",cboLogLevel.SelectedIndex);
-            cf.Write("system", "taskname",txtTaskName.Text);
+            cf.Write("system", "loglevel", cboLogLevel.SelectedIndex);
+            cf.Write("system", "taskname", cbTask.Items[cbTask.SelectedIndex].ToString());
             cf.Write("system", "tasker_times", numTaskTimes.Value);
             cf.Write("system", "try_factor_times", numFactorTimes.Value);
             cf.Write("system", "factor_sleep", numFactorSleep.Value);
@@ -154,13 +184,18 @@ namespace MAClientGUI
             cf.Write("system", "fairy_battle_sleep", txtFairySleep.Text);
             cf.Write("system", "fairy_battle_sleep_factor", numFairySleepFactor.Value);
             cf.Write("tactic", "greet_words", txtGreetWords.Text);
-            cf.Write("tactic", "factor_getnew",chkNewFactor.Checked );
+            cf.Write("tactic", "factor_getnew", chkNewFactor.Checked);
 
         }
 
         private void saveCond()
         {
-            cf.Write("tasker", txtTaskName.Text, txtCondTasker.Text);
+            //cf.Write("tasker", txtTaskName.Text, txtCondTasker.Text);
+            //save all task
+
+
+
+            cf.Write("tasker", cbTask.Items[cbTask.SelectedIndex].ToString(), txtCondTasker.Text);
             cf.Write("condition", "fairy_select", txtCondFairy.Text);
             cf.Write("condition", "explore_area", txtCondExplore.Text);
             cf.Write("condition", "explore_floor ", txtCondFloor.Text);
@@ -190,17 +225,18 @@ namespace MAClientGUI
         private void frmConfig_Load(object sender, EventArgs e)
         {
             //setToolTipText();
-            this.Text += (" v"+Application.ProductVersion +" (for MAClient v1.65+)");
+            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.65+)");
             tabControl1.Enabled = false;
             DirectoryInfo folder = new DirectoryInfo(System.Environment.CurrentDirectory);
             foreach (FileInfo file in folder.GetFiles("*.ini"))
             {
                 cboCfgFile.Items.Add(file);
             }
-            if (cboCfgFile.Items.Count>0)
+            if (cboCfgFile.Items.Count > 0)
                 cboCfgFile.SelectedIndex = 0;
-            Control.CheckForIllegalCrossThreadCalls = false;//丑就丑点吧www
-            
+
+            //Control.CheckForIllegalCrossThreadCalls = false;//丑就丑点吧www
+
         }
 
         private void btnGoBack_Click(object sender, EventArgs e)
@@ -215,17 +251,14 @@ namespace MAClientGUI
 
         private void cboServer_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string[] slist={"cn","cn2","cn3","tw","kr"};
+            string[] slist = { "cn", "cn2", "cn3", "tw", "kr" };
             server = slist[cboServer.SelectedIndex];
             refreshAccount();
         }
 
         private void cboCfgFile_SelectedIndexChanged(object sender, EventArgs e)
         {
-            cf = new configParser(cboCfgFile.Text);
-            tabControl1.Enabled = true;
-            refreshAll();
-            refreshCond();
+
         }
 
 
@@ -275,9 +308,9 @@ namespace MAClientGUI
             else
             {
                 lblTaskerCache.Text = lblTaskerCache.Text.Replace("' or 'fyb'", "| or 'fyb'");
-                then = then.Remove(0,1);
+                then = then.Remove(0, 1);
             }
-            lblTaskerCache.Text=lblTaskerCache.Text.Replace(" or 'fyb'", then + " or 'fyb'");
+            lblTaskerCache.Text = lblTaskerCache.Text.Replace(" or 'fyb'", then + " or 'fyb'");
         }
         private void btnTaskerBC_Click(object sender, EventArgs e)
         {
@@ -299,8 +332,8 @@ namespace MAClientGUI
         }
         private void button53_Click(object sender, EventArgs e)
         {
-            addTaskerCond("("+numericUpDown5.Value.ToString() + "," + numericUpDown4.Value.ToString()+")<(HH,MM)<("+
-                numericUpDown3.Value.ToString() + "," + numericUpDown2.Value.ToString()+")");
+            addTaskerCond("(" + numericUpDown5.Value.ToString() + "," + numericUpDown4.Value.ToString() + ")<(HH,MM)<(" +
+                numericUpDown3.Value.ToString() + "," + numericUpDown2.Value.ToString() + ")");
             button53.Enabled = false;
         }
         private void button17_Click(object sender, EventArgs e)
@@ -320,8 +353,8 @@ namespace MAClientGUI
             if (!lblTaskerCache.Text.EndsWith(" or 'fyb'"))
                 lblTaskerCache.Text += " and 'fyb' or 'fyb'";
             txtCondTasker.Text = txtCondTasker.Text.Replace("or 'fyb'", "or ('fyb')");
-            txtCondTasker.Text = txtCondTasker.Text.Replace("'fyb'",lblTaskerCache.Text);
-            lblTaskerCache.Text="";
+            txtCondTasker.Text = txtCondTasker.Text.Replace("'fyb'", lblTaskerCache.Text);
+            lblTaskerCache.Text = "";
             btnTaskerBC.Enabled = true;
             btnTaskerAP.Enabled = true;
             button17.Enabled = true;
@@ -361,7 +394,7 @@ namespace MAClientGUI
             chkNewFactor.Checked = true;
             chkAutoUpdate.Checked = true;
             txtFairySleep.Text = "0,4,6|4,7,4|7,8,2|8,11,2|11,14,1|14,16,2|16,19,0.8|19,21,1.5|21,24,2";
-            numFairySleepFactor.Value =1;
+            numFairySleepFactor.Value = 1;
             txtGreetWords.Text = "你好！";
 
             label23.Text = "刷妖精战" + numFactorTimes.Value + "次";
@@ -379,7 +412,7 @@ namespace MAClientGUI
         }
         private void btnTaskerSetCard_Click(object sender, EventArgs e)
         {
-            addTaskerThen("'sc " + txtSetCard.Text+"'");
+            addTaskerThen("'sc " + txtSetCard.Text + "'");
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -389,14 +422,14 @@ namespace MAClientGUI
 
         private void button2_Click(object sender, EventArgs e)
         {
-            string sel_lake="";
+            string sel_lake = "";
             if (textBox28.Text != "")
                 sel_lake = " lake:" + textBox28.Text;
-            addTaskerThen("'fcb " + txtTaskerBCLimit.Text+sel_lake +"'");
+            addTaskerThen("'fcb " + txtTaskerBCLimit.Text + sel_lake + "'");
         }
         private void button54_Click(object sender, EventArgs e)
         {
-            addTaskerThen("'sleep " + numericUpDown6.Value.ToString()+"'");
+            addTaskerThen("'sleep " + numericUpDown6.Value.ToString() + "'");
         }
         /// <summary>
         /// 秘境选项卡！
@@ -432,7 +465,7 @@ namespace MAClientGUI
 
         private void button5_Click(object sender, EventArgs e)
         {
-            if (textBox12.Text!="")
+            if (textBox12.Text != "")
                 addExploreCond("'" + textBox12.Text + "' in area.name");
         }
 
@@ -448,10 +481,10 @@ namespace MAClientGUI
         }
         private void button55_Click(object sender, EventArgs e)
         {
-           if (! txtCondExplore.Text.EndsWith("|"))
-            txtCondExplore.Text +="|";
+            if (!txtCondExplore.Text.EndsWith("|"))
+                txtCondExplore.Text += "|";
         }
-       
+
         /// <summary>
         /// 卖卡选项卡！
         /// </summary>
@@ -464,7 +497,7 @@ namespace MAClientGUI
 
         private void btnSellStar_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox10.Text +"<=card.star<=" + textBox9.Text);
+            addSellCond(textBox10.Text + "<=card.star<=" + textBox9.Text);
         }
 
         private void btnSellLv_Click(object sender, EventArgs e)
@@ -474,12 +507,12 @@ namespace MAClientGUI
 
         private void btnSellPrice_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox5.Text + "<=card.price<= "+ textBox6.Text);
+            addSellCond(textBox5.Text + "<=card.price<= " + textBox6.Text);
         }
 
         private void btnsSellExclude_Click(object sender, EventArgs e)
         {
-            addSellCond("card.mid not in [" + textBox11.Text  + "]");
+            addSellCond("card.mid not in [" + textBox11.Text + "]");
         }
 
         /// <summary>
@@ -529,18 +562,18 @@ namespace MAClientGUI
 
         private void button19_Click(object sender, EventArgs e)
         {
-            addFactorCond(textBox22.Text + "<=star<=" +textBox21.Text);
-        
+            addFactorCond(textBox22.Text + "<=star<=" + textBox21.Text);
+
         }
 
         private void button15_Click(object sender, EventArgs e)
         {
-            addFactorCond("cid in ["+textBox16.Text+"]");
+            addFactorCond("cid in [" + textBox16.Text + "]");
         }
         /// <summary>
         /// 妖精选项卡！
         /// </summary>
-       private void addFairyCond(string cond)
+        private void addFairyCond(string cond)
         {
             if (lblFairyCache.Text != "")
                 lblFairyCache.Text += " and ";
@@ -548,10 +581,10 @@ namespace MAClientGUI
         }
         private void button22_Click(object sender, EventArgs e)
         {
-            if (txtCondFairy.Text!="")
-                txtCondFairy.Text+=" or ";
-            txtCondFairy.Text+="("+lblFairyCache.Text+")";
-            lblFairyCache.Text="";
+            if (txtCondFairy.Text != "")
+                txtCondFairy.Text += " or ";
+            txtCondFairy.Text += "(" + lblFairyCache.Text + ")";
+            lblFairyCache.Text = "";
             button23.Enabled = true;
             button24.Enabled = true;
             button25.Enabled = true;
@@ -619,7 +652,7 @@ namespace MAClientGUI
         }
         private void button23_Click(object sender, EventArgs e)
         {
-            addFairyCond("fairy.LIMIT<"+(int.Parse(textBox17.Text)*3600+int.Parse(textBox18.Text)*60+int.Parse(textBox19.Text)));
+            addFairyCond("fairy.LIMIT<" + (int.Parse(textBox17.Text) * 3600 + int.Parse(textBox18.Text) * 60 + int.Parse(textBox19.Text)));
             button23.Enabled = false;
         }
         private void button21_Click(object sender, EventArgs e)
@@ -646,7 +679,7 @@ namespace MAClientGUI
         }
         private void button36_Click(object sender, EventArgs e)
         {
-            addCarddeckCond(textBox27.Text+"<=fairy.lv<="+textBox26.Text);
+            addCarddeckCond(textBox27.Text + "<=fairy.lv<=" + textBox26.Text);
             button36.Enabled = false;
         }
 
@@ -668,7 +701,7 @@ namespace MAClientGUI
             button30.Enabled = false;
         }
 
-        
+
 
         private void button34_Click(object sender, EventArgs e)
         {
@@ -730,7 +763,8 @@ namespace MAClientGUI
         {
             if (lblCarddeckCache.Text != "")
             {
-                if (textBox23.Text==""){
+                if (textBox23.Text == "")
+                {
                     textBox23.Focus();
                     return;
                 }
@@ -784,7 +818,7 @@ namespace MAClientGUI
         {
             saveAll();
             saveCond();
-            refreshAll();
+            //refreshAll();
         }
 
         private void button38_Click(object sender, EventArgs e)
@@ -838,12 +872,12 @@ namespace MAClientGUI
                 {
                     System.Diagnostics.Process.Start(
                        maclient_path,
-                        "\""+cboCfgFile.Text+"\" "+arg);
+                        "\"" + cboCfgFile.Text + "\" " + arg);
                     break;
                 }
                 catch (Win32Exception)
                 {
-                    if (!alltested) 
+                    if (!alltested)
                     {
                         maclient_path = maclient_path.Replace(".exe", ".py");
                         alltested = true;
@@ -864,7 +898,7 @@ namespace MAClientGUI
                     }
                     else
                         break;
-                    
+
                 }
             }
         }
@@ -875,7 +909,7 @@ namespace MAClientGUI
 
         private void button10_Click(object sender, EventArgs e)
         {
-            start_mac("t:"+txtTaskName.Text);
+            start_mac("t:" + cbTask.Items[cbTask.SelectedIndex].ToString());
         }
 
         private void button14_Click(object sender, EventArgs e)
@@ -893,17 +927,11 @@ namespace MAClientGUI
             start_mac("fyb");
         }
 
-        private void txtTaskName_TextChanged(object sender, EventArgs e)
-        {
-            txtCondTasker.Text = cf.Read("tasker", txtTaskName.Text);
-            label41.Text = "正在编辑任务:" + txtTaskName.Text;
-            button10.Text = "开始任务 " + txtTaskName.Text;
-        }
 
         private void label41_Click(object sender, EventArgs e)
         {
-            tabControl1.SelectedIndex=0;
-            txtTaskName.Focus();
+            tabControl1.SelectedIndex = 0;
+            cbTask.Focus();
         }
 
         private void btnSaveAs_Click(object sender, EventArgs e)
@@ -914,7 +942,7 @@ namespace MAClientGUI
             fileDialog1.RestoreDirectory = true;
             if (fileDialog1.ShowDialog() == DialogResult.OK)
             {
-                System.IO.File.Copy(cboCfgFile.Text,fileDialog1.FileName,true);
+                System.IO.File.Copy(cboCfgFile.Text, fileDialog1.FileName, true);
                 cf = new configParser(fileDialog1.FileName);
                 saveAll();
                 saveCond();
@@ -1009,7 +1037,7 @@ namespace MAClientGUI
 
         private void button60_Click(object sender, EventArgs e)
         {
-            txtCondExplore.Text+=" or ";
+            txtCondExplore.Text += " or ";
         }
 
         private void button59_Click(object sender, EventArgs e)
@@ -1027,13 +1055,13 @@ namespace MAClientGUI
             }
         }
 
-        private ToolStripMenuItem menuItem(string title, EventHandler click = null, WndHdl.WndInfo ? winfo = null, Image img = null)
+        private ToolStripMenuItem menuItem(string title, EventHandler click = null, WndHdl.WndInfo? winfo = null, Image img = null)
         {
             ToolStripMenuItem i = new ToolStripMenuItem();
-            i.Text=title;
-            if (click!=null) i.Click+=click;
+            i.Text = title;
+            if (click != null) i.Click += click;
             if (winfo != null) i.Tag = winfo;
-            if (img!=null) i.Image=img;
+            if (img != null) i.Image = img;
             return i;
         }
 
@@ -1045,15 +1073,17 @@ namespace MAClientGUI
             Thread oThread = new Thread(new ThreadStart(th.threading_hook));
             oThread.Start();
             //WndHdl.WndInfo[] res = WndHdl.findHwndbyTitleReg(@"ebug");
-            foreach (WndHdl.WndInfo r in res){
-                ToolStripMenuItem itm = menuItem("", new EventHandler(delegate(Object o, EventArgs a) {
+            foreach (WndHdl.WndInfo r in res)
+            {
+                ToolStripMenuItem itm = menuItem("", new EventHandler(delegate(Object o, EventArgs a)
+                {
                     if (WndHdl.isVisible(r.hwnd)) WndHdl.hideWnd(r);
                     else { WndHdl.showWnd(r); WndHdl.SetForegroundWindow(r.hwnd); }
                 }), r);
                 //MessageBox.Show(((uint)r.procid).ToString() + ";" + ((uint)r.threadid).ToString());
                 itm.Font = new Font(textBox1.Font, FontStyle.Bold);
                 itm.ToolTipText = "切换显示/隐藏";
-                dockMenu.Items. Add(itm);
+                dockMenu.Items.Add(itm);
                 dockMenu.Items.Add(new ToolStripTextBoxEx(Color.FromArgb(128, 0, 128, 0)));//AP
                 dockMenu.Items.Add(new ToolStripTextBoxEx(Color.FromArgb(128, 128, 0, 0)));//BC
                 ToolStripMenuItem t = menuItem("");//G,FP
@@ -1064,13 +1094,15 @@ namespace MAClientGUI
             //ToolStripTextBoxEx t = new ToolStripTextBoxEx();
             dockMenu.Items.Add(menuItem(button59.Text + "全部", new EventHandler(delegate(Object o, EventArgs a)
             {
-                button59_Click(o, a); ToolStripMenuItem m = o as ToolStripMenuItem; m.Text = button59.Text + "全部";  
+                button59_Click(o, a); ToolStripMenuItem m = o as ToolStripMenuItem; m.Text = button59.Text + "全部";
             })));
             dockMenu.Items.Add(menuItem("显示GUI", new EventHandler(this.frmNormalize)));
-            dockMenu.Items.Add(menuItem("退出", new EventHandler(delegate(Object o, EventArgs a) { 
+            dockMenu.Items.Add(menuItem("退出", new EventHandler(delegate(Object o, EventArgs a)
+            {
                 notifyIcon1.Visible = false;
-                button59.Text="恢复"; button59_Click(o, a);
-                System.Environment.Exit(0); })));
+                button59.Text = "恢复"; button59_Click(o, a);
+                System.Environment.Exit(0);
+            })));
             repaint_menu();
         }
 
@@ -1099,31 +1131,31 @@ namespace MAClientGUI
         private void repaint_menu()
         {
             string txtnot = "MAClient users";
-            for (int i = 2; i < dockMenu.Items.Count-3;i+=5 ) 
+            for (int i = 2; i < dockMenu.Items.Count - 3; i += 5)
             {
-                dockMenu.Items[i].Tag=WndHdl.refreshTitle((WndHdl.WndInfo)dockMenu.Items[i].Tag);
-                string title=((WndHdl.WndInfo)dockMenu.Items[i].Tag).title;
+                dockMenu.Items[i].Tag = WndHdl.refreshTitle((WndHdl.WndInfo)dockMenu.Items[i].Tag);
+                string title = ((WndHdl.WndInfo)dockMenu.Items[i].Tag).title;
                 if (title == "")//closed
                 {
-                    for (int j = 0; j < 5; j++) 
+                    for (int j = 0; j < 5; j++)
                         dockMenu.Items.RemoveAt(i);
                     i -= 5;
                     continue;
                 }
-                GroupCollection g=fullsplt.Match(title).Groups;
+                GroupCollection g = fullsplt.Match(title).Groups;
                 dockMenu.Items[i].Text = g[1].ToString();
-                for (int j=1; j<3;j++) 
+                for (int j = 1; j < 3; j++)
                 {
-                    GroupCollection g2=splt.Match(g[1+j].ToString()).Groups;
-                    float p=float.Parse(g2[1].ToString())/float.Parse(g2[2].ToString());
+                    GroupCollection g2 = splt.Match(g[1 + j].ToString()).Groups;
+                    float p = float.Parse(g2[1].ToString()) / float.Parse(g2[2].ToString());
                     ((ToolStripTextBoxEx)dockMenu.Items[i + j]).setPercent(p);
                     dockMenu.Items[i + j].Text = g[1 + j].ToString();
                 }
                 //+ g[4] + "  基:" + g[5]
-                dockMenu.Items[i + 3].Text = "金:" + g[4] +" 卡片:" + g[7];
+                dockMenu.Items[i + 3].Text = "金:" + g[4] + " 卡片:" + g[7];
                 txtnot += Environment.NewLine + "❁" + g[1];
             }
-            this.notifyIcon1.Text=txtnot;
+            this.notifyIcon1.Text = txtnot;
         }
         private bool has_show_bollon = false;
         private void frmConfig_Resize(object sender, EventArgs e)
@@ -1133,13 +1165,13 @@ namespace MAClientGUI
                 this.Hide();
                 this.ShowInTaskbar = false;
                 notifyIcon1.Visible = true;
-                
+
                 if (!has_show_bollon)
                 {
                     notifyIcon1.ShowBalloonTip(1);
                     has_show_bollon = true;
                 }
-                if (button59.Text.StartsWith("隐藏")) 
+                if (button59.Text.StartsWith("隐藏"))
                     button59_Click(sender, e);
                 if (dockMenu.Items.Count <= 2) load_menu();
             }
@@ -1150,7 +1182,7 @@ namespace MAClientGUI
             frmNormalize();
         }
 
-        private void frmNormalize() 
+        private void frmNormalize()
         {
             this.Show();
             WindowState = FormWindowState.Normal;
@@ -1158,10 +1190,11 @@ namespace MAClientGUI
             this.ShowInTaskbar = true;
             notifyIcon1.Visible = false;
         }
-        private int lastclick = 0; 
+        private int lastclick = 0;
         private Thread notifyTestClickThread;
         private void notifyIcon1_MouseDown(object sender, MouseEventArgs e)
         {
+            /*
             if ((Environment.TickCount - this.lastclick) < 500)
             {
                 if (this.notifyTestClickThread != null)
@@ -1187,124 +1220,143 @@ namespace MAClientGUI
                 this.notifyTestClickThread.IsBackground = true; 
                 this.notifyTestClickThread.Start();
             }
-            
+             
+            */
+
         }
 
         private void notifyIcon1_MouseUp(object sender, MouseEventArgs e)
         {
             this.lastclick = Environment.TickCount;
         }
-    private void button60_Click_1(object sender, EventArgs e)
-    {
-        /*WinEventDelegate procDelegate = new WinEventDelegate(WinEventProc);
-        // Listen for name change changes across all processes/threads on current desktop...
-        IntPtr hhook = SetWinEventHook(EVENT_OBJECT_NAMECHANGE, EVENT_OBJECT_NAMECHANGE, IntPtr.Zero,
-                procDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
-        MessageBox.Show("Tracking name changes on HWNDs, close message box to exit.");
-
-        UnhookWinEvent(hhook);*/
-    }
-
-    private void frmConfig_FormClosing(object sender, FormClosingEventArgs e)
-    {
-        button59.Text = "恢复";
-        button59_Click(sender, e);
-      System.Environment.Exit(0);
-    }
 
 
-    private void button60_Click_2(object sender, EventArgs e)
-    {
-        if (!groupBox11.Enabled)//左边group设为可用
+        private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
         {
-            textBox23.Text = "auto_set";
-            cboAim.SelectedIndex = cboAim.SelectedIndex == -1 ? 0 : cboAim.SelectedIndex;
-            cboBCLimit.SelectedIndex = cboBCLimit.SelectedIndex == -1 ? 0 : cboBCLimit.SelectedIndex;
-            cboLineCnt.SelectedIndex = cboLineCnt.SelectedIndex == -1 ? 0 : cboLineCnt.SelectedIndex;
-            button60.Text = "←←确认参数";
+            if (e.Button == MouseButtons.Left)
+                frmNormalize();
         }
-        else//确认
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            textBox23.Text = "";
-            switch (cboBCLimit.SelectedIndex)
-            {
-                case 1:
-                    textBox23.Text += " bc:max";
-                    break;
-                case 2:
-                    textBox23.Text += " bc:"+txtBCLimit.Text;
-                    break;
-            }
-            if (cboLineCnt.SelectedIndex!=0)
-                textBox23.Text += " line:" + (cboLineCnt.SelectedIndex+1).ToString();
-            switch (cboAim.SelectedIndex)
-            {
-                case 1:
-                    textBox23.Text += " aim:MAX_CP";
-                    break;
-                case 2:
-                    textBox23.Text += " aim:DEFEAT";
-                    break;
-            }
-            if (!chkIsTest.Checked)
-                textBox23.Text += " notest";
-            if (!chkIsFast.Checked)
-                textBox23.Text += " nofast";
-            if (txtCardEval.Text!="card.lv>=45")
-                textBox23.Text += " sel:" + txtCardEval.Text;
-            if (txtCardIncl.Text != "")
-                textBox23.Text += " incl:" + txtCardIncl.Text;
-            textBox23.Text = "auto_set(" + textBox23.Text.Trim() +")";
-            button60.Text = "使用自动配卡";
+
         }
-        groupBox11.Enabled = !groupBox11.Enabled;
-       
-    }
-
-    private void cboBCLimit_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (cboBCLimit.SelectedIndex == 2) txtBCLimit.Enabled = true;
-        else txtBCLimit.Enabled = false;
-    }
-
-    private void checkWarning()
-    {
-        if ((cboLineCnt.SelectedIndex > 0 && cboAim.SelectedIndex == 2) ||//超过一排，击败妖精
-                (cboLineCnt.SelectedIndex == 2 && !chkIsFast.Checked))//三排，非快速模式
-            lblLineWarning.Visible = true;
-        else lblLineWarning.Visible = false;
-    }
-
-    private void cboLineCnt_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        checkWarning();
-    }
-
-    private void chkIsTest_CheckedChanged(object sender, EventArgs e)
-    {
-        if (chkIsTest.Checked)
-            chkIsTest.ForeColor = Color.Red;
-        else
-            chkIsTest.ForeColor = Color.Black;
-    }
-
-    private void cboAim_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        checkWarning();
-    }
-
-    private void chkIsFast_CheckedChanged(object sender, EventArgs e)
-    {
-        checkWarning();
-    }
 
 
 
 
+        private void button60_Click_1(object sender, EventArgs e)
+        {
+            /*WinEventDelegate procDelegate = new WinEventDelegate(WinEventProc);
+            // Listen for name change changes across all processes/threads on current desktop...
+            IntPtr hhook = SetWinEventHook(EVENT_OBJECT_NAMECHANGE, EVENT_OBJECT_NAMECHANGE, IntPtr.Zero,
+                    procDelegate, 0, 0, WINEVENT_OUTOFCONTEXT);
+            MessageBox.Show("Tracking name changes on HWNDs, close message box to exit.");
+
+            UnhookWinEvent(hhook);*/
+        }
+
+        private void frmConfig_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            button59.Text = "恢复";
+            button59_Click(sender, e);
+            Application.ExitThread();
+            //System.Environment.Exit(0);
+        }
 
 
+        private void button60_Click_2(object sender, EventArgs e)
+        {
+            if (!groupBox11.Enabled)//左边group设为可用
+            {
+                textBox23.Text = "auto_set";
+                cboAim.SelectedIndex = cboAim.SelectedIndex == -1 ? 0 : cboAim.SelectedIndex;
+                cboBCLimit.SelectedIndex = cboBCLimit.SelectedIndex == -1 ? 0 : cboBCLimit.SelectedIndex;
+                cboLineCnt.SelectedIndex = cboLineCnt.SelectedIndex == -1 ? 0 : cboLineCnt.SelectedIndex;
+                button60.Text = "←←确认参数";
+            }
+            else//确认
+            {
+                textBox23.Text = "";
+                switch (cboBCLimit.SelectedIndex)
+                {
+                    case 1:
+                        textBox23.Text += " bc:max";
+                        break;
+                    case 2:
+                        textBox23.Text += " bc:" + txtBCLimit.Text;
+                        break;
+                }
+                if (cboLineCnt.SelectedIndex != 0)
+                    textBox23.Text += " line:" + (cboLineCnt.SelectedIndex + 1).ToString();
+                switch (cboAim.SelectedIndex)
+                {
+                    case 1:
+                        textBox23.Text += " aim:MAX_CP";
+                        break;
+                    case 2:
+                        textBox23.Text += " aim:DEFEAT";
+                        break;
+                }
+                if (!chkIsTest.Checked)
+                    textBox23.Text += " notest";
+                if (!chkIsFast.Checked)
+                    textBox23.Text += " nofast";
+                if (txtCardEval.Text != "card.lv>=45")
+                    textBox23.Text += " sel:" + txtCardEval.Text;
+                if (txtCardIncl.Text != "")
+                    textBox23.Text += " incl:" + txtCardIncl.Text;
+                textBox23.Text = "auto_set(" + textBox23.Text.Trim() + ")";
+                button60.Text = "使用自动配卡";
+            }
+            groupBox11.Enabled = !groupBox11.Enabled;
 
-        
+        }
+
+        private void cboBCLimit_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cboBCLimit.SelectedIndex == 2) txtBCLimit.Enabled = true;
+            else txtBCLimit.Enabled = false;
+        }
+
+        private void checkWarning()
+        {
+            if ((cboLineCnt.SelectedIndex > 0 && cboAim.SelectedIndex == 2) ||//超过一排，击败妖精
+                    (cboLineCnt.SelectedIndex == 2 && !chkIsFast.Checked))//三排，非快速模式
+                lblLineWarning.Visible = true;
+            else lblLineWarning.Visible = false;
+        }
+
+        private void cboLineCnt_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            checkWarning();
+        }
+
+        private void chkIsTest_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkIsTest.Checked)
+                chkIsTest.ForeColor = Color.Red;
+            else
+                chkIsTest.ForeColor = Color.Black;
+        }
+
+        private void cboAim_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            checkWarning();
+        }
+
+        private void chkIsFast_CheckedChanged(object sender, EventArgs e)
+        {
+            checkWarning();
+        }
+
+        private void cbTask_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txtCondTasker.Text = cf.Read("tasker", cbTask.Items[cbTask.SelectedIndex].ToString());
+            label41.Text = "正在编辑任务:" + cbTask.Items[cbTask.SelectedIndex].ToString();
+            button10.Text = "开始任务 " + cbTask.Items[cbTask.SelectedIndex].ToString();
+        }
+
 
     }
 }
