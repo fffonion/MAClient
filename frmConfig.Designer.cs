@@ -108,7 +108,30 @@
             this.chkNewFactor = new System.Windows.Forms.CheckBox();
             this.txtGreetWords = new System.Windows.Forms.TextBox();
             this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.label73 = new System.Windows.Forms.Label();
+            this.label71 = new System.Windows.Forms.Label();
+            this.lblPluginState = new System.Windows.Forms.Label();
+            this.btnToggleEnable = new System.Windows.Forms.Button();
+            this.button67 = new System.Windows.Forms.Button();
+            this.button66 = new System.Windows.Forms.Button();
+            this.label83 = new System.Windows.Forms.Label();
+            this.label84 = new System.Windows.Forms.Label();
+            this.label72 = new System.Windows.Forms.Label();
+            this.label82 = new System.Windows.Forms.Label();
+            this.label80 = new System.Windows.Forms.Label();
+            this.txtDisabledPlugins = new System.Windows.Forms.TextBox();
+            this.label79 = new System.Windows.Forms.Label();
+            this.label78 = new System.Windows.Forms.Label();
+            this.label76 = new System.Windows.Forms.Label();
+            this.label77 = new System.Windows.Forms.Label();
+            this.label75 = new System.Windows.Forms.Label();
+            this.label74 = new System.Windows.Forms.Label();
+            this.button65 = new System.Windows.Forms.Button();
+            this.button64 = new System.Windows.Forms.Button();
+            this.label70 = new System.Windows.Forms.Label();
             this.label53 = new System.Windows.Forms.Label();
+            this.lstPlugins = new System.Windows.Forms.ListBox();
+            this.label81 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.txtCondCarddeck = new System.Windows.Forms.TextBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
@@ -502,6 +525,7 @@
             this.chkUsePlugins.TabIndex = 1051;
             this.chkUsePlugins.Text = "启用插件";
             this.chkUsePlugins.UseVisualStyleBackColor = true;
+            this.chkUsePlugins.CheckedChanged += new System.EventHandler(this.chkUsePlugins_CheckedChanged);
             // 
             // chkAutoUpdate
             // 
@@ -1216,6 +1240,7 @@
             this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.tabControl1.HotTrack = true;
             this.tabControl1.Location = new System.Drawing.Point(12, 47);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tabControl1.Name = "tabControl1";
@@ -1223,6 +1248,7 @@
             this.tabControl1.ShowToolTips = true;
             this.tabControl1.Size = new System.Drawing.Size(789, 580);
             this.tabControl1.TabIndex = 1023;
+            this.tabControl1.Click += new System.EventHandler(this.tabControl1_Click);
             // 
             // tabPage0
             // 
@@ -1316,7 +1342,30 @@
             // tabPage8
             // 
             this.tabPage8.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage8.Controls.Add(this.lblPluginState);
+            this.tabPage8.Controls.Add(this.label73);
+            this.tabPage8.Controls.Add(this.label71);
+            this.tabPage8.Controls.Add(this.btnToggleEnable);
+            this.tabPage8.Controls.Add(this.button67);
+            this.tabPage8.Controls.Add(this.button66);
+            this.tabPage8.Controls.Add(this.label83);
+            this.tabPage8.Controls.Add(this.label84);
+            this.tabPage8.Controls.Add(this.label72);
+            this.tabPage8.Controls.Add(this.label82);
+            this.tabPage8.Controls.Add(this.label80);
+            this.tabPage8.Controls.Add(this.txtDisabledPlugins);
+            this.tabPage8.Controls.Add(this.label79);
+            this.tabPage8.Controls.Add(this.label78);
+            this.tabPage8.Controls.Add(this.label76);
+            this.tabPage8.Controls.Add(this.label77);
+            this.tabPage8.Controls.Add(this.label75);
+            this.tabPage8.Controls.Add(this.label74);
+            this.tabPage8.Controls.Add(this.button65);
+            this.tabPage8.Controls.Add(this.button64);
+            this.tabPage8.Controls.Add(this.label70);
             this.tabPage8.Controls.Add(this.label53);
+            this.tabPage8.Controls.Add(this.lstPlugins);
+            this.tabPage8.Controls.Add(this.label81);
             this.tabPage8.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPage8.Location = new System.Drawing.Point(4, 29);
             this.tabPage8.Name = "tabPage8";
@@ -1324,14 +1373,238 @@
             this.tabPage8.TabIndex = 10;
             this.tabPage8.Text = "插件";
             // 
+            // label73
+            // 
+            this.label73.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label73.ForeColor = System.Drawing.Color.Firebrick;
+            this.label73.Location = new System.Drawing.Point(700, 76);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(63, 28);
+            this.label73.TabIndex = 7;
+            this.label73.Text = "ｖ0.1";
+            // 
+            // label71
+            // 
+            this.label71.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label71.Location = new System.Drawing.Point(425, 74);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(287, 35);
+            this.label71.TabIndex = 5;
+            this.label71.Text = "文件名";
+            // 
+            // lblPluginState
+            // 
+            this.lblPluginState.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblPluginState.Location = new System.Drawing.Point(409, 76);
+            this.lblPluginState.Name = "lblPluginState";
+            this.lblPluginState.Size = new System.Drawing.Size(21, 26);
+            this.lblPluginState.TabIndex = 23;
+            this.lblPluginState.Text = "√";
+            // 
+            // btnToggleEnable
+            // 
+            this.btnToggleEnable.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnToggleEnable.Location = new System.Drawing.Point(689, 445);
+            this.btnToggleEnable.Name = "btnToggleEnable";
+            this.btnToggleEnable.Size = new System.Drawing.Size(78, 29);
+            this.btnToggleEnable.TabIndex = 22;
+            this.btnToggleEnable.Text = "禁用当前";
+            this.btnToggleEnable.UseVisualStyleBackColor = true;
+            this.btnToggleEnable.Click += new System.EventHandler(this.btnToggleEnable_Click);
+            // 
+            // button67
+            // 
+            this.button67.Location = new System.Drawing.Point(689, 501);
+            this.button67.Name = "button67";
+            this.button67.Size = new System.Drawing.Size(78, 27);
+            this.button67.TabIndex = 21;
+            this.button67.Text = "撤销";
+            this.button67.UseVisualStyleBackColor = true;
+            this.button67.Click += new System.EventHandler(this.button67_Click);
+            // 
+            // button66
+            // 
+            this.button66.Location = new System.Drawing.Point(689, 473);
+            this.button66.Name = "button66";
+            this.button66.Size = new System.Drawing.Size(78, 29);
+            this.button66.TabIndex = 20;
+            this.button66.Text = "保存";
+            this.button66.UseVisualStyleBackColor = true;
+            this.button66.Click += new System.EventHandler(this.button66_Click);
+            // 
+            // label83
+            // 
+            this.label83.AutoEllipsis = true;
+            this.label83.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label83.Location = new System.Drawing.Point(455, 135);
+            this.label83.Name = "label83";
+            this.label83.Size = new System.Drawing.Size(287, 44);
+            this.label83.TabIndex = 18;
+            this.label83.Text = "tips";
+            // 
+            // label84
+            // 
+            this.label84.AutoSize = true;
+            this.label84.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label84.Location = new System.Drawing.Point(411, 135);
+            this.label84.Name = "label84";
+            this.label84.Size = new System.Drawing.Size(39, 19);
+            this.label84.TabIndex = 19;
+            this.label84.Text = "提示";
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label72.Location = new System.Drawing.Point(455, 109);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(43, 20);
+            this.label72.TabIndex = 6;
+            this.label72.Text = "desc";
+            // 
+            // label82
+            // 
+            this.label82.AutoSize = true;
+            this.label82.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label82.Location = new System.Drawing.Point(411, 109);
+            this.label82.Name = "label82";
+            this.label82.Size = new System.Drawing.Size(39, 19);
+            this.label82.TabIndex = 17;
+            this.label82.Text = "描述";
+            // 
+            // label80
+            // 
+            this.label80.AutoSize = true;
+            this.label80.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label80.Location = new System.Drawing.Point(406, 425);
+            this.label80.Name = "label80";
+            this.label80.Size = new System.Drawing.Size(129, 19);
+            this.label80.TabIndex = 15;
+            this.label80.Text = "已禁用的插件列表";
+            // 
+            // txtDisabledPlugins
+            // 
+            this.txtDisabledPlugins.Location = new System.Drawing.Point(402, 447);
+            this.txtDisabledPlugins.Multiline = true;
+            this.txtDisabledPlugins.Name = "txtDisabledPlugins";
+            this.txtDisabledPlugins.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtDisabledPlugins.Size = new System.Drawing.Size(278, 81);
+            this.txtDisabledPlugins.TabIndex = 14;
+            // 
+            // label79
+            // 
+            this.label79.AutoSize = true;
+            this.label79.Location = new System.Drawing.Point(685, 110);
+            this.label79.Name = "label79";
+            this.label79.Size = new System.Drawing.Size(57, 20);
+            this.label79.TabIndex = 13;
+            this.label79.Text = "author";
+            // 
+            // label78
+            // 
+            this.label78.AutoSize = true;
+            this.label78.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label78.Location = new System.Drawing.Point(641, 110);
+            this.label78.Name = "label78";
+            this.label78.Size = new System.Drawing.Size(39, 19);
+            this.label78.TabIndex = 12;
+            this.label78.Text = "作者";
+            // 
+            // label76
+            // 
+            this.label76.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label76.Location = new System.Drawing.Point(604, 202);
+            this.label76.Name = "label76";
+            this.label76.Size = new System.Drawing.Size(151, 212);
+            this.label76.TabIndex = 11;
+            // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label77.Location = new System.Drawing.Point(600, 179);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(69, 19);
+            this.label77.TabIndex = 10;
+            this.label77.Text = "附加命令";
+            // 
+            // label75
+            // 
+            this.label75.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label75.Location = new System.Drawing.Point(411, 202);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(184, 212);
+            this.label75.TabIndex = 9;
+            // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label74.Location = new System.Drawing.Point(411, 179);
+            this.label74.Name = "label74";
+            this.label74.Size = new System.Drawing.Size(69, 19);
+            this.label74.TabIndex = 8;
+            this.label74.Text = "事件钩子";
+            // 
+            // button65
+            // 
+            this.button65.Location = new System.Drawing.Point(459, 24);
+            this.button65.Name = "button65";
+            this.button65.Size = new System.Drawing.Size(79, 33);
+            this.button65.TabIndex = 4;
+            this.button65.Text = "选择目录";
+            this.button65.UseVisualStyleBackColor = true;
+            this.button65.Click += new System.EventHandler(this.button65_Click);
+            // 
+            // button64
+            // 
+            this.button64.Location = new System.Drawing.Point(402, 24);
+            this.button64.Name = "button64";
+            this.button64.Size = new System.Drawing.Size(50, 33);
+            this.button64.TabIndex = 3;
+            this.button64.Text = "刷新";
+            this.button64.UseVisualStyleBackColor = true;
+            this.button64.Click += new System.EventHandler(this.button64_Click);
+            // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label70.ForeColor = System.Drawing.Color.ForestGreen;
+            this.label70.Location = new System.Drawing.Point(702, 24);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(65, 33);
+            this.label70.TabIndex = 2;
+            this.label70.Text = "开启";
+            // 
             // label53
             // 
-            this.label53.AutoSize = true;
-            this.label53.Location = new System.Drawing.Point(349, 156);
+            this.label53.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label53.Location = new System.Drawing.Point(571, 24);
             this.label53.Name = "label53";
-            this.label53.Size = new System.Drawing.Size(84, 20);
-            this.label53.TabIndex = 0;
-            this.label53.Text = "蛤蛤蛤蛤蛤";
+            this.label53.Size = new System.Drawing.Size(142, 33);
+            this.label53.TabIndex = 1;
+            this.label53.Text = "插件系统已";
+            // 
+            // lstPlugins
+            // 
+            this.lstPlugins.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.lstPlugins.FormattingEnabled = true;
+            this.lstPlugins.ItemHeight = 50;
+            this.lstPlugins.Location = new System.Drawing.Point(12, 24);
+            this.lstPlugins.Name = "lstPlugins";
+            this.lstPlugins.Size = new System.Drawing.Size(379, 504);
+            this.lstPlugins.TabIndex = 0;
+            this.lstPlugins.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lstPlugins_DrawItem);
+            this.lstPlugins.SelectedIndexChanged += new System.EventHandler(this.lstPlugins_SelectedIndexChanged);
+            // 
+            // label81
+            // 
+            this.label81.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label81.Location = new System.Drawing.Point(402, 60);
+            this.label81.Name = "label81";
+            this.label81.Size = new System.Drawing.Size(365, 365);
+            this.label81.TabIndex = 16;
             // 
             // tabPage4
             // 
@@ -3875,7 +4148,6 @@
         private System.Windows.Forms.ContextMenuStrip dockMenu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem dockMenu_head;
-        private System.Windows.Forms.Label label53;
         private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.ComboBox cboLineCnt;
         private System.Windows.Forms.Label label55;
@@ -3907,6 +4179,30 @@
         private System.Windows.Forms.Button button62;
         private System.Windows.Forms.Button button63;
         private System.Windows.Forms.CheckBox chkAutoGreet;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.ListBox lstPlugins;
+        private System.Windows.Forms.Button button64;
+        private System.Windows.Forms.Button button65;
+        private System.Windows.Forms.Label label71;
+        private System.Windows.Forms.Label label73;
+        private System.Windows.Forms.Label label72;
+        private System.Windows.Forms.TextBox txtDisabledPlugins;
+        private System.Windows.Forms.Label label79;
+        private System.Windows.Forms.Label label78;
+        private System.Windows.Forms.Label label76;
+        private System.Windows.Forms.Label label77;
+        private System.Windows.Forms.Label label75;
+        private System.Windows.Forms.Label label74;
+        private System.Windows.Forms.Label label80;
+        private System.Windows.Forms.Label label81;
+        private System.Windows.Forms.Label label82;
+        private System.Windows.Forms.Label label83;
+        private System.Windows.Forms.Label label84;
+        private System.Windows.Forms.Button button67;
+        private System.Windows.Forms.Button button66;
+        private System.Windows.Forms.Button btnToggleEnable;
+        private System.Windows.Forms.Label lblPluginState;
     }
 }
 

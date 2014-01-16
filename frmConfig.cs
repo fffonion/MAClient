@@ -103,8 +103,9 @@ namespace MAClientGUI
             txtFairySleep.Text = cf.Read("system", "fairy_battle_sleep");
             numFairySleepFactor.Value=(decimal)cf.ReadFloat("system","fairy_battle_sleep_factor");
             txtGreetWords.Text = cf.Read("tactic", "greet_words");
-
             label23.Text = "刷妖精战" + numFactorTimes.Value + "次";
+
+            txtDisabledPlugins.Text = cf.Read("plugin", "disabled");
             //button10.Text = "开始任务" + txtTaskName.Text;
             setToolTipText();
         }
@@ -158,6 +159,8 @@ namespace MAClientGUI
             cf.Write("system", "fairy_battle_sleep_factor", numFairySleepFactor.Value);
             cf.Write("tactic", "greet_words", txtGreetWords.Text);
             cf.Write("tactic", "factor_getnew",chkNewFactor.Checked );
+
+            cf.Write("plugin", "disabled", txtDisabledPlugins.Text);
 
         }
 
@@ -785,6 +788,8 @@ namespace MAClientGUI
 
         private void button20_Click(object sender, EventArgs e)
         {
+            if (cboCfgFile.Items.Count == 0)
+                return;
             saveAll();
             saveCond();
             refreshAll();
@@ -792,6 +797,8 @@ namespace MAClientGUI
 
         private void button38_Click(object sender, EventArgs e)
         {
+            if (cboCfgFile.Items.Count == 0)
+                return;
             refreshAll();
             refreshCond();
         }
@@ -911,6 +918,8 @@ namespace MAClientGUI
 
         private void btnSaveAs_Click(object sender, EventArgs e)
         {
+            if (cboCfgFile.Items.Count == 0)
+                return;
             SaveFileDialog fileDialog1 = new SaveFileDialog();
             fileDialog1.Filter = "配置文件(*.ini)|*.ini|所有文件(*.*)|*.*";
             fileDialog1.FilterIndex = 1;
@@ -1301,13 +1310,331 @@ namespace MAClientGUI
         checkWarning();
     }
 
+    bool has_load_plugins = false;
+    private void tabControl1_Click(object sender, EventArgs e)
+    {
+        if (tabControl1.SelectedIndex == 1 && !has_load_plugins)
+            loadPluginList();
+    }
+
+    private void loadPluginList()
+    {
+        if (cboCfgFile.Items.Count == 0)
+            loadPluginList(Path.Combine(System.Environment.CurrentDirectory,"plugins"));
+        else
+            loadPluginList(Path.Combine(Path.GetDirectoryName(cboCfgFile.SelectedItem.ToString()),"plugins"));
+    }
+    private void loadPluginList(string pluginPath)
+    {
+        if (chkUsePlugins.Checked)
+        {
+            label70.Text = "开启";
+            label70.ForeColor = Color.ForestGreen;
+            label71.Visible = true;
+            label72.Visible = true;
+            label73.Visible = true;
+            label74.Visible = true;
+            label75.Visible = true;
+            label76.Visible = true;
+            label77.Visible = true;
+            label78.Visible = true;
+            label79.Visible = true;
+            label82.Visible = true;
+            label83.Visible = true;
+            label84.Visible = true;
+            lblPluginState.Visible = true;
+        }
+        else
+        {
+            label70.Text = "关闭";
+            label70.ForeColor = Color.OrangeRed;
+            label71.Visible = false;
+            label72.Visible = false;
+            label73.Visible = false;
+            label74.Visible = false;
+            label75.Visible = false;
+            label76.Visible = false;
+            label77.Visible = false;
+            label78.Visible = false;
+            label79.Visible = false;
+            label82.Visible = false;
+            label83.Visible = false;
+            label84.Visible = false;
+            lblPluginState.Visible = false;
+            return;
+        }
+        DirectoryInfo folder = new DirectoryInfo(pluginPath);
+        if (!folder.Exists)
+            return;
+        lstPlugins.Items.Clear();
+        pluginItem pi;
+        string line;
+        List<string> has_read = new List<string>();
+        foreach (FileInfo file in folder.GetFiles("*.py?"))
+        {
+            string fn = file.ToString().Substring(0, file.ToString().Length - file.Extension.Length);
+            string fext = file.Extension.Substring(1);
+            if (has_read.IndexOf(fn) != -1 && file.Extension == ".pyc")
+                continue;
+            has_read.Add(fn);
+            pi = new pluginItem();
+            pi.file_name = fn;
+            pi.file_ext = fext;
+            if (file.Extension == ".py")
+            {
+                StreamReader fr = new StreamReader(Path.Combine(pluginPath,file.ToString()));
+                bool _unfinished_extra_cmd = false;
+                bool _unfinished_hooks = false;
+                while ((line = fr.ReadLine()) != null)
+                {
+                    if (_unfinished_hooks)
+                    {
+                        pi.hooks += line.Trim().Replace("'", "").Replace("\"", "")
+                            .Replace("{", "").Replace("}", "");
+                        _unfinished_hooks = !line.EndsWith("}");
+                    }
+                    if (_unfinished_extra_cmd)
+                    {
+                        pi.extra_cmd += line.Trim().Replace("'", "").Replace("\"", "")
+                            .Replace("{", "").Replace("}", "");
+                        _unfinished_extra_cmd = !line.EndsWith("}");
+                    }
+                    if (line.StartsWith("__version__"))
+                        pi.version = "v"+line.Split('=')[1].Trim();
+                    else if (line.StartsWith("__plugin_name__"))
+                        pi.plugin_name = line.Split('=')[1].Trim().Replace("'", "").Replace("\"", "");
+                    else if (line.StartsWith("__author"))
+                        pi.author = line.Split('=')[1].Trim().Replace("'", "").Replace("\"", "");
+                    else if (line.StartsWith("__tip__"))
+                        pi.tip = line.Split('=')[1].Trim().Replace("'", "").Replace("\"", "");
+                    else if (line.StartsWith("hooks"))
+                    {
+                        pi.hooks = line.Split('=')[1].Trim().Replace("'", "").Replace("\"", "")
+                            .Replace("{", "").Replace("}", "");
+                        _unfinished_hooks=!line.EndsWith("}");
+                    }else if (line.StartsWith("extra_cmd"))
+                    {
+                        pi.extra_cmd = line.Split('=')[1].Trim().Replace("'", "").Replace("\"", "")
+                            .Replace("{", "").Replace("}", "");
+                        _unfinished_extra_cmd=!line.EndsWith("}");
+                    }else if (line.IndexOf("end meta") != -1)
+                        break;
+                }
+                fr.Close();
+            }
+            lstPlugins.Items.Add(pi);
+        }
+        if (lstPlugins.Items.Count > 0)
+            lstPlugins.SelectedIndex = 0;
+    }
+
+    private void lstPlugins_DrawItem(object sender, DrawItemEventArgs e)
+    {
+        if (lstPlugins.Items.Count == 0)
+            return;
+        e.DrawBackground();
+	    Graphics g = e.Graphics;
+        pluginItem item = (pluginItem)lstPlugins.Items[e.Index];
+        Brush brush;
+        bool selected = false;
+        if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
+        {
+            brush = new SolidBrush(Color.FromArgb(0x8e, 0x44, 0xad));
+            selected = true;
+        }
+        else
+            brush = (e.Index) % 2 == 1 ? Brushes.LightGray : new SolidBrush(e.BackColor);
+        g.FillRectangle(brush, e.Bounds);
+        //name
+        e.Graphics.DrawString(item.file_name,
+                    new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Bold), 
+				    new SolidBrush(e.ForeColor), 0,e.Bounds.Top, StringFormat.GenericDefault);
+        //version
+	    e.Graphics.DrawString(item.version,
+                    new System.Drawing.Font("微软雅黑", 7F, System.Drawing.FontStyle.Regular),
+                    selected ? Brushes.AntiqueWhite : Brushes.Firebrick, e.Bounds.Width - 33, e.Bounds.Top, StringFormat.GenericDefault);
+        //plugin name
+	    e.Graphics.DrawString(item.plugin_name, e.Font,
+                    selected ? Brushes.White : Brushes.DimGray, 0,e.Bounds.Bottom-23, StringFormat.GenericDefault);
+        //ext
+        e.Graphics.DrawString("["+item.file_ext+"]",
+                    new System.Drawing.Font("微软雅黑", 9.2F, System.Drawing.FontStyle.Bold),
+                    selected ? Brushes.LightYellow : Brushes.Gold, e.Bounds.Width - 38, e.Bounds.Bottom - 23, StringFormat.GenericDefault);
+	    e.DrawFocusRectangle();
+    }
+
+    private void button64_Click(object sender, EventArgs e)
+    {
+        loadPluginList();
+    }
+
+    private void button65_Click(object sender, EventArgs e)
+    {
+        FolderBrowserDialog fdlDialog = new FolderBrowserDialog ();
+        if (fdlDialog.ShowDialog() == DialogResult.OK)
+        {
+            loadPluginList(fdlDialog.SelectedPath);
+        }
+    }
+
+    private void lstPlugins_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        pluginItem item = (pluginItem)lstPlugins.SelectedItem;
+        label71.Text = item.file_name;
+        label72.Text = item.plugin_name;
+        if (item.version == null)
+        {
+            label73.Visible = false;
+            label74.Visible = false;
+            label75.Visible = false;
+            label76.Visible = false;
+            label77.Visible = false;
+            label78.Visible = false;
+            label79.Visible = false;
+            label82.Visible = false;
+            label83.Text = item.file_name.StartsWith("_") ? "依赖模块" : "非源代码无法获得详细信息";
+        }
+        else
+        {
+            label73.Visible = true;
+            label74.Visible = true;
+            label75.Visible = true;
+            label76.Visible = true;
+            label77.Visible = true;
+            label78.Visible = true;
+            label79.Visible = true;
+            label82.Visible = true;
+            label73.Text = item.version;
+            label79.Text = item.author;
+            label83.Text = item.tip == null ? "无" : item.tip;
+            //hooks
+            //max 11
+            int cnt=0;
+            string[] l = item.hooks.Split(',');
+            if (l.Length > 0 && l[0]!="")
+            {
+                label75.Text = "";
+                foreach (string v in l)
+                {
+                    if (label75.Text.Length > 0)
+                        label75.Text += "\n";
+                    if (cnt == 10 && l.Length > 11)
+                    {
+                        label75.Text += "……等" + l.Length + "项";
+                        break;
+                    }
+                    string[] p = v.Trim().Split(':');
+                    if (p.Length < 2)
+                        continue;
+                    label75.Text += p[0].Replace("ENTER_", "进入").Replace("EXIT_", "退出") + " 级别" + p[1];
+                    cnt++;
+                }
+            }
+            else
+                label75.Text = "无";
+            //extra_cmd
+            //max 11
+            l = item.extra_cmd.Split(',');
+            if (l.Length > 0 && l[0] != "")
+            {
+                Dictionary<string,string> cmds=new Dictionary<string,string>();
+                label76.Text = "";
+                foreach (string v in l)
+                {
+                    if (cmds.Count == 10 && l.Length > 11)
+                    {
+                        cmds.Add("……等" + l.Length + "项","");
+                        break;
+                    }
+                    string[] p = v.Trim().Split(':');
+                    if (p.Length < 2)
+                        continue;
+                    if(cmds.ContainsKey(p[1]))
+                    {
+                        string old=cmds[p[1]];
+                        if(old.Length>p[0].Length)
+                            cmds[p[1]] = old + "\n    缩写:" + p[0];
+                        else
+                            cmds[p[1]]=p[0]+"\n    缩写:"+old;
+                    }else
+                        cmds.Add(p[1],p[0]);
+                }
+                foreach (string c in cmds.Values)
+                {
+                    label76.Text += c + "\n";
+                }
+            }
+            else
+                label76.Text = "无";
+            if (txtDisabledPlugins.Text.IndexOf(item.file_name) != -1)
+            {
+                lblPluginState.Text = "×";
+                lblPluginState.ForeColor = Color.Crimson;
+                btnToggleEnable.ForeColor = Color.Green;
+                btnToggleEnable.Text = "启用当前";
+            }
+            else
+            {
+                if (item.file_name.StartsWith("_"))
+                {
+                    lblPluginState.Text = "○";
+                    lblPluginState.ForeColor = Color.Goldenrod;
+                }
+                else
+                {
+                    lblPluginState.Text = "√";
+                    lblPluginState.ForeColor = Color.Green;
+                }
+                btnToggleEnable.ForeColor = Color.Crimson;
+                btnToggleEnable.Text = "禁用当前";
+            }
+        }
+    }
+
+    private void btnToggleEnable_Click(object sender, EventArgs e)
+    {
+        if (label70.Text == "关闭")
+            return;
+        if (btnToggleEnable.Text == "启用当前")
+        {
+            txtDisabledPlugins.Text = txtDisabledPlugins.Text.Replace(label71.Text + ",", "")
+                .Replace("," + label71.Text, "").Replace(label71.Text, "");
+            btnToggleEnable.ForeColor = Color.Crimson;
+            btnToggleEnable.Text = "禁用当前";
+        }
+        else
+        {
+            if (label71.Text.StartsWith("_"))
+            {
+                MessageBox.Show("不能禁用依赖模块或过时的插件");
+                return;
+            }
+            if (txtDisabledPlugins.Text.Length > 0)
+                txtDisabledPlugins.Text += ",";
+            txtDisabledPlugins.Text += label71.Text;
+            btnToggleEnable.ForeColor = Color.Green;
+            btnToggleEnable.Text = "启用当前";
+        }
+    }
+
+    private void button66_Click(object sender, EventArgs e)
+    {
+        cf.Write("plugin", "disabled", txtDisabledPlugins.Text);
+    }
+
+    private void button67_Click(object sender, EventArgs e)
+    {
+        txtDisabledPlugins.Text = cf.Read("plugin", "disabled");
+    }
+
+    private void chkUsePlugins_CheckedChanged(object sender, EventArgs e)
+    {
+        has_load_plugins = false;
+    }
 
 
 
-
-
-
-        
+ 
 
     }
 }

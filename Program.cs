@@ -23,6 +23,17 @@ namespace MAClientGUI
             Application.Run(new frmConfig());
         }
     }
+    struct pluginItem
+    {
+        public string file_name;
+        public string file_ext;
+        public string author;
+        public string plugin_name;
+        public string version;
+        public string tip;
+        public string hooks;
+        public string extra_cmd;
+    }
     public class animator
     {
         public void ChangeHeight(Control ctl, int toheight)
