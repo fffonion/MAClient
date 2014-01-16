@@ -443,7 +443,7 @@ class maClient():
                 if cnt != 1:
                     logging.sleep('tasker:正在滚床单wwww')
                     time.sleep(3.15616546511)
-                    resp, ct = self._dopost('mainmenu')  # 初始化
+                    resp, ct = self._dopost('mainmenu', no2ndkey = True)  # 初始化
 
     def login(self, uname = '', pwd = '', fast = False):
         # sessionfile='.%s.session'%self.loc
@@ -464,13 +464,13 @@ class maClient():
             token = self._read_config('system', 'device_token').replace('\\n', '\n') or \
             'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
             if not fast:
-                #ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
+                ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
                 # self.poster.update_server(ct)
                 pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
                 if self.loc == 'kr':
                      pdata='S=nosessionid&%s' % pdata
-                self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False)
-            resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password))
+                self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
+            resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
             if resp['error']:
                 logging.info('登录失败しました')
                 self._exit(1)
@@ -1145,7 +1145,7 @@ class maClient():
         if resp['error']:
             return
         time.sleep(1.2)
-        resp, ct = self._dopost('mainmenu')
+        resp, ct = self._dopost('mainmenu', no2ndkey = True)
         if resp['error']:
             return
         if ct.header.your_data.fairy_appearance != '1':  # 没有“妖精出现中”
@@ -1676,7 +1676,7 @@ class maClient():
     def reward_box(self, rw_type = '12345'):
         if self._dopost('menu/menulist')[0]['error']:
             return False
-        resp, ct = self._dopost('mainmenu')
+        resp, ct = self._dopost('mainmenu', no2ndkey = True)
         if resp['error']:
             return False
         if ct.body.mainmenu.rewards == '0':

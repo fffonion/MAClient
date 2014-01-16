@@ -52,6 +52,7 @@ class Crypt():
         self.random_cipher_plain=''
         if loc in ['cn','tw']:
             self.gen_rsa_pubkey()
+        self.AES2ndKey = None
 
     def gen_cipher_with_uid(self, uid, loc):
         plain = '%s%s%s' % (getattr(maclient_smart, 'key_%s' % loc[:2])['crypt'][:16], uid, '0'*(16-len(uid)))
@@ -90,11 +91,14 @@ class Crypt():
     def decode_res(self, bytein):
         return self.cipher_res.decrypt(bytein)
 
-    def decode_data(self, bytein):
+    def decode_data(self, bytein, second_cipher = False):
         if len(bytein) == 0:
             return ''
         else:
-            return unpad(b2u(self.cipher_data.decrypt(bytein)))
+            if second_cipher:
+                return unpad(b2u(self.AES2ndKey.decrypt(bytein)))
+            else:
+                return unpad(b2u(self.cipher_data.decrypt(bytein)))
 
     def decode_data64(self, strin):
         return self.decode_data(base64.decodestring(self.urlescape(strin)))
@@ -114,13 +118,17 @@ class Crypt():
         #     return self.urlunescape(res)
         return res
 
-    def encode_param(self, param, mode=MOD_AES):
+    def encode_param(self, param, mode = MOD_AES, second_cipher = False):
         p = param.split('&')
         if mode == MOD_RSA_AES_RANDOM:
             _m=self.encode_rsa_64
         else:
             _m=lambda x:x
+        if second_cipher: #replace
+            self.AES2ndKey, self.cipher_data = self.cipher_data, self.AES2ndKey
         p_enc = '%0A&'.join(['%s=%s' % (p[i].split('=')[0], self.urlunescape(_m(self.encode_data64(p[i].split('=')[1], mode)))) for i in xrange(len(p))])
+        if second_cipher: #rollback
+            self.AES2ndKey, self.cipher_data = self.cipher_data, self.AES2ndKey
         # print p_enc
         return p_enc.replace('\n', '')
 
@@ -187,7 +195,7 @@ class poster():
         self.issavetraffic = True
 
     def gen_2nd_key(self, uid, loc='jp'):
-        self.crypt.cipher_data = self.crypt.gen_cipher_with_uid(uid, loc)
+        self.crypt.AES2ndKey = self.crypt.gen_cipher_with_uid(uid, loc)
 
     def load_svr(self, loc, ua=''):
         self.servloc = loc
@@ -207,7 +215,7 @@ class poster():
             self.ht.add_credentials("eWa25vrE", "2DbcAh3G")
             if (not self.header['User-Agent'].endswith('GooglePlay')):
                 self.header['User-Agent'] += 'GooglePlay'
-        self.default_2ndkey = loc =='jp'
+        self.has_2ndkey = loc =='jp'
         self.crypt=Crypt(self.shortloc)
 
     def update_server(self, check_inspection_str):
@@ -224,7 +232,7 @@ class poster():
                 raw_input()
                 os._exit(1)
 
-    def post(self, uri, postdata = '', usecookie = True, setcookie = True, extraheader = {'Cookie2': '$Version=1'}, noencrypt = False, savetraffic = False, no2ndkey = False):
+    def post(self, uri, postdata = '', usecookie = True, setcookie = True, extraheader = {'Cookie2': '$Version=1'}, noencrypt = False, savetraffic = False, no2ndkey = False):#no2ndkey only used in jp server
             header = {}
             header.update(self.header)
             header.update(extraheader)
@@ -247,7 +255,7 @@ class poster():
                     else:
                         postdata=sign
                 elif postdata != '':
-                    postdata = self.crypt.encode_param(postdata)  
+                    postdata = self.crypt.encode_param(postdata, second_cipher = self.has_2ndkey and not no2ndkey)  
             trytime = 0
             ttimes = 3
             callback_hook = None
@@ -295,7 +303,7 @@ class poster():
             if savetraffic and self.issavetraffic:
                 return resp, content
             # 否则解码
-            dec = self.rollback_utf8(self.crypt.decode_data(content))
+            dec = self.rollback_utf8(self.crypt.decode_data(content, second_cipher = self.has_2ndkey and not no2ndkey))
             if os.path.exists('debug'):
                 open('debug/%s.xml' % uri.replace('/', '#').replace('?', '~'), 'w').write(dec)
                 # open('debug/~%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(content)
