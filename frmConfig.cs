@@ -1660,8 +1660,6 @@ namespace MAClientGUI
 
     private void cbTask_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (MessageBox.Show("是否需要保存对任务" + cbTask.Items[cbTask.SelectedIndex] + "的修改?", "询问", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
-        saveCond();
         txtCondTasker.Text = cf.Read("tasker", cbTask.Items[cbTask.SelectedIndex].ToString());
         label41.Text = "正在编辑任务:" + cbTask.Items[cbTask.SelectedIndex].ToString();
         button10.Text = "开始任务 " + cbTask.Items[cbTask.SelectedIndex].ToString();
