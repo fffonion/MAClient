@@ -30,7 +30,7 @@ namespace MAClientGUI
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmConfig));
-            this.btnLoadCfg = new System.Windows.Forms.Button();
+            this.btnChooseCfg = new System.Windows.Forms.Button();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.chkIsFast = new System.Windows.Forms.CheckBox();
             this.chkIsTest = new System.Windows.Forms.CheckBox();
@@ -40,7 +40,6 @@ namespace MAClientGUI
             this.button63 = new System.Windows.Forms.Button();
             this.cboCfgFile = new System.Windows.Forms.ComboBox();
             this.grpSystem = new System.Windows.Forms.GroupBox();
-            this.cbTask = new System.Windows.Forms.ComboBox();
             this.chkUsePlugins = new System.Windows.Forms.CheckBox();
             this.chkAutoUpdate = new System.Windows.Forms.CheckBox();
             this.label44 = new System.Windows.Forms.Label();
@@ -108,7 +107,30 @@ namespace MAClientGUI
             this.chkNewFactor = new System.Windows.Forms.CheckBox();
             this.txtGreetWords = new System.Windows.Forms.TextBox();
             this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.lblPluginState = new System.Windows.Forms.Label();
+            this.label73 = new System.Windows.Forms.Label();
+            this.label71 = new System.Windows.Forms.Label();
+            this.btnToggleEnable = new System.Windows.Forms.Button();
+            this.button67 = new System.Windows.Forms.Button();
+            this.button66 = new System.Windows.Forms.Button();
+            this.label83 = new System.Windows.Forms.Label();
+            this.label84 = new System.Windows.Forms.Label();
+            this.label72 = new System.Windows.Forms.Label();
+            this.label82 = new System.Windows.Forms.Label();
+            this.label80 = new System.Windows.Forms.Label();
+            this.txtDisabledPlugins = new System.Windows.Forms.TextBox();
+            this.label79 = new System.Windows.Forms.Label();
+            this.label78 = new System.Windows.Forms.Label();
+            this.label76 = new System.Windows.Forms.Label();
+            this.label77 = new System.Windows.Forms.Label();
+            this.label75 = new System.Windows.Forms.Label();
+            this.label74 = new System.Windows.Forms.Label();
+            this.button65 = new System.Windows.Forms.Button();
+            this.button64 = new System.Windows.Forms.Button();
+            this.label70 = new System.Windows.Forms.Label();
             this.label53 = new System.Windows.Forms.Label();
+            this.lstPlugins = new System.Windows.Forms.ListBox();
+            this.label81 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.txtCondCarddeck = new System.Windows.Forms.TextBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
@@ -302,6 +324,7 @@ namespace MAClientGUI
             this.dockMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dockMenu_head = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.cbTask = new System.Windows.Forms.ComboBox();
             this.grpSystem.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFairySleepFactor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
@@ -347,17 +370,17 @@ namespace MAClientGUI
             this.dockMenu.SuspendLayout();
             this.SuspendLayout();
             // 
-            // btnLoadCfg
+            // btnChooseCfg
             // 
-            this.btnLoadCfg.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnLoadCfg.Location = new System.Drawing.Point(379, 8);
-            this.btnLoadCfg.Margin = new System.Windows.Forms.Padding(2);
-            this.btnLoadCfg.Name = "btnLoadCfg";
-            this.btnLoadCfg.Size = new System.Drawing.Size(54, 22);
-            this.btnLoadCfg.TabIndex = 1;
-            this.btnLoadCfg.Text = "载入";
-            this.btnLoadCfg.UseVisualStyleBackColor = true;
-            this.btnLoadCfg.Click += new System.EventHandler(this.btnChooseCfg_Click);
+            this.btnChooseCfg.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnChooseCfg.Location = new System.Drawing.Point(354, 9);
+            this.btnChooseCfg.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnChooseCfg.Name = "btnChooseCfg";
+            this.btnChooseCfg.Size = new System.Drawing.Size(55, 22);
+            this.btnChooseCfg.TabIndex = 1;
+            this.btnChooseCfg.Text = "选择…";
+            this.btnChooseCfg.UseVisualStyleBackColor = true;
+            this.btnChooseCfg.Click += new System.EventHandler(this.btnChooseCfg_Click);
             // 
             // toolTip1
             // 
@@ -371,7 +394,7 @@ namespace MAClientGUI
             this.chkIsFast.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkIsFast.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkIsFast.Location = new System.Drawing.Point(79, 121);
-            this.chkIsFast.Margin = new System.Windows.Forms.Padding(2);
+            this.chkIsFast.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkIsFast.Name = "chkIsFast";
             this.chkIsFast.Size = new System.Drawing.Size(75, 21);
             this.chkIsFast.TabIndex = 1051;
@@ -385,7 +408,7 @@ namespace MAClientGUI
             this.chkIsTest.AutoSize = true;
             this.chkIsTest.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkIsTest.Location = new System.Drawing.Point(5, 121);
-            this.chkIsTest.Margin = new System.Windows.Forms.Padding(2);
+            this.chkIsTest.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkIsTest.Name = "chkIsTest";
             this.chkIsTest.Size = new System.Drawing.Size(75, 21);
             this.chkIsTest.TabIndex = 1050;
@@ -398,7 +421,7 @@ namespace MAClientGUI
             // 
             this.button58.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button58.Location = new System.Drawing.Point(145, 224);
-            this.button58.Margin = new System.Windows.Forms.Padding(2);
+            this.button58.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button58.Name = "button58";
             this.button58.Size = new System.Drawing.Size(22, 26);
             this.button58.TabIndex = 23;
@@ -411,7 +434,7 @@ namespace MAClientGUI
             // 
             this.button48.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button48.Location = new System.Drawing.Point(186, 224);
-            this.button48.Margin = new System.Windows.Forms.Padding(2);
+            this.button48.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button48.Name = "button48";
             this.button48.Size = new System.Drawing.Size(22, 26);
             this.button48.TabIndex = 22;
@@ -424,7 +447,7 @@ namespace MAClientGUI
             // 
             this.button31.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button31.Location = new System.Drawing.Point(165, 224);
-            this.button31.Margin = new System.Windows.Forms.Padding(2);
+            this.button31.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button31.Name = "button31";
             this.button31.Size = new System.Drawing.Size(22, 26);
             this.button31.TabIndex = 13;
@@ -437,7 +460,7 @@ namespace MAClientGUI
             // 
             this.button63.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button63.Location = new System.Drawing.Point(207, 224);
-            this.button63.Margin = new System.Windows.Forms.Padding(2);
+            this.button63.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button63.Name = "button63";
             this.button63.Size = new System.Drawing.Size(22, 26);
             this.button63.TabIndex = 27;
@@ -452,9 +475,9 @@ namespace MAClientGUI
             this.cboCfgFile.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.cboCfgFile.FormattingEnabled = true;
             this.cboCfgFile.Location = new System.Drawing.Point(9, 10);
-            this.cboCfgFile.Margin = new System.Windows.Forms.Padding(2);
+            this.cboCfgFile.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboCfgFile.Name = "cboCfgFile";
-            this.cboCfgFile.Size = new System.Drawing.Size(365, 25);
+            this.cboCfgFile.Size = new System.Drawing.Size(342, 25);
             this.cboCfgFile.TabIndex = 1017;
             this.cboCfgFile.SelectedIndexChanged += new System.EventHandler(this.cboCfgFile_SelectedIndexChanged);
             // 
@@ -494,43 +517,33 @@ namespace MAClientGUI
             this.grpSystem.Controls.Add(this.numFairyTimes);
             this.grpSystem.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.grpSystem.Location = new System.Drawing.Point(21, 78);
-            this.grpSystem.Margin = new System.Windows.Forms.Padding(2);
+            this.grpSystem.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.grpSystem.Name = "grpSystem";
-            this.grpSystem.Padding = new System.Windows.Forms.Padding(2);
+            this.grpSystem.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.grpSystem.Size = new System.Drawing.Size(538, 164);
             this.grpSystem.TabIndex = 1021;
             this.grpSystem.TabStop = false;
             this.grpSystem.Text = "系统";
-            // 
-            // cbTask
-            // 
-            this.cbTask.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbTask.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.cbTask.FormattingEnabled = true;
-            this.cbTask.Location = new System.Drawing.Point(83, 79);
-            this.cbTask.Name = "cbTask";
-            this.cbTask.Size = new System.Drawing.Size(64, 25);
-            this.cbTask.TabIndex = 1053;
-            this.cbTask.SelectedIndexChanged += new System.EventHandler(this.cbTask_SelectedIndexChanged);
             // 
             // chkUsePlugins
             // 
             this.chkUsePlugins.AutoSize = true;
             this.chkUsePlugins.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkUsePlugins.Location = new System.Drawing.Point(466, 106);
-            this.chkUsePlugins.Margin = new System.Windows.Forms.Padding(2);
+            this.chkUsePlugins.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkUsePlugins.Name = "chkUsePlugins";
             this.chkUsePlugins.Size = new System.Drawing.Size(75, 21);
             this.chkUsePlugins.TabIndex = 1051;
             this.chkUsePlugins.Text = "启用插件";
             this.chkUsePlugins.UseVisualStyleBackColor = true;
+            this.chkUsePlugins.CheckedChanged += new System.EventHandler(this.chkUsePlugins_CheckedChanged);
             // 
             // chkAutoUpdate
             // 
             this.chkAutoUpdate.AutoSize = true;
             this.chkAutoUpdate.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkAutoUpdate.Location = new System.Drawing.Point(466, 78);
-            this.chkAutoUpdate.Margin = new System.Windows.Forms.Padding(2);
+            this.chkAutoUpdate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkAutoUpdate.Name = "chkAutoUpdate";
             this.chkAutoUpdate.Size = new System.Drawing.Size(75, 21);
             this.chkAutoUpdate.TabIndex = 1050;
@@ -557,7 +570,7 @@ namespace MAClientGUI
             0,
             65536});
             this.numFairySleepFactor.Location = new System.Drawing.Point(478, 45);
-            this.numFairySleepFactor.Margin = new System.Windows.Forms.Padding(2);
+            this.numFairySleepFactor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numFairySleepFactor.Minimum = new decimal(new int[] {
             1,
             0,
@@ -613,7 +626,7 @@ namespace MAClientGUI
             0,
             65536});
             this.numDelay.Location = new System.Drawing.Point(83, 106);
-            this.numDelay.Margin = new System.Windows.Forms.Padding(2);
+            this.numDelay.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numDelay.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -629,7 +642,7 @@ namespace MAClientGUI
             this.chkSaveTraffic.AutoSize = true;
             this.chkSaveTraffic.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkSaveTraffic.Location = new System.Drawing.Point(14, 135);
-            this.chkSaveTraffic.Margin = new System.Windows.Forms.Padding(2);
+            this.chkSaveTraffic.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkSaveTraffic.Name = "chkSaveTraffic";
             this.chkSaveTraffic.Size = new System.Drawing.Size(75, 21);
             this.chkSaveTraffic.TabIndex = 1049;
@@ -641,7 +654,7 @@ namespace MAClientGUI
             this.chkAni.AutoSize = true;
             this.chkAni.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkAni.Location = new System.Drawing.Point(82, 135);
-            this.chkAni.Margin = new System.Windows.Forms.Padding(2);
+            this.chkAni.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkAni.Name = "chkAni";
             this.chkAni.Size = new System.Drawing.Size(75, 21);
             this.chkAni.TabIndex = 1012;
@@ -652,7 +665,7 @@ namespace MAClientGUI
             // 
             this.txtFairySleep.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtFairySleep.Location = new System.Drawing.Point(226, 18);
-            this.txtFairySleep.Margin = new System.Windows.Forms.Padding(2);
+            this.txtFairySleep.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtFairySleep.Multiline = true;
             this.txtFairySleep.Name = "txtFairySleep";
             this.txtFairySleep.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -692,7 +705,7 @@ namespace MAClientGUI
             "ERROR",
             "CRITICAL"});
             this.cboLogLevel.Location = new System.Drawing.Point(83, 50);
-            this.cboLogLevel.Margin = new System.Windows.Forms.Padding(2);
+            this.cboLogLevel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboLogLevel.Name = "cboLogLevel";
             this.cboLogLevel.Size = new System.Drawing.Size(64, 25);
             this.cboLogLevel.TabIndex = 1000;
@@ -816,7 +829,7 @@ namespace MAClientGUI
             "提示R+",
             "提示所有"});
             this.cboSellCardWarning.Location = new System.Drawing.Point(405, 136);
-            this.cboSellCardWarning.Margin = new System.Windows.Forms.Padding(2);
+            this.cboSellCardWarning.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboSellCardWarning.Name = "cboSellCardWarning";
             this.cboSellCardWarning.Size = new System.Drawing.Size(69, 25);
             this.cboSellCardWarning.TabIndex = 1020;
@@ -831,9 +844,10 @@ namespace MAClientGUI
             "国服2区",
             "国服3区",
             "台服",
-            "韩服"});
+            "韩服",
+            "日服"});
             this.cboServer.Location = new System.Drawing.Point(83, 18);
-            this.cboServer.Margin = new System.Windows.Forms.Padding(2);
+            this.cboServer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboServer.Name = "cboServer";
             this.cboServer.Size = new System.Drawing.Size(64, 25);
             this.cboServer.TabIndex = 999;
@@ -843,7 +857,7 @@ namespace MAClientGUI
             // 
             this.numTaskTimes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.numTaskTimes.Location = new System.Drawing.Point(250, 74);
-            this.numTaskTimes.Margin = new System.Windows.Forms.Padding(2);
+            this.numTaskTimes.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numTaskTimes.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -858,7 +872,7 @@ namespace MAClientGUI
             // 
             this.numFactorTimes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.numFactorTimes.Location = new System.Drawing.Point(250, 102);
-            this.numFactorTimes.Margin = new System.Windows.Forms.Padding(2);
+            this.numFactorTimes.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numFactorTimes.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -873,7 +887,7 @@ namespace MAClientGUI
             // 
             this.numFactorSleep.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.numFactorSleep.Location = new System.Drawing.Point(405, 74);
-            this.numFactorSleep.Margin = new System.Windows.Forms.Padding(2);
+            this.numFactorSleep.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numFactorSleep.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -888,7 +902,7 @@ namespace MAClientGUI
             // 
             this.numExploreSleep.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.numExploreSleep.Location = new System.Drawing.Point(405, 105);
-            this.numExploreSleep.Margin = new System.Windows.Forms.Padding(2);
+            this.numExploreSleep.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numExploreSleep.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -903,7 +917,7 @@ namespace MAClientGUI
             // 
             this.numFairyTimes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.numFairyTimes.Location = new System.Drawing.Point(250, 133);
-            this.numFairyTimes.Margin = new System.Windows.Forms.Padding(2);
+            this.numFairyTimes.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numFairyTimes.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -944,7 +958,7 @@ namespace MAClientGUI
             0,
             0});
             this.numInstantFight.Location = new System.Drawing.Point(256, 27);
-            this.numInstantFight.Margin = new System.Windows.Forms.Padding(2);
+            this.numInstantFight.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numInstantFight.Maximum = new decimal(new int[] {
             999999,
             0,
@@ -964,7 +978,7 @@ namespace MAClientGUI
             // 
             this.btnGoBack.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnGoBack.Location = new System.Drawing.Point(496, 345);
-            this.btnGoBack.Margin = new System.Windows.Forms.Padding(2);
+            this.btnGoBack.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnGoBack.Name = "btnGoBack";
             this.btnGoBack.Size = new System.Drawing.Size(62, 29);
             this.btnGoBack.TabIndex = 1041;
@@ -976,7 +990,7 @@ namespace MAClientGUI
             // 
             this.btnSave.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnSave.Location = new System.Drawing.Point(496, 381);
-            this.btnSave.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSave.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(62, 29);
             this.btnSave.TabIndex = 2;
@@ -1031,7 +1045,7 @@ namespace MAClientGUI
             // 
             this.numAutoDelFriend.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.numAutoDelFriend.Location = new System.Drawing.Point(256, 84);
-            this.numAutoDelFriend.Margin = new System.Windows.Forms.Padding(2);
+            this.numAutoDelFriend.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numAutoDelFriend.Maximum = new decimal(new int[] {
             30,
             0,
@@ -1052,7 +1066,7 @@ namespace MAClientGUI
             "觉醒嗑药",
             "全部嗑药"});
             this.cboAutoRTLv.Location = new System.Drawing.Point(83, 82);
-            this.cboAutoRTLv.Margin = new System.Windows.Forms.Padding(2);
+            this.cboAutoRTLv.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboAutoRTLv.Name = "cboAutoRTLv";
             this.cboAutoRTLv.Size = new System.Drawing.Size(70, 25);
             this.cboAutoRTLv.TabIndex = 1021;
@@ -1061,7 +1075,7 @@ namespace MAClientGUI
             // 
             this.numAutoGT.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.numAutoGT.Location = new System.Drawing.Point(83, 51);
-            this.numAutoGT.Margin = new System.Windows.Forms.Padding(2);
+            this.numAutoGT.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numAutoGT.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -1076,7 +1090,7 @@ namespace MAClientGUI
             // 
             this.numAutoRT.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.numAutoRT.Location = new System.Drawing.Point(83, 21);
-            this.numAutoRT.Margin = new System.Windows.Forms.Padding(2);
+            this.numAutoRT.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numAutoRT.Maximum = new decimal(new int[] {
             99999,
             0,
@@ -1092,7 +1106,7 @@ namespace MAClientGUI
             this.chkGachaBuild.AutoSize = true;
             this.chkGachaBuild.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkGachaBuild.Location = new System.Drawing.Point(357, 74);
-            this.chkGachaBuild.Margin = new System.Windows.Forms.Padding(2);
+            this.chkGachaBuild.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkGachaBuild.Name = "chkGachaBuild";
             this.chkGachaBuild.Size = new System.Drawing.Size(111, 21);
             this.chkGachaBuild.TabIndex = 1015;
@@ -1104,7 +1118,7 @@ namespace MAClientGUI
             this.chkFairyRewards.AutoSize = true;
             this.chkFairyRewards.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkFairyRewards.Location = new System.Drawing.Point(357, 94);
-            this.chkFairyRewards.Margin = new System.Windows.Forms.Padding(2);
+            this.chkFairyRewards.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkFairyRewards.Name = "chkFairyRewards";
             this.chkFairyRewards.Size = new System.Drawing.Size(99, 21);
             this.chkFairyRewards.TabIndex = 1014;
@@ -1116,7 +1130,7 @@ namespace MAClientGUI
             this.chkFPGachaBulk.AutoSize = true;
             this.chkFPGachaBulk.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkFPGachaBulk.Location = new System.Drawing.Point(357, 113);
-            this.chkFPGachaBulk.Margin = new System.Windows.Forms.Padding(2);
+            this.chkFPGachaBulk.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkFPGachaBulk.Name = "chkFPGachaBulk";
             this.chkFPGachaBulk.Size = new System.Drawing.Size(87, 21);
             this.chkFPGachaBulk.TabIndex = 1013;
@@ -1128,7 +1142,7 @@ namespace MAClientGUI
             this.chkAutoSellCard.AutoSize = true;
             this.chkAutoSellCard.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkAutoSellCard.Location = new System.Drawing.Point(357, 17);
-            this.chkAutoSellCard.Margin = new System.Windows.Forms.Padding(2);
+            this.chkAutoSellCard.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkAutoSellCard.Name = "chkAutoSellCard";
             this.chkAutoSellCard.Size = new System.Drawing.Size(75, 21);
             this.chkAutoSellCard.TabIndex = 1011;
@@ -1140,7 +1154,7 @@ namespace MAClientGUI
             this.chkAutoFPGacha.AutoSize = true;
             this.chkAutoFPGacha.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkAutoFPGacha.Location = new System.Drawing.Point(357, 36);
-            this.chkAutoFPGacha.Margin = new System.Windows.Forms.Padding(2);
+            this.chkAutoFPGacha.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkAutoFPGacha.Name = "chkAutoFPGacha";
             this.chkAutoFPGacha.Size = new System.Drawing.Size(87, 21);
             this.chkAutoFPGacha.TabIndex = 1010;
@@ -1152,7 +1166,7 @@ namespace MAClientGUI
             this.chkAutoExplore.AutoSize = true;
             this.chkAutoExplore.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkAutoExplore.Location = new System.Drawing.Point(357, 55);
-            this.chkAutoExplore.Margin = new System.Windows.Forms.Padding(2);
+            this.chkAutoExplore.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkAutoExplore.Name = "chkAutoExplore";
             this.chkAutoExplore.Size = new System.Drawing.Size(99, 21);
             this.chkAutoExplore.TabIndex = 1009;
@@ -1164,7 +1178,7 @@ namespace MAClientGUI
             this.chkStirctBC.AutoSize = true;
             this.chkStirctBC.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkStirctBC.Location = new System.Drawing.Point(8, 117);
-            this.chkStirctBC.Margin = new System.Windows.Forms.Padding(2);
+            this.chkStirctBC.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkStirctBC.Name = "chkStirctBC";
             this.chkStirctBC.Size = new System.Drawing.Size(91, 21);
             this.chkStirctBC.TabIndex = 1008;
@@ -1187,7 +1201,7 @@ namespace MAClientGUI
             // 
             this.txtUsername.Font = new System.Drawing.Font("微软雅黑", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtUsername.Location = new System.Drawing.Point(56, 21);
-            this.txtUsername.Margin = new System.Windows.Forms.Padding(2);
+            this.txtUsername.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(166, 32);
             this.txtUsername.TabIndex = 1;
@@ -1210,7 +1224,7 @@ namespace MAClientGUI
             // 
             this.txtPswd.Font = new System.Drawing.Font("微软雅黑", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtPswd.Location = new System.Drawing.Point(304, 21);
-            this.txtPswd.Margin = new System.Windows.Forms.Padding(2);
+            this.txtPswd.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtPswd.Name = "txtPswd";
             this.txtPswd.PasswordChar = '☺';
             this.txtPswd.RightToLeft = System.Windows.Forms.RightToLeft.No;
@@ -1248,7 +1262,7 @@ namespace MAClientGUI
             this.checkBox9.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBox9.Font = new System.Drawing.Font("宋体", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.checkBox9.Location = new System.Drawing.Point(487, 30);
-            this.checkBox9.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBox9.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.checkBox9.Name = "checkBox9";
             this.checkBox9.Size = new System.Drawing.Size(36, 18);
             this.checkBox9.TabIndex = 6;
@@ -1267,9 +1281,9 @@ namespace MAClientGUI
             this.grpAccount.Controls.Add(this.lblUsername);
             this.grpAccount.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.grpAccount.Location = new System.Drawing.Point(22, 13);
-            this.grpAccount.Margin = new System.Windows.Forms.Padding(2);
+            this.grpAccount.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.grpAccount.Name = "grpAccount";
-            this.grpAccount.Padding = new System.Windows.Forms.Padding(2);
+            this.grpAccount.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.grpAccount.Size = new System.Drawing.Size(536, 60);
             this.grpAccount.TabIndex = 1022;
             this.grpAccount.TabStop = false;
@@ -1287,6 +1301,7 @@ namespace MAClientGUI
             this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage6);
             this.tabControl1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.tabControl1.HotTrack = true;
             this.tabControl1.Location = new System.Drawing.Point(9, 38);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tabControl1.Name = "tabControl1";
@@ -1294,6 +1309,7 @@ namespace MAClientGUI
             this.tabControl1.ShowToolTips = true;
             this.tabControl1.Size = new System.Drawing.Size(592, 464);
             this.tabControl1.TabIndex = 1023;
+            this.tabControl1.Click += new System.EventHandler(this.tabControl1_Click);
             // 
             // tabPage0
             // 
@@ -1305,7 +1321,7 @@ namespace MAClientGUI
             this.tabPage0.Controls.Add(this.btnGoBack);
             this.tabPage0.Controls.Add(this.btnSave);
             this.tabPage0.Location = new System.Drawing.Point(4, 26);
-            this.tabPage0.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPage0.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPage0.Name = "tabPage0";
             this.tabPage0.Size = new System.Drawing.Size(584, 434);
             this.tabPage0.TabIndex = 8;
@@ -1315,7 +1331,7 @@ namespace MAClientGUI
             // 
             this.btnDefault.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnDefault.Location = new System.Drawing.Point(496, 308);
-            this.btnDefault.Margin = new System.Windows.Forms.Padding(2);
+            this.btnDefault.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnDefault.Name = "btnDefault";
             this.btnDefault.Size = new System.Drawing.Size(62, 29);
             this.btnDefault.TabIndex = 1053;
@@ -1348,9 +1364,9 @@ namespace MAClientGUI
             this.groupBox10.Controls.Add(this.numInstantFight);
             this.groupBox10.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox10.Location = new System.Drawing.Point(21, 246);
-            this.groupBox10.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox10.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox10.Name = "groupBox10";
-            this.groupBox10.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox10.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox10.Size = new System.Drawing.Size(471, 170);
             this.groupBox10.TabIndex = 1052;
             this.groupBox10.TabStop = false;
@@ -1361,7 +1377,7 @@ namespace MAClientGUI
             this.chkAutoGreet.AutoSize = true;
             this.chkAutoGreet.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkAutoGreet.Location = new System.Drawing.Point(117, 138);
-            this.chkAutoGreet.Margin = new System.Windows.Forms.Padding(2);
+            this.chkAutoGreet.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkAutoGreet.Name = "chkAutoGreet";
             this.chkAutoGreet.Size = new System.Drawing.Size(75, 21);
             this.chkAutoGreet.TabIndex = 1053;
@@ -1373,7 +1389,7 @@ namespace MAClientGUI
             this.chkNewFactor.AutoEllipsis = true;
             this.chkNewFactor.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.chkNewFactor.Location = new System.Drawing.Point(357, 126);
-            this.chkNewFactor.Margin = new System.Windows.Forms.Padding(2);
+            this.chkNewFactor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.chkNewFactor.Name = "chkNewFactor";
             this.chkNewFactor.Size = new System.Drawing.Size(101, 39);
             this.chkNewFactor.TabIndex = 1052;
@@ -1384,7 +1400,7 @@ namespace MAClientGUI
             // 
             this.txtGreetWords.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtGreetWords.Location = new System.Drawing.Point(191, 113);
-            this.txtGreetWords.Margin = new System.Windows.Forms.Padding(2);
+            this.txtGreetWords.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtGreetWords.Multiline = true;
             this.txtGreetWords.Name = "txtGreetWords";
             this.txtGreetWords.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -1394,24 +1410,294 @@ namespace MAClientGUI
             // tabPage8
             // 
             this.tabPage8.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage8.Controls.Add(this.lblPluginState);
+            this.tabPage8.Controls.Add(this.label73);
+            this.tabPage8.Controls.Add(this.label71);
+            this.tabPage8.Controls.Add(this.btnToggleEnable);
+            this.tabPage8.Controls.Add(this.button67);
+            this.tabPage8.Controls.Add(this.button66);
+            this.tabPage8.Controls.Add(this.label83);
+            this.tabPage8.Controls.Add(this.label84);
+            this.tabPage8.Controls.Add(this.label72);
+            this.tabPage8.Controls.Add(this.label82);
+            this.tabPage8.Controls.Add(this.label80);
+            this.tabPage8.Controls.Add(this.txtDisabledPlugins);
+            this.tabPage8.Controls.Add(this.label79);
+            this.tabPage8.Controls.Add(this.label78);
+            this.tabPage8.Controls.Add(this.label76);
+            this.tabPage8.Controls.Add(this.label77);
+            this.tabPage8.Controls.Add(this.label75);
+            this.tabPage8.Controls.Add(this.label74);
+            this.tabPage8.Controls.Add(this.button65);
+            this.tabPage8.Controls.Add(this.button64);
+            this.tabPage8.Controls.Add(this.label70);
             this.tabPage8.Controls.Add(this.label53);
+            this.tabPage8.Controls.Add(this.lstPlugins);
+            this.tabPage8.Controls.Add(this.label81);
             this.tabPage8.ForeColor = System.Drawing.SystemColors.ControlText;
             this.tabPage8.Location = new System.Drawing.Point(4, 26);
-            this.tabPage8.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPage8.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPage8.Name = "tabPage8";
             this.tabPage8.Size = new System.Drawing.Size(584, 434);
             this.tabPage8.TabIndex = 10;
             this.tabPage8.Text = "插件";
             // 
+            // lblPluginState
+            // 
+            this.lblPluginState.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblPluginState.Location = new System.Drawing.Point(307, 61);
+            this.lblPluginState.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblPluginState.Name = "lblPluginState";
+            this.lblPluginState.Size = new System.Drawing.Size(16, 21);
+            this.lblPluginState.TabIndex = 23;
+            this.lblPluginState.Text = "√";
+            // 
+            // label73
+            // 
+            this.label73.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label73.ForeColor = System.Drawing.Color.Firebrick;
+            this.label73.Location = new System.Drawing.Point(525, 61);
+            this.label73.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label73.Name = "label73";
+            this.label73.Size = new System.Drawing.Size(47, 22);
+            this.label73.TabIndex = 7;
+            this.label73.Text = "ｖ0.1";
+            // 
+            // label71
+            // 
+            this.label71.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label71.Location = new System.Drawing.Point(319, 59);
+            this.label71.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label71.Name = "label71";
+            this.label71.Size = new System.Drawing.Size(215, 28);
+            this.label71.TabIndex = 5;
+            this.label71.Text = "文件名";
+            // 
+            // btnToggleEnable
+            // 
+            this.btnToggleEnable.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnToggleEnable.Location = new System.Drawing.Point(517, 356);
+            this.btnToggleEnable.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnToggleEnable.Name = "btnToggleEnable";
+            this.btnToggleEnable.Size = new System.Drawing.Size(58, 23);
+            this.btnToggleEnable.TabIndex = 22;
+            this.btnToggleEnable.Text = "禁用当前";
+            this.btnToggleEnable.UseVisualStyleBackColor = true;
+            this.btnToggleEnable.Click += new System.EventHandler(this.btnToggleEnable_Click);
+            // 
+            // button67
+            // 
+            this.button67.Location = new System.Drawing.Point(517, 401);
+            this.button67.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button67.Name = "button67";
+            this.button67.Size = new System.Drawing.Size(58, 22);
+            this.button67.TabIndex = 21;
+            this.button67.Text = "撤销";
+            this.button67.UseVisualStyleBackColor = true;
+            this.button67.Click += new System.EventHandler(this.button67_Click);
+            // 
+            // button66
+            // 
+            this.button66.Location = new System.Drawing.Point(517, 378);
+            this.button66.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button66.Name = "button66";
+            this.button66.Size = new System.Drawing.Size(58, 23);
+            this.button66.TabIndex = 20;
+            this.button66.Text = "保存";
+            this.button66.UseVisualStyleBackColor = true;
+            this.button66.Click += new System.EventHandler(this.button66_Click);
+            // 
+            // label83
+            // 
+            this.label83.AutoEllipsis = true;
+            this.label83.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label83.Location = new System.Drawing.Point(341, 108);
+            this.label83.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label83.Name = "label83";
+            this.label83.Size = new System.Drawing.Size(215, 35);
+            this.label83.TabIndex = 18;
+            this.label83.Text = "tips";
+            // 
+            // label84
+            // 
+            this.label84.AutoSize = true;
+            this.label84.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label84.Location = new System.Drawing.Point(308, 108);
+            this.label84.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label84.Name = "label84";
+            this.label84.Size = new System.Drawing.Size(32, 17);
+            this.label84.TabIndex = 19;
+            this.label84.Text = "提示";
+            // 
+            // label72
+            // 
+            this.label72.AutoSize = true;
+            this.label72.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label72.Location = new System.Drawing.Point(341, 87);
+            this.label72.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label72.Name = "label72";
+            this.label72.Size = new System.Drawing.Size(35, 17);
+            this.label72.TabIndex = 6;
+            this.label72.Text = "desc";
+            // 
+            // label82
+            // 
+            this.label82.AutoSize = true;
+            this.label82.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label82.Location = new System.Drawing.Point(308, 87);
+            this.label82.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label82.Name = "label82";
+            this.label82.Size = new System.Drawing.Size(32, 17);
+            this.label82.TabIndex = 17;
+            this.label82.Text = "描述";
+            // 
+            // label80
+            // 
+            this.label80.AutoSize = true;
+            this.label80.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label80.Location = new System.Drawing.Point(304, 340);
+            this.label80.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label80.Name = "label80";
+            this.label80.Size = new System.Drawing.Size(104, 17);
+            this.label80.TabIndex = 15;
+            this.label80.Text = "已禁用的插件列表";
+            // 
+            // txtDisabledPlugins
+            // 
+            this.txtDisabledPlugins.Location = new System.Drawing.Point(302, 358);
+            this.txtDisabledPlugins.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtDisabledPlugins.Multiline = true;
+            this.txtDisabledPlugins.Name = "txtDisabledPlugins";
+            this.txtDisabledPlugins.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtDisabledPlugins.Size = new System.Drawing.Size(210, 66);
+            this.txtDisabledPlugins.TabIndex = 14;
+            // 
+            // label79
+            // 
+            this.label79.AutoSize = true;
+            this.label79.Location = new System.Drawing.Point(514, 88);
+            this.label79.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label79.Name = "label79";
+            this.label79.Size = new System.Drawing.Size(46, 17);
+            this.label79.TabIndex = 13;
+            this.label79.Text = "author";
+            // 
+            // label78
+            // 
+            this.label78.AutoSize = true;
+            this.label78.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label78.Location = new System.Drawing.Point(481, 88);
+            this.label78.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label78.Name = "label78";
+            this.label78.Size = new System.Drawing.Size(32, 17);
+            this.label78.TabIndex = 12;
+            this.label78.Text = "作者";
+            // 
+            // label76
+            // 
+            this.label76.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label76.Location = new System.Drawing.Point(453, 162);
+            this.label76.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label76.Name = "label76";
+            this.label76.Size = new System.Drawing.Size(113, 170);
+            this.label76.TabIndex = 11;
+            // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label77.Location = new System.Drawing.Point(450, 143);
+            this.label77.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(56, 17);
+            this.label77.TabIndex = 10;
+            this.label77.Text = "附加命令";
+            // 
+            // label75
+            // 
+            this.label75.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label75.Location = new System.Drawing.Point(308, 162);
+            this.label75.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label75.Name = "label75";
+            this.label75.Size = new System.Drawing.Size(138, 170);
+            this.label75.TabIndex = 9;
+            // 
+            // label74
+            // 
+            this.label74.AutoSize = true;
+            this.label74.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label74.Location = new System.Drawing.Point(308, 143);
+            this.label74.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label74.Name = "label74";
+            this.label74.Size = new System.Drawing.Size(56, 17);
+            this.label74.TabIndex = 8;
+            this.label74.Text = "事件钩子";
+            // 
+            // button65
+            // 
+            this.button65.Location = new System.Drawing.Point(344, 19);
+            this.button65.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button65.Name = "button65";
+            this.button65.Size = new System.Drawing.Size(59, 26);
+            this.button65.TabIndex = 4;
+            this.button65.Text = "选择目录";
+            this.button65.UseVisualStyleBackColor = true;
+            this.button65.Click += new System.EventHandler(this.button65_Click);
+            // 
+            // button64
+            // 
+            this.button64.Location = new System.Drawing.Point(302, 19);
+            this.button64.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button64.Name = "button64";
+            this.button64.Size = new System.Drawing.Size(38, 26);
+            this.button64.TabIndex = 3;
+            this.button64.Text = "刷新";
+            this.button64.UseVisualStyleBackColor = true;
+            this.button64.Click += new System.EventHandler(this.button64_Click);
+            // 
+            // label70
+            // 
+            this.label70.AutoSize = true;
+            this.label70.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label70.ForeColor = System.Drawing.Color.ForestGreen;
+            this.label70.Location = new System.Drawing.Point(526, 19);
+            this.label70.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label70.Name = "label70";
+            this.label70.Size = new System.Drawing.Size(52, 27);
+            this.label70.TabIndex = 2;
+            this.label70.Text = "开启";
+            // 
             // label53
             // 
-            this.label53.AutoSize = true;
-            this.label53.Location = new System.Drawing.Point(262, 125);
+            this.label53.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label53.Location = new System.Drawing.Point(428, 19);
             this.label53.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label53.Name = "label53";
-            this.label53.Size = new System.Drawing.Size(68, 17);
-            this.label53.TabIndex = 0;
-            this.label53.Text = "蛤蛤蛤蛤蛤";
+            this.label53.Size = new System.Drawing.Size(106, 26);
+            this.label53.TabIndex = 1;
+            this.label53.Text = "插件系统已";
+            // 
+            // lstPlugins
+            // 
+            this.lstPlugins.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
+            this.lstPlugins.FormattingEnabled = true;
+            this.lstPlugins.ItemHeight = 50;
+            this.lstPlugins.Location = new System.Drawing.Point(9, 19);
+            this.lstPlugins.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lstPlugins.Name = "lstPlugins";
+            this.lstPlugins.Size = new System.Drawing.Size(285, 404);
+            this.lstPlugins.TabIndex = 0;
+            this.lstPlugins.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lstPlugins_DrawItem);
+            this.lstPlugins.SelectedIndexChanged += new System.EventHandler(this.lstPlugins_SelectedIndexChanged);
+            // 
+            // label81
+            // 
+            this.label81.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label81.Location = new System.Drawing.Point(302, 48);
+            this.label81.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label81.Name = "label81";
+            this.label81.Size = new System.Drawing.Size(274, 292);
+            this.label81.TabIndex = 16;
             // 
             // tabPage4
             // 
@@ -1428,7 +1714,7 @@ namespace MAClientGUI
             this.tabPage4.Controls.Add(this.button29);
             this.tabPage4.Controls.Add(this.groupBox7);
             this.tabPage4.Location = new System.Drawing.Point(4, 26);
-            this.tabPage4.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPage4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Size = new System.Drawing.Size(584, 434);
             this.tabPage4.TabIndex = 3;
@@ -1439,7 +1725,7 @@ namespace MAClientGUI
             // 
             this.txtCondCarddeck.Font = new System.Drawing.Font("Lucida Console", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCondCarddeck.Location = new System.Drawing.Point(11, 11);
-            this.txtCondCarddeck.Margin = new System.Windows.Forms.Padding(2);
+            this.txtCondCarddeck.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtCondCarddeck.Multiline = true;
             this.txtCondCarddeck.Name = "txtCondCarddeck";
             this.txtCondCarddeck.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -1453,9 +1739,9 @@ namespace MAClientGUI
             this.groupBox8.Controls.Add(this.textBox23);
             this.groupBox8.Font = new System.Drawing.Font("微软雅黑", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox8.Location = new System.Drawing.Point(410, 170);
-            this.groupBox8.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox8.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox8.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox8.Size = new System.Drawing.Size(162, 87);
             this.groupBox8.TabIndex = 9;
             this.groupBox8.TabStop = false;
@@ -1465,7 +1751,7 @@ namespace MAClientGUI
             // 
             this.textBox23.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox23.Location = new System.Drawing.Point(14, 36);
-            this.textBox23.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox23.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox23.Multiline = true;
             this.textBox23.Name = "textBox23";
             this.textBox23.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
@@ -1504,9 +1790,9 @@ namespace MAClientGUI
             this.groupBox9.Controls.Add(this.button36);
             this.groupBox9.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox9.Location = new System.Drawing.Point(11, 170);
-            this.groupBox9.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox9.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox9.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox9.Size = new System.Drawing.Size(242, 256);
             this.groupBox9.TabIndex = 8;
             this.groupBox9.TabStop = false;
@@ -1560,7 +1846,7 @@ namespace MAClientGUI
             // 
             this.button49.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button49.Location = new System.Drawing.Point(145, 187);
-            this.button49.Margin = new System.Windows.Forms.Padding(2);
+            this.button49.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button49.Name = "button49";
             this.button49.Size = new System.Drawing.Size(82, 26);
             this.button49.TabIndex = 21;
@@ -1583,7 +1869,7 @@ namespace MAClientGUI
             // 
             this.textBox32.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox32.Location = new System.Drawing.Point(129, 152);
-            this.textBox32.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox32.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox32.Name = "textBox32";
             this.textBox32.Size = new System.Drawing.Size(25, 23);
             this.textBox32.TabIndex = 19;
@@ -1593,7 +1879,7 @@ namespace MAClientGUI
             // 
             this.button37.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button37.Location = new System.Drawing.Point(17, 150);
-            this.button37.Margin = new System.Windows.Forms.Padding(2);
+            this.button37.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button37.Name = "button37";
             this.button37.Size = new System.Drawing.Size(62, 26);
             this.button37.TabIndex = 18;
@@ -1605,7 +1891,7 @@ namespace MAClientGUI
             // 
             this.textBox29.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox29.Location = new System.Drawing.Point(206, 118);
-            this.textBox29.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox29.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox29.Name = "textBox29";
             this.textBox29.Size = new System.Drawing.Size(22, 23);
             this.textBox29.TabIndex = 17;
@@ -1616,7 +1902,7 @@ namespace MAClientGUI
             // 
             this.textBox30.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox30.Location = new System.Drawing.Point(172, 118);
-            this.textBox30.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox30.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox30.Name = "textBox30";
             this.textBox30.Size = new System.Drawing.Size(22, 23);
             this.textBox30.TabIndex = 16;
@@ -1627,7 +1913,7 @@ namespace MAClientGUI
             // 
             this.textBox31.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox31.Location = new System.Drawing.Point(141, 118);
-            this.textBox31.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox31.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox31.Name = "textBox31";
             this.textBox31.Size = new System.Drawing.Size(19, 23);
             this.textBox31.TabIndex = 15;
@@ -1638,7 +1924,7 @@ namespace MAClientGUI
             // 
             this.button30.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button30.Location = new System.Drawing.Point(17, 114);
-            this.button30.Margin = new System.Windows.Forms.Padding(2);
+            this.button30.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button30.Name = "button30";
             this.button30.Size = new System.Drawing.Size(110, 26);
             this.button30.TabIndex = 14;
@@ -1650,7 +1936,7 @@ namespace MAClientGUI
             // 
             this.button32.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button32.Location = new System.Drawing.Point(165, 152);
-            this.button32.Margin = new System.Windows.Forms.Padding(2);
+            this.button32.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button32.Name = "button32";
             this.button32.Size = new System.Drawing.Size(62, 26);
             this.button32.TabIndex = 12;
@@ -1662,7 +1948,7 @@ namespace MAClientGUI
             // 
             this.button33.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button33.Location = new System.Drawing.Point(17, 187);
-            this.button33.Margin = new System.Windows.Forms.Padding(2);
+            this.button33.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button33.Name = "button33";
             this.button33.Size = new System.Drawing.Size(123, 26);
             this.button33.TabIndex = 9;
@@ -1674,7 +1960,7 @@ namespace MAClientGUI
             // 
             this.button34.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button34.Location = new System.Drawing.Point(17, 224);
-            this.button34.Margin = new System.Windows.Forms.Padding(2);
+            this.button34.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button34.Name = "button34";
             this.button34.Size = new System.Drawing.Size(123, 26);
             this.button34.TabIndex = 8;
@@ -1686,7 +1972,7 @@ namespace MAClientGUI
             // 
             this.textBox24.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox24.Location = new System.Drawing.Point(124, 79);
-            this.textBox24.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox24.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox24.Name = "textBox24";
             this.textBox24.Size = new System.Drawing.Size(36, 23);
             this.textBox24.TabIndex = 7;
@@ -1696,7 +1982,7 @@ namespace MAClientGUI
             // 
             this.textBox25.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox25.Location = new System.Drawing.Point(174, 79);
-            this.textBox25.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox25.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox25.Name = "textBox25";
             this.textBox25.Size = new System.Drawing.Size(51, 23);
             this.textBox25.TabIndex = 6;
@@ -1706,7 +1992,7 @@ namespace MAClientGUI
             // 
             this.textBox26.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox26.Location = new System.Drawing.Point(174, 42);
-            this.textBox26.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox26.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox26.Name = "textBox26";
             this.textBox26.Size = new System.Drawing.Size(36, 23);
             this.textBox26.TabIndex = 5;
@@ -1716,7 +2002,7 @@ namespace MAClientGUI
             // 
             this.textBox27.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox27.Location = new System.Drawing.Point(124, 42);
-            this.textBox27.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox27.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox27.Name = "textBox27";
             this.textBox27.Size = new System.Drawing.Size(36, 23);
             this.textBox27.TabIndex = 4;
@@ -1748,7 +2034,7 @@ namespace MAClientGUI
             // 
             this.button35.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button35.Location = new System.Drawing.Point(17, 78);
-            this.button35.Margin = new System.Windows.Forms.Padding(2);
+            this.button35.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button35.Name = "button35";
             this.button35.Size = new System.Drawing.Size(46, 26);
             this.button35.TabIndex = 1;
@@ -1760,7 +2046,7 @@ namespace MAClientGUI
             // 
             this.button36.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button36.Location = new System.Drawing.Point(17, 39);
-            this.button36.Margin = new System.Windows.Forms.Padding(2);
+            this.button36.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button36.Name = "button36";
             this.button36.Size = new System.Drawing.Size(46, 26);
             this.button36.TabIndex = 0;
@@ -1787,9 +2073,9 @@ namespace MAClientGUI
             this.groupBox11.Enabled = false;
             this.groupBox11.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox11.Location = new System.Drawing.Point(257, 170);
-            this.groupBox11.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox11.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox11.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox11.Size = new System.Drawing.Size(147, 256);
             this.groupBox11.TabIndex = 24;
             this.groupBox11.TabStop = false;
@@ -1812,7 +2098,7 @@ namespace MAClientGUI
             // 
             this.txtCardIncl.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtCardIncl.Location = new System.Drawing.Point(75, 162);
-            this.txtCardIncl.Margin = new System.Windows.Forms.Padding(2);
+            this.txtCardIncl.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtCardIncl.Multiline = true;
             this.txtCardIncl.Name = "txtCardIncl";
             this.txtCardIncl.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -1840,7 +2126,7 @@ namespace MAClientGUI
             "2排",
             "3排"});
             this.cboLineCnt.Location = new System.Drawing.Point(53, 65);
-            this.cboLineCnt.Margin = new System.Windows.Forms.Padding(2);
+            this.cboLineCnt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboLineCnt.Name = "cboLineCnt";
             this.cboLineCnt.Size = new System.Drawing.Size(42, 25);
             this.cboLineCnt.TabIndex = 1002;
@@ -1861,7 +2147,7 @@ namespace MAClientGUI
             // 
             this.txtCardEval.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtCardEval.Location = new System.Drawing.Point(4, 162);
-            this.txtCardEval.Margin = new System.Windows.Forms.Padding(2);
+            this.txtCardEval.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtCardEval.Multiline = true;
             this.txtCardEval.Name = "txtCardEval";
             this.txtCardEval.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -1885,7 +2171,7 @@ namespace MAClientGUI
             this.txtBCLimit.Enabled = false;
             this.txtBCLimit.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtBCLimit.Location = new System.Drawing.Point(115, 37);
-            this.txtBCLimit.Margin = new System.Windows.Forms.Padding(2);
+            this.txtBCLimit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtBCLimit.Name = "txtBCLimit";
             this.txtBCLimit.Size = new System.Drawing.Size(25, 23);
             this.txtBCLimit.TabIndex = 1005;
@@ -1902,7 +2188,7 @@ namespace MAClientGUI
             "最大BC",
             "指定BC"});
             this.cboBCLimit.Location = new System.Drawing.Point(52, 35);
-            this.cboBCLimit.Margin = new System.Windows.Forms.Padding(2);
+            this.cboBCLimit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboBCLimit.Name = "cboBCLimit";
             this.cboBCLimit.Size = new System.Drawing.Size(59, 25);
             this.cboBCLimit.TabIndex = 1004;
@@ -1929,7 +2215,7 @@ namespace MAClientGUI
             "最大CP卡组",
             "击败当前妖精"});
             this.cboAim.Location = new System.Drawing.Point(53, 92);
-            this.cboAim.Margin = new System.Windows.Forms.Padding(2);
+            this.cboAim.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cboAim.Name = "cboAim";
             this.cboAim.Size = new System.Drawing.Size(90, 25);
             this.cboAim.TabIndex = 1000;
@@ -1958,7 +2244,7 @@ namespace MAClientGUI
             // 
             this.button60.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button60.Location = new System.Drawing.Point(436, 262);
-            this.button60.Margin = new System.Windows.Forms.Padding(2);
+            this.button60.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button60.Name = "button60";
             this.button60.Size = new System.Drawing.Size(136, 23);
             this.button60.TabIndex = 25;
@@ -1971,7 +2257,7 @@ namespace MAClientGUI
             this.button43.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.button43.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button43.Location = new System.Drawing.Point(540, 102);
-            this.button43.Margin = new System.Windows.Forms.Padding(2);
+            this.button43.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button43.Name = "button43";
             this.button43.Size = new System.Drawing.Size(20, 20);
             this.button43.TabIndex = 19;
@@ -1991,7 +2277,7 @@ namespace MAClientGUI
             // button28
             // 
             this.button28.Location = new System.Drawing.Point(491, 394);
-            this.button28.Margin = new System.Windows.Forms.Padding(2);
+            this.button28.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button28.Name = "button28";
             this.button28.Size = new System.Drawing.Size(68, 32);
             this.button28.TabIndex = 12;
@@ -2002,7 +2288,7 @@ namespace MAClientGUI
             // button29
             // 
             this.button29.Location = new System.Drawing.Point(410, 394);
-            this.button29.Margin = new System.Windows.Forms.Padding(2);
+            this.button29.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button29.Name = "button29";
             this.button29.Size = new System.Drawing.Size(68, 32);
             this.button29.TabIndex = 11;
@@ -2016,9 +2302,9 @@ namespace MAClientGUI
             this.groupBox7.Controls.Add(this.label36);
             this.groupBox7.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox7.Location = new System.Drawing.Point(410, 287);
-            this.groupBox7.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox7.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox7.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox7.Size = new System.Drawing.Size(165, 94);
             this.groupBox7.TabIndex = 10;
             this.groupBox7.TabStop = false;
@@ -2028,7 +2314,7 @@ namespace MAClientGUI
             // 
             this.textBox20.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox20.Location = new System.Drawing.Point(29, 46);
-            this.textBox20.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox20.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox20.Name = "textBox20";
             this.textBox20.Size = new System.Drawing.Size(122, 25);
             this.textBox20.TabIndex = 8;
@@ -2056,7 +2342,7 @@ namespace MAClientGUI
             this.tabPage7.Controls.Add(this.grpTaskerIf);
             this.tabPage7.Controls.Add(this.btnTaskerReset);
             this.tabPage7.Location = new System.Drawing.Point(4, 26);
-            this.tabPage7.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPage7.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Size = new System.Drawing.Size(584, 434);
             this.tabPage7.TabIndex = 9;
@@ -2079,7 +2365,7 @@ namespace MAClientGUI
             // 
             this.button39.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button39.Location = new System.Drawing.Point(540, 102);
-            this.button39.Margin = new System.Windows.Forms.Padding(2);
+            this.button39.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button39.Name = "button39";
             this.button39.Size = new System.Drawing.Size(20, 20);
             this.button39.TabIndex = 8;
@@ -2090,8 +2376,8 @@ namespace MAClientGUI
             // txtCondTasker
             // 
             this.txtCondTasker.Font = new System.Drawing.Font("Lucida Console", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCondTasker.Location = new System.Drawing.Point(12, 11);
-            this.txtCondTasker.Margin = new System.Windows.Forms.Padding(2);
+            this.txtCondTasker.Location = new System.Drawing.Point(11, 11);
+            this.txtCondTasker.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtCondTasker.Multiline = true;
             this.txtCondTasker.Name = "txtCondTasker";
             this.txtCondTasker.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -2111,7 +2397,7 @@ namespace MAClientGUI
             // btnTaskerSave
             // 
             this.btnTaskerSave.Location = new System.Drawing.Point(475, 348);
-            this.btnTaskerSave.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTaskerSave.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnTaskerSave.Name = "btnTaskerSave";
             this.btnTaskerSave.Size = new System.Drawing.Size(68, 32);
             this.btnTaskerSave.TabIndex = 5;
@@ -2125,9 +2411,9 @@ namespace MAClientGUI
             this.groupBox1.Controls.Add(this.label22);
             this.groupBox1.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox1.Location = new System.Drawing.Point(289, 334);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox1.Size = new System.Drawing.Size(164, 94);
             this.groupBox1.TabIndex = 4;
             this.groupBox1.TabStop = false;
@@ -2172,9 +2458,9 @@ namespace MAClientGUI
             this.grpTaskerThen.Controls.Add(this.label21);
             this.grpTaskerThen.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.grpTaskerThen.Location = new System.Drawing.Point(289, 172);
-            this.grpTaskerThen.Margin = new System.Windows.Forms.Padding(2);
+            this.grpTaskerThen.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.grpTaskerThen.Name = "grpTaskerThen";
-            this.grpTaskerThen.Padding = new System.Windows.Forms.Padding(2);
+            this.grpTaskerThen.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.grpTaskerThen.Size = new System.Drawing.Size(286, 157);
             this.grpTaskerThen.TabIndex = 3;
             this.grpTaskerThen.TabStop = false;
@@ -2189,7 +2475,7 @@ namespace MAClientGUI
             0,
             0});
             this.numericUpDown6.Location = new System.Drawing.Point(84, 130);
-            this.numericUpDown6.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDown6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numericUpDown6.Maximum = new decimal(new int[] {
             60,
             0,
@@ -2214,7 +2500,7 @@ namespace MAClientGUI
             // 
             this.button54.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button54.Location = new System.Drawing.Point(10, 125);
-            this.button54.Margin = new System.Windows.Forms.Padding(2);
+            this.button54.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button54.Name = "button54";
             this.button54.Size = new System.Drawing.Size(68, 27);
             this.button54.TabIndex = 12;
@@ -2237,7 +2523,7 @@ namespace MAClientGUI
             // 
             this.textBox28.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox28.Location = new System.Drawing.Point(174, 87);
-            this.textBox28.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox28.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox28.Name = "textBox28";
             this.textBox28.Size = new System.Drawing.Size(18, 25);
             this.textBox28.TabIndex = 10;
@@ -2246,7 +2532,7 @@ namespace MAClientGUI
             // 
             this.numericUpDown1.Font = new System.Drawing.Font("微软雅黑", 10.2F);
             this.numericUpDown1.Location = new System.Drawing.Point(240, 48);
-            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDown1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numericUpDown1.Minimum = new decimal(new int[] {
             1,
             0,
@@ -2276,7 +2562,7 @@ namespace MAClientGUI
             // 
             this.button52.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button52.Location = new System.Drawing.Point(169, 46);
-            this.button52.Margin = new System.Windows.Forms.Padding(2);
+            this.button52.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button52.Name = "button52";
             this.button52.Size = new System.Drawing.Size(67, 27);
             this.button52.TabIndex = 7;
@@ -2288,7 +2574,7 @@ namespace MAClientGUI
             // 
             this.txtTaskerBCLimit.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtTaskerBCLimit.Location = new System.Drawing.Point(109, 87);
-            this.txtTaskerBCLimit.Margin = new System.Windows.Forms.Padding(2);
+            this.txtTaskerBCLimit.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtTaskerBCLimit.Name = "txtTaskerBCLimit";
             this.txtTaskerBCLimit.Size = new System.Drawing.Size(25, 25);
             this.txtTaskerBCLimit.TabIndex = 6;
@@ -2309,7 +2595,7 @@ namespace MAClientGUI
             // 
             this.button2.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button2.Location = new System.Drawing.Point(9, 86);
-            this.button2.Margin = new System.Windows.Forms.Padding(2);
+            this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(68, 27);
             this.button2.TabIndex = 4;
@@ -2321,7 +2607,7 @@ namespace MAClientGUI
             // 
             this.button1.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button1.Location = new System.Drawing.Point(203, 125);
-            this.button1.Margin = new System.Windows.Forms.Padding(2);
+            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(68, 27);
             this.button1.TabIndex = 3;
@@ -2333,7 +2619,7 @@ namespace MAClientGUI
             // 
             this.txtSetCard.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.txtSetCard.Location = new System.Drawing.Point(81, 46);
-            this.txtSetCard.Margin = new System.Windows.Forms.Padding(2);
+            this.txtSetCard.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtSetCard.Name = "txtSetCard";
             this.txtSetCard.Size = new System.Drawing.Size(76, 25);
             this.txtSetCard.TabIndex = 2;
@@ -2342,7 +2628,7 @@ namespace MAClientGUI
             // 
             this.btnTaskerSetCard.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnTaskerSetCard.Location = new System.Drawing.Point(9, 45);
-            this.btnTaskerSetCard.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTaskerSetCard.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnTaskerSetCard.Name = "btnTaskerSetCard";
             this.btnTaskerSetCard.Size = new System.Drawing.Size(68, 27);
             this.btnTaskerSetCard.TabIndex = 1;
@@ -2385,9 +2671,9 @@ namespace MAClientGUI
             this.grpTaskerIf.Controls.Add(this.btnTaskerBC);
             this.grpTaskerIf.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.grpTaskerIf.Location = new System.Drawing.Point(13, 172);
-            this.grpTaskerIf.Margin = new System.Windows.Forms.Padding(2);
+            this.grpTaskerIf.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.grpTaskerIf.Name = "grpTaskerIf";
-            this.grpTaskerIf.Padding = new System.Windows.Forms.Padding(2);
+            this.grpTaskerIf.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.grpTaskerIf.Size = new System.Drawing.Size(254, 256);
             this.grpTaskerIf.TabIndex = 2;
             this.grpTaskerIf.TabStop = false;
@@ -2419,7 +2705,7 @@ namespace MAClientGUI
             // 
             this.button53.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button53.Location = new System.Drawing.Point(10, 181);
-            this.button53.Margin = new System.Windows.Forms.Padding(2);
+            this.button53.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button53.Name = "button53";
             this.button53.Size = new System.Drawing.Size(104, 30);
             this.button53.TabIndex = 20;
@@ -2485,7 +2771,7 @@ namespace MAClientGUI
             // 
             this.numericUpDown5.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.numericUpDown5.Location = new System.Drawing.Point(34, 157);
-            this.numericUpDown5.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDown5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numericUpDown5.Maximum = new decimal(new int[] {
             23,
             0,
@@ -2504,7 +2790,7 @@ namespace MAClientGUI
             0,
             0});
             this.numericUpDown4.Location = new System.Drawing.Point(82, 158);
-            this.numericUpDown4.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDown4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numericUpDown4.Maximum = new decimal(new int[] {
             60,
             0,
@@ -2518,7 +2804,7 @@ namespace MAClientGUI
             // 
             this.numericUpDown3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.numericUpDown3.Location = new System.Drawing.Point(34, 214);
-            this.numericUpDown3.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDown3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numericUpDown3.Maximum = new decimal(new int[] {
             23,
             0,
@@ -2542,7 +2828,7 @@ namespace MAClientGUI
             0,
             0});
             this.numericUpDown2.Location = new System.Drawing.Point(82, 214);
-            this.numericUpDown2.Margin = new System.Windows.Forms.Padding(2);
+            this.numericUpDown2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.numericUpDown2.Maximum = new decimal(new int[] {
             60,
             0,
@@ -2561,7 +2847,7 @@ namespace MAClientGUI
             // 
             this.button17.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button17.Location = new System.Drawing.Point(130, 206);
-            this.button17.Margin = new System.Windows.Forms.Padding(2);
+            this.button17.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button17.Name = "button17";
             this.button17.Size = new System.Drawing.Size(105, 31);
             this.button17.TabIndex = 9;
@@ -2573,7 +2859,7 @@ namespace MAClientGUI
             // 
             this.button18.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button18.Location = new System.Drawing.Point(130, 154);
-            this.button18.Margin = new System.Windows.Forms.Padding(2);
+            this.button18.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button18.Name = "button18";
             this.button18.Size = new System.Drawing.Size(105, 31);
             this.button18.TabIndex = 8;
@@ -2585,7 +2871,7 @@ namespace MAClientGUI
             // 
             this.textBox3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox3.Location = new System.Drawing.Point(142, 110);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(36, 23);
             this.textBox3.TabIndex = 7;
@@ -2595,7 +2881,7 @@ namespace MAClientGUI
             // 
             this.textBox4.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox4.Location = new System.Drawing.Point(201, 110);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(36, 23);
             this.textBox4.TabIndex = 6;
@@ -2605,7 +2891,7 @@ namespace MAClientGUI
             // 
             this.textBox2.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox2.Location = new System.Drawing.Point(201, 60);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(36, 23);
             this.textBox2.TabIndex = 5;
@@ -2615,7 +2901,7 @@ namespace MAClientGUI
             // 
             this.textBox1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox1.Location = new System.Drawing.Point(142, 60);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(36, 23);
             this.textBox1.TabIndex = 4;
@@ -2647,7 +2933,7 @@ namespace MAClientGUI
             // 
             this.btnTaskerAP.Font = new System.Drawing.Font("微软雅黑", 10.2F);
             this.btnTaskerAP.Location = new System.Drawing.Point(17, 104);
-            this.btnTaskerAP.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTaskerAP.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnTaskerAP.Name = "btnTaskerAP";
             this.btnTaskerAP.Size = new System.Drawing.Size(56, 31);
             this.btnTaskerAP.TabIndex = 1;
@@ -2659,7 +2945,7 @@ namespace MAClientGUI
             // 
             this.btnTaskerBC.Font = new System.Drawing.Font("微软雅黑", 10.2F);
             this.btnTaskerBC.Location = new System.Drawing.Point(17, 54);
-            this.btnTaskerBC.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTaskerBC.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnTaskerBC.Name = "btnTaskerBC";
             this.btnTaskerBC.Size = new System.Drawing.Size(56, 31);
             this.btnTaskerBC.TabIndex = 0;
@@ -2670,7 +2956,7 @@ namespace MAClientGUI
             // btnTaskerReset
             // 
             this.btnTaskerReset.Location = new System.Drawing.Point(475, 396);
-            this.btnTaskerReset.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTaskerReset.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnTaskerReset.Name = "btnTaskerReset";
             this.btnTaskerReset.Size = new System.Drawing.Size(68, 32);
             this.btnTaskerReset.TabIndex = 6;
@@ -2688,7 +2974,7 @@ namespace MAClientGUI
             this.tabPage1.Controls.Add(this.lblFairyCache);
             this.tabPage1.Controls.Add(this.groupBox6);
             this.tabPage1.Location = new System.Drawing.Point(4, 26);
-            this.tabPage1.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Size = new System.Drawing.Size(584, 434);
             this.tabPage1.TabIndex = 6;
@@ -2698,7 +2984,7 @@ namespace MAClientGUI
             // 
             this.button40.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button40.Location = new System.Drawing.Point(540, 102);
-            this.button40.Margin = new System.Windows.Forms.Padding(2);
+            this.button40.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button40.Name = "button40";
             this.button40.Size = new System.Drawing.Size(20, 20);
             this.button40.TabIndex = 19;
@@ -2710,7 +2996,7 @@ namespace MAClientGUI
             // 
             this.txtCondFairy.Font = new System.Drawing.Font("Lucida Console", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCondFairy.Location = new System.Drawing.Point(11, 11);
-            this.txtCondFairy.Margin = new System.Windows.Forms.Padding(2);
+            this.txtCondFairy.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtCondFairy.Multiline = true;
             this.txtCondFairy.Name = "txtCondFairy";
             this.txtCondFairy.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -2722,7 +3008,7 @@ namespace MAClientGUI
             // button21
             // 
             this.button21.Location = new System.Drawing.Point(472, 349);
-            this.button21.Margin = new System.Windows.Forms.Padding(2);
+            this.button21.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button21.Name = "button21";
             this.button21.Size = new System.Drawing.Size(68, 32);
             this.button21.TabIndex = 18;
@@ -2733,7 +3019,7 @@ namespace MAClientGUI
             // button22
             // 
             this.button22.Location = new System.Drawing.Point(472, 301);
-            this.button22.Margin = new System.Windows.Forms.Padding(2);
+            this.button22.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button22.Name = "button22";
             this.button22.Size = new System.Drawing.Size(68, 32);
             this.button22.TabIndex = 17;
@@ -2767,9 +3053,9 @@ namespace MAClientGUI
             this.groupBox6.Controls.Add(this.button26);
             this.groupBox6.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox6.Location = new System.Drawing.Point(11, 170);
-            this.groupBox6.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox6.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox6.Size = new System.Drawing.Size(390, 256);
             this.groupBox6.TabIndex = 15;
             this.groupBox6.TabStop = false;
@@ -2779,7 +3065,7 @@ namespace MAClientGUI
             // 
             this.button62.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button62.Location = new System.Drawing.Point(290, 145);
-            this.button62.Margin = new System.Windows.Forms.Padding(2);
+            this.button62.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button62.Name = "button62";
             this.button62.Size = new System.Drawing.Size(91, 31);
             this.button62.TabIndex = 16;
@@ -2791,7 +3077,7 @@ namespace MAClientGUI
             // 
             this.button56.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button56.Location = new System.Drawing.Point(196, 145);
-            this.button56.Margin = new System.Windows.Forms.Padding(2);
+            this.button56.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button56.Name = "button56";
             this.button56.Size = new System.Drawing.Size(91, 31);
             this.button56.TabIndex = 15;
@@ -2803,7 +3089,7 @@ namespace MAClientGUI
             // 
             this.button47.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button47.Location = new System.Drawing.Point(200, 55);
-            this.button47.Margin = new System.Windows.Forms.Padding(2);
+            this.button47.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button47.Name = "button47";
             this.button47.Size = new System.Drawing.Size(103, 31);
             this.button47.TabIndex = 14;
@@ -2815,7 +3101,7 @@ namespace MAClientGUI
             // 
             this.button27.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button27.Location = new System.Drawing.Point(103, 145);
-            this.button27.Margin = new System.Windows.Forms.Padding(2);
+            this.button27.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button27.Name = "button27";
             this.button27.Size = new System.Drawing.Size(91, 31);
             this.button27.TabIndex = 13;
@@ -2827,7 +3113,7 @@ namespace MAClientGUI
             // 
             this.button46.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button46.Location = new System.Drawing.Point(200, 101);
-            this.button46.Margin = new System.Windows.Forms.Padding(2);
+            this.button46.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button46.Name = "button46";
             this.button46.Size = new System.Drawing.Size(103, 31);
             this.button46.TabIndex = 12;
@@ -2839,7 +3125,7 @@ namespace MAClientGUI
             // 
             this.textBox19.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox19.Location = new System.Drawing.Point(265, 205);
-            this.textBox19.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox19.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox19.Name = "textBox19";
             this.textBox19.Size = new System.Drawing.Size(22, 25);
             this.textBox19.TabIndex = 11;
@@ -2861,7 +3147,7 @@ namespace MAClientGUI
             // 
             this.textBox18.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox18.Location = new System.Drawing.Point(232, 205);
-            this.textBox18.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox18.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox18.Name = "textBox18";
             this.textBox18.Size = new System.Drawing.Size(22, 25);
             this.textBox18.TabIndex = 9;
@@ -2883,7 +3169,7 @@ namespace MAClientGUI
             // 
             this.textBox17.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox17.Location = new System.Drawing.Point(200, 205);
-            this.textBox17.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox17.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox17.Name = "textBox17";
             this.textBox17.Size = new System.Drawing.Size(19, 25);
             this.textBox17.TabIndex = 5;
@@ -2894,7 +3180,7 @@ namespace MAClientGUI
             // 
             this.button23.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button23.Location = new System.Drawing.Point(69, 198);
-            this.button23.Margin = new System.Windows.Forms.Padding(2);
+            this.button23.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button23.Name = "button23";
             this.button23.Size = new System.Drawing.Size(110, 31);
             this.button23.TabIndex = 3;
@@ -2906,7 +3192,7 @@ namespace MAClientGUI
             // 
             this.button24.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button24.Location = new System.Drawing.Point(9, 145);
-            this.button24.Margin = new System.Windows.Forms.Padding(2);
+            this.button24.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button24.Name = "button24";
             this.button24.Size = new System.Drawing.Size(91, 31);
             this.button24.TabIndex = 2;
@@ -2918,7 +3204,7 @@ namespace MAClientGUI
             // 
             this.button25.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button25.Location = new System.Drawing.Point(69, 101);
-            this.button25.Margin = new System.Windows.Forms.Padding(2);
+            this.button25.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button25.Name = "button25";
             this.button25.Size = new System.Drawing.Size(102, 31);
             this.button25.TabIndex = 1;
@@ -2930,7 +3216,7 @@ namespace MAClientGUI
             // 
             this.button26.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button26.Location = new System.Drawing.Point(69, 55);
-            this.button26.Margin = new System.Windows.Forms.Padding(2);
+            this.button26.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button26.Name = "button26";
             this.button26.Size = new System.Drawing.Size(102, 31);
             this.button26.TabIndex = 0;
@@ -2946,7 +3232,7 @@ namespace MAClientGUI
             this.tabPage2.Controls.Add(this.button55);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Location = new System.Drawing.Point(4, 26);
-            this.tabPage2.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPage2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Size = new System.Drawing.Size(584, 434);
             this.tabPage2.TabIndex = 7;
@@ -2956,7 +3242,7 @@ namespace MAClientGUI
             // 
             this.button41.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button41.Location = new System.Drawing.Point(540, 102);
-            this.button41.Margin = new System.Windows.Forms.Padding(2);
+            this.button41.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button41.Name = "button41";
             this.button41.Size = new System.Drawing.Size(20, 20);
             this.button41.TabIndex = 15;
@@ -2968,7 +3254,7 @@ namespace MAClientGUI
             // 
             this.txtCondExplore.Font = new System.Drawing.Font("Lucida Console", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCondExplore.Location = new System.Drawing.Point(11, 11);
-            this.txtCondExplore.Margin = new System.Windows.Forms.Padding(2);
+            this.txtCondExplore.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtCondExplore.Multiline = true;
             this.txtCondExplore.Name = "txtCondExplore";
             this.txtCondExplore.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -2981,7 +3267,7 @@ namespace MAClientGUI
             // 
             this.button55.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button55.Location = new System.Drawing.Point(450, 331);
-            this.button55.Margin = new System.Windows.Forms.Padding(2);
+            this.button55.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button55.Name = "button55";
             this.button55.Size = new System.Drawing.Size(78, 38);
             this.button55.TabIndex = 8;
@@ -3002,9 +3288,9 @@ namespace MAClientGUI
             this.groupBox2.Controls.Add(this.button7);
             this.groupBox2.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox2.Location = new System.Drawing.Point(11, 170);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox2.Size = new System.Drawing.Size(390, 256);
             this.groupBox2.TabIndex = 13;
             this.groupBox2.TabStop = false;
@@ -3014,7 +3300,7 @@ namespace MAClientGUI
             // 
             this.button61.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button61.Location = new System.Drawing.Point(116, 108);
-            this.button61.Margin = new System.Windows.Forms.Padding(2);
+            this.button61.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button61.Name = "button61";
             this.button61.Size = new System.Drawing.Size(77, 31);
             this.button61.TabIndex = 8;
@@ -3026,7 +3312,7 @@ namespace MAClientGUI
             // 
             this.button9.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button9.Location = new System.Drawing.Point(204, 109);
-            this.button9.Margin = new System.Windows.Forms.Padding(2);
+            this.button9.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(123, 31);
             this.button9.TabIndex = 7;
@@ -3038,7 +3324,7 @@ namespace MAClientGUI
             // 
             this.button8.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button8.Location = new System.Drawing.Point(204, 59);
-            this.button8.Margin = new System.Windows.Forms.Padding(2);
+            this.button8.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(123, 31);
             this.button8.TabIndex = 6;
@@ -3050,7 +3336,7 @@ namespace MAClientGUI
             // 
             this.textBox13.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox13.Location = new System.Drawing.Point(180, 202);
-            this.textBox13.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox13.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox13.Name = "textBox13";
             this.textBox13.Size = new System.Drawing.Size(148, 25);
             this.textBox13.TabIndex = 5;
@@ -3059,7 +3345,7 @@ namespace MAClientGUI
             // 
             this.textBox12.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox12.Location = new System.Drawing.Point(180, 161);
-            this.textBox12.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox12.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new System.Drawing.Size(148, 25);
             this.textBox12.TabIndex = 4;
@@ -3068,7 +3354,7 @@ namespace MAClientGUI
             // 
             this.button6.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button6.Location = new System.Drawing.Point(68, 198);
-            this.button6.Margin = new System.Windows.Forms.Padding(2);
+            this.button6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(92, 31);
             this.button6.TabIndex = 3;
@@ -3080,7 +3366,7 @@ namespace MAClientGUI
             // 
             this.button5.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button5.Location = new System.Drawing.Point(68, 154);
-            this.button5.Margin = new System.Windows.Forms.Padding(2);
+            this.button5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(92, 31);
             this.button5.TabIndex = 2;
@@ -3092,7 +3378,7 @@ namespace MAClientGUI
             // 
             this.button4.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button4.Location = new System.Drawing.Point(28, 108);
-            this.button4.Margin = new System.Windows.Forms.Padding(2);
+            this.button4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(77, 31);
             this.button4.TabIndex = 1;
@@ -3104,7 +3390,7 @@ namespace MAClientGUI
             // 
             this.button7.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button7.Location = new System.Drawing.Point(68, 59);
-            this.button7.Margin = new System.Windows.Forms.Padding(2);
+            this.button7.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(92, 31);
             this.button7.TabIndex = 0;
@@ -3120,7 +3406,7 @@ namespace MAClientGUI
             this.tabPage3.Controls.Add(this.button57);
             this.tabPage3.Controls.Add(this.groupBox3);
             this.tabPage3.Location = new System.Drawing.Point(4, 26);
-            this.tabPage3.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPage3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(584, 434);
             this.tabPage3.TabIndex = 2;
@@ -3131,7 +3417,7 @@ namespace MAClientGUI
             // 
             this.button42.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button42.Location = new System.Drawing.Point(540, 102);
-            this.button42.Margin = new System.Windows.Forms.Padding(2);
+            this.button42.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button42.Name = "button42";
             this.button42.Size = new System.Drawing.Size(20, 20);
             this.button42.TabIndex = 18;
@@ -3143,7 +3429,7 @@ namespace MAClientGUI
             // 
             this.txtCondFloor.Font = new System.Drawing.Font("Lucida Console", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCondFloor.Location = new System.Drawing.Point(11, 11);
-            this.txtCondFloor.Margin = new System.Windows.Forms.Padding(2);
+            this.txtCondFloor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtCondFloor.Multiline = true;
             this.txtCondFloor.Name = "txtCondFloor";
             this.txtCondFloor.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -3156,7 +3442,7 @@ namespace MAClientGUI
             // 
             this.button57.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button57.Location = new System.Drawing.Point(450, 331);
-            this.button57.Margin = new System.Windows.Forms.Padding(2);
+            this.button57.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button57.Name = "button57";
             this.button57.Size = new System.Drawing.Size(78, 38);
             this.button57.TabIndex = 19;
@@ -3176,9 +3462,9 @@ namespace MAClientGUI
             this.groupBox3.Controls.Add(this.button16);
             this.groupBox3.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox3.Location = new System.Drawing.Point(11, 170);
-            this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox3.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox3.Size = new System.Drawing.Size(390, 256);
             this.groupBox3.TabIndex = 16;
             this.groupBox3.TabStop = false;
@@ -3199,7 +3485,7 @@ namespace MAClientGUI
             // 
             this.textBox14.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox14.Location = new System.Drawing.Point(293, 162);
-            this.textBox14.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox14.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox14.Name = "textBox14";
             this.textBox14.Size = new System.Drawing.Size(30, 23);
             this.textBox14.TabIndex = 10;
@@ -3209,7 +3495,7 @@ namespace MAClientGUI
             // 
             this.textBox15.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox15.Location = new System.Drawing.Point(242, 162);
-            this.textBox15.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox15.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox15.Name = "textBox15";
             this.textBox15.Size = new System.Drawing.Size(30, 23);
             this.textBox15.TabIndex = 9;
@@ -3230,7 +3516,7 @@ namespace MAClientGUI
             // 
             this.button11.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button11.Location = new System.Drawing.Point(204, 109);
-            this.button11.Margin = new System.Windows.Forms.Padding(2);
+            this.button11.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(123, 31);
             this.button11.TabIndex = 7;
@@ -3242,7 +3528,7 @@ namespace MAClientGUI
             // 
             this.button12.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button12.Location = new System.Drawing.Point(204, 59);
-            this.button12.Margin = new System.Windows.Forms.Padding(2);
+            this.button12.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(123, 31);
             this.button12.TabIndex = 6;
@@ -3254,7 +3540,7 @@ namespace MAClientGUI
             // 
             this.button13.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button13.Location = new System.Drawing.Point(68, 157);
-            this.button13.Margin = new System.Windows.Forms.Padding(2);
+            this.button13.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button13.Name = "button13";
             this.button13.Size = new System.Drawing.Size(92, 31);
             this.button13.TabIndex = 3;
@@ -3266,7 +3552,7 @@ namespace MAClientGUI
             // 
             this.button16.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button16.Location = new System.Drawing.Point(68, 59);
-            this.button16.Margin = new System.Windows.Forms.Padding(2);
+            this.button16.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button16.Name = "button16";
             this.button16.Size = new System.Drawing.Size(92, 31);
             this.button16.TabIndex = 0;
@@ -3282,7 +3568,7 @@ namespace MAClientGUI
             this.tabPage5.Controls.Add(this.label29);
             this.tabPage5.Controls.Add(this.groupBox5);
             this.tabPage5.Location = new System.Drawing.Point(4, 26);
-            this.tabPage5.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPage5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Size = new System.Drawing.Size(584, 434);
             this.tabPage5.TabIndex = 4;
@@ -3293,7 +3579,7 @@ namespace MAClientGUI
             // 
             this.button44.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button44.Location = new System.Drawing.Point(540, 102);
-            this.button44.Margin = new System.Windows.Forms.Padding(2);
+            this.button44.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button44.Name = "button44";
             this.button44.Size = new System.Drawing.Size(20, 20);
             this.button44.TabIndex = 14;
@@ -3305,7 +3591,7 @@ namespace MAClientGUI
             // 
             this.txtCondFactor.Font = new System.Drawing.Font("Lucida Console", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCondFactor.Location = new System.Drawing.Point(11, 11);
-            this.txtCondFactor.Margin = new System.Windows.Forms.Padding(2);
+            this.txtCondFactor.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtCondFactor.Multiline = true;
             this.txtCondFactor.Name = "txtCondFactor";
             this.txtCondFactor.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -3336,9 +3622,9 @@ namespace MAClientGUI
             this.groupBox5.Controls.Add(this.button19);
             this.groupBox5.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox5.Location = new System.Drawing.Point(11, 170);
-            this.groupBox5.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox5.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox5.Size = new System.Drawing.Size(390, 256);
             this.groupBox5.TabIndex = 13;
             this.groupBox5.TabStop = false;
@@ -3359,7 +3645,7 @@ namespace MAClientGUI
             // 
             this.textBox16.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox16.Location = new System.Drawing.Point(142, 105);
-            this.textBox16.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox16.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox16.Multiline = true;
             this.textBox16.Name = "textBox16";
             this.textBox16.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -3371,7 +3657,7 @@ namespace MAClientGUI
             // 
             this.button15.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button15.Location = new System.Drawing.Point(70, 110);
-            this.button15.Margin = new System.Windows.Forms.Padding(2);
+            this.button15.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button15.Name = "button15";
             this.button15.Size = new System.Drawing.Size(56, 31);
             this.button15.TabIndex = 12;
@@ -3383,7 +3669,7 @@ namespace MAClientGUI
             // 
             this.textBox21.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox21.Location = new System.Drawing.Point(244, 66);
-            this.textBox21.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox21.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox21.Name = "textBox21";
             this.textBox21.Size = new System.Drawing.Size(32, 23);
             this.textBox21.TabIndex = 5;
@@ -3393,7 +3679,7 @@ namespace MAClientGUI
             // 
             this.textBox22.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox22.Location = new System.Drawing.Point(195, 66);
-            this.textBox22.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox22.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox22.Name = "textBox22";
             this.textBox22.Size = new System.Drawing.Size(29, 23);
             this.textBox22.TabIndex = 4;
@@ -3414,7 +3700,7 @@ namespace MAClientGUI
             // 
             this.button19.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button19.Location = new System.Drawing.Point(70, 60);
-            this.button19.Margin = new System.Windows.Forms.Padding(2);
+            this.button19.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button19.Name = "button19";
             this.button19.Size = new System.Drawing.Size(56, 31);
             this.button19.TabIndex = 0;
@@ -3429,7 +3715,7 @@ namespace MAClientGUI
             this.tabPage6.Controls.Add(this.txtCondSell);
             this.tabPage6.Controls.Add(this.groupBox4);
             this.tabPage6.Location = new System.Drawing.Point(4, 26);
-            this.tabPage6.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPage6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Size = new System.Drawing.Size(584, 434);
             this.tabPage6.TabIndex = 5;
@@ -3440,7 +3726,7 @@ namespace MAClientGUI
             // 
             this.button45.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button45.Location = new System.Drawing.Point(540, 101);
-            this.button45.Margin = new System.Windows.Forms.Padding(2);
+            this.button45.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button45.Name = "button45";
             this.button45.Size = new System.Drawing.Size(20, 20);
             this.button45.TabIndex = 13;
@@ -3452,7 +3738,7 @@ namespace MAClientGUI
             // 
             this.txtCondSell.Font = new System.Drawing.Font("Lucida Console", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCondSell.Location = new System.Drawing.Point(11, 11);
-            this.txtCondSell.Margin = new System.Windows.Forms.Padding(2);
+            this.txtCondSell.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.txtCondSell.Multiline = true;
             this.txtCondSell.Name = "txtCondSell";
             this.txtCondSell.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -3482,9 +3768,9 @@ namespace MAClientGUI
             this.groupBox4.Controls.Add(this.btnSellStar);
             this.groupBox4.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox4.Location = new System.Drawing.Point(11, 170);
-            this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
+            this.groupBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
+            this.groupBox4.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupBox4.Size = new System.Drawing.Size(390, 256);
             this.groupBox4.TabIndex = 8;
             this.groupBox4.TabStop = false;
@@ -3527,7 +3813,7 @@ namespace MAClientGUI
             // 
             this.textBox11.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox11.Location = new System.Drawing.Point(272, 103);
-            this.textBox11.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox11.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox11.Multiline = true;
             this.textBox11.Name = "textBox11";
             this.textBox11.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -3539,7 +3825,7 @@ namespace MAClientGUI
             // 
             this.btnsSellExclude.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnsSellExclude.Location = new System.Drawing.Point(272, 58);
-            this.btnsSellExclude.Margin = new System.Windows.Forms.Padding(2);
+            this.btnsSellExclude.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnsSellExclude.Name = "btnsSellExclude";
             this.btnsSellExclude.Size = new System.Drawing.Size(103, 31);
             this.btnsSellExclude.TabIndex = 12;
@@ -3551,7 +3837,7 @@ namespace MAClientGUI
             // 
             this.textBox5.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox5.Location = new System.Drawing.Point(157, 195);
-            this.textBox5.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(36, 23);
             this.textBox5.TabIndex = 11;
@@ -3561,7 +3847,7 @@ namespace MAClientGUI
             // 
             this.textBox6.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox6.Location = new System.Drawing.Point(214, 195);
-            this.textBox6.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(36, 23);
             this.textBox6.TabIndex = 10;
@@ -3582,7 +3868,7 @@ namespace MAClientGUI
             // 
             this.btnSellPrice.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnSellPrice.Location = new System.Drawing.Point(32, 190);
-            this.btnSellPrice.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSellPrice.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSellPrice.Name = "btnSellPrice";
             this.btnSellPrice.Size = new System.Drawing.Size(56, 31);
             this.btnSellPrice.TabIndex = 8;
@@ -3594,7 +3880,7 @@ namespace MAClientGUI
             // 
             this.textBox7.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox7.Location = new System.Drawing.Point(157, 126);
-            this.textBox7.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox7.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(36, 23);
             this.textBox7.TabIndex = 7;
@@ -3604,7 +3890,7 @@ namespace MAClientGUI
             // 
             this.textBox8.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox8.Location = new System.Drawing.Point(214, 126);
-            this.textBox8.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox8.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(36, 23);
             this.textBox8.TabIndex = 6;
@@ -3614,7 +3900,7 @@ namespace MAClientGUI
             // 
             this.textBox9.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox9.Location = new System.Drawing.Point(214, 64);
-            this.textBox9.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox9.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new System.Drawing.Size(36, 23);
             this.textBox9.TabIndex = 5;
@@ -3624,7 +3910,7 @@ namespace MAClientGUI
             // 
             this.textBox10.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.textBox10.Location = new System.Drawing.Point(157, 64);
-            this.textBox10.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox10.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox10.Name = "textBox10";
             this.textBox10.Size = new System.Drawing.Size(36, 23);
             this.textBox10.TabIndex = 4;
@@ -3656,7 +3942,7 @@ namespace MAClientGUI
             // 
             this.btnSellLv.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnSellLv.Location = new System.Drawing.Point(32, 121);
-            this.btnSellLv.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSellLv.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSellLv.Name = "btnSellLv";
             this.btnSellLv.Size = new System.Drawing.Size(56, 31);
             this.btnSellLv.TabIndex = 1;
@@ -3668,7 +3954,7 @@ namespace MAClientGUI
             // 
             this.btnSellStar.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnSellStar.Location = new System.Drawing.Point(32, 58);
-            this.btnSellStar.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSellStar.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSellStar.Name = "btnSellStar";
             this.btnSellStar.Size = new System.Drawing.Size(56, 31);
             this.btnSellStar.TabIndex = 0;
@@ -3679,10 +3965,10 @@ namespace MAClientGUI
             // button20
             // 
             this.button20.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button20.Location = new System.Drawing.Point(433, 8);
-            this.button20.Margin = new System.Windows.Forms.Padding(2);
+            this.button20.Location = new System.Drawing.Point(413, 9);
+            this.button20.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button20.Name = "button20";
-            this.button20.Size = new System.Drawing.Size(54, 22);
+            this.button20.Size = new System.Drawing.Size(45, 22);
             this.button20.TabIndex = 1044;
             this.button20.Text = "保存";
             this.button20.UseVisualStyleBackColor = true;
@@ -3691,12 +3977,12 @@ namespace MAClientGUI
             // button38
             // 
             this.button38.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button38.Location = new System.Drawing.Point(542, 8);
-            this.button38.Margin = new System.Windows.Forms.Padding(2);
+            this.button38.Location = new System.Drawing.Point(521, 9);
+            this.button38.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button38.Name = "button38";
-            this.button38.Size = new System.Drawing.Size(55, 22);
+            this.button38.Size = new System.Drawing.Size(74, 22);
             this.button38.TabIndex = 1045;
-            this.button38.Text = "重载";
+            this.button38.Text = "重新载入";
             this.button38.UseVisualStyleBackColor = true;
             this.button38.Click += new System.EventHandler(this.button38_Click);
             // 
@@ -3704,7 +3990,7 @@ namespace MAClientGUI
             // 
             this.button3.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button3.Location = new System.Drawing.Point(503, 523);
-            this.button3.Margin = new System.Windows.Forms.Padding(2);
+            this.button3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(94, 28);
             this.button3.TabIndex = 1046;
@@ -3716,7 +4002,7 @@ namespace MAClientGUI
             // 
             this.button10.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button10.Location = new System.Drawing.Point(14, 523);
-            this.button10.Margin = new System.Windows.Forms.Padding(2);
+            this.button10.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(83, 28);
             this.button10.TabIndex = 1047;
@@ -3728,7 +4014,7 @@ namespace MAClientGUI
             // 
             this.button14.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button14.Location = new System.Drawing.Point(113, 523);
-            this.button14.Margin = new System.Windows.Forms.Padding(2);
+            this.button14.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button14.Name = "button14";
             this.button14.Size = new System.Drawing.Size(47, 28);
             this.button14.TabIndex = 1048;
@@ -3740,7 +4026,7 @@ namespace MAClientGUI
             // 
             this.button50.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button50.Location = new System.Drawing.Point(161, 523);
-            this.button50.Margin = new System.Windows.Forms.Padding(2);
+            this.button50.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button50.Name = "button50";
             this.button50.Size = new System.Drawing.Size(47, 28);
             this.button50.TabIndex = 1049;
@@ -3752,7 +4038,7 @@ namespace MAClientGUI
             // 
             this.button51.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button51.Location = new System.Drawing.Point(209, 523);
-            this.button51.Margin = new System.Windows.Forms.Padding(2);
+            this.button51.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button51.Name = "button51";
             this.button51.Size = new System.Drawing.Size(47, 28);
             this.button51.TabIndex = 1050;
@@ -3763,8 +4049,8 @@ namespace MAClientGUI
             // btnSaveAs
             // 
             this.btnSaveAs.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnSaveAs.Location = new System.Drawing.Point(487, 8);
-            this.btnSaveAs.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSaveAs.Location = new System.Drawing.Point(462, 9);
+            this.btnSaveAs.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.btnSaveAs.Name = "btnSaveAs";
             this.btnSaveAs.Size = new System.Drawing.Size(55, 22);
             this.btnSaveAs.TabIndex = 1051;
@@ -3776,7 +4062,7 @@ namespace MAClientGUI
             // 
             this.button59.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button59.Location = new System.Drawing.Point(404, 523);
-            this.button59.Margin = new System.Windows.Forms.Padding(2);
+            this.button59.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button59.Name = "button59";
             this.button59.Size = new System.Drawing.Size(94, 28);
             this.button59.TabIndex = 1052;
@@ -3793,7 +4079,6 @@ namespace MAClientGUI
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseClick);
-            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
             this.notifyIcon1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDown);
             this.notifyIcon1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseUp);
             // 
@@ -3821,6 +4106,17 @@ namespace MAClientGUI
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(169, 6);
             // 
+            // cbTask
+            // 
+            this.cbTask.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbTask.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.cbTask.FormattingEnabled = true;
+            this.cbTask.Location = new System.Drawing.Point(83, 78);
+            this.cbTask.Name = "cbTask";
+            this.cbTask.Size = new System.Drawing.Size(64, 25);
+            this.cbTask.TabIndex = 1054;
+            this.cbTask.SelectedIndexChanged += new System.EventHandler(this.cbTask_SelectedIndexChanged);
+            // 
             // frmConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -3837,9 +4133,9 @@ namespace MAClientGUI
             this.Controls.Add(this.button20);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.cboCfgFile);
-            this.Controls.Add(this.btnLoadCfg);
+            this.Controls.Add(this.btnChooseCfg);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "frmConfig";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MAClientGUI";
@@ -3919,7 +4215,7 @@ namespace MAClientGUI
 
         #endregion
 
-        private System.Windows.Forms.Button btnLoadCfg;
+        private System.Windows.Forms.Button btnChooseCfg;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.ComboBox cboCfgFile;
         private System.Windows.Forms.GroupBox grpSystem;
@@ -4158,7 +4454,6 @@ namespace MAClientGUI
         private System.Windows.Forms.ContextMenuStrip dockMenu;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem dockMenu_head;
-        private System.Windows.Forms.Label label53;
         private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.ComboBox cboLineCnt;
         private System.Windows.Forms.Label label55;
@@ -4190,6 +4485,30 @@ namespace MAClientGUI
         private System.Windows.Forms.Button button62;
         private System.Windows.Forms.Button button63;
         private System.Windows.Forms.CheckBox chkAutoGreet;
+        private System.Windows.Forms.Label label53;
+        private System.Windows.Forms.Label label70;
+        private System.Windows.Forms.ListBox lstPlugins;
+        private System.Windows.Forms.Button button64;
+        private System.Windows.Forms.Button button65;
+        private System.Windows.Forms.Label label71;
+        private System.Windows.Forms.Label label73;
+        private System.Windows.Forms.Label label72;
+        private System.Windows.Forms.TextBox txtDisabledPlugins;
+        private System.Windows.Forms.Label label79;
+        private System.Windows.Forms.Label label78;
+        private System.Windows.Forms.Label label76;
+        private System.Windows.Forms.Label label77;
+        private System.Windows.Forms.Label label75;
+        private System.Windows.Forms.Label label74;
+        private System.Windows.Forms.Label label80;
+        private System.Windows.Forms.Label label81;
+        private System.Windows.Forms.Label label82;
+        private System.Windows.Forms.Label label83;
+        private System.Windows.Forms.Label label84;
+        private System.Windows.Forms.Button button67;
+        private System.Windows.Forms.Button button66;
+        private System.Windows.Forms.Button btnToggleEnable;
+        private System.Windows.Forms.Label lblPluginState;
         private System.Windows.Forms.ComboBox cbTask;
     }
 }
