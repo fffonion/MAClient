@@ -23,6 +23,17 @@ namespace MAClientGUI
             Application.Run(new frmConfig());
         }
     }
+    struct pluginItem
+    {
+        public string file_name;
+        public string file_ext;
+        public string author;
+        public string plugin_name;
+        public string version;
+        public string tip;
+        public string hooks;
+        public string extra_cmd;
+    }
     public class animator
     {
         public void ChangeHeight(Control ctl, int toheight)
@@ -120,7 +131,6 @@ namespace MAClientGUI
             return File.Exists(inipath);
         }
 
-
         public List<string> EnumIniKey(string sectionName)
         {
             string[] IniText = File.ReadAllLines(inipath, Encoding.Default);
@@ -151,9 +161,9 @@ namespace MAClientGUI
 
         }
 
+
     }
 
-    
 
     public class  WndHdl
     { 
@@ -169,16 +179,16 @@ namespace MAClientGUI
         [DllImport("User32.dll ")] 
         private static extern int GetClassNameW(IntPtr hWnd, [MarshalAs(UnmanagedType.LPWStr)]StringBuilder lpString, int nMaxCount);
         [DllImport("User32.dll ")] 
-        public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+        private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
         [DllImport("User32.dll ")] 
         private static extern bool IsWindowVisible(IntPtr hWnd);
-        public const int SW_HIDE = 0;                                                          //常量，隐藏
-        public const int SW_SHOWNORMAL = 1;                                                    //常量，显示，标准状态
-        public const int SW_SHOWMINIMIZED = 2;                                                 //常量，显示，最小化
-        public const int SW_SHOWMAXIMIZED = 3;                                                 //常量，显示，最大化
-        public const int SW_SHOWNOACTIVATE = 4;                                                //常量，显示，不激活
-        public const int SW_RESTORE = 9;                                                       //常量，显示，回复原状
-        public const int SW_SHOWDEFAULT = 10;                                                  //常量，显示，默认
+        private const int SW_HIDE = 0;                                                          //常量，隐藏
+        private const int SW_SHOWNORMAL = 1;                                                    //常量，显示，标准状态
+        private const int SW_SHOWMINIMIZED = 2;                                                 //常量，显示，最小化
+        private const int SW_SHOWMAXIMIZED = 3;                                                 //常量，显示，最大化
+        private const int SW_SHOWNOACTIVATE = 4;                                                //常量，显示，不激活
+        private const int SW_RESTORE = 9;                                                       //常量，显示，回复原状
+        private const int SW_SHOWDEFAULT = 10;                                                  //常量，显示，默认
         
         [DllImport("user32")]
         public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int processId);
