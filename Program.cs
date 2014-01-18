@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -130,7 +130,41 @@ namespace MAClientGUI
         {
             return File.Exists(inipath);
         }
+
+        public List<string> EnumIniKey(string sectionName)
+        {
+            string[] IniText = File.ReadAllLines(inipath, Encoding.Default);
+            List<string> KeyList = new List<string>();
+
+            string curs = null;
+
+            for (int i = 0; i != IniText.Length; i++)
+            {
+                string Text = IniText[i].Trim();
+                if (Text == "")
+                    continue;
+                if (Text[0] == '[' && Text[Text.Length - 1] == ']')
+                {
+                    curs = Text;
+
+                }
+                else
+                {
+
+                    if (curs == "[" + sectionName + "]")
+                        KeyList.Add(Text);
+                }
+
+
+            }
+            return KeyList;
+
+        }
+
+
     }
+
+
     public class  WndHdl
     { 
         [DllImport( "User32.dll ")] 
