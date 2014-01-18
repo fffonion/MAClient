@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -25,6 +25,13 @@ namespace MAClientGUI
         
         private void btnChooseCfg_Click(object sender, EventArgs e)
         {
+            if (cboCfgFile.Items.Count <= 0)
+                return;
+            cf = new configParser(cboCfgFile.Text);
+            tabControl1.Enabled = true;
+            refreshAll();
+            refreshCond();
+            /*
             OpenFileDialog fileDialog1 = new OpenFileDialog();
             fileDialog1.Filter = "配置文件(*.ini)|*.ini|所有文件(*.*)|*.*";
             fileDialog1.FilterIndex = 1;
@@ -39,6 +46,7 @@ namespace MAClientGUI
                     cboCfgFile.SelectedIndex = cboCfgFile.FindStringExact(fileDialog1.FileName);
                 }
             }
+             */
 
         }
       
@@ -72,7 +80,19 @@ namespace MAClientGUI
             }
             refreshAccount();
             cboLogLevel.SelectedIndex = cf.ReadInt("system", "loglevel");
-            txtTaskName.Text = cf.Read("system", "taskname");
+            //txtTaskName.Text = cf.Read("system", "taskname");
+            cbTask.Items.Clear();
+            List<string> tsl = cf.EnumIniKey("tasker");
+
+            foreach (string ts in tsl)
+            {
+                cbTask.Items.Add(ts.Split('=')[0].Trim());
+
+            }
+
+            if (cbTask.Items.Count > 0)
+                cbTask.SelectedIndex = 0;
+
             numTaskTimes.Value = cf.ReadInt("system", "tasker_times");
             numFactorTimes.Value = cf.ReadInt("system", "try_factor_times");
             numFactorSleep.Value = cf.ReadInt("system", "factor_sleep");
@@ -111,7 +131,8 @@ namespace MAClientGUI
         }
         private void refreshCond()
         {
-            txtCondTasker.Text = cf.Read("tasker", txtTaskName.Text);
+            //txtCondTasker.Text = cf.Read("tasker", txtTaskName.Text);
+            txtCondTasker.Text = cf.Read("tasker", cbTask.Items[cbTask.SelectedIndex].ToString());
             txtCondFairy.Text = cf.Read("condition", "fairy_select");
             txtCondExplore.Text = cf.Read("condition", "explore_area");
             txtCondFloor.Text = cf.Read("condition", "explore_floor");
@@ -128,7 +149,8 @@ namespace MAClientGUI
             cf.Write("account_" + server, "password", lblPswd.Tag.ToString());
             cf.Write("system", "server", server);
             cf.Write("system", "loglevel",cboLogLevel.SelectedIndex);
-            cf.Write("system", "taskname",txtTaskName.Text);
+            //cf.Write("system", "taskname",txtTaskName.Text);
+            cf.Write("system", "taskname", cbTask.Items[cbTask.SelectedIndex].ToString());
             cf.Write("system", "tasker_times", numTaskTimes.Value);
             cf.Write("system", "try_factor_times", numFactorTimes.Value);
             cf.Write("system", "factor_sleep", numFactorSleep.Value);
@@ -166,7 +188,8 @@ namespace MAClientGUI
 
         private void saveCond()
         {
-            cf.Write("tasker", txtTaskName.Text, txtCondTasker.Text);
+            //cf.Write("tasker", txtTaskName.Text, txtCondTasker.Text);
+            cf.Write("tasker", cbTask.Items[cbTask.SelectedIndex].ToString(), txtCondTasker.Text);
             cf.Write("condition", "fairy_select", txtCondFairy.Text);
             cf.Write("condition", "explore_area", txtCondExplore.Text);
             cf.Write("condition", "explore_floor ", txtCondFloor.Text);
@@ -885,7 +908,7 @@ namespace MAClientGUI
 
         private void button10_Click(object sender, EventArgs e)
         {
-            start_mac("t:"+txtTaskName.Text);
+            start_mac("t:" + cbTask.Items[cbTask.SelectedIndex].ToString());
         }
 
         private void button14_Click(object sender, EventArgs e)
@@ -905,15 +928,15 @@ namespace MAClientGUI
 
         private void txtTaskName_TextChanged(object sender, EventArgs e)
         {
-            txtCondTasker.Text = cf.Read("tasker", txtTaskName.Text);
-            label41.Text = "正在编辑任务:" + txtTaskName.Text;
-            button10.Text = "开始任务 " + txtTaskName.Text;
+            txtCondTasker.Text = cf.Read("tasker", cbTask.Items[cbTask.SelectedIndex].ToString());
+            label41.Text = "正在编辑任务:" + cbTask.Items[cbTask.SelectedIndex].ToString();
+            button10.Text = "开始任务 " + cbTask.Items[cbTask.SelectedIndex].ToString();
         }
 
         private void label41_Click(object sender, EventArgs e)
         {
             tabControl1.SelectedIndex=0;
-            txtTaskName.Focus();
+            cbTask.Focus();
         }
 
         private void btnSaveAs_Click(object sender, EventArgs e)
@@ -1174,6 +1197,7 @@ namespace MAClientGUI
         private Thread notifyTestClickThread;
         private void notifyIcon1_MouseDown(object sender, MouseEventArgs e)
         {
+            /*
             if ((Environment.TickCount - this.lastclick) < 500)
             {
                 if (this.notifyTestClickThread != null)
@@ -1199,12 +1223,13 @@ namespace MAClientGUI
                 this.notifyTestClickThread.IsBackground = true; 
                 this.notifyTestClickThread.Start();
             }
+             */
             
         }
 
         private void notifyIcon1_MouseUp(object sender, MouseEventArgs e)
         {
-            this.lastclick = Environment.TickCount;
+            //this.lastclick = Environment.TickCount;
         }
     private void button60_Click_1(object sender, EventArgs e)
     {
@@ -1221,7 +1246,8 @@ namespace MAClientGUI
     {
         button59.Text = "恢复";
         button59_Click(sender, e);
-      System.Environment.Exit(0);
+        Application.ExitThread();
+      //System.Environment.Exit(0);
     }
 
 
@@ -1632,8 +1658,20 @@ namespace MAClientGUI
         has_load_plugins = false;
     }
 
+    private void cbTask_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        txtCondTasker.Text = cf.Read("tasker", cbTask.Items[cbTask.SelectedIndex].ToString());
+        label41.Text = "正在编辑任务:" + cbTask.Items[cbTask.SelectedIndex].ToString();
+        button10.Text = "开始任务 " + cbTask.Items[cbTask.SelectedIndex].ToString();
 
+    }
 
+    private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
+    {
+        if (e.Button == MouseButtons.Left)
+            frmNormalize();
+
+    }
  
 
     }
