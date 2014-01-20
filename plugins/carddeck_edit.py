@@ -1,4 +1,4 @@
-# coding:utf-8
+﻿# coding:utf-8
 from _prototype import plugin_prototype
 import sys
 import os
