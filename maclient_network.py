@@ -231,6 +231,9 @@ class poster():
                 self.logger.error(du8('错误的密钥？'))
                 raw_input()
                 os._exit(1)
+                
+    def set_timeout(self, timeout):
+        self.ht.timeout = timeout
 
     def post(self, uri, postdata = '', usecookie = True, setcookie = True, extraheader = {'Cookie2': '$Version=1'}, noencrypt = False, savetraffic = False, no2ndkey = False):#no2ndkey only used in jp server
             header = {}

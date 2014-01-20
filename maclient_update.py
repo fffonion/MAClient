@@ -50,6 +50,7 @@ def check_revision(loc, rev_tuple):
 def update_master(loc, need_update, poster):
     new_rev = [None, None]
     if need_update[0]:
+        poster.set_timeout(240)
         a, b = poster.post('masterdata/card/update', postdata = '%s&revision=0' % poster.cookie)
         resp = XML2Dict().fromstring(b.replace('&', '--').replace('--#', '&#')).response  # 不替换会解析出错摔
         cards = resp.body.master_data.master_card_data.card
@@ -71,6 +72,7 @@ def update_master(loc, need_update, poster):
         new_rev[0] = resp.header.revision.card_rev
         save_revision(loc, cardrev = new_rev[0])
     if need_update[1]:
+        poster.set_timeout(240)
         a, b = poster.post('masterdata/item/update', postdata = '%s&revision=0' % poster.cookie)
         resp = XML2Dict().fromstring(b).response
         itmes = resp.body.master_data.master_item_data.item_info
@@ -87,4 +89,5 @@ def update_master(loc, need_update, poster):
             open(opath.join(getPATH0, 'db/item.%s.txt' % loc), 'w').write('\n'.join(strs))
         new_rev[1] = resp.header.revision.item_rev
         save_revision(loc, itemrev = new_rev[1])
+    poster.set_timeout(15)#rollback
     return new_rev
