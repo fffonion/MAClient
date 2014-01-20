@@ -45,7 +45,7 @@ class player(object):
         for key in ['ap', 'bc']:
             if self.hasattr(key):
                 getattr(self, key)['current'] += (
-                    time.time() - int(getattr(self, key)['current_time'])) / int(getattr(self, key)['interval_time'])
+                    time.time() - getattr(self, key)['current_time']) / getattr(self, key)['interval_time']
                 getattr(self, key)['current_time'] = int(time.time())
                 if getattr(self, key)['current'] >= getattr(self, key)['max']:
                     getattr(self, key)['current'] = getattr(self, key)['max']
@@ -129,7 +129,7 @@ class item(object):
             try:
                 self.db[int(it.item_id)][1] = it.num
             except KeyError:
-                self.db[int(it.item_id)][1] = 0
+                pass#self.db[int(it.item_id)][1] = 0
 
     def get_name(self, item_id):
         return self.db[item_id][0]

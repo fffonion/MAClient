@@ -38,24 +38,24 @@ EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
-eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "race_type=='12'"), ('STILL_ALIVE', "self.player.fairy['alive']")]
-eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('STILL_ALIVE', "self.player.fairy['alive']"), ('LIMIT', 'time_limit')]
+eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type=='12'"), ('STILL_ALIVE', "self.player.fairy['alive']")]
+eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('STILL_ALIVE', "self.player.fairy['alive']"), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type=='12'")]
 eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type=='12'"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"')]
 eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale_price'), ('sid', 'serial_id'), ('holo', 'holography==1')]
 
 eval_task = []
-duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db.duowan.com/ma/card/detail/%s.html'}
+#duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 logging = maclient_logging.Logging('logging')  # =sys.modules['logging']
 
 def setT(strt):
-    if not PYTHON3:
-        strt = strt.decode('utf-8').encode('cp936', 'ignore')
+    #if not PYTHON3:
+    #    strt = strt.decode('utf-8').encode('cp936', 'ignore')
     if sys.platform == 'cli':
         import System.Console
         System.Console.Title = strt
     else:
-        os.system(convhans('TITLE %s' % strt))
+        os.system(du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 
 class set_title(threading.Thread):
     def __init__(self, maInstance):
@@ -185,7 +185,7 @@ class maClient():
             disabled_plugin = self._read_config('plugin', 'disabled').split(',')
             plugin.set_disable(disabled_plugin)
             plugin.scan_hooks()
-            logging.debug('plugin:loaded %s' % (','.join(plugin.plugins.keys())))
+            logging.debug('plugin:loaded %s' % (','.join(plugin.plugins.keys())) or 'NONE')
         else:
             plugin.enable = False
 
@@ -216,7 +216,7 @@ class maClient():
             if  self.cfg_delay == 0:
                 logging.warning('post:NO DELAY!')
             else:
-                logging.debug('post:slow down...')
+                #logging.debug('post:slow down...')
                 time.sleep(random.randint(int(0.75 * self.cfg_delay), int(1.25 * self.cfg_delay)))
         resp, _dec = self.poster.post(urikey, postdata, usecookie, setcookie, extraheader, noencrypt, savetraffic, no2ndkey)
         self.lastposttime = time.time()
@@ -377,7 +377,7 @@ class maClient():
                 logging.debug('tasker:%s' % task[0])
                 task[0] = task[0].lower()
                 if task[0] in plugin.extra_cmd:
-                    plugin.do_extra_cmd(tasks)
+                    plugin.do_extra_cmd(' '.join(task))
                 elif task[0] == 'set_card' or task[0] == 'sc':
                     if task[1] == '':
                         logging.mac_error(self, 'set_card need 1 argument')
@@ -451,7 +451,7 @@ class maClient():
                 if cnt != 1:
                     logging.mac_sleep(self, 'tasker:正在滚床单wwww')
                     time.sleep(3.15616546511)
-                    resp, ct = self._dopost('mainmenu')  # 初始化
+                    resp, ct = self._dopost('mainmenu', no2ndkey = True)  # 初始化
 
     def login(self, uname = '', pwd = '', fast = False):
         # sessionfile='.%s.session'%self.loc
@@ -472,13 +472,13 @@ class maClient():
             token = self._read_config('system', 'device_token').replace('\\n', '\n') or \
             'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
             if not fast:
-                #ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
+                ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
                 # self.poster.update_server(ct)
                 pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
-                if self.loc[:2] not in ['cn','tw']:
+                if self.loc == 'kr':
                      pdata='S=nosessionid&%s' % pdata
-                self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False)
-            resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password))
+                self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
+            resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
             if resp['error']:
                 logging.mac_info(self, '登录失败しました')
                 self._exit(1)
@@ -518,8 +518,9 @@ class maClient():
             else:
                 self.player.id = self._read_config('account_%s' % self.loc, 'user_id')
             # for jp server, regenerate
-            self.poster.gen_2nd_key(self.player.id,self.loc)
-        if self.settitle and not self.shellbyweb:
+            if self.loc == 'jp':
+                self.poster.gen_2nd_key(self.username,self.loc)
+	if self.settitle and not self.shellbyweb:
             # 窗口标题线程
             self.stitle = set_title(self)
             self.stitle.setDaemon(True)
@@ -1003,10 +1004,10 @@ class maClient():
         for card in excards:
             mid = self.player.card.sid(card.serial_id).master_card_id
             if gacha_type > GACHA_FRIENNSHIP_POINT:
-                rare = ['R', 'R+', 'SR', 'SR+']
+                rare = ['R', 'R+', 'SR', 'SR+','MR']
                 rare_str = ' ' + rare[self.carddb[int(mid)][1] - 3]
             else:
-                rare = ['', '', '', 'R+', 'SR', 'SR+']
+                rare = ['', '', '', 'R+', 'SR', 'SR+','MR']
                 rare_str = ' %s' % (rare[self.carddb[int(mid)][1] - 1])
             excname.append('[%s]%s%s' % (
                 self.carddb[int(mid)][0],
@@ -1162,7 +1163,7 @@ class maClient():
         if resp['error']:
             return
         time.sleep(1.2)
-        resp, ct = self._dopost('mainmenu')
+        resp, ct = self._dopost('mainmenu', no2ndkey = True)
         if resp['error']:
             return
         if ct.header.your_data.fairy_appearance != '1':  # 没有“妖精出现中”
@@ -1251,7 +1252,7 @@ class maClient():
 
     @plugin.func_hook
     def _fairy_battle(self, fairy, bt_type = NORMAL_BATTLE, carddeck = None):
-        while time.time() - self.lastfairytime < 20:
+        while time.time() - self.lastfairytime < 20 and fairy.race_type != '12':
             logging.mac_sleep(self, '等待20s战斗冷却')
             time.sleep(5)
         def fairy_floor(f = fairy):
@@ -1303,10 +1304,11 @@ class maClient():
             #    if fairy.race_type == '12':#找不到
             #        disc_name = '公会妖精'
         hms = lambda x:x >= 3600 and time.strftime('%H:%M:%S', time.localtime(x + 16 * 3600)) or time.strftime('%M:%S', time.localtime(x))
-        logging.mac_info(self, '妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s %s' % (
+        logging.mac_info(self, '妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s%s%s' % (
             fairy.name, fairy.lv, fairy.hp, disc_name,
             len(f_attackers), hms(fairy.time_limit),
-            fairy.wake and 'WAKE!' or''))
+            fairy.race_type == '12' and ' 公会' or '',
+            fairy.wake and ' WAKE!' or ''))
         if carddeck:
             cardd = carddeck
             logging.debug('fairy_battle:carddeck override:%s' % (cardd))
@@ -1692,7 +1694,7 @@ class maClient():
     def reward_box(self, rw_type = '12345'):
         if self._dopost('menu/menulist')[0]['error']:
             return False
-        resp, ct = self._dopost('mainmenu')
+        resp, ct = self._dopost('mainmenu', no2ndkey = True)
         if resp['error']:
             return False
         if ct.body.mainmenu.rewards == '0':
@@ -1751,7 +1753,7 @@ class maClient():
         if nid == []:
             logging.mac_info(self, '没有符合筛选的奖励(%d)' % (len(rwds)))
         else:
-            logging.mac_info(self, strl.rstrip(' , ').replace('--', '&'))
+            logging.mac_info(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' '))
             res = self._get_rewards(nid)
             if res[0]:
                 logging.mac_info(self, res[1])
@@ -1867,71 +1869,70 @@ class maClient():
                     userlist = ct.body.battle_userlist.user_list.user
                 except KeyError:  # no user found
                     continue
-                if len(userlist) == 18:  # only 1 user
-                    userlist = [userlist]
-                for u in userlist:
+                for u in self.tolist(userlist):
                     cid = int(u.leader_card.master_card_id)
                     cost = int(u.cost)
                     friends = int(u.friends)
                     deck_rank = int(u.deck_rank)
                     rank = int(u.rank)
                     lv = int(u.town_level)
-                    try:
-                        star = int(self.carddb[cid][1])
-                    except KeyError:
-                        logging.warning('id为 %d 的卡片木有找到. 你可能想要查看这个网页:\n%s' % (
-                            cid,
-                            duowan[self.loc[:2]] % (base64.encodestring('{"no":"%d"}' % cid).strip('\n').replace('=', '_3_'))))
-                    else:
-                        logging.debug('factor_battle: star:%s, cid:%d, deckrank:%d, cost:%d, result:%s' % (
-                            star,
-                            cid,
-                            deck_rank,
-                            cost,
-                            eval(self.evalstr_factor))
-                        )
-                        if eval(self.evalstr_factor):
-                            logging.debug('factor_battle:->%s @ %s' % (u.name, u.leader_card.master_card_id))
-                            ap = self.player.ap['current']
-                            bc = self.player.bc['current']
-                            logging.mac_info(self, '%s%s%s' % ('艹了一下一个叫 ', u.name, ' 的家伙'))
-                            if l.event_id != '0':  # event
-                                fparam = 'battle_type=0&event_id=%s&user_id=%s' % (l.event_id, u.id)
-                            else:
-                                fparam = 'lake_id=%s&parts_id=%d&user_id=%s' % (l.lake_id, partid, u.id)
-                            resp, ct = self._dopost('battle/battle', postdata = fparam)
-                            if resp['error']:
-                                time.sleep(2)
-                                continue
-                            elif resp['errno'] == 1050:
-                                logging.warning('BC不够了TOT')
-                                if not self.red_tea(False):
-                                    logging.mac_error(self, '那就不打了哟(*￣︶￣)y ')
-                                    return
-                            else:
-                                try:
-                                    result = ct.body.battle_result.winner
-                                except KeyError:
-                                    logging.warning('no BC ?')
-                                    return
-                                if int(resp['content-length']) > 10000:
-                                    logging.mac_info(self, '收集碎片合成了新的骑士卡片！')
-                                # print bc,self.player.bc.current
-                                logging.mac_info(self, (result == '0' and '擦输了QAQ' or '赢了XDDD') +
-                                    ' AP:%+d/%s/%s' % (
-                                        self.player.ap['current'] - ap,
-                                        self.player.ap['current'],
-                                        self.player.ap['max']) +
-                                    ' BC:%+d/%s/%s' % (
-                                        self.player.bc['current'] - bc,
-                                        self.player.bc['current'],
-                                        self.player.bc['max']))
-                                time.sleep(8.62616513)
-                                resp, cmp_parts_ct = self._dopost('battle/area')
-                                if result == '1':  # 赢过一次就置为真
-                                    battle_win += 1
-                                    cmp_parts = cmp_parts_ct.body.competition_parts
-                                break
+                    star = int(self.carddb[cid][1])
+                    # try:
+                    #     star = int(self.carddb[cid][1])
+                    # except KeyError:
+                    #     logging.warning('id为 %d 的卡片木有找到. 你可能想要查看这个网页:\n%s' % (
+                    #         cid,
+                    #         duowan[self.loc[:2]] % (base64.encodestring('{"no":"%d"}' % cid).strip('\n').replace('=', '_3_'))))
+                    # else:
+                    logging.debug('factor_battle: star:%s, cid:%d, deckrank:%d, cost:%d, result:%s' % (
+                        star,
+                        cid,
+                        deck_rank,
+                        cost,
+                        eval(self.evalstr_factor))
+                    )
+                    if eval(self.evalstr_factor):
+                        logging.debug('factor_battle:->%s @ %s' % (u.name, u.leader_card.master_card_id))
+                        ap = self.player.ap['current']
+                        bc = self.player.bc['current']
+                        logging.mac_info('%s%s%s' % ('艹了一下一个叫 ', u.name, ' 的家伙'))
+                        if l.event_id != '0':  # event
+                            fparam = 'battle_type=0&event_id=%s&user_id=%s' % (l.event_id, u.id)
+                        else:
+                            fparam = 'lake_id=%s&parts_id=%d&user_id=%s' % (l.lake_id, partid, u.id)
+                        resp, ct = self._dopost('battle/battle', postdata = fparam)
+                        if resp['error']:
+                            time.sleep(2)
+                            continue
+                        elif resp['errno'] == 1050:
+                            logging.warning('BC不够了TOT')
+                            if not self.red_tea(False):
+                                logging.mac_error('那就不打了哟(*￣︶￣)y ')
+                                return
+                        else:
+                            try:
+                                result = ct.body.battle_result.winner
+                            except KeyError:
+                                logging.warning('no BC ?')
+                                return
+                            if int(resp['content-length']) > 10000:
+                                logging.mac_info('收集碎片合成了新的骑士卡片！')
+                            # print bc,self.player.bc.current
+                            logging.mac_info((result == '0' and '擦输了QAQ' or '赢了XDDD') +
+                                ' AP:%+d/%s/%s' % (
+                                    self.player.ap['current'] - ap,
+                                    self.player.ap['current'],
+                                    self.player.ap['max']) +
+                                ' BC:%+d/%s/%s' % (
+                                    self.player.bc['current'] - bc,
+                                    self.player.bc['current'],
+                                    self.player.bc['max']))
+                            time.sleep(8.62616513)
+                            resp, cmp_parts_ct = self._dopost('battle/area')
+                            if result == '1':  # 赢过一次就置为真
+                                battle_win += 1
+                                cmp_parts = cmp_parts_ct.body.competition_parts
+                            break
                 time.sleep(int(self._read_config('system', 'factor_sleep')))
             logging.mac_sleep(self, '换一个碎片……：-/')
             time.sleep(int(self._read_config('system', 'factor_sleep')))

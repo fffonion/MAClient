@@ -1,4 +1,4 @@
-﻿MAClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服、国服全区和韩服。
+﻿MAClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服、国服全区、韩服和日服。
 
 [更新历史](https://github.com/fffonion/MAClient/wiki/HISTORY)
 
@@ -35,7 +35,7 @@ MAClient_cli.py [config file] [task]/[commands]
 
 ###account_?
 
-?可选cn,cn2,cn3,tw,kr分别对应国服1区，国服2区，国服3区，台服，韩服
+?可选cn,cn2,cn3,tw,kr,jp分别对应国服1区，国服2区，国服3区，台服，韩服，日服
 
 session不用管它
 
