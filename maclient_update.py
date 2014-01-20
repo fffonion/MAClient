@@ -79,7 +79,7 @@ def update_master(loc, need_update, poster):
             strs.append('%s,%s,%s' % (
                 c.item_id,
                 c.name,
-                c.explanation
+                c.explanation.replace('\n','\\n')
             ))
         if PYTHON3:
             open(opath.join(getPATH0, 'db/item.%s.txt' % loc), 'w', encoding = 'utf-8').write('\n'.join(strs))

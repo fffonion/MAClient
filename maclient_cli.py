@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # coding:utf-8
 # maclient command line interface
 # Contributor:
@@ -195,7 +195,7 @@ if __name__ == '__main__':
                 mod = (mod + 1) % 2
             elif ch == '3':
                 print(du8('此功能已转移至插件carddeck_edit'))
-                print(du8('请到这里查看详细帮助https://github.com/fffonion/MAClient/wiki/carddeck_edit'))
+                print(du8('请到这里查看详细帮助http://t.cn/8kDOLwV'))
                 # import maclient_network
                 # cards = maclient_network.decode_param(read_proxy(work = 1))
                 # cdeck = cards.split('&')[0].split('=')[1].strip('%0A').rstrip(',empty')

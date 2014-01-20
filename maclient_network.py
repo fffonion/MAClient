@@ -4,6 +4,7 @@
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
 import os
+import re
 import sys
 import time
 import base64
@@ -51,9 +52,11 @@ class Crypt():
         self.random_cipher_plain=''
         if loc in ['cn','tw']:
             self.gen_rsa_pubkey()
+        self.AES2ndKey = None
 
     def gen_cipher_with_uid(self, uid, loc):
-        pass
+        plain = '%s%s%s' % (getattr(maclient_smart, 'key_%s' % loc[:2])['crypt'][:16], uid, '0'*(16-len(uid)))
+        return self._gen_cipher(plain)
 
     def gen_rsa_pubkey(self):
         #pk="""MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAM5U06JAbYWdRBrnMdE2bEuDmWgUav7xNKm7i8s1Uy/\nfvpvfxLeoWowLGIBKz0kDLIvhuLV8Lv4XV0+aXdl2j4kCAwEAAQ=="""
@@ -76,10 +79,9 @@ class Crypt():
     def init_cipher(self,loc = 'cn', uid = None):
         _key = getattr(maclient_smart, 'key_%s' % loc[:2])
         if loc == 'jp':
-            if not uid:
-                uid = '0'
-            _key['crypt'] = '%s%s%s' % (_key['crypt'], uid, '0' * (32 - len(_key['crypt'] + uid)))
-            print(_key['crypt'])
+            #if not uid:
+            #    uid = '0'
+            _key['crypt'] = '%s%s' % (_key['crypt'], '0' * 16)
         if sys.platform == 'cli':
             pass  # import clr
             # clr.AddReference("IronPyCrypto.dll")
@@ -89,11 +91,14 @@ class Crypt():
     def decode_res(self, bytein):
         return self.cipher_res.decrypt(bytein)
 
-    def decode_data(self, bytein):
+    def decode_data(self, bytein, second_cipher = False):
         if len(bytein) == 0:
             return ''
         else:
-            return unpad(b2u(self.cipher_data.decrypt(bytein)))
+            if second_cipher:
+                return unpad(b2u(self.AES2ndKey.decrypt(bytein)))
+            else:
+                return unpad(b2u(self.cipher_data.decrypt(bytein)))
 
     def decode_data64(self, strin):
         return self.decode_data(base64.decodestring(self.urlescape(strin)))
@@ -113,13 +118,17 @@ class Crypt():
         #     return self.urlunescape(res)
         return res
 
-    def encode_param(self, param, mode=MOD_AES):
+    def encode_param(self, param, mode = MOD_AES, second_cipher = False):
         p = param.split('&')
         if mode == MOD_RSA_AES_RANDOM:
             _m=self.encode_rsa_64
         else:
             _m=lambda x:x
+        if second_cipher: #replace
+            self.AES2ndKey, self.cipher_data = self.cipher_data, self.AES2ndKey
         p_enc = '%0A&'.join(['%s=%s' % (p[i].split('=')[0], self.urlunescape(_m(self.encode_data64(p[i].split('=')[1], mode)))) for i in xrange(len(p))])
+        if second_cipher: #rollback
+            self.AES2ndKey, self.cipher_data = self.cipher_data, self.AES2ndKey
         # print p_enc
         return p_enc.replace('\n', '')
 
@@ -148,7 +157,21 @@ class Crypt():
             pass
 
 #ht = httplib2.Http(timeout = 15,proxy_info = httplib2.ProxyInfo(httplib2.socks.PROXY_TYPE_HTTP_NO_TUNNEL, "192.168.124.1", 23300))
-
+def htmlescape(htmlstr):
+    def replc(match):
+        # self._print match.group(0),match.group(1),match.group(2)
+        dict = {'amp':'&', 'nbsp':' ', 'quot':'"', 'lt':'<', 'gt':'>', 'copy':'©', 'reg':'®'}
+        # dict+={'∀':'forall','∂':'part','∃':'exist','∅':'empty','∇':'nabla','∈':'isin','∉':'notin','∋':'ni','∏':'prod','∑':'sum','−':'minus','∗':'lowast','√':'radic','∝':'prop','∞':'infin','∠':'ang','∧':'and','∨':'or','∩':'cap','∪':'cup','∫':'int','∴':'there4','∼':'sim','≅':'cong','≈':'asymp','≠':'ne','≡':'equiv','≤':'le','≥':'ge','⊂':'sub','⊃':'sup','⊄':'nsub','⊆':'sube','⊇':'supe','⊕':'oplus','⊗':'otimes','⊥':'perp','⋅':'sdot','Α':'Alpha','Β':'Beta','Γ':'Gamma','Δ':'Delta','Ε':'Epsilon','Ζ':'Zeta','Η':'Eta','Θ':'Theta','Ι':'Iota','Κ':'Kappa','Λ':'Lambda','Μ':'Mu','Ν':'Nu','Ξ':'Xi','Ο':'Omicron','Π':'Pi','Ρ':'Rho','Σ':'Sigma','Τ':'Tau','Υ':'Upsilon','Φ':'Phi','Χ':'Chi','Ψ':'Psi','Ω':'Omega','α':'alpha','β':'beta','γ':'gamma','δ':'delta','ε':'epsilon','ζ':'zeta','η':'eta','θ':'theta','ι':'iota','κ':'kappa','λ':'lambda','μ':'mu','ν':'nu','ξ':'xi','ο':'omicron','π':'pi','ρ':'rho','ς':'sigmaf','σ':'sigma','τ':'tau','υ':'upsilon','φ':'phi','χ':'chi','ψ':'psi','ω':'omega','ϑ':'thetasym','ϒ':'upsih','ϖ':'piv','Œ':'OElig','œ':'oelig','Š':'Scaron','š':'scaron','Ÿ':'Yuml','ƒ':'fnof','ˆ':'circ','˜':'tilde',' ':'ensp',' ':'emsp',' ':'thinsp','‌':'zwnj','‍':'zwj','‎':'lrm','‏':'rlm','–':'ndash','—':'mdash','‘':'lsquo','’':'rsquo','‚':'sbquo','“':'ldquo','”':'rdquo','„':'bdquo','†':'dagger','‡':'Dagger','•':'bull','…':'hellip','‰':'permil','′':'prime','″':'Prime','‹':'lsaquo','›':'rsaquo','‾':'oline','€':'euro','™':'trade','←':'larr','↑':'uarr','→':'rarr','↓':'darr','↔':'harr','↵':'crarr','⌈':'lceil','⌉':'rceil','⌊':'lfloor','⌋':'rfloor','◊':'loz','♠':'spades','♣':'clubs','♥':'hearts','♦':'diams'}
+        if match.groups > 2:
+            if match.group(1) == '#':
+                if match.group(2).startswith('x'):#xD, xA
+                    return unichr(int(match.group(2)[1:],16))
+                else:
+                    return unichr(int(match.group(2)))
+            else:
+                return  dict.get(match.group(2), '?')
+    htmlre = re.compile("&(#?)(\d{1,5}|\w{1,8}|[a-z]+);")
+    return htmlre.sub(replc, htmlstr)
 
 class poster():
     def __init__(self, loc, logger, ua):
@@ -172,15 +195,13 @@ class poster():
         self.issavetraffic = True
 
     def gen_2nd_key(self, uid, loc='jp'):
-        self.crypt.gen_cipher_with_uid(uid, loc)
+        self.crypt.AES2ndKey = self.crypt.gen_cipher_with_uid(uid, loc)
 
     def load_svr(self, loc, ua=''):
         self.servloc = loc
         self.shortloc = loc[:2]
         self.header = dict(headers_main)
         self.header.update(headers_post)
-        if self.shortloc in ['cn','kr']:
-            self.ht.add_credentials("iW7B5MWJ", "8KdtjVfX")
         if ua != '':
             if '%d' in ua:  # formatted ua
                 self.header['User-Agent'] = ua % getattr(maclient_smart, 'app_ver_%s' % self.shortloc)
@@ -188,7 +209,13 @@ class poster():
                 self.header['User-Agent'] = ua
         else:
             self.header['User-Agent'] = self.header['User-Agent'] % getattr(maclient_smart, 'app_ver_%s' % self.shortloc)
-        self.default_2ndkey = loc in ['jp','cn']
+        if self.shortloc in ['cn','kr']:
+            self.ht.add_credentials("iW7B5MWJ", "8KdtjVfX")
+        elif self.servloc == 'jp':
+            self.ht.add_credentials("eWa25vrE", "2DbcAh3G")
+            if (not self.header['User-Agent'].endswith('GooglePlay')):
+                self.header['User-Agent'] += 'GooglePlay'
+        self.has_2ndkey = loc =='jp'
         self.crypt=Crypt(self.shortloc)
 
     def update_server(self, check_inspection_str):
@@ -205,7 +232,7 @@ class poster():
                 raw_input()
                 os._exit(1)
 
-    def post(self, uri, postdata = '', usecookie = True, setcookie = True, extraheader = {'Cookie2': '$Version=1'}, noencrypt = False, savetraffic = False, no2ndkey = False):
+    def post(self, uri, postdata = '', usecookie = True, setcookie = True, extraheader = {'Cookie2': '$Version=1'}, noencrypt = False, savetraffic = False, no2ndkey = False):#no2ndkey only used in jp server
             header = {}
             header.update(self.header)
             header.update(extraheader)
@@ -228,7 +255,7 @@ class poster():
                     else:
                         postdata=sign
                 elif postdata != '':
-                    postdata = self.crypt.encode_param(postdata)  
+                    postdata = self.crypt.encode_param(postdata, second_cipher = self.has_2ndkey and not no2ndkey)  
             trytime = 0
             ttimes = 3
             callback_hook = None
@@ -276,7 +303,7 @@ class poster():
             if savetraffic and self.issavetraffic:
                 return resp, content
             # 否则解码
-            dec = self.rollback_utf8(self.crypt.decode_data(content))
+            dec = self.rollback_utf8(self.crypt.decode_data(content, second_cipher = self.has_2ndkey and not no2ndkey))
             if os.path.exists('debug'):
                 open('debug/%s.xml' % uri.replace('/', '#').replace('?', '~'), 'w').write(dec)
                 # open('debug/~%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(content)
