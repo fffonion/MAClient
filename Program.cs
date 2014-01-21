@@ -22,7 +22,6 @@ namespace MAClientGUI
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new frmConfig());
         }
-
     }
     struct pluginItem
     {
@@ -181,7 +180,8 @@ namespace MAClientGUI
         private static extern int GetClassNameW(IntPtr hWnd, [MarshalAs(UnmanagedType.LPWStr)]StringBuilder lpString, int nMaxCount);
         [DllImport("User32.dll ")] 
         private static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
-
+        [DllImport("User32.dll ")] 
+        private static extern bool IsWindowVisible(IntPtr hWnd);
         private const int SW_HIDE = 0;                                                          //常量，隐藏
         private const int SW_SHOWNORMAL = 1;                                                    //常量，显示，标准状态
         private const int SW_SHOWMINIMIZED = 2;                                                 //常量，显示，最小化
@@ -250,7 +250,10 @@ namespace MAClientGUI
             showWnd(wnds);
         }
 
-
+        public static bool isVisible(IntPtr hwnd)
+        {
+            return IsWindowVisible(hwnd);
+        }
 
         public static WndInfo[] findHwndbyTitleReg(String textReg) 
         {
