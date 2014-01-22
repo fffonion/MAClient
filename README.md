@@ -194,7 +194,10 @@ session不用管它
     SUPER 累积的super值
     G 金币
     FP 友情点数
-    FAIRY_ALIVE 自己的妖精是否存活
+    FAIRY_ALIVE 自己发现的妖精是否存活
+    GUILD_ALIVE 公会的妖精是否存活
+
+PS:你必须进入一次妖精列表（使用fairy_battle/fyb或fairy_select/fs）才能刷新FAIRY_ALIVE和GUILD_ALIVE的值
 
 ####factor
 因子战需满足的表达式

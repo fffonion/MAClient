@@ -30,16 +30,17 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.65
+__version__ = 1.66
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
 EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -2, -1, 0, 1, 2
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
+GUILD_RACE_TYPE = '12'
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
-eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type=='12'"), ('STILL_ALIVE', "self.player.fairy['alive']")]
-eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('STILL_ALIVE', "self.player.fairy['alive']"), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type=='12'")]
+eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type=='12'")]
+eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type=='12'")]
 eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type=='12'"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"')]
 eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale_price'), ('sid', 'serial_id'), ('holo', 'holography==1')]
@@ -58,23 +59,24 @@ def setT(strt):
         os.system(du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 
 class set_title(threading.Thread):
-    def __init__(self, maInstance):
+    def __init__(self, macInstance):
         threading.Thread.__init__(self)
-        self.maInstance = maInstance
+        self.macInstance = macInstance
         self.flag = 1
     def run(self):
-        if not self.maInstance.settitle:
+        if not self.macInstance.settitle:
             self.flag = 0
        # if os.name == 'nt':
         while self.flag == 1:
-            self.maInstance.player.calc_ap_bc()
-            strt = '[%s] AP:%d/%d BC:%d/%d G:%d F:%d SP:%d Cards:%d%s' % (
-                self.maInstance.player.name,
-                self.maInstance.player.ap['current'], self.maInstance.player.ap['max'],
-                self.maInstance.player.bc['current'], self.maInstance.player.bc['max'],
-                self.maInstance.player.gold, self.maInstance.player.friendship_point,
-                self.maInstance.player.ex_gauge, self.maInstance.player.card.count,
-                self.maInstance.player.fairy['alive'] and ' 妖精存活' or '')
+            self.macInstance.player.calc_ap_bc()
+            strt = '[%s] AP:%d/%d BC:%d/%d G:%d F:%d SP:%d 卡片:%d%s%s' % (
+                self.macInstance.player.name,
+                self.macInstance.player.ap['current'], self.macInstance.player.ap['max'],
+                self.macInstance.player.bc['current'], self.macInstance.player.bc['max'],
+                self.macInstance.player.gold, self.macInstance.player.friendship_point,
+                self.macInstance.player.ex_gauge, self.macInstance.player.card.count,
+                self.macInstance.player.fairy['alive'] and ' 妖精存活' or '',
+                self.macInstance.player.fairy['guild_alive'] and ' 公会妖存活' or '')
             setT(strt)
             time.sleep(28)
         # elif os.name == 'posix':
@@ -273,20 +275,22 @@ class maClient():
                     update_dt = self.player.update_all(dec)
                     # self.remoteHdl(method='PROFILE')
                     if self.settitle:
-                        setT('[%s] AP:%d/%d BC:%d/%d G:%d F:%d SP:%d Cards:%d%s' % (
+                        setT('[%s] AP:%d/%d BC:%d/%d G:%d F:%d SP:%d 卡片:%d%s%s' % (
                             self.player.name,
                             self.player.ap['current'], self.player.ap['max'],
                             self.player.bc['current'], self.player.bc['max'],
                             self.player.gold, self.player.friendship_point,
                             self.player.ex_gauge, self.player.card.count,
-                            self.player.fairy['alive'] and ' 妖精存活' or ''))
+                            self.player.fairy['alive'] and ' 妖精存活' or '',
+                            self.player.fairy['guild_alive'] and ' 公会妖存活' or ''))
                     else:
                         if self.posttime == 5:
-                            logging.sleep('汇报 AP:%d/%d BC:%d/%d G:%d F:%d SP:%d %s' % (
+                            logging.sleep('汇报 AP:%d/%d BC:%d/%d G:%d F:%d SP:%d%s%s' % (
                                 self.player.ap['current'], self.player.ap['max'],
                                 self.player.bc['current'], self.player.bc['max'],
                                 self.player.gold, self.player.friendship_point, self.player.ex_gauge,
-                                self.player.fairy['alive'] and 'FAIRY_ALIVE' or ''))
+                                self.player.fairy['alive'] and ' FAIRY_ALIVE' or '',
+                                self.player.fairy['guild_alive'] and ' GUILD_FAIRY_ALIVE' or ''))
                         self.posttime = (self.posttime + 1) % 6
                     if update_dt[1]:
                         logging.debug(update_dt[0])
@@ -332,7 +336,7 @@ class maClient():
         self.cf.write(open(f, "w"))
 
     def _eval_gen(self, streval, repllst = []):
-        repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('G', 'self.player.gold'), ('FP', 'self.friendship_point'), ('FAIRY_ALIVE', 'self.player.fairy["alive"]')]
+        repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('G', 'self.player.gold'), ('FP', 'self.friendship_point'), ('FAIRY_ALIVE', 'self.player.fairy["alive"]'), ('GUILD_ALIVE', "self.player.fairy['guild_alive']")]
         if streval == '':
             return 'True'
         for (i, j) in repllst + repllst2:
@@ -869,7 +873,10 @@ class maClient():
                         info.fairy.lv, info.fairy.hp = int(info.fairy.lv), int(info.fairy.hp)
                         logging.info('碰到只妖精:%s lv%d hp%d' % (info.fairy.name, info.fairy.lv, info.fairy.hp))
                         logging.debug('sid' + info.fairy.serial_id + ' mid' + info.fairy.master_boss_id + ' uid' + info.fairy.discoverer_id)
-                        self.player.fairy = {'id':info.fairy.serial_id, 'alive':True}
+                        if info.fairy.race_type == GUILD_RACE_TYPE:
+                            self.player.fairy['guild_alive'] = True
+                        else:
+                            self.player.fairy.update({'id':info.fairy.serial_id, 'alive':True})
                         # evalfight=self._eval_gen(self._read_config('condition','encounter_fairy'),\
                         #    {'fairy':'info.fairy'})
                         # logging.debug('eval:%s result:%s'%(evalfight,eval(evalfight)))
@@ -1149,8 +1156,8 @@ class maClient():
         if resp['error']:
             return
         if ct.header.your_data.fairy_appearance != '1':  # 没有“妖精出现中”
-            if self.player.fairy['alive']:
-                self.player.fairy = {'alive':False, 'id':0}
+            if self.player.fairy['alive'] or  self.player.fairy['guild_alive']:
+                self.player.fairy = {'alive':False, 'id':0, 'guild_alive':False}
             return
         time.sleep(0.8)
         resp, ct = self._dopost('menu/fairyselect')
@@ -1175,7 +1182,7 @@ class maClient():
         # 筛选
         # 先置为已挂了
         fitemp = self.player.fairy['id']
-        self.player.fairy = {'alive':False, 'id':0}
+        self.player.fairy = {'alive':False, 'id':0, 'guild_alive':False}
         evalstr = (cond != '' and self._eval_gen(cond, eval_fairy_select) or self.evalstr_fairy)
         logging.debug('fairy_select:eval:%s' % (evalstr))
         fairies = []
@@ -1186,7 +1193,9 @@ class maClient():
             fairy.fairy.lv = int(fairy.fairy.lv)
             # 检查自己的还活着不
             if (fitemp == fairy.fairy.serial_id or fairy.user.id == self.player.id):
-                self.player.fairy = {'alive':True, 'id':fairy.fairy.serial_id}
+                self.player.fairy.update({'alive':True, 'id':fairy.fairy.serial_id})
+            elif fairy.fairy.race_type == GUILD_RACE_TYPE:
+                self.player.fairy['guild_alive'] = True
             fairy['time_limit'] = int(fairy.fairy.time_limit)
             fairy['wake'] = False
             fairy['wake_rare'] = False
@@ -1234,7 +1243,7 @@ class maClient():
 
     @plugin.func_hook
     def _fairy_battle(self, fairy, bt_type = NORMAL_BATTLE, carddeck = None):
-        while time.time() - self.lastfairytime < 20 and fairy.race_type != '12':
+        while time.time() - self.lastfairytime < 20 and fairy.race_type != GUILD_RACE_TYPE:
             logging.sleep('等待20s战斗冷却')
             time.sleep(5)
         def fairy_floor(f = fairy):
@@ -1257,7 +1266,9 @@ class maClient():
         if fairy.hp == '0':
             logging.warning('妖精已被消灭')
             if fairy.serial_id == self.player.fairy['id']:
-                self.player.fairy = {'id':0, 'alive':False}
+                self.player.fairy.update({'id':0, 'alive':False})
+            elif fairy.race_type == GUILD_RACE_TYPE:
+                self.player.fairy['guild_alive'] = False
             return False
         fairy['lv'] = int(fairy.lv)
         fairy['hp'] = int(fairy.hp)
@@ -1289,7 +1300,7 @@ class maClient():
         logging.info('妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s%s%s' % (
             fairy.name, fairy.lv, fairy.hp, disc_name,
             len(f_attackers), hms(fairy.time_limit),
-            fairy.race_type == '12' and ' 公会' or '',
+            fairy.race_type == GUILD_RACE_TYPE and ' 公会' or '',
             fairy.wake and ' WAKE!' or ''))
         if carddeck:
             cardd = carddeck
@@ -1342,7 +1353,9 @@ class maClient():
             except KeyError:
                 logging.warning('没有发现奖励，妖精已经挂了？')
                 if fairy.serial_id == self.player.fairy['id']:
-                    self.player.fairy = {'id':0, 'alive':False}
+                    self.player.fairy.update({'id':0, 'alive':False})
+                elif fairy.race_type == GUILD_RACE_TYPE:
+                    self.player.fairy['guild_alive'] = False
                 return False
             # 通知远程
             # self.remoteHdl(method='FAIRY',fairy=fairy)
@@ -1372,7 +1385,10 @@ class maClient():
                         logging.info('获得卡片 %s%s' % (self.carddb[int(b.card_id)][0], (b.holo_flag == '1' and '(闪)' or '')))
                 # 如果是自己的妖精则设为死了
                 if fairy.serial_id == self.player.fairy['id']:
-                    self.player.fairy = {'id':0, 'alive':False}
+                    self.player.fairy.update({'id':0, 'alive':False})
+                # 如果是公会妖精则设为死了
+                elif fairy.race_type == GUILD_RACE_TYPE:
+                    self.player.fairy['guild_alive'] = False
             else:  # 输了
                 hpleft = int(ct.body.explore.fairy.hp)
                 logging.info('YOU LOSE- - Fairy-HP:%d' % hpleft)
@@ -1466,7 +1482,10 @@ class maClient():
             logging.info('妖精真正的力量觉醒！'.center(39))
             logging.warning('WARNING WARNING WARNING WARNING WARNING')
             time.sleep(3)
-            self.player.fairy = {'alive':True, 'id':rare_fairy.serial_id}
+            if rare_fairy.race_type == GUILD_RACE_TYPE:
+                self.player.fairy['guild_alive'] = True
+            else:
+                self.player.fairy.update({'alive':True, 'id':rare_fairy.serial_id})
             self._fairy_battle(rare_fairy, bt_type = WAKE_BATTLE)
         # 输了，
         if not win:
