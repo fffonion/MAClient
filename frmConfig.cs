@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace MAClientGUI
 {
@@ -25,28 +26,35 @@ namespace MAClientGUI
         
         private void btnChooseCfg_Click(object sender, EventArgs e)
         {
-            if (cboCfgFile.Items.Count <= 0)
-                return;
+            if (cboCfgFile.Items.Count == 0)
+            {
+                if (MessageBox.Show("木有发现配置文件，是否手动寻找？", "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
+                    return;
+
+                OpenFileDialog fileDialog1 = new OpenFileDialog();
+                fileDialog1.Filter = "配置文件(*.ini)|*.ini|所有文件(*.*)|*.*";
+                fileDialog1.FilterIndex = 1;
+                fileDialog1.RestoreDirectory = true;
+                if (fileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    if (cboCfgFile.FindStringExact(fileDialog1.FileName) == -1)
+                    {
+                        if (fileDialog1.FileName.IndexOf(":") == -1)
+                            cboCfgFile.Items.Add(System.Environment.CurrentDirectory + "\\" + fileDialog1.FileName);
+                        else
+                            cboCfgFile.Items.Add(fileDialog1.FileName);
+                        cboCfgFile.SelectedIndex = cboCfgFile.FindStringExact(fileDialog1.FileName);
+                    }
+                }
+                else
+                    return;
+
+            }
+
             cf = new configParser(cboCfgFile.Text);
             tabControl1.Enabled = true;
             refreshAll();
             refreshCond();
-            /*
-            OpenFileDialog fileDialog1 = new OpenFileDialog();
-            fileDialog1.Filter = "配置文件(*.ini)|*.ini|所有文件(*.*)|*.*";
-            fileDialog1.FilterIndex = 1;
-            fileDialog1.RestoreDirectory = true;
-            if (fileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                if (cboCfgFile.FindStringExact(fileDialog1.FileName)==-1){
-                    if (fileDialog1.FileName.IndexOf(":")==-1)
-                        cboCfgFile.Items.Add(System.Environment.CurrentDirectory + "\\" + fileDialog1.FileName);
-                    else
-                        cboCfgFile.Items.Add(fileDialog1.FileName);
-                    cboCfgFile.SelectedIndex = cboCfgFile.FindStringExact(fileDialog1.FileName);
-                }
-            }
-             */
 
         }
       
@@ -219,14 +227,14 @@ namespace MAClientGUI
         private void frmConfig_Load(object sender, EventArgs e)
         {
             //setToolTipText();
-            this.Text += (" v"+Application.ProductVersion +" (for MAClient v1.65+)");
+            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.65+)");
             tabControl1.Enabled = false;
             DirectoryInfo folder = new DirectoryInfo(System.Environment.CurrentDirectory);
             foreach (FileInfo file in folder.GetFiles("*.ini"))
             {
                 cboCfgFile.Items.Add(file);
             }
-            if (cboCfgFile.Items.Count>0)
+            if (cboCfgFile.Items.Count > 0)
                 cboCfgFile.SelectedIndex = 0;
             Control.CheckForIllegalCrossThreadCalls = false;//丑就丑点吧www
             
@@ -864,42 +872,78 @@ namespace MAClientGUI
         }
         private void start_mac(string arg = "")
         {
-            bool alltested = false;
-            while (true)
+            string mcpath = System.Environment.CurrentDirectory + "\\maclient_cli.exe";
+            string cfgpath = cboCfgFile.Text;
+            if (!File.Exists(mcpath))
             {
-                try
+                if (MessageBox.Show("当前目录下木有maclient_cli.exe或maclient_cli.py，是否手动寻找？", "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
                 {
-                    System.Diagnostics.Process.Start(
-                       maclient_path,
-                        "\""+cboCfgFile.Text+"\" "+arg);
-                    break;
-                }
-                catch (Win32Exception)
-                {
-                    if (!alltested) 
+                    OpenFileDialog fileDialog1 = new OpenFileDialog();
+                    fileDialog1.Filter = "maclient_cli.exe,maclient_cli.py|*.exe;*.py";
+                    fileDialog1.FilterIndex = 1;
+                    fileDialog1.RestoreDirectory = true;
+                    if (fileDialog1.ShowDialog() == DialogResult.OK)
                     {
-                        maclient_path = maclient_path.Replace(".exe", ".py");
-                        alltested = true;
-                        continue;
-                    }
-                    if (MessageBox.Show("当前目录下木有maclient_cli.exe或maclient_cli.py，是否手动寻找？", "呵呵",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
-                    {
-                        OpenFileDialog fileDialog1 = new OpenFileDialog();
-                        fileDialog1.Filter = "maclient_cli.exe,maclient_cli.py|*.exe;*.py";
-                        fileDialog1.FilterIndex = 1;
-                        fileDialog1.RestoreDirectory = true;
-                        if (fileDialog1.ShowDialog() == DialogResult.OK)
-                        {
-                            maclient_path = fileDialog1.FileName;
-                        }
-                        continue;
+                        mcpath = fileDialog1.FileName;
                     }
                     else
-                        break;
-                    
+                    {
+                        return;
+                    }
+
                 }
+                else
+                {
+                    return;
+                }
+
             }
+
+            if (cfgpath == "" || !File.Exists(cfgpath))
+            {
+                if (MessageBox.Show("木有发现配置文件，是否手动寻找？", "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
+                {
+                    OpenFileDialog fileDialog1 = new OpenFileDialog();
+                    fileDialog1.Filter = "config.ini|*.ini";
+                    fileDialog1.FilterIndex = 1;
+                    fileDialog1.RestoreDirectory = true;
+                    if (fileDialog1.ShowDialog() == DialogResult.OK)
+                    {
+                        if (cboCfgFile.FindStringExact(fileDialog1.FileName) == -1)
+                        {
+                            if (fileDialog1.FileName.IndexOf(":") == -1)
+                                cboCfgFile.Items.Add(System.Environment.CurrentDirectory + "\\" + fileDialog1.FileName);
+                            else
+                                cboCfgFile.Items.Add(fileDialog1.FileName);
+                            cboCfgFile.SelectedIndex = cboCfgFile.FindStringExact(fileDialog1.FileName);
+                        }
+
+                        cfgpath = fileDialog1.FileName;
+                    }
+                    else
+                    {
+                        return;
+                    }
+
+                }
+                else
+                {
+                    return;
+                }
+
+            }
+
+
+            cboCfgFile.SelectedIndex = 0;
+            Process proc = new Process();
+            proc.StartInfo.FileName = mcpath;
+            proc.StartInfo.CreateNoWindow = true;
+            proc.StartInfo.UseShellExecute = true;
+            proc.StartInfo.Arguments = "\"" + cfgpath + "\" " + arg;
+            proc.EnableRaisingEvents = true;
+            proc.Start();
+
+
         }
         private void button3_Click(object sender, EventArgs e)
         {
@@ -908,6 +952,12 @@ namespace MAClientGUI
 
         private void button10_Click(object sender, EventArgs e)
         {
+            if (cbTask.Items.Count == 0)
+            {
+                MessageBox.Show("不存在的任务名，请检查后重试！", "呵呵", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             start_mac("t:" + cbTask.Items[cbTask.SelectedIndex].ToString());
         }
 
@@ -1080,15 +1130,17 @@ namespace MAClientGUI
             Thread oThread = new Thread(new ThreadStart(th.threading_hook));
             oThread.Start();
             //WndHdl.WndInfo[] res = WndHdl.findHwndbyTitleReg(@"ebug");
-            foreach (WndHdl.WndInfo r in res){
-                ToolStripMenuItem itm = menuItem("", new EventHandler(delegate(Object o, EventArgs a) {
+            foreach (WndHdl.WndInfo r in res)
+            {
+                ToolStripMenuItem itm = menuItem("", new EventHandler(delegate(Object o, EventArgs a)
+                {
                     if (WndHdl.isVisible(r.hwnd)) WndHdl.hideWnd(r);
                     else { WndHdl.showWnd(r); WndHdl.SetForegroundWindow(r.hwnd); }
                 }), r);
                 //MessageBox.Show(((uint)r.procid).ToString() + ";" + ((uint)r.threadid).ToString());
                 itm.Font = new Font(textBox1.Font, FontStyle.Bold);
                 itm.ToolTipText = "切换显示/隐藏";
-                dockMenu.Items. Add(itm);
+                dockMenu.Items.Add(itm);
                 dockMenu.Items.Add(new ToolStripTextBoxEx(Color.FromArgb(128, 0, 128, 0)));//AP
                 dockMenu.Items.Add(new ToolStripTextBoxEx(Color.FromArgb(128, 128, 0, 0)));//BC
                 ToolStripMenuItem t = menuItem("");//G,FP
@@ -1099,13 +1151,15 @@ namespace MAClientGUI
             //ToolStripTextBoxEx t = new ToolStripTextBoxEx();
             dockMenu.Items.Add(menuItem(button59.Text + "全部", new EventHandler(delegate(Object o, EventArgs a)
             {
-                button59_Click(o, a); ToolStripMenuItem m = o as ToolStripMenuItem; m.Text = button59.Text + "全部";  
+                button59_Click(o, a); ToolStripMenuItem m = o as ToolStripMenuItem; m.Text = button59.Text + "全部";
             })));
             dockMenu.Items.Add(menuItem("显示GUI", new EventHandler(this.frmNormalize)));
-            dockMenu.Items.Add(menuItem("退出", new EventHandler(delegate(Object o, EventArgs a) { 
+            dockMenu.Items.Add(menuItem("退出", new EventHandler(delegate(Object o, EventArgs a)
+            {
                 notifyIcon1.Visible = false;
-                button59.Text="恢复"; button59_Click(o, a);
-                System.Environment.Exit(0); })));
+                button59.Text = "恢复"; button59_Click(o, a);
+                System.Environment.Exit(0);
+            })));
             repaint_menu();
         }
 
@@ -1134,32 +1188,33 @@ namespace MAClientGUI
         private void repaint_menu()
         {
             string txtnot = "MAClient users";
-            for (int i = 2; i < dockMenu.Items.Count-3;i+=5 ) 
+            for (int i = 2; i < dockMenu.Items.Count - 3; i += 5)
             {
-                dockMenu.Items[i].Tag=WndHdl.refreshTitle((WndHdl.WndInfo)dockMenu.Items[i].Tag);
-                string title=((WndHdl.WndInfo)dockMenu.Items[i].Tag).title;
+                dockMenu.Items[i].Tag = WndHdl.refreshTitle((WndHdl.WndInfo)dockMenu.Items[i].Tag);
+                string title = ((WndHdl.WndInfo)dockMenu.Items[i].Tag).title;
                 if (title == "")//closed
                 {
-                    for (int j = 0; j < 5; j++) 
+                    for (int j = 0; j < 5; j++)
                         dockMenu.Items.RemoveAt(i);
                     i -= 5;
                     continue;
                 }
-                GroupCollection g=fullsplt.Match(title).Groups;
+                GroupCollection g = fullsplt.Match(title).Groups;
                 dockMenu.Items[i].Text = g[1].ToString();
-                for (int j=1; j<3;j++) 
+                for (int j = 1; j < 3; j++)
                 {
-                    GroupCollection g2=splt.Match(g[1+j].ToString()).Groups;
-                    float p=float.Parse(g2[1].ToString())/float.Parse(g2[2].ToString());
+                    GroupCollection g2 = splt.Match(g[1 + j].ToString()).Groups;
+                    float p = float.Parse(g2[1].ToString()) / float.Parse(g2[2].ToString());
                     ((ToolStripTextBoxEx)dockMenu.Items[i + j]).setPercent(p);
                     dockMenu.Items[i + j].Text = g[1 + j].ToString();
                 }
                 //+ g[4] + "  基:" + g[5]
-                dockMenu.Items[i + 3].Text = "金:" + g[4] +" 卡片:" + g[7];
+                dockMenu.Items[i + 3].Text = "金:" + g[4] + " 卡片:" + g[7];
                 txtnot += Environment.NewLine + "❁" + g[1];
             }
-            this.notifyIcon1.Text=txtnot;
+            this.notifyIcon1.Text = txtnot;
         }
+
         private bool has_show_bollon = false;
         private void frmConfig_Resize(object sender, EventArgs e)
         {
@@ -1168,16 +1223,17 @@ namespace MAClientGUI
                 this.Hide();
                 this.ShowInTaskbar = false;
                 notifyIcon1.Visible = true;
-                
+
                 if (!has_show_bollon)
                 {
                     notifyIcon1.ShowBalloonTip(1);
                     has_show_bollon = true;
                 }
-                if (button59.Text.StartsWith("隐藏")) 
+                if (button59.Text.StartsWith("隐藏"))
                     button59_Click(sender, e);
                 if (dockMenu.Items.Count <= 2) load_menu();
             }
+
         }
 
         private void frmNormalize(Object o, EventArgs a)
@@ -1185,7 +1241,7 @@ namespace MAClientGUI
             frmNormalize();
         }
 
-        private void frmNormalize() 
+        private void frmNormalize()
         {
             this.Show();
             WindowState = FormWindowState.Normal;
@@ -1193,44 +1249,10 @@ namespace MAClientGUI
             this.ShowInTaskbar = true;
             notifyIcon1.Visible = false;
         }
-        private int lastclick = 0; 
-        private Thread notifyTestClickThread;
-        private void notifyIcon1_MouseDown(object sender, MouseEventArgs e)
-        {
-            /*
-            if ((Environment.TickCount - this.lastclick) < 500)
-            {
-                if (this.notifyTestClickThread != null)
-                {
-                    this.notifyTestClickThread.Abort();
-                    this.notifyTestClickThread = null;
-                }
 
-                button59_Click(sender, e);
-            }
-            else{
-                this.notifyTestClickThread = new Thread(new ThreadStart(() =>
-                {
-                    if (e.Button == MouseButtons.Left)
-                    {
-                        this.Invoke(new Action(() =>
-                       {
-                           Thread.Sleep(300);
-                           frmNormalize();
-                       }));
-                    }
-                }));
-                this.notifyTestClickThread.IsBackground = true; 
-                this.notifyTestClickThread.Start();
-            }
-             */
-            
-        }
 
-        private void notifyIcon1_MouseUp(object sender, MouseEventArgs e)
-        {
-            //this.lastclick = Environment.TickCount;
-        }
+
+
     private void button60_Click_1(object sender, EventArgs e)
     {
         /*WinEventDelegate procDelegate = new WinEventDelegate(WinEventProc);
@@ -1246,8 +1268,8 @@ namespace MAClientGUI
     {
         button59.Text = "恢复";
         button59_Click(sender, e);
-        Application.ExitThread();
-      //System.Environment.Exit(0);
+        Process.GetCurrentProcess().Kill();
+        //System.Environment.Exit(0);
     }
 
 
