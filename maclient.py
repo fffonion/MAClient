@@ -336,7 +336,7 @@ class maClient():
         self.cf.write(open(f, "w"))
 
     def _eval_gen(self, streval, repllst = []):
-        repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('G', 'self.player.gold'), ('FP', 'self.friendship_point'), ('FAIRY_ALIVE', 'self.player.fairy["alive"]'), ('GUILD_ALIVE', "self.player.fairy['guild_alive']")]
+        repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('FAIRY_ALIVE', 'self.player.fairy["alive"]'), ('GUILD_ALIVE', "self.player.fairy['guild_alive']"), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('G', 'self.player.gold'), ('FP', 'self.friendship_point')]
         if streval == '':
             return 'True'
         for (i, j) in repllst + repllst2:
@@ -1191,8 +1191,8 @@ class maClient():
             if fairy.put_down not in '01':
                 continue
             fairy.fairy.lv = int(fairy.fairy.lv)
-            # 检查自己的还活着不
-            if (fitemp == fairy.fairy.serial_id or fairy.user.id == self.player.id):
+            # (sid相同，或未记录的)且不是公会妖
+            if (fitemp == fairy.fairy.serial_id or fairy.user.id == self.player.id) and fairy.fairy.race_type != GUILD_RACE_TYPE:
                 self.player.fairy.update({'alive':True, 'id':fairy.fairy.serial_id})
             elif fairy.fairy.race_type == GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
