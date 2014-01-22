@@ -1,4 +1,4 @@
-maClient Plugin Document
+MAClient Plugin Document
 ================
 本文档给出maclient插件制作的标准和一些参考
 
@@ -16,7 +16,7 @@ maClient Plugin Document
 
 ##概述
 
-maclient1.50版本开始支持插件，通过在配置项中的“启用插件”功能(enable_plguins)和“禁用单个插件”选项(disabled)来控制插件的启用与否。
+MAClient1.50版本开始支持插件，通过在配置项中的“启用插件”功能(enable_plguins)和“禁用单个插件”选项(disabled)来控制插件的启用与否。
 
 插件为py脚本，放置在plugins目录下，由maclient_plugin在运行时载入；其中下划线开头的脚本和子目录中的脚本 __不会__ 被载入；同名脚本的优先级为pyd>py>pyc=pyo
 

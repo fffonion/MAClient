@@ -1,4 +1,4 @@
-﻿MAClient是一个可以用来装B的百万亚瑟王客户端，用于解放你的双手和智商。目前支持台服、国服全区、韩服和日服。
+﻿MAClient是一个可以用来装B的百万亚瑟王客户端。支持台服、国服全区、韩服和日服。
 
 [更新历史](https://github.com/fffonion/MAClient/wiki/HISTORY)
 
@@ -16,20 +16,20 @@ MAClient可以在支持websocket的浏览器上运行![chaojibang](http://ww1.si
 MAClient可以在python2.x和3.x上运行
 ```shell
 git clone --recursive https://github.com/fffonion/MAClient.git
-mv httplib2/httplib2/* httplib2
-MAClient_cli.py
-MAClient_cli.py [config file]
-MAClient_cli.py [config file] [task]/[commands]
+cd httplib2
+python setup.py install
+
+python MAClient_cli.py
+python MAClient_cli.py [config file]
+python MAClient_cli.py [config file] [task]/[commands]
 ```
 子模块为针对py2x的httplib2；对py3x，你需要下载[针对py3x的httplib2](https://github.com/fffonion/httplib2-plus/tree/python3)
 
 **使用打包的exe的windows用户注意**：路径不能包含中文，这是pyinstaller的缺陷
 
-##CONFIG.INI文件说明
+##配置文件说明
 
-关于config.ini可以参考config_sample.ini
-
-图形化配置工具MAClientGUI可以从[这里下载](http://mac.yooooo.us/MAClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/MAClient/tree/gui)
+参考config_sample.ini，或者使用图形化配置工具MAClientGUI，它可以从[这里下载](http://mac.yooooo.us/MAClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/MAClient/tree/gui)
 
 ***
 
