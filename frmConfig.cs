@@ -26,31 +26,29 @@ namespace MAClientGUI
         
         private void btnChooseCfg_Click(object sender, EventArgs e)
         {
-            if (cboCfgFile.Items.Count == 0)
+            //if (cboCfgFile.Items.Count == 0)
+            //{
+            //if (MessageBox.Show("木有发现配置文件，是否手动寻找？", "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
+            //    return;
+
+            OpenFileDialog fileDialog1 = new OpenFileDialog();
+            fileDialog1.Filter = "配置文件(*.ini)|*.ini|所有文件(*.*)|*.*";
+            fileDialog1.FilterIndex = 1;
+            fileDialog1.RestoreDirectory = true;
+            if (fileDialog1.ShowDialog() == DialogResult.OK)
             {
-                if (MessageBox.Show("木有发现配置文件，是否手动寻找？", "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.No)
-                    return;
-
-                OpenFileDialog fileDialog1 = new OpenFileDialog();
-                fileDialog1.Filter = "配置文件(*.ini)|*.ini|所有文件(*.*)|*.*";
-                fileDialog1.FilterIndex = 1;
-                fileDialog1.RestoreDirectory = true;
-                if (fileDialog1.ShowDialog() == DialogResult.OK)
+                if (cboCfgFile.FindStringExact(fileDialog1.FileName) == -1)
                 {
-                    if (cboCfgFile.FindStringExact(fileDialog1.FileName) == -1)
-                    {
-                        if (fileDialog1.FileName.IndexOf(":") == -1)
-                            cboCfgFile.Items.Add(System.Environment.CurrentDirectory + "\\" + fileDialog1.FileName);
-                        else
-                            cboCfgFile.Items.Add(fileDialog1.FileName);
-                        cboCfgFile.SelectedIndex = cboCfgFile.FindStringExact(fileDialog1.FileName);
-                    }
+                    if (fileDialog1.FileName.IndexOf(":") == -1)
+                        cboCfgFile.Items.Add(System.Environment.CurrentDirectory + "\\" + fileDialog1.FileName);
+                    else
+                        cboCfgFile.Items.Add(fileDialog1.FileName);
+                    cboCfgFile.SelectedIndex = cboCfgFile.FindStringExact(fileDialog1.FileName);
                 }
-                else
-                    return;
-
             }
-
+            else
+                return;
+            //}
             cf = new configParser(cboCfgFile.Text);
             tabControl1.Enabled = true;
             refreshAll();
@@ -227,7 +225,7 @@ namespace MAClientGUI
         private void frmConfig_Load(object sender, EventArgs e)
         {
             //setToolTipText();
-            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.65+)");
+            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.66+)");
             tabControl1.Enabled = false;
             DirectoryInfo folder = new DirectoryInfo(System.Environment.CurrentDirectory);
             foreach (FileInfo file in folder.GetFiles("*.ini"))
@@ -346,6 +344,18 @@ namespace MAClientGUI
             button18.Enabled = false;
             button17.Enabled = false;
         }
+        private void button71_Click(object sender, EventArgs e)
+        {
+            addTaskerCond("GUILD_ALIVE");
+            button71.Enabled = false;
+            button70.Enabled = false;
+        }
+        private void button70_Click(object sender, EventArgs e)
+        {
+            addTaskerCond("not GUILD_ALIVE");
+            button71.Enabled = false;
+            button70.Enabled = false;
+        }
         private void button52_Click(object sender, EventArgs e)
         {
             addTaskerThen("'fyb " + numericUpDown1.Value + "'");
@@ -363,6 +373,8 @@ namespace MAClientGUI
             btnTaskerAP.Enabled = true;
             button17.Enabled = true;
             button18.Enabled = true;
+            button70.Enabled = true;
+            button71.Enabled = true;
             button53.Enabled = true;
         }
 
@@ -413,6 +425,8 @@ namespace MAClientGUI
             btnTaskerAP.Enabled = true;
             button17.Enabled = true;
             button18.Enabled = true;
+            button70.Enabled = true;
+            button71.Enabled = true;
         }
         private void btnTaskerSetCard_Click(object sender, EventArgs e)
         {
@@ -461,12 +475,22 @@ namespace MAClientGUI
         {
             addExploreCond("area.IS_EVENT");
         }
-
         private void button61_Click(object sender, EventArgs e)
         {
             addExploreCond("area.IS_GUILD");
         }
-
+        private void button8_Click(object sender, EventArgs e)
+        {
+            addExploreCond("FAIRY_ALIVE");
+        }
+        private void button69_Click(object sender, EventArgs e)
+        {
+            addExploreCond("GUILD_ALIVE");
+        }
+        private void button68_Click(object sender, EventArgs e)
+        {
+            addExploreCond("not GUILD_ALIVE");
+        }
         private void button5_Click(object sender, EventArgs e)
         {
             if (textBox12.Text!="")
@@ -477,11 +501,6 @@ namespace MAClientGUI
         {
             if (textBox13.Text != "")
                 addExploreCond("'" + textBox13.Text + "' not in area.name");
-        }
-
-        private void button8_Click(object sender, EventArgs e)
-        {
-            addExploreCond("FAIRY_ALIVE");
         }
         private void button55_Click(object sender, EventArgs e)
         {
@@ -542,6 +561,16 @@ namespace MAClientGUI
         private void button11_Click(object sender, EventArgs e)
         {
             addFloorCond("not FAIRY_ALIVE");
+        }
+
+        private void button74_Click(object sender, EventArgs e)
+        {
+            addFloorCond("GUILD_ALIVE");
+        }
+
+        private void button75_Click(object sender, EventArgs e)
+        {
+            addFloorCond("not GUILD_ALIVE");
         }
 
         private void button57_Click(object sender, EventArgs e)
@@ -720,6 +749,19 @@ namespace MAClientGUI
             button33.Enabled = false;
             button34.Enabled = false;
         }
+        private void button72_Click(object sender, EventArgs e)
+        {
+            addCarddeckCond("GUILD_ALIVE");
+            button72.Enabled = false;
+            button73.Enabled = false;
+        }
+
+        private void button73_Click(object sender, EventArgs e)
+        {
+            addCarddeckCond("not GUILD_ALIVE");
+            button72.Enabled = false;
+            button73.Enabled = false;
+        }
 
         private void button32_Click(object sender, EventArgs e)
         {
@@ -727,6 +769,7 @@ namespace MAClientGUI
             button32.Enabled = false;
             button49.Enabled = false;
         }
+
         private void button49_Click(object sender, EventArgs e)
         {
             addCarddeckCond("not fairy.IS_MINE");
@@ -797,6 +840,8 @@ namespace MAClientGUI
                 button49.Enabled = true;
                 button58.Enabled = true;
                 button63.Enabled = true;
+                button72.Enabled = true;
+                button73.Enabled = true;
             }
         }
 
@@ -815,6 +860,8 @@ namespace MAClientGUI
             button49.Enabled = true;
             button58.Enabled = true;
             button63.Enabled = true;
+            button72.Enabled = true;
+            button73.Enabled = true;
         }
 
         private void button20_Click(object sender, EventArgs e)
@@ -1182,7 +1229,7 @@ namespace MAClientGUI
             //MessageBox.Show(sb.ToString() + ";"+a);
         }
 
-        Regex fullsplt = new Regex(@"\[([^\[]+)\] AP\:([\d\/]+) BC\:([\d\/]+) G\:(\d+) F\:(\d+) SP\:(\d+) Cards\:(\d+)\s{0,1}(.*)");
+        Regex fullsplt = new Regex(@"\[([^\[]+)\] AP\:([\d\/]+) BC\:([\d\/]+) G\:(\d+) F\:(\d+) SP\:(\d+) 卡片\:(\d+)\s{0,1}(.*)");
         Regex splt = new Regex(@"(\d+)\/(\d+)");
 
         private void repaint_menu()
@@ -1694,7 +1741,8 @@ namespace MAClientGUI
             frmNormalize();
 
     }
- 
+
+
 
     }
 }
