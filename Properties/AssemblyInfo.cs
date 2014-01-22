@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("丧心病狂的MA客户端的GUI")]
 [assembly: AssemblyDescription("丧心病狂的MA客户端的GUI")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("http://www.yooooo.us")]
+[assembly: AssemblyCompany("http://yooooo.us")]
 [assembly: AssemblyProduct("丧心病狂的MA客户端的GUI")]
 [assembly: AssemblyCopyright("GPLv3")]
 [assembly: AssemblyTrademark("木有")]
@@ -33,4 +33,4 @@ using System.Runtime.InteropServices;
 // 方法是按如下所示使用“*”:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.65")]
-[assembly: AssemblyFileVersion("1.45")]
+[assembly: AssemblyFileVersion("1.4.6")]
