@@ -97,8 +97,13 @@ namespace MAClientGUI
             }
 
             if (cbTask.Items.Count > 0)
-                cbTask.SelectedIndex = 0;
+            {
 
+                int idx = cbTask.Items.IndexOf(cf.Read("system", "taskname"));
+                if (idx == -1)
+                    idx = 0;
+                cbTask.SelectedIndex = idx;
+            }
             numTaskTimes.Value = cf.ReadInt("system", "tasker_times");
             numFactorTimes.Value = cf.ReadInt("system", "try_factor_times");
             numFactorSleep.Value = cf.ReadInt("system", "factor_sleep");
@@ -146,6 +151,9 @@ namespace MAClientGUI
             //只有一个卡组名，则两边引号会被剥掉，加回去
             if (!txtCondCarddeck.Text.Contains("\"") && !txtCondCarddeck.Text.Contains("'"))
                 txtCondCarddeck.Text = "'" + txtCondCarddeck.Text + "'";
+            //同理
+            if (!txtCondTasker.Text.Contains("\"") && !txtCondTasker.Text.Contains("'"))
+                txtCondTasker.Text = "'" + txtCondTasker.Text + "'";
             txtCondFactor.Text = cf.Read("condition", "factor");
             txtCondSell.Text = cf.Read("condition", "select_card_to_sell");
         }
@@ -456,7 +464,7 @@ namespace MAClientGUI
         /// <param name="e"></param>
         private void addExploreCond(string cond)
         {
-            if (txtCondExplore.Text != "")
+            if (txtCondExplore.Text != "" && !txtCondExplore.Text.TrimEnd().EndsWith("|"))
                 txtCondExplore.Text += " and ";
             txtCondExplore.Text += cond;
         }
@@ -543,7 +551,7 @@ namespace MAClientGUI
         /// </summary>
         private void addFloorCond(string cond)
         {
-            if (txtCondFloor.Text != "")
+            if (txtCondFloor.Text != "" && !txtCondFloor.Text.TrimEnd().EndsWith("|"))
                 txtCondFloor.Text += " and ";
             txtCondFloor.Text += cond;
         }
@@ -1023,16 +1031,9 @@ namespace MAClientGUI
             start_mac("fyb");
         }
 
-        private void txtTaskName_TextChanged(object sender, EventArgs e)
-        {
-            txtCondTasker.Text = cf.Read("tasker", cbTask.Items[cbTask.SelectedIndex].ToString());
-            label41.Text = "正在编辑任务:" + cbTask.Items[cbTask.SelectedIndex].ToString();
-            button10.Text = "开始任务 " + cbTask.Items[cbTask.SelectedIndex].ToString();
-        }
-
         private void label41_Click(object sender, EventArgs e)
         {
-            tabControl1.SelectedIndex=0;
+            //tabControl1.SelectedIndex=0;
             cbTask.Focus();
         }
 
@@ -1730,6 +1731,8 @@ namespace MAClientGUI
     private void cbTask_SelectedIndexChanged(object sender, EventArgs e)
     {
         txtCondTasker.Text = cf.Read("tasker", cbTask.Items[cbTask.SelectedIndex].ToString());
+        if (!txtCondTasker.Text.Contains("\"") && !txtCondTasker.Text.Contains("'"))
+            txtCondTasker.Text = "'" + txtCondTasker.Text + "'";
         label41.Text = "正在编辑任务:" + cbTask.Items[cbTask.SelectedIndex].ToString();
         button10.Text = "开始任务 " + cbTask.Items[cbTask.SelectedIndex].ToString();
 

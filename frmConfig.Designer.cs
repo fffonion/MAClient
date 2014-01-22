@@ -281,6 +281,8 @@ namespace MAClientGUI
             this.txtCondFloor = new System.Windows.Forms.TextBox();
             this.button57 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button74 = new System.Windows.Forms.Button();
+            this.button75 = new System.Windows.Forms.Button();
             this.label65 = new System.Windows.Forms.Label();
             this.textBox14 = new System.Windows.Forms.TextBox();
             this.textBox15 = new System.Windows.Forms.TextBox();
@@ -335,8 +337,6 @@ namespace MAClientGUI
             this.dockMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.dockMenu_head = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.button74 = new System.Windows.Forms.Button();
-            this.button75 = new System.Windows.Forms.Button();
             this.grpSystem.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFairySleepFactor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
@@ -3542,6 +3542,30 @@ namespace MAClientGUI
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "探索这些地区";
             // 
+            // button74
+            // 
+            this.button74.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button74.Location = new System.Drawing.Point(280, 129);
+            this.button74.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button74.Name = "button74";
+            this.button74.Size = new System.Drawing.Size(156, 39);
+            this.button74.TabIndex = 29;
+            this.button74.Text = "公会妖精跪了";
+            this.button74.UseVisualStyleBackColor = true;
+            this.button74.Click += new System.EventHandler(this.button74_Click);
+            // 
+            // button75
+            // 
+            this.button75.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button75.Location = new System.Drawing.Point(280, 188);
+            this.button75.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button75.Name = "button75";
+            this.button75.Size = new System.Drawing.Size(156, 39);
+            this.button75.TabIndex = 28;
+            this.button75.Text = "公会妖精活着";
+            this.button75.UseVisualStyleBackColor = true;
+            this.button75.Click += new System.EventHandler(this.button75_Click);
+            // 
             // label65
             // 
             this.label65.AutoSize = true;
@@ -4164,30 +4188,6 @@ namespace MAClientGUI
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(195, 6);
-            // 
-            // button74
-            // 
-            this.button74.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button74.Location = new System.Drawing.Point(280, 129);
-            this.button74.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button74.Name = "button74";
-            this.button74.Size = new System.Drawing.Size(156, 39);
-            this.button74.TabIndex = 29;
-            this.button74.Text = "公会妖精跪了";
-            this.button74.UseVisualStyleBackColor = true;
-            this.button74.Click += new System.EventHandler(this.button74_Click);
-            // 
-            // button75
-            // 
-            this.button75.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button75.Location = new System.Drawing.Point(280, 188);
-            this.button75.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button75.Name = "button75";
-            this.button75.Size = new System.Drawing.Size(156, 39);
-            this.button75.TabIndex = 28;
-            this.button75.Text = "公会妖精活着";
-            this.button75.UseVisualStyleBackColor = true;
-            this.button75.Click += new System.EventHandler(this.button75_Click);
             // 
             // frmConfig
             // 
