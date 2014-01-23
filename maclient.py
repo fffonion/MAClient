@@ -36,7 +36,7 @@ EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
 EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -2, -1, 0, 1, 2
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
-GUILD_RACE_TYPE = '12'
+GUILD_RACE_TYPE = ['11','12']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
 eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type=='12'")]
@@ -873,7 +873,7 @@ class maClient():
                         info.fairy.lv, info.fairy.hp = int(info.fairy.lv), int(info.fairy.hp)
                         logging.info('碰到只妖精:%s lv%d hp%d' % (info.fairy.name, info.fairy.lv, info.fairy.hp))
                         logging.debug('sid' + info.fairy.serial_id + ' mid' + info.fairy.master_boss_id + ' uid' + info.fairy.discoverer_id)
-                        if info.fairy.race_type == GUILD_RACE_TYPE:
+                        if info.fairy.race_type in GUILD_RACE_TYPE:
                             self.player.fairy['guild_alive'] = True
                         else:
                             self.player.fairy.update({'id':info.fairy.serial_id, 'alive':True})
@@ -1194,7 +1194,7 @@ class maClient():
             # (sid相同，或未记录的)且不是公会妖
             if (fitemp == fairy.fairy.serial_id or fairy.user.id == self.player.id) and fairy.fairy.race_type != GUILD_RACE_TYPE:
                 self.player.fairy.update({'alive':True, 'id':fairy.fairy.serial_id})
-            elif fairy.fairy.race_type == GUILD_RACE_TYPE:
+            elif fairy.fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
             fairy['time_limit'] = int(fairy.fairy.time_limit)
             fairy['wake'] = False
@@ -1267,7 +1267,7 @@ class maClient():
             logging.warning('妖精已被消灭')
             if fairy.serial_id == self.player.fairy['id']:
                 self.player.fairy.update({'id':0, 'alive':False})
-            elif fairy.race_type == GUILD_RACE_TYPE:
+            elif fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = False
             return False
         fairy['lv'] = int(fairy.lv)
@@ -1300,7 +1300,7 @@ class maClient():
         logging.info('妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s%s%s' % (
             fairy.name, fairy.lv, fairy.hp, disc_name,
             len(f_attackers), hms(fairy.time_limit),
-            fairy.race_type == GUILD_RACE_TYPE and ' 公会' or '',
+            fairy.race_type in GUILD_RACE_TYPE and ' 公会' or '',
             fairy.wake and ' WAKE!' or ''))
         if carddeck:
             cardd = carddeck
@@ -1354,7 +1354,7 @@ class maClient():
                 logging.warning('没有发现奖励，妖精已经挂了？')
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
-                elif fairy.race_type == GUILD_RACE_TYPE:
+                elif fairy.race_type in GUILD_RACE_TYPE:
                     self.player.fairy['guild_alive'] = False
                 return False
             # 通知远程
@@ -1387,7 +1387,7 @@ class maClient():
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
                 # 如果是公会妖精则设为死了
-                elif fairy.race_type == GUILD_RACE_TYPE:
+                elif fairy.race_type in GUILD_RACE_TYPE:
                     self.player.fairy['guild_alive'] = False
             else:  # 输了
                 hpleft = int(ct.body.explore.fairy.hp)
@@ -1482,7 +1482,7 @@ class maClient():
             logging.info('妖精真正的力量觉醒！'.center(39))
             logging.warning('WARNING WARNING WARNING WARNING WARNING')
             time.sleep(3)
-            if rare_fairy.race_type == GUILD_RACE_TYPE:
+            if rare_fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
             else:
                 self.player.fairy.update({'alive':True, 'id':rare_fairy.serial_id})
