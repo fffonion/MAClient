@@ -20,7 +20,7 @@ class player(object):
         self.card = card(loc[:2])
         self.item = item(loc[:2])
         self.loc = loc
-        self.fairy = {'id':0, 'alive':False}
+        self.fairy = {'id':0, 'alive':False, 'guild_alive':False}
         self.id = '0'
         self.update_checked = False
         self.need_update = False, False
