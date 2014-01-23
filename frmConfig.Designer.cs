@@ -108,6 +108,7 @@ namespace MAClientGUI
             this.chkNewFactor = new System.Windows.Forms.CheckBox();
             this.txtGreetWords = new System.Windows.Forms.TextBox();
             this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.label53 = new System.Windows.Forms.Label();
             this.lblPluginState = new System.Windows.Forms.Label();
             this.label73 = new System.Windows.Forms.Label();
             this.label71 = new System.Windows.Forms.Label();
@@ -129,7 +130,6 @@ namespace MAClientGUI
             this.button65 = new System.Windows.Forms.Button();
             this.button64 = new System.Windows.Forms.Button();
             this.label70 = new System.Windows.Forms.Label();
-            this.label53 = new System.Windows.Forms.Label();
             this.lstPlugins = new System.Windows.Forms.ListBox();
             this.label81 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -545,7 +545,7 @@ namespace MAClientGUI
             this.cbTask.Location = new System.Drawing.Point(116, 98);
             this.cbTask.Margin = new System.Windows.Forms.Padding(4);
             this.cbTask.Name = "cbTask";
-            this.cbTask.Size = new System.Drawing.Size(84, 28);
+            this.cbTask.Size = new System.Drawing.Size(91, 28);
             this.cbTask.TabIndex = 1054;
             this.cbTask.SelectedIndexChanged += new System.EventHandler(this.cbTask_SelectedIndexChanged);
             // 
@@ -592,7 +592,7 @@ namespace MAClientGUI
             0,
             0,
             65536});
-            this.numFairySleepFactor.Location = new System.Drawing.Point(637, 56);
+            this.numFairySleepFactor.Location = new System.Drawing.Point(639, 56);
             this.numFairySleepFactor.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numFairySleepFactor.Minimum = new decimal(new int[] {
             1,
@@ -725,7 +725,7 @@ namespace MAClientGUI
             this.cboLogLevel.Location = new System.Drawing.Point(116, 62);
             this.cboLogLevel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cboLogLevel.Name = "cboLogLevel";
-            this.cboLogLevel.Size = new System.Drawing.Size(84, 28);
+            this.cboLogLevel.Size = new System.Drawing.Size(91, 28);
             this.cboLogLevel.TabIndex = 1000;
             // 
             // label16
@@ -857,7 +857,7 @@ namespace MAClientGUI
             this.cboServer.Location = new System.Drawing.Point(116, 22);
             this.cboServer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cboServer.Name = "cboServer";
-            this.cboServer.Size = new System.Drawing.Size(84, 28);
+            this.cboServer.Size = new System.Drawing.Size(91, 28);
             this.cboServer.TabIndex = 999;
             this.cboServer.SelectedIndexChanged += new System.EventHandler(this.cboServer_SelectedIndexChanged);
             // 
@@ -1107,7 +1107,7 @@ namespace MAClientGUI
             // 
             this.chkGachaBuild.AutoSize = true;
             this.chkGachaBuild.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkGachaBuild.Location = new System.Drawing.Point(476, 92);
+            this.chkGachaBuild.Location = new System.Drawing.Point(476, 90);
             this.chkGachaBuild.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkGachaBuild.Name = "chkGachaBuild";
             this.chkGachaBuild.Size = new System.Drawing.Size(136, 24);
@@ -1119,7 +1119,7 @@ namespace MAClientGUI
             // 
             this.chkFairyRewards.AutoSize = true;
             this.chkFairyRewards.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkFairyRewards.Location = new System.Drawing.Point(476, 118);
+            this.chkFairyRewards.Location = new System.Drawing.Point(476, 116);
             this.chkFairyRewards.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkFairyRewards.Name = "chkFairyRewards";
             this.chkFairyRewards.Size = new System.Drawing.Size(121, 24);
@@ -1131,7 +1131,7 @@ namespace MAClientGUI
             // 
             this.chkFPGachaBulk.AutoSize = true;
             this.chkFPGachaBulk.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkFPGachaBulk.Location = new System.Drawing.Point(476, 141);
+            this.chkFPGachaBulk.Location = new System.Drawing.Point(476, 139);
             this.chkFPGachaBulk.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkFPGachaBulk.Name = "chkFPGachaBulk";
             this.chkFPGachaBulk.Size = new System.Drawing.Size(106, 24);
@@ -1143,7 +1143,7 @@ namespace MAClientGUI
             // 
             this.chkAutoSellCard.AutoSize = true;
             this.chkAutoSellCard.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkAutoSellCard.Location = new System.Drawing.Point(476, 21);
+            this.chkAutoSellCard.Location = new System.Drawing.Point(476, 19);
             this.chkAutoSellCard.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkAutoSellCard.Name = "chkAutoSellCard";
             this.chkAutoSellCard.Size = new System.Drawing.Size(91, 24);
@@ -1155,7 +1155,7 @@ namespace MAClientGUI
             // 
             this.chkAutoFPGacha.AutoSize = true;
             this.chkAutoFPGacha.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkAutoFPGacha.Location = new System.Drawing.Point(476, 45);
+            this.chkAutoFPGacha.Location = new System.Drawing.Point(476, 43);
             this.chkAutoFPGacha.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkAutoFPGacha.Name = "chkAutoFPGacha";
             this.chkAutoFPGacha.Size = new System.Drawing.Size(106, 24);
@@ -1167,7 +1167,7 @@ namespace MAClientGUI
             // 
             this.chkAutoExplore.AutoSize = true;
             this.chkAutoExplore.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkAutoExplore.Location = new System.Drawing.Point(476, 69);
+            this.chkAutoExplore.Location = new System.Drawing.Point(476, 67);
             this.chkAutoExplore.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkAutoExplore.Name = "chkAutoExplore";
             this.chkAutoExplore.Size = new System.Drawing.Size(121, 24);
@@ -1386,7 +1386,7 @@ namespace MAClientGUI
             // 
             this.chkNewFactor.AutoEllipsis = true;
             this.chkNewFactor.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkNewFactor.Location = new System.Drawing.Point(476, 161);
+            this.chkNewFactor.Location = new System.Drawing.Point(476, 162);
             this.chkNewFactor.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkNewFactor.Name = "chkNewFactor";
             this.chkNewFactor.Size = new System.Drawing.Size(135, 49);
@@ -1408,6 +1408,7 @@ namespace MAClientGUI
             // tabPage8
             // 
             this.tabPage8.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage8.Controls.Add(this.label53);
             this.tabPage8.Controls.Add(this.lblPluginState);
             this.tabPage8.Controls.Add(this.label73);
             this.tabPage8.Controls.Add(this.label71);
@@ -1429,7 +1430,6 @@ namespace MAClientGUI
             this.tabPage8.Controls.Add(this.button65);
             this.tabPage8.Controls.Add(this.button64);
             this.tabPage8.Controls.Add(this.label70);
-            this.tabPage8.Controls.Add(this.label53);
             this.tabPage8.Controls.Add(this.lstPlugins);
             this.tabPage8.Controls.Add(this.label81);
             this.tabPage8.ForeColor = System.Drawing.SystemColors.ControlText;
@@ -1440,10 +1440,20 @@ namespace MAClientGUI
             this.tabPage8.TabIndex = 10;
             this.tabPage8.Text = "插件";
             // 
+            // label53
+            // 
+            this.label53.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label53.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label53.Location = new System.Drawing.Point(571, 24);
+            this.label53.Name = "label53";
+            this.label53.Size = new System.Drawing.Size(141, 32);
+            this.label53.TabIndex = 1;
+            this.label53.Text = "插件系统已";
+            // 
             // lblPluginState
             // 
             this.lblPluginState.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblPluginState.Location = new System.Drawing.Point(409, 76);
+            this.lblPluginState.Location = new System.Drawing.Point(409, 68);
             this.lblPluginState.Name = "lblPluginState";
             this.lblPluginState.Size = new System.Drawing.Size(21, 26);
             this.lblPluginState.TabIndex = 23;
@@ -1472,7 +1482,7 @@ namespace MAClientGUI
             // btnToggleEnable
             // 
             this.btnToggleEnable.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnToggleEnable.Location = new System.Drawing.Point(919, 556);
+            this.btnToggleEnable.Location = new System.Drawing.Point(689, 445);
             this.btnToggleEnable.Margin = new System.Windows.Forms.Padding(4);
             this.btnToggleEnable.Name = "btnToggleEnable";
             this.btnToggleEnable.Size = new System.Drawing.Size(77, 29);
@@ -1483,7 +1493,7 @@ namespace MAClientGUI
             // 
             // button67
             // 
-            this.button67.Location = new System.Drawing.Point(689, 501);
+            this.button67.Location = new System.Drawing.Point(689, 503);
             this.button67.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button67.Name = "button67";
             this.button67.Size = new System.Drawing.Size(77, 28);
@@ -1494,7 +1504,7 @@ namespace MAClientGUI
             // 
             // button66
             // 
-            this.button66.Location = new System.Drawing.Point(689, 472);
+            this.button66.Location = new System.Drawing.Point(689, 474);
             this.button66.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button66.Name = "button66";
             this.button66.Size = new System.Drawing.Size(77, 29);
@@ -1643,24 +1653,13 @@ namespace MAClientGUI
             // label70
             // 
             this.label70.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label70.AutoSize = true;
             this.label70.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label70.ForeColor = System.Drawing.Color.ForestGreen;
-            this.label70.Location = new System.Drawing.Point(701, 24);
+            this.label70.Location = new System.Drawing.Point(706, 24);
             this.label70.Name = "label70";
-            this.label70.Size = new System.Drawing.Size(65, 33);
+            this.label70.Size = new System.Drawing.Size(66, 33);
             this.label70.TabIndex = 2;
             this.label70.Text = "开启";
-            // 
-            // label53
-            // 
-            this.label53.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label53.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label53.Location = new System.Drawing.Point(571, 24);
-            this.label53.Name = "label53";
-            this.label53.Size = new System.Drawing.Size(141, 32);
-            this.label53.TabIndex = 1;
-            this.label53.Text = "插件系统已";
             // 
             // lstPlugins
             // 
@@ -1686,8 +1685,8 @@ namespace MAClientGUI
             // tabPage4
             // 
             this.tabPage4.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage4.Controls.Add(this.groupBox11);
             this.tabPage4.Controls.Add(this.txtCondCarddeck);
+            this.tabPage4.Controls.Add(this.groupBox11);
             this.tabPage4.Controls.Add(this.groupBox8);
             this.tabPage4.Controls.Add(this.groupBox9);
             this.tabPage4.Controls.Add(this.lblCarddeckCache);
@@ -4089,19 +4088,20 @@ namespace MAClientGUI
             this.button10.Location = new System.Drawing.Point(19, 654);
             this.button10.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(111, 35);
+            this.button10.Size = new System.Drawing.Size(142, 35);
             this.button10.TabIndex = 1047;
             this.button10.Text = "开始任务";
+            this.button10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.button10.UseVisualStyleBackColor = true;
             this.button10.Click += new System.EventHandler(this.button10_Click);
             // 
             // button14
             // 
             this.button14.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button14.Location = new System.Drawing.Point(151, 654);
+            this.button14.Location = new System.Drawing.Point(198, 654);
             this.button14.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button14.Name = "button14";
-            this.button14.Size = new System.Drawing.Size(63, 35);
+            this.button14.Size = new System.Drawing.Size(70, 35);
             this.button14.TabIndex = 1048;
             this.button14.Text = "秘境";
             this.button14.UseVisualStyleBackColor = true;
@@ -4110,10 +4110,10 @@ namespace MAClientGUI
             // button50
             // 
             this.button50.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button50.Location = new System.Drawing.Point(215, 654);
+            this.button50.Location = new System.Drawing.Point(270, 654);
             this.button50.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button50.Name = "button50";
-            this.button50.Size = new System.Drawing.Size(63, 35);
+            this.button50.Size = new System.Drawing.Size(70, 35);
             this.button50.TabIndex = 1049;
             this.button50.Text = "因子战";
             this.button50.UseVisualStyleBackColor = true;
@@ -4122,10 +4122,10 @@ namespace MAClientGUI
             // button51
             // 
             this.button51.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button51.Location = new System.Drawing.Point(279, 654);
+            this.button51.Location = new System.Drawing.Point(342, 654);
             this.button51.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button51.Name = "button51";
-            this.button51.Size = new System.Drawing.Size(63, 35);
+            this.button51.Size = new System.Drawing.Size(70, 35);
             this.button51.TabIndex = 1050;
             this.button51.Text = "妖精战";
             this.button51.UseVisualStyleBackColor = true;

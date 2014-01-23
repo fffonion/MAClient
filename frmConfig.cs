@@ -1120,12 +1120,14 @@ namespace MAClientGUI
         {
             animator a = new animator();
             a.ChangeHeight(txtCondTasker, 137);
+            label41.Visible = true;
         }
 
         private void txtCondTasker_Enter(object sender, EventArgs e)
         {
             animator a = new animator();
             a.ChangeHeight(txtCondTasker, 500);
+            label41.Visible = false;
         }
 
         private void txtCondCarddeck_Enter(object sender, EventArgs e)
@@ -1697,6 +1699,8 @@ namespace MAClientGUI
                 .Replace("," + label71.Text, "").Replace(label71.Text, "");
             btnToggleEnable.ForeColor = Color.Crimson;
             btnToggleEnable.Text = "禁用当前";
+            lblPluginState.Text = "√";
+            lblPluginState.ForeColor = Color.Green;
         }
         else
         {
@@ -1710,6 +1714,8 @@ namespace MAClientGUI
             txtDisabledPlugins.Text += label71.Text;
             btnToggleEnable.ForeColor = Color.Green;
             btnToggleEnable.Text = "启用当前";
+            lblPluginState.Text = "×";
+            lblPluginState.ForeColor = Color.Crimson;
         }
     }
 
