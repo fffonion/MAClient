@@ -21,14 +21,9 @@ try:
     import httplib2
 except ImportError:
     print('httplib2 not found in python libs. You can download it here: https://github.com/fffonion/httplib2-plus')
-try:
-    from Crypto.Cipher import AES
-    from Crypto.PublicKey import RSA
-    from Crypto.Cipher import PKCS1_v1_5
-    SLOW_MODE = False
-except ImportError:
-    import pyaes as AES
-    SLOW_MODE=True
+from Crypto.Cipher import AES
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_v1_5
 
 
 serv = {'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/',
@@ -182,8 +177,6 @@ class poster():
                 (lambda dt:dt)
         self.logger = logger
         self.load_svr(loc, ua)
-        if SLOW_MODE:
-            self.logger.warning(du8('post:没有安装pycrypto库，可能将额外耗费大量时间'))
         self.issavetraffic = False
         
 
@@ -231,6 +224,9 @@ class poster():
                 self.logger.error(du8('错误的密钥？'))
                 raw_input()
                 os._exit(1)
+                
+    def set_timeout(self, timeout):
+        self.ht.timeout = timeout
 
     def post(self, uri, postdata = '', usecookie = True, setcookie = True, extraheader = {'Cookie2': '$Version=1'}, noencrypt = False, savetraffic = False, no2ndkey = False):#no2ndkey only used in jp server
             header = {}
