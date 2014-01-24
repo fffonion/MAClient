@@ -9,6 +9,7 @@ import sys
 import zipimport
 sys.path.append('python27.zip')
 import time
+import socket
 # import httplib2
 import os
 import os.path as opath
@@ -67,32 +68,32 @@ class srv(threading.Thread):
         self.server.serve_forever()
 
 
-def read_proxy(work = 0):
+def read_proxy():
     serverport = 23300
     server_address = ("", serverport)
     hdl = maclient_proxy.Handler
     server = maclient_proxy.ThreadingHTTPServer(server_address, hdl)
     # Random Target Proxy Server
-    if work == 0:
-        print(du8('请将设备的代理设置为 本机ip:%s 然后随便进行一次操作' % (serverport)))
-    elif work == 1:
-        print(du8('请将设备的代理设置为 本机ip:%s 然后设定一次卡组\n除了这种办法，你还可以直接在config.ini中输入所需卡片的卡片id，如小狼女: 124\n可以在db/card.tw.txt或db/card.tw.txt中查找' % (serverport)))
+    #if work == 0:
+    print(du8('请将设备的代理设置为 %s:%s 然后随便进行一次操作' % (socket.gethostbyname(socket.gethostname()),serverport)))
+    # elif work == 1:
+    #     print(du8('请将设备的代理设置为 本机ip:%s 然后设定一次卡组\n除了这种办法，你还可以直接在config.ini中输入所需卡片的卡片id，如小狼女: 124\n可以在db/card.tw.txt或db/card.tw.txt中查找' % (serverport)))
     srver = srv(server)
     srver.setDaemon(True)
     srver.start()
     while True:
-        if work == 0 and os.path.exists('.session'):
+        if os.path.exists('.session'):
             sessionid = open('.session', 'r').read()
             print('found sessionid :%s' % sessionid)
             srver.join(1)
             os.remove('.session')
             return sessionid
-        elif work == 1 and os.path.exists('.carddeck'):
-            carddeck = open('.carddeck', 'r').read()
-            print('found carddeck change')
-            srver.join(1)
-            os.remove('.carddeck')
-            return carddeck
+        # elif work == 1 and os.path.exists('.carddeck'):
+        #     carddeck = open('.carddeck', 'r').read()
+        #     print('found carddeck change')
+        #     srver.join(1)
+        #     os.remove('.carddeck')
+        #     return carddeck
         time.sleep(1)
 
 if __name__ == '__main__':
@@ -188,7 +189,7 @@ if __name__ == '__main__':
                 #     maclient1.tasker()
             elif ch == '2':
                 if mod == 0:
-                    session = read_proxy(work = 0)
+                    session = read_proxy()
                     maclient1._write_config('account_%s' % maclient1._read_config('system', 'server'), 'session', session)
                     maclient1.load_cookie()
                     maclient1.login()

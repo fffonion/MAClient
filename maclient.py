@@ -39,9 +39,9 @@ BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
 GUILD_RACE_TYPE = ['11','12']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
-eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type=='12'")]
-eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type=='12'")]
-eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type=='12'"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
+eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'fairy.not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type in GUILD_RACE_TYPE")]
+eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('NOT_BATTLED', 'not_battled')]
+eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"')]
 eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale_price'), ('sid', 'serial_id'), ('holo', 'holography==1')]
 
@@ -336,7 +336,7 @@ class maClient():
         self.cf.write(open(f, "w"))
 
     def _eval_gen(self, streval, repllst = []):
-        repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('FAIRY_ALIVE', 'self.player.fairy["alive"]'), ('GUILD_ALIVE', "self.player.fairy['guild_alive']"), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('G', 'self.player.gold'), ('FP', 'self.friendship_point')]
+        repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('FAIRY_ALIVE', 'self.player.fairy["alive"]'), ('GUILD_ALIVE', "self.player.fairy['guild_alive']"), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('GOLD', 'self.player.gold'), ('FP', 'self.friendship_point')]
         if streval == '':
             return 'True'
         for (i, j) in repllst + repllst2:
@@ -1192,7 +1192,7 @@ class maClient():
                 continue
             fairy.fairy.lv = int(fairy.fairy.lv)
             # (sid相同，或未记录的)且不是公会妖
-            if (fitemp == fairy.fairy.serial_id or fairy.user.id == self.player.id) and fairy.fairy.race_type != GUILD_RACE_TYPE:
+            if (fitemp == fairy.fairy.serial_id or fairy.user.id == self.player.id) and fairy.fairy.race_type not in GUILD_RACE_TYPE:
                 self.player.fairy.update({'alive':True, 'id':fairy.fairy.serial_id})
             elif fairy.fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
@@ -1204,7 +1204,7 @@ class maClient():
             for k in maclient_smart.name_wake_rare:
                 fairy['wake_rare'] = fairy['wake_rare'] or fairy.fairy.name.startswith(k)
             ftime = (self._read_config('fairy', fairy.fairy.serial_id) + ',,').split(',')
-            fairy['not_battled'] = ftime[0] == ''
+            fairy.fairy['not_battled'] = ftime[0] == ''
             # logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
             if eval(evalstr):
                 if time.time() - int(ftime[1] or '0') < 180 and cond == '':  # 若手动选择则不受3min限制
@@ -1214,7 +1214,7 @@ class maClient():
         logging.info(len(fairies) == 0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD' % len(fairies))
         # 依次艹
         for f in fairies:
-            logging.debug('fairy_select:select sid %s battled %s' % (f.fairy.serial_id, not f.not_battled))
+            logging.debug('fairy_select:select sid %s battled %s' % (f.fairy.serial_id, not f.fairy.not_battled))
             f.fairy.discoverer_id = f.user.id
             self._fairy_battle(f.fairy, bt_type = NORMAL_BATTLE, carddeck = carddeck)
             # 走个形式
@@ -1274,6 +1274,9 @@ class maClient():
         fairy['hp'] = int(fairy.hp)
         fairy['time_limit'] = int(fairy.time_limit)
         fairy['wake_rare'] = False
+        if 'not_battled' not in fairy:
+            ftime = (self._read_config('fairy', fairy.serial_id) + ',,').split(',')
+            fairy['not_battled'] = ftime[0] == ''
         for k in maclient_smart.name_wake_rare:
             fairy['wake_rare'] = fairy['wake_rare'] or k in fairy.name
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
