@@ -7,7 +7,7 @@
     BC 剩余bc
     AP 剩余ap
     SUPER 累积的super值
-    G 金币
+    GOLD 金币
     FP 友情点数
     FAIRY_ALIVE 自己的妖精是否存活
 

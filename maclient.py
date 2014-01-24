@@ -133,12 +133,12 @@ class maClient():
         etmp = self._read_config('condition', 'fairy_select') or 'True'
         self.evalstr_fairy = self._eval_gen(
             '(%s) and fairy.put_down in "01"' % etmp,
-            eval_fairy_select)  # 1战斗中 2胜利 3失败
-        self.evalstr_area = self._eval_gen(self._read_config('condition', 'explore_area'), eval_explore_area)
-        self.evalstr_floor = self._eval_gen(self._read_config('condition', 'explore_floor'), eval_explore_floor)
-        self.evalstr_selcard = self._eval_gen(self._read_config('condition', 'select_card_to_sell'), eval_select_card)
+            eval_fairy_select, 'fairy')  # 1战斗中 2胜利 3失败
+        self.evalstr_area = self._eval_gen(self._read_config('condition', 'explore_area'), eval_explore_area,'area')
+        self.evalstr_floor = self._eval_gen(self._read_config('condition', 'explore_floor'), eval_explore_floor, 'floor')
+        self.evalstr_selcard = self._eval_gen(self._read_config('condition', 'select_card_to_sell'), eval_select_card, 'card')
         self.evalstr_fairy_select_carddeck = self._eval_gen(self._read_config('condition', 'fairy_select_carddeck'),
-            eval_fairy_select_carddeck)
+            eval_fairy_select_carddeck, 'fairy')
         self.evalstr_factor = self._eval_gen(self._read_config('condition', 'factor'), [])
         # tasker须动态生成#self.evalstr_task=self._eval_gen(self._read_config('system','tasker'),[])
         logging.debug('system:知识库版本 %s%s' % (maclient_smart.__version__, str(maclient_smart).endswith('pyd\'>') and ' C-Extension' or ''))
@@ -335,10 +335,12 @@ class maClient():
         self.cf.remove_option(sec, key)
         self.cf.write(open(f, "w"))
 
-    def _eval_gen(self, streval, repllst = []):
+    def _eval_gen(self, streval, repllst = [], super_prefix = None):
         repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('FAIRY_ALIVE', 'self.player.fairy["alive"]'), ('GUILD_ALIVE', "self.player.fairy['guild_alive']"), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('GOLD', 'self.player.gold'), ('FP', 'self.friendship_point')]
         if streval == '':
             return 'True'
+        if super_prefix:
+            streval = streval.replace('$.', '%s.'%super_prefix)
         for (i, j) in repllst + repllst2:
             streval = streval.replace(i, j)
         return streval
@@ -769,7 +771,7 @@ class maClient():
             else:
                 logging.info('自动选图www')
                 areasel = []
-                cond_area = (cond == '' and self.evalstr_area or self._eval_gen(cond, eval_explore_area)).split('|')
+                cond_area = (cond == '' and self.evalstr_area or self._eval_gen(cond, eval_explore_area, 'area')).split('|')
                 while len(cond_area) > 0:
                     if cond_area[0] == '':
                         cond_area[0] = 'True'
@@ -1183,7 +1185,7 @@ class maClient():
         # 先置为已挂了
         fitemp = self.player.fairy['id']
         self.player.fairy = {'alive':False, 'id':0, 'guild_alive':False}
-        evalstr = (cond != '' and self._eval_gen(cond, eval_fairy_select) or self.evalstr_fairy)
+        evalstr = (cond != '' and self._eval_gen(cond, eval_fairy_select, 'fairy') or self.evalstr_fairy)
         logging.debug('fairy_select:eval:%s' % (evalstr))
         fairies = []
         for fairy in fairy_event:

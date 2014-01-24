@@ -35,7 +35,7 @@ python MAClient_cli.py [config file] [task]/[commands]
 
 ###account_?
 
-?可选cn,cn2,cn3,tw,kr,jp分别对应国服1区，国服2区，国服3区，台服，韩服，日服
+?可选`cn`,`cn2`,`cn3`,`tw`,`kr`,`jp`分别对应国服1区，国服2区，国服3区，台服，韩服，日服
 
 session不用管它
 
@@ -51,7 +51,7 @@ session不用管它
     min=124 #选出小狼女
     factor=93714777,54276719 
 
-请保证存在min项且值为舔刀卡组，以保证省流模式工作正常
+请保证存在`min`项且值为舔刀卡组，以保证省流模式工作正常
 
 如果你卡片中存在小狼女，那么请不要大意地忽略这句话吧ww
 	
@@ -61,7 +61,7 @@ session不用管它
 
 ####server
 
-选服，可选cn，cn2，tw
+选服，可选`cn`,`cn2`,`cn3`,`tw`,`kr`,`jp`
 
 ####loglevel
 
@@ -111,7 +111,7 @@ session不用管它
 
 ####auto_explore
 
-是否自动选择秘境(按照explore_area和explore_floor规则)，是为1
+是否自动选择秘境(按照`explore_area`和`explore_floor`规则)，是为1
 
 ####auto_green_tea,auto_red_tea
 
@@ -127,7 +127,7 @@ session不用管它
 
 ####auto_sell_card
 
-到≥200张了是否自动卖卡，按照select_card_to_sell规则
+到≥200张了是否自动卖卡，按照`select_card_to_sell`规则
 
 ####auto_fp_gacha
 
@@ -166,11 +166,11 @@ session不用管它
 
 可选：
 
-登陆login/l, 设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,刷列表中的妖精 fairy_battle/fyb,嗑药 red_tea/rt,嗑药 green_tea/gt,自动卖卡 sell_card/slc,设置账号类型 set_server/ss,好友相关 friend/f,转蛋gacha/g,分配点数point/p,礼物盒reward_box/rb(可后跟参数 12345 分别表示 卡片 道具 金 绊点 蛋卷),手动选择妖精战斗fairy_select/fs,重新登录relogin/rl,问好like/greet/gr
+登陆 `login`/`l`, 设置卡组 `set_card`/`sc`,因子战 `factor_battle`/`fcb`,秘境探索 `explore`/`e`,刷列表中的妖精 `fairy_battle`/`fyb`,嗑药 `red_tea`/`rt` `green_tea`/`gt`,自动卖卡 `sell_card`/`slc`,设置账号类型 `set_server`/`ss`,好友相关 `friend`/`f`,转蛋`gacha`/`g`,分配点数`point`/`p`,礼物盒`rewardbox`/`rb`(可后跟参数 12345 分别表示 卡片 道具 金 绊点 蛋卷),手动选择妖精战斗`fairy_select`/`fs`,重新登录`relogin`/`rl`,问好`like`/`greet`/`gr`
 
 以t:开头可执行任务
 
-其中explore，sell_card后可跟参数以指定条件，否则按照condition中的条件执行;factor_battle可选参数 最低BC，默认为0；fairy_battle可选参数 循环次数，默认按照config中所指定的次数
+其中`explore`，`sell_card`后可选参数以指定条件，否则按照condition中的条件执行;`factor_battle`可选参数 最低BC，默认为0；`fairy_battle`可选参数 循环次数，默认按照config中所指定的次数
 
 如：
 
@@ -192,19 +192,23 @@ session不用管它
     BC 剩余bc
     AP 剩余ap
     SUPER 累积的super值
-    G 金币
+    GOLD 金币
     FP 友情点数
     FAIRY_ALIVE 自己发现的妖精是否存活
     GUILD_ALIVE 公会的妖精是否存活
 
-PS:你必须进入一次妖精列表（使用fairy_battle/fyb或fairy_select/fs）才能刷新FAIRY_ALIVE和GUILD_ALIVE的值
+PS:你必须进入一次妖精列表（使用`fairy_battle`/`fyb`或`fairy_select`/`fs`）才能刷新FAIRY_ALIVE和GUILD_ALIVE的值
+
+PPS:当表达式中的主语可以被唯一确定时（变量只有一个），可以用'$'代替之
+
+如`explore_area`表达式中，`$.IS_EVENT`和`area.IS_EVENT`是等价的
 
 ####factor
 因子战需满足的表达式
 
 变量：
 
-star，cid，分别对应头像的星数和卡片id, 鉴于其他变量严重影响游戏公平性, 不作公开
+`star`，`cid`，分别对应头像的星数和卡片id, 其他变量严重影响游戏公平性, 不作公开
 
 eg:
 
@@ -214,11 +218,11 @@ eg:
 ####explore_area
 选择秘境满足的表达式，支持多个条件，留空表示随机
 
-变量：area
+变量：`area`
 
 属性：
 
-活动秘境 IS_EVENT, 每日秘境 IS_DAILY_EVENT, 公会秘境 IS_GUILD, 未刷完 NOT_FINNISHED, 秘境名称 name
+活动秘境 `IS_EVENT`, 每日秘境 `IS_DAILY_EVENT`, 公会秘境 `IS_GUILD`, 未刷完 `NOT_FINNISHED`, 秘境名称 `name`
 
 eg.：
 
@@ -230,11 +234,11 @@ eg.：
 ####explore_floor
 选择地区满足的表达式，支持多个条件，留空表示随机
 
-变量：floor
+变量：`floor`
 
 属性：
 
-未刷完 NOT_FINNISHED, AP消耗 cost
+未刷完 `NOT_FINNISHED`, AP消耗 `cost`
 
 eg.：
 
@@ -244,11 +248,11 @@ eg.：
 ####fairy_select
 妖精列表里的什么妖精要打
 
-变量：fairy
+变量：`fairy`
 
 属性：
 
-是我开的 IS_MINE,剩余时间 LIMIT(单位为秒),没打过 NOT_BATTLED,等级 lv,是否觉醒 IS_WAKE,是否稀有妖精 IS_WAKE_RARE,是否公会妖精 IS_GUILD,自己的妖精是否还活着 STILL_ALIVE
+是我开的 `IS_MINE`,剩余时间 `LIMIT`(单位为秒),没打过 `NOT_BATTLED`,等级 `lv`,是否觉醒 `IS_WAKE`,是否稀有妖精 `IS_WAKE_RARE`,是否公会妖精 `IS_GUILD`
 
 eg.：
 
@@ -257,11 +261,11 @@ eg.：
 ####fairy_select_carddeck
 遇到什么样的妖精时选择什么样的卡组
 
-变量：fairy
+变量：`fairy`
 
 属性：
 
-lv,hp,name,IS_MINE,自己的妖精是否还活着 STILL_ALIVE, 剩余时间 TIME_LIMIT(单位为秒), 是否觉醒 IS_WAKE, 是否稀有妖精 IS_WAKE_RARE
+`lv`,`hp`,`name`,`IS_MINE`, 剩余时间 `TIME_LIMIT`(单位为秒), 是否觉醒 `IS_WAKE`, 是否稀有妖精 `IS_WAKE_RARE`,是否公会妖精 `IS_GUILD`
 
 只能使用and or表达式 或if else表达式，可嵌套；卡组名称需加引号，需在carddeck中给出；可以使用'no_change'表示不更改卡组
 
@@ -273,15 +277,15 @@ eg.：
 ####select_card_to_sell
 自动卖卡卖哪些
 
-变量：card
+变量：`card`
 
 属性：
 
-star,lv,序列号 sid,卡片编号 cid，贩卖价格price
+`star`,`lv`,序列号 `sid`,卡片编号 `cid`，贩卖价格`price`
 
 eg：
 
     card.star in [1,2] and card.lv<5 and card.cid != 124 #1星2星 lv5一下的卡且不是小狼女:
 
 注：
-已自动排除三种切尔莉，如果不慎选入R及以上的卡，会出现提示确认
+已自动排除所有小切切；如果不慎选入R及以上的卡，会出现提示确认
