@@ -133,6 +133,9 @@ namespace MAClientGUI
             this.lstPlugins = new System.Windows.Forms.ListBox();
             this.label81 = new System.Windows.Forms.Label();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.button43 = new System.Windows.Forms.Button();
+            this.txtCondCarddeck = new System.Windows.Forms.TextBox();
+            this.chkSuperPrefCarddeck = new System.Windows.Forms.CheckBox();
             this.groupBox11 = new System.Windows.Forms.GroupBox();
             this.txtCardIncl = new System.Windows.Forms.TextBox();
             this.label55 = new System.Windows.Forms.Label();
@@ -146,7 +149,6 @@ namespace MAClientGUI
             this.cboAim = new System.Windows.Forms.ComboBox();
             this.label54 = new System.Windows.Forms.Label();
             this.lblLineWarning = new System.Windows.Forms.Label();
-            this.txtCondCarddeck = new System.Windows.Forms.TextBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.textBox23 = new System.Windows.Forms.TextBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
@@ -179,7 +181,6 @@ namespace MAClientGUI
             this.button36 = new System.Windows.Forms.Button();
             this.lblCarddeckCache = new System.Windows.Forms.Label();
             this.button60 = new System.Windows.Forms.Button();
-            this.button43 = new System.Windows.Forms.Button();
             this.label37 = new System.Windows.Forms.Label();
             this.button28 = new System.Windows.Forms.Button();
             this.button29 = new System.Windows.Forms.Button();
@@ -242,6 +243,7 @@ namespace MAClientGUI
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.button40 = new System.Windows.Forms.Button();
             this.txtCondFairy = new System.Windows.Forms.TextBox();
+            this.chkSuperPrefFairy = new System.Windows.Forms.CheckBox();
             this.button21 = new System.Windows.Forms.Button();
             this.button22 = new System.Windows.Forms.Button();
             this.lblFairyCache = new System.Windows.Forms.Label();
@@ -263,6 +265,7 @@ namespace MAClientGUI
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.button41 = new System.Windows.Forms.Button();
             this.txtCondExplore = new System.Windows.Forms.TextBox();
+            this.chkSuperPrefExplore = new System.Windows.Forms.CheckBox();
             this.button55 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.button68 = new System.Windows.Forms.Button();
@@ -279,6 +282,7 @@ namespace MAClientGUI
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.button42 = new System.Windows.Forms.Button();
             this.txtCondFloor = new System.Windows.Forms.TextBox();
+            this.chkSuperPrefFloor = new System.Windows.Forms.CheckBox();
             this.button57 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.button74 = new System.Windows.Forms.Button();
@@ -306,7 +310,9 @@ namespace MAClientGUI
             this.tabPage6 = new System.Windows.Forms.TabPage();
             this.button45 = new System.Windows.Forms.Button();
             this.txtCondSell = new System.Windows.Forms.TextBox();
+            this.chkSuperPrefCards = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.chkNoHolo = new System.Windows.Forms.CheckBox();
             this.label69 = new System.Windows.Forms.Label();
             this.label68 = new System.Windows.Forms.Label();
             this.label67 = new System.Windows.Forms.Label();
@@ -1685,13 +1691,14 @@ namespace MAClientGUI
             // tabPage4
             // 
             this.tabPage4.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage4.Controls.Add(this.button43);
             this.tabPage4.Controls.Add(this.txtCondCarddeck);
+            this.tabPage4.Controls.Add(this.chkSuperPrefCarddeck);
             this.tabPage4.Controls.Add(this.groupBox11);
             this.tabPage4.Controls.Add(this.groupBox8);
             this.tabPage4.Controls.Add(this.groupBox9);
             this.tabPage4.Controls.Add(this.lblCarddeckCache);
             this.tabPage4.Controls.Add(this.button60);
-            this.tabPage4.Controls.Add(this.button43);
             this.tabPage4.Controls.Add(this.label37);
             this.tabPage4.Controls.Add(this.button28);
             this.tabPage4.Controls.Add(this.button29);
@@ -1703,6 +1710,44 @@ namespace MAClientGUI
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "卡组&配卡";
             this.tabPage4.ToolTipText = "遇到什么妖精换什么卡组";
+            // 
+            // button43
+            // 
+            this.button43.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.button43.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button43.Location = new System.Drawing.Point(719, 124);
+            this.button43.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button43.Name = "button43";
+            this.button43.Size = new System.Drawing.Size(27, 25);
+            this.button43.TabIndex = 19;
+            this.button43.Text = "✗";
+            this.button43.UseVisualStyleBackColor = true;
+            this.button43.Click += new System.EventHandler(this.button43_Click);
+            // 
+            // txtCondCarddeck
+            // 
+            this.txtCondCarddeck.Font = new System.Drawing.Font("Lucida Console", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCondCarddeck.Location = new System.Drawing.Point(15, 14);
+            this.txtCondCarddeck.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtCondCarddeck.Multiline = true;
+            this.txtCondCarddeck.Name = "txtCondCarddeck";
+            this.txtCondCarddeck.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtCondCarddeck.Size = new System.Drawing.Size(751, 136);
+            this.txtCondCarddeck.TabIndex = 7;
+            this.txtCondCarddeck.Enter += new System.EventHandler(this.txtCondCarddeck_Enter);
+            this.txtCondCarddeck.Leave += new System.EventHandler(this.txtCondCarddeck_Leave);
+            // 
+            // chkSuperPrefCarddeck
+            // 
+            this.chkSuperPrefCarddeck.AutoSize = true;
+            this.chkSuperPrefCarddeck.Checked = true;
+            this.chkSuperPrefCarddeck.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSuperPrefCarddeck.Location = new System.Drawing.Point(547, 466);
+            this.chkSuperPrefCarddeck.Name = "chkSuperPrefCarddeck";
+            this.chkSuperPrefCarddeck.Size = new System.Drawing.Size(184, 24);
+            this.chkSuperPrefCarddeck.TabIndex = 26;
+            this.chkSuperPrefCarddeck.Text = "使用固定前缀 $ = fairy";
+            this.chkSuperPrefCarddeck.UseVisualStyleBackColor = true;
             // 
             // groupBox11
             // 
@@ -1874,19 +1919,6 @@ namespace MAClientGUI
             this.lblLineWarning.TabIndex = 1056;
             this.lblLineWarning.Text = "炒鸡慢！";
             this.lblLineWarning.Visible = false;
-            // 
-            // txtCondCarddeck
-            // 
-            this.txtCondCarddeck.Font = new System.Drawing.Font("Lucida Console", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCondCarddeck.Location = new System.Drawing.Point(15, 14);
-            this.txtCondCarddeck.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtCondCarddeck.Multiline = true;
-            this.txtCondCarddeck.Name = "txtCondCarddeck";
-            this.txtCondCarddeck.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtCondCarddeck.Size = new System.Drawing.Size(751, 136);
-            this.txtCondCarddeck.TabIndex = 7;
-            this.txtCondCarddeck.Enter += new System.EventHandler(this.txtCondCarddeck_Enter);
-            this.txtCondCarddeck.Leave += new System.EventHandler(this.txtCondCarddeck_Leave);
             // 
             // groupBox8
             // 
@@ -2266,19 +2298,6 @@ namespace MAClientGUI
             this.button60.UseVisualStyleBackColor = true;
             this.button60.Click += new System.EventHandler(this.button60_Click_2);
             // 
-            // button43
-            // 
-            this.button43.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button43.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button43.Location = new System.Drawing.Point(720, 128);
-            this.button43.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button43.Name = "button43";
-            this.button43.Size = new System.Drawing.Size(27, 25);
-            this.button43.TabIndex = 19;
-            this.button43.Text = "✗";
-            this.button43.UseVisualStyleBackColor = true;
-            this.button43.Click += new System.EventHandler(this.button43_Click);
-            // 
             // label37
             // 
             this.label37.AutoSize = true;
@@ -2318,7 +2337,7 @@ namespace MAClientGUI
             this.groupBox7.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox7.Name = "groupBox7";
             this.groupBox7.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox7.Size = new System.Drawing.Size(220, 118);
+            this.groupBox7.Size = new System.Drawing.Size(220, 102);
             this.groupBox7.TabIndex = 10;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "默认卡组";
@@ -2326,7 +2345,7 @@ namespace MAClientGUI
             // textBox20
             // 
             this.textBox20.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox20.Location = new System.Drawing.Point(39, 58);
+            this.textBox20.Location = new System.Drawing.Point(39, 45);
             this.textBox20.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox20.Name = "textBox20";
             this.textBox20.Size = new System.Drawing.Size(161, 30);
@@ -2375,7 +2394,7 @@ namespace MAClientGUI
             // button39
             // 
             this.button39.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button39.Location = new System.Drawing.Point(720, 128);
+            this.button39.Location = new System.Drawing.Point(719, 124);
             this.button39.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button39.Name = "button39";
             this.button39.Size = new System.Drawing.Size(27, 25);
@@ -2406,7 +2425,7 @@ namespace MAClientGUI
             // 
             // btnTaskerSave
             // 
-            this.btnTaskerSave.Location = new System.Drawing.Point(633, 435);
+            this.btnTaskerSave.Location = new System.Drawing.Point(633, 441);
             this.btnTaskerSave.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnTaskerSave.Name = "btnTaskerSave";
             this.btnTaskerSave.Size = new System.Drawing.Size(91, 40);
@@ -3015,6 +3034,7 @@ namespace MAClientGUI
             this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage1.Controls.Add(this.button40);
             this.tabPage1.Controls.Add(this.txtCondFairy);
+            this.tabPage1.Controls.Add(this.chkSuperPrefFairy);
             this.tabPage1.Controls.Add(this.button21);
             this.tabPage1.Controls.Add(this.button22);
             this.tabPage1.Controls.Add(this.lblFairyCache);
@@ -3029,7 +3049,7 @@ namespace MAClientGUI
             // button40
             // 
             this.button40.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button40.Location = new System.Drawing.Point(720, 128);
+            this.button40.Location = new System.Drawing.Point(719, 124);
             this.button40.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button40.Name = "button40";
             this.button40.Size = new System.Drawing.Size(27, 25);
@@ -3050,6 +3070,17 @@ namespace MAClientGUI
             this.txtCondFairy.TabIndex = 14;
             this.txtCondFairy.Enter += new System.EventHandler(this.txtCondFairy_Enter);
             this.txtCondFairy.Leave += new System.EventHandler(this.txtCondFairy_Leave);
+            // 
+            // chkSuperPrefFairy
+            // 
+            this.chkSuperPrefFairy.Checked = true;
+            this.chkSuperPrefFairy.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSuperPrefFairy.Location = new System.Drawing.Point(625, 327);
+            this.chkSuperPrefFairy.Name = "chkSuperPrefFairy";
+            this.chkSuperPrefFairy.Size = new System.Drawing.Size(121, 44);
+            this.chkSuperPrefFairy.TabIndex = 27;
+            this.chkSuperPrefFairy.Text = "使用固定前缀 $ = fairy";
+            this.chkSuperPrefFairy.UseVisualStyleBackColor = true;
             // 
             // button21
             // 
@@ -3272,6 +3303,7 @@ namespace MAClientGUI
             this.tabPage2.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage2.Controls.Add(this.button41);
             this.tabPage2.Controls.Add(this.txtCondExplore);
+            this.tabPage2.Controls.Add(this.chkSuperPrefExplore);
             this.tabPage2.Controls.Add(this.button55);
             this.tabPage2.Controls.Add(this.groupBox2);
             this.tabPage2.Location = new System.Drawing.Point(4, 29);
@@ -3284,7 +3316,7 @@ namespace MAClientGUI
             // button41
             // 
             this.button41.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button41.Location = new System.Drawing.Point(720, 128);
+            this.button41.Location = new System.Drawing.Point(719, 124);
             this.button41.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button41.Name = "button41";
             this.button41.Size = new System.Drawing.Size(27, 25);
@@ -3305,6 +3337,17 @@ namespace MAClientGUI
             this.txtCondExplore.TabIndex = 12;
             this.txtCondExplore.Enter += new System.EventHandler(this.txtCondExplore_Enter);
             this.txtCondExplore.Leave += new System.EventHandler(this.txtCondExplore_Leave);
+            // 
+            // chkSuperPrefExplore
+            // 
+            this.chkSuperPrefExplore.Checked = true;
+            this.chkSuperPrefExplore.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSuperPrefExplore.Location = new System.Drawing.Point(598, 356);
+            this.chkSuperPrefExplore.Name = "chkSuperPrefExplore";
+            this.chkSuperPrefExplore.Size = new System.Drawing.Size(121, 53);
+            this.chkSuperPrefExplore.TabIndex = 27;
+            this.chkSuperPrefExplore.Text = "使用固定前缀$ = area";
+            this.chkSuperPrefExplore.UseVisualStyleBackColor = true;
             // 
             // button55
             // 
@@ -3472,6 +3515,7 @@ namespace MAClientGUI
             this.tabPage3.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage3.Controls.Add(this.button42);
             this.tabPage3.Controls.Add(this.txtCondFloor);
+            this.tabPage3.Controls.Add(this.chkSuperPrefFloor);
             this.tabPage3.Controls.Add(this.button57);
             this.tabPage3.Controls.Add(this.groupBox3);
             this.tabPage3.Location = new System.Drawing.Point(4, 29);
@@ -3485,7 +3529,7 @@ namespace MAClientGUI
             // button42
             // 
             this.button42.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button42.Location = new System.Drawing.Point(720, 128);
+            this.button42.Location = new System.Drawing.Point(719, 124);
             this.button42.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button42.Name = "button42";
             this.button42.Size = new System.Drawing.Size(27, 25);
@@ -3506,6 +3550,17 @@ namespace MAClientGUI
             this.txtCondFloor.TabIndex = 15;
             this.txtCondFloor.Enter += new System.EventHandler(this.txtCondFloor_Enter);
             this.txtCondFloor.Leave += new System.EventHandler(this.txtCondFloor_Leave);
+            // 
+            // chkSuperPrefFloor
+            // 
+            this.chkSuperPrefFloor.Checked = true;
+            this.chkSuperPrefFloor.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSuperPrefFloor.Location = new System.Drawing.Point(598, 356);
+            this.chkSuperPrefFloor.Name = "chkSuperPrefFloor";
+            this.chkSuperPrefFloor.Size = new System.Drawing.Size(121, 48);
+            this.chkSuperPrefFloor.TabIndex = 27;
+            this.chkSuperPrefFloor.Text = "使用固定前缀 $ = floor";
+            this.chkSuperPrefFloor.UseVisualStyleBackColor = true;
             // 
             // button57
             // 
@@ -3671,7 +3726,7 @@ namespace MAClientGUI
             // button44
             // 
             this.button44.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button44.Location = new System.Drawing.Point(720, 128);
+            this.button44.Location = new System.Drawing.Point(719, 124);
             this.button44.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button44.Name = "button44";
             this.button44.Size = new System.Drawing.Size(27, 25);
@@ -3803,6 +3858,7 @@ namespace MAClientGUI
             this.tabPage6.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage6.Controls.Add(this.button45);
             this.tabPage6.Controls.Add(this.txtCondSell);
+            this.tabPage6.Controls.Add(this.chkSuperPrefCards);
             this.tabPage6.Controls.Add(this.groupBox4);
             this.tabPage6.Location = new System.Drawing.Point(4, 29);
             this.tabPage6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -3815,7 +3871,7 @@ namespace MAClientGUI
             // button45
             // 
             this.button45.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button45.Location = new System.Drawing.Point(720, 126);
+            this.button45.Location = new System.Drawing.Point(719, 124);
             this.button45.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button45.Name = "button45";
             this.button45.Size = new System.Drawing.Size(27, 25);
@@ -3837,8 +3893,21 @@ namespace MAClientGUI
             this.txtCondSell.Enter += new System.EventHandler(this.txtCondSell_Enter);
             this.txtCondSell.Leave += new System.EventHandler(this.txtCondSell_Leave);
             // 
+            // chkSuperPrefCards
+            // 
+            this.chkSuperPrefCards.AutoSize = true;
+            this.chkSuperPrefCards.Checked = true;
+            this.chkSuperPrefCards.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSuperPrefCards.Location = new System.Drawing.Point(561, 343);
+            this.chkSuperPrefCards.Name = "chkSuperPrefCards";
+            this.chkSuperPrefCards.Size = new System.Drawing.Size(185, 24);
+            this.chkSuperPrefCards.TabIndex = 28;
+            this.chkSuperPrefCards.Text = "使用固定前缀 $ = card";
+            this.chkSuperPrefCards.UseVisualStyleBackColor = true;
+            // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.chkNoHolo);
             this.groupBox4.Controls.Add(this.label69);
             this.groupBox4.Controls.Add(this.label68);
             this.groupBox4.Controls.Add(this.label67);
@@ -3865,6 +3934,20 @@ namespace MAClientGUI
             this.groupBox4.TabIndex = 8;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "卖这些卡片";
+            // 
+            // chkNoHolo
+            // 
+            this.chkNoHolo.AutoSize = true;
+            this.chkNoHolo.Checked = true;
+            this.chkNoHolo.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkNoHolo.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.chkNoHolo.Location = new System.Drawing.Point(363, 29);
+            this.chkNoHolo.Name = "chkNoHolo";
+            this.chkNoHolo.Size = new System.Drawing.Size(110, 29);
+            this.chkNoHolo.TabIndex = 28;
+            this.chkNoHolo.Text = "不是闪卡";
+            this.chkNoHolo.UseVisualStyleBackColor = true;
+            this.chkNoHolo.CheckedChanged += new System.EventHandler(this.chkNoHolo_CheckedChanged);
             // 
             // label69
             // 
@@ -4206,8 +4289,10 @@ namespace MAClientGUI
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.cboCfgFile);
             this.Controls.Add(this.btnChooseCfg);
+            this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.MaximizeBox = false;
             this.Name = "frmConfig";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "MAClientGUI";
@@ -4594,6 +4679,12 @@ namespace MAClientGUI
         private System.Windows.Forms.Label label87;
         private System.Windows.Forms.Button button74;
         private System.Windows.Forms.Button button75;
+        private System.Windows.Forms.CheckBox chkNoHolo;
+        private System.Windows.Forms.CheckBox chkSuperPrefCarddeck;
+        private System.Windows.Forms.CheckBox chkSuperPrefFairy;
+        private System.Windows.Forms.CheckBox chkSuperPrefExplore;
+        private System.Windows.Forms.CheckBox chkSuperPrefFloor;
+        private System.Windows.Forms.CheckBox chkSuperPrefCards;
     }
 }
 

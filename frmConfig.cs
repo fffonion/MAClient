@@ -464,6 +464,8 @@ namespace MAClientGUI
         /// <param name="e"></param>
         private void addExploreCond(string cond)
         {
+            if (!chkSuperPrefExplore.Checked)
+                cond = cond.Replace("$.", "area.");
             if (txtCondExplore.Text != "" && !txtCondExplore.Text.TrimEnd().EndsWith("|"))
                 txtCondExplore.Text += " and ";
             txtCondExplore.Text += cond;
@@ -476,16 +478,16 @@ namespace MAClientGUI
 
         private void button7_Click(object sender, EventArgs e)
         {
-            addExploreCond("area.NOT_FINNISHED");
+            addExploreCond("$.NOT_FINNISHED");
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            addExploreCond("area.IS_EVENT");
+            addExploreCond("$.IS_EVENT");
         }
         private void button61_Click(object sender, EventArgs e)
         {
-            addExploreCond("area.IS_GUILD");
+            addExploreCond("$.IS_GUILD");
         }
         private void button8_Click(object sender, EventArgs e)
         {
@@ -502,13 +504,13 @@ namespace MAClientGUI
         private void button5_Click(object sender, EventArgs e)
         {
             if (textBox12.Text!="")
-                addExploreCond("'" + textBox12.Text + "' in area.name");
+                addExploreCond("'" + textBox12.Text + "' in $.name");
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
             if (textBox13.Text != "")
-                addExploreCond("'" + textBox13.Text + "' not in area.name");
+                addExploreCond("'" + textBox13.Text + "' not in $.name");
         }
         private void button55_Click(object sender, EventArgs e)
         {
@@ -521,6 +523,8 @@ namespace MAClientGUI
         /// </summary>
         private void addSellCond(string cond)
         {
+            if (!chkSuperPrefCards.Checked)
+                cond = cond.Replace("$.", "card.");
             if (txtCondSell.Text != "")
                 txtCondSell.Text += " and ";
             txtCondSell.Text += cond;
@@ -528,22 +532,32 @@ namespace MAClientGUI
 
         private void btnSellStar_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox10.Text +"<=card.star<=" + textBox9.Text);
+            addSellCond(textBox10.Text +"<=$.star<=" + textBox9.Text);
         }
 
         private void btnSellLv_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox7.Text + "<=card.lv<=" + textBox8.Text);
+            addSellCond(textBox7.Text + "<=$.lv<=" + textBox8.Text);
         }
 
         private void btnSellPrice_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox5.Text + "<=card.price<= "+ textBox6.Text);
+            addSellCond(textBox5.Text + "<=$.price<= "+ textBox6.Text);
         }
 
         private void btnsSellExclude_Click(object sender, EventArgs e)
         {
-            addSellCond("card.mid not in [" + textBox11.Text  + "]");
+            addSellCond("$.mid not in [" + textBox11.Text  + "]");
+        }
+
+        private void chkNoHolo_CheckedChanged(object sender, EventArgs e)
+        {
+            string _t = "$.holo";
+            if(!chkSuperPrefCards.Checked)
+                _t = "card.holo";
+            if(!chkNoHolo.Checked)
+                _t +="not ";
+            txtCondSell.Text = txtCondSell.Text.Replace("and " + _t + " and","").Replace(_t + " and","").Replace("and " + _t,"").Replace(_t, "");
         }
 
         /// <summary>
@@ -551,13 +565,15 @@ namespace MAClientGUI
         /// </summary>
         private void addFloorCond(string cond)
         {
+            if (!chkSuperPrefFloor.Checked)
+                cond = cond.Replace("$.", "floor.");
             if (txtCondFloor.Text != "" && !txtCondFloor.Text.TrimEnd().EndsWith("|"))
                 txtCondFloor.Text += " and ";
             txtCondFloor.Text += cond;
         }
         private void button16_Click(object sender, EventArgs e)
         {
-            addFloorCond("floor.NOT_FINNISHED");
+            addFloorCond("$.NOT_FINNISHED");
         }
 
 
@@ -589,7 +605,7 @@ namespace MAClientGUI
 
         private void button13_Click(object sender, EventArgs e)
         {
-            addFloorCond(textBox15.Text + "<=floor.cost<=" + textBox14.Text);
+            addFloorCond(textBox15.Text + "<=$.cost<=" + textBox14.Text);
         }
         /// <summary>
         /// 因子战选项卡！
@@ -616,6 +632,8 @@ namespace MAClientGUI
         /// </summary>
        private void addFairyCond(string cond)
         {
+            if (!chkSuperPrefFairy.Checked)
+                cond = cond.Replace("$.", "fairy.");
             if (lblFairyCache.Text != "")
                 lblFairyCache.Text += " and ";
             lblFairyCache.Text += cond;
@@ -639,40 +657,40 @@ namespace MAClientGUI
 
         private void button26_Click(object sender, EventArgs e)
         {
-            addFairyCond("fairy.NOT_BATTLED");
+            addFairyCond("$.NOT_BATTLED");
             button26.Enabled = false;
             button47.Enabled = false;
         }
         private void button47_Click(object sender, EventArgs e)
         {
-            addFairyCond("not fairy.NOT_BATTLED");
+            addFairyCond("not $.NOT_BATTLED");
             button47.Enabled = false;
             button26.Enabled = false;
         }
 
         private void button25_Click(object sender, EventArgs e)
         {
-            addFairyCond("fairy.IS_MINE");
+            addFairyCond("$.IS_MINE");
             button25.Enabled = false;
             button46.Enabled = false;
         }
         private void button46_Click(object sender, EventArgs e)
         {
-            addFairyCond("not fairy.IS_MINE");
+            addFairyCond("not $.IS_MINE");
             button46.Enabled = false;
             button25.Enabled = false;
         }
 
         private void button24_Click(object sender, EventArgs e)
         {
-            addFairyCond("fairy.IS_WAKE");
+            addFairyCond("$.IS_WAKE");
             button24.Enabled = false;
             button27.Enabled = false;
             button56.Enabled = false;
         }
         private void button27_Click(object sender, EventArgs e)
         {
-            addFairyCond("not fairy.IS_WAKE");
+            addFairyCond("not $.IS_WAKE");
             button27.Enabled = false;
             button24.Enabled = false;
             button56.Enabled = false;
@@ -680,20 +698,20 @@ namespace MAClientGUI
 
         private void button62_Click(object sender, EventArgs e)
         {
-            addFairyCond("fairy.IS_GUILD");
+            addFairyCond("$.IS_GUILD");
             button62.Enabled = false;
         }
 
         private void button56_Click(object sender, EventArgs e)
         {
-            addFairyCond("fairy.IS_WAKE_RARE");
+            addFairyCond("$.IS_WAKE_RARE");
             button27.Enabled = false;
             button24.Enabled = false;
             button56.Enabled = false;
         }
         private void button23_Click(object sender, EventArgs e)
         {
-            addFairyCond("fairy.LIMIT<"+(int.Parse(textBox17.Text)*3600+int.Parse(textBox18.Text)*60+int.Parse(textBox19.Text)));
+            addFairyCond("$.LIMIT<"+(int.Parse(textBox17.Text)*3600+int.Parse(textBox18.Text)*60+int.Parse(textBox19.Text)));
             button23.Enabled = false;
         }
         private void button21_Click(object sender, EventArgs e)
@@ -714,19 +732,21 @@ namespace MAClientGUI
         /// </summary>
         private void addCarddeckCond(string cond)
         {
+            if(!chkSuperPrefCarddeck.Checked)
+                cond=cond.Replace("$.","fairy.");
             if (lblCarddeckCache.Text != "")
                 lblCarddeckCache.Text += " and ";
             lblCarddeckCache.Text += cond;
         }
         private void button36_Click(object sender, EventArgs e)
         {
-            addCarddeckCond(textBox27.Text+"<=fairy.lv<="+textBox26.Text);
+            addCarddeckCond(textBox27.Text+"<=$.lv<="+textBox26.Text);
             button36.Enabled = false;
         }
 
         private void button35_Click(object sender, EventArgs e)
         {
-            addCarddeckCond(textBox24.Text + "<=fairy.hp<=" + textBox25.Text);
+            addCarddeckCond(textBox24.Text + "<=$.hp<=" + textBox25.Text);
             button35.Enabled = false;
         }
 
@@ -738,7 +758,7 @@ namespace MAClientGUI
 
         private void button30_Click(object sender, EventArgs e)
         {
-            addFairyCond("fairy.LIMIT<" + (int.Parse(textBox31.Text) * 3600 + int.Parse(textBox30.Text) * 60 + int.Parse(textBox29.Text)));
+            addFairyCond("$.LIMIT<" + (int.Parse(textBox31.Text) * 3600 + int.Parse(textBox30.Text) * 60 + int.Parse(textBox29.Text)));
             button30.Enabled = false;
         }
 
@@ -773,28 +793,28 @@ namespace MAClientGUI
 
         private void button32_Click(object sender, EventArgs e)
         {
-            addCarddeckCond("fairy.IS_MINE");
+            addCarddeckCond("$.IS_MINE");
             button32.Enabled = false;
             button49.Enabled = false;
         }
 
         private void button49_Click(object sender, EventArgs e)
         {
-            addCarddeckCond("not fairy.IS_MINE");
+            addCarddeckCond("not $.IS_MINE");
             button49.Enabled = false;
             button32.Enabled = false;
         }
 
         private void button31_Click(object sender, EventArgs e)
         {
-            addCarddeckCond("fairy.IS_WAKE");
+            addCarddeckCond("$.IS_WAKE");
             button31.Enabled = false;
             button48.Enabled = false;
             button58.Enabled = false;
         }
         private void button48_Click(object sender, EventArgs e)
         {
-            addCarddeckCond("not fairy.IS_WAKE");
+            addCarddeckCond("not $.IS_WAKE");
             button48.Enabled = false;
             button31.Enabled = false;
             button58.Enabled = false;
@@ -802,7 +822,7 @@ namespace MAClientGUI
 
         private void button58_Click(object sender, EventArgs e)
         {
-            addCarddeckCond("fairy.IS_WAKE_RARE");
+            addCarddeckCond("$.IS_WAKE_RARE");
             button48.Enabled = false;
             button31.Enabled = false;
             button58.Enabled = false;
@@ -810,7 +830,7 @@ namespace MAClientGUI
 
         private void button63_Click(object sender, EventArgs e)
         {
-            addCarddeckCond("fairy.IS_GUILD");
+            addCarddeckCond("$.IS_GUILD");
             button63.Enabled = false;
         }
 
@@ -1058,88 +1078,102 @@ namespace MAClientGUI
 
         private void txtCondFairy_Leave(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondFairy, 137);
+            a.ChangeOffsetY(button40, -363);
         }
 
         private void txtCondFairy_Enter(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondFairy, 500);
+            a.ChangeOffsetY(button40, 363);
         }
 
         private void txtCondExplore_Enter(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondExplore, 500);
+            a.ChangeOffsetY(button41, 363);
         }
 
         private void txtCondExplore_Leave(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondExplore, 137);
+            a.ChangeOffsetY(button41, -363);
         }
 
         private void txtCondFloor_Enter(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondFloor, 500);
+            a.ChangeOffsetY(button42, 363);
         }
 
         private void txtCondFloor_Leave(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondFloor, 137);
+            a.ChangeOffsetY(button42, -363);
         }
 
         private void txtCondFactor_Leave(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondFactor, 137);
+            a.ChangeOffsetY(button44, -363);
         }
 
         private void txtCondFactor_Enter(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondFactor, 500);
+            a.ChangeOffsetY(button44, 363);
         }
 
         private void txtCondSell_Enter(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondSell, 500);
+            a.ChangeOffsetY(button45, 363);
         }
 
         private void txtCondSell_Leave(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondSell, 137);
+            a.ChangeOffsetY(button45, -363);
         }
 
         private void txtCondTasker_Leave(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondTasker, 137);
-            label41.Visible = true;
+            a.ChangeOffsetY(label41, -363);
+            a.ChangeOffsetY(button39, -363);
         }
 
         private void txtCondTasker_Enter(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondTasker, 500);
-            label41.Visible = false;
+            a.ChangeOffsetY(label41, 363);
+            a.ChangeOffsetY(button39, 363);
         }
 
         private void txtCondCarddeck_Enter(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondCarddeck, 500);
+            a.ChangeOffsetY(button43, 363);
         }
 
         private void txtCondCarddeck_Leave(object sender, EventArgs e)
         {
-            animator a = new animator();
+            CtrlAnimator a = new CtrlAnimator(this);
             a.ChangeHeight(txtCondCarddeck, 137);
+            a.ChangeOffsetY(button43, -363);
         }
 
         private void button60_Click(object sender, EventArgs e)
@@ -1360,7 +1394,7 @@ namespace MAClientGUI
                 textBox23.Text += " notest";
             if (!chkIsFast.Checked)
                 textBox23.Text += " nofast";
-            if (txtCardEval.Text!="card.lv>=45")
+            if (txtCardEval.Text!="$.lv>=45")
                 textBox23.Text += " sel:" + txtCardEval.Text;
             if (txtCardIncl.Text != "")
                 textBox23.Text += " incl:" + txtCardIncl.Text;

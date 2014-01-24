@@ -34,11 +34,39 @@ namespace MAClientGUI
         public string hooks;
         public string extra_cmd;
     }
-    public class animator
+    public class CtrlAnimator
     {
+        public int duration = 35;
+        public int sleep = 3;
+        public int max_step = 30;
+        public int inc_amp = 1;
+        private Form mainFrm;
+        
+
+        public CtrlAnimator(Form mainFrm)
+        {
+            this.mainFrm = mainFrm;
+        }
         public void ChangeHeight(Control ctl, int toheight)
         {
-            ctl.Height = toheight;
+            Thread athread = new Thread(new ThreadStart(() =>
+            {
+                int done=0,ori=ctl.Height;
+                int accel_time = Convert.ToInt32(duration/sleep*0.2);
+                while(done<=duration/sleep && ((ori<toheight &&ctl.Height<toheight)||(ori>toheight &&ctl.Height>toheight))){
+                    this.mainFrm.Invoke((MethodInvoker)(() =>
+                    {
+                        ctl.Height += (toheight-ori)*sleep/duration+Math.Sign(toheight-ori)*3;
+                    }));
+                    done += 1;
+                    Thread.Sleep(sleep);
+                }
+            }));
+            athread.Start();
+        }
+        public void ChangeOffsetY(Control ctl, int tooffset)
+        {
+            ctl.Location = new System.Drawing.Point(ctl.Location.X,ctl.Location.Y+tooffset);
         }
     }
     public class configParser
