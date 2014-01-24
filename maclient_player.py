@@ -19,6 +19,7 @@ class player(object):
         # [:2]可以让cn2变成cn以使用同一个卡组/道具数据
         self.card = card(loc[:2])
         self.item = item(loc[:2])
+        self.boss = boss(loc[:2])
         self.loc = loc
         self.fairy = {'id':0, 'alive':False, 'guild_alive':False}
         self.id = '0'
@@ -76,11 +77,12 @@ class player(object):
             # try:
             cardrev = int(xmldata.header.revision.card_rev)
             itemrev = int(xmldata.header.revision.item_rev)
+            bossrev = int(xmldata.header.revision.boss_rev)
             # except KeyError:
             #     pass
             # else:
             import maclient_update
-            self.need_update = maclient_update.check_revision(self.loc, (cardrev, itemrev))
+            self.need_update = maclient_update.check_revision(self.loc, (cardrev, itemrev, bossrev))
             self.update_checked = True  # 只检查一次
         # print self.ap.current,self.bc.current
         return 'AP:%d/%d BC:%d/%d G:%d FP:%d' % (self.ap['current'], self.ap['max'], self.bc['current'], self.bc['max'], self.gold, self.friendship_point), True
@@ -175,6 +177,34 @@ class card(object):
 
     def cid(self, cid):
         return self._found_card_by_value('master_card_id', int(cid))
+
+class boss(object):
+    def __init__(self, loc):
+        self.name_wake = ''
+        self.load_db(loc)
+        #self.hp_factor = {}
+    def load_db(self, loc):
+        # print(open(opath.join(getPATH0,'db/card.%s.txt'%loc),encoding='utf8').read().encode(encoding="utf-8"))
+        if not opath.exists(opath.join(getPATH0, 'db/boss.%s.txt' % loc)):#legacy db support
+            print(du8('强敌数据不存在，请更新一次数据库'))
+            return
+        if PYTHON3:
+            b = open(opath.join(getPATH0, 'db/boss.%s.txt' % loc), encoding = 'utf8')
+        else:
+            b = open(opath.join(getPATH0, 'db/boss.%s.txt' % loc))
+        lastname = 'NOTHING'
+        for c in b.readlines():
+            c = _split(c)
+            if c != ['']:
+                #self.hp_factor[int(c[0])] = int(c[2])
+                if lastname in c[1] and int(c[0])>2000:
+                    pref = c[1].replace(lastname, '')
+                    if pref not in self.name_wake and pref:
+                        self.name_wake = '%s|%s' %(self.name_wake, pref)
+                lastname = c[1]
+        lastname = None
+        self.name_wake = du8(self.name_wake.lstrip('|'))
+
 
 def check_exclusion(inpstr):
     '''Return False if exclusion exists'''

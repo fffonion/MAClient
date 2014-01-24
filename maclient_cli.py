@@ -246,10 +246,11 @@ if __name__ == '__main__':
             elif ch == '5':
                 logging.info(du8('将强制重新从服务器下载数据……'))
                 import maclient_update
-                crev, irev = maclient_update.update_master(maclient1.loc, (True, True), maclient1.poster)
-                logging.info(du8('%s%s' % (
+                crev, irev, brev = maclient_update.update_master(maclient1.loc, (True, True, True), maclient1.poster)
+                logging.info(du8('%s%s%s' % (
                     '卡片数据更新为rev.%s' % crev if crev else '',
-                    '道具数据更新为rev.%s' % irev if irev else '')))
+                    '道具数据更新为rev.%s' % irev if irev else '',
+                    '强敌数据更新为rev.%s' % brev if brev else '')))
                 # the following is deprecated
                 # getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
                 #  and sys.path[0].decode(sys.getfilesystemencoding()) \

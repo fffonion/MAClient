@@ -256,18 +256,20 @@ class maClient():
                 open(self.playerfile, 'w').write(_dec)
             else:
                 # check revision update
-                if self.player.need_update[0] or self.player.need_update[1]:
+                if sum(self.player.need_update) >=1:
                     if self.cfg_auto_update:
-                        logging.info('更新%s%s数据……' % (
+                        logging.info('更新%s%s%s数据……' % (
                             ' 卡片' if self.player.need_update[0] else '',
-                            ' 道具' if self.player.need_update[1] else ''))
+                            ' 道具' if self.player.need_update[1] else '',
+                            ' 强敌' if self.player.need_update[2] else ''))
                         import maclient_update
-                        crev, irev = maclient_update.update_master(self.loc[:2], self.player.need_update, self.poster)
-                        logging.info('%s%s' % (
+                        crev, irev, brev = maclient_update.update_master(self.loc[:2], self.player.need_update, self.poster)
+                        logging.info('%s%s%s' % (
                             '卡片数据更新为rev.%s' % crev if crev else '',
-                            '道具数据更新为rev.%s' % irev if irev else ''))
+                            '道具数据更新为rev.%s' % irev if irev else '',
+                            '强敌数据更新为rev.%s' % irev if brev else ''))
                         self.player.reload_db()
-                        self.player.need_update = False, False
+                        self.player.need_update = False, False, False
                     else:
                         logging.warning('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库')
                 if not resp['error']:
@@ -510,6 +512,7 @@ class maClient():
                 logging.error('当前登录的用户(%s)已经运行了一个maClient' % (self.username))
                 self._exit(2)
             self.carddb = self.player.card.db
+            self.player.boss.name_wake = '|'.join((self.player.boss.name_wake,maclient_smart.name_wake_rare))
             self.player_initiated = True
             if self.player.id != '0':
                 self._write_config('account_%s' % self.loc, 'user_id', self.player.id)
@@ -1199,12 +1202,8 @@ class maClient():
             elif fairy.fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
             fairy['time_limit'] = int(fairy.fairy.time_limit)
-            fairy['wake'] = False
-            fairy['wake_rare'] = False
-            for k in maclient_smart.name_wake:
-                fairy['wake'] = fairy['wake'] or (k in fairy.fairy.name)
-            for k in maclient_smart.name_wake_rare:
-                fairy['wake_rare'] = fairy['wake_rare'] or fairy.fairy.name.startswith(k)
+            fairy['wake'] = re.match(self.player.boss.name_wake, du8(fairy.fairy.name)) != None
+            fairy['wake_rare'] = re.match(maclient_smart.name_wake_rare, du8(fairy.fairy.name)) != None
             ftime = (self._read_config('fairy', fairy.fairy.serial_id) + ',,').split(',')
             fairy.fairy['not_battled'] = ftime[0] == ''
             # logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))

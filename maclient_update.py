@@ -22,7 +22,7 @@ def get_revision(loc):
         raise KeyError('No server revision data found for "%s"' % loc)
     return rev[1:]
 
-def save_revision(loc, cardrev = None, itemrev = None):
+def save_revision(loc, cardrev = None, itemrev = None, bossrev = None):
     rev_str = open(opath.join(getPATH0, 'db/revision.txt')).read()
     local_revs = rev_str.split('\n')
     rev = None
@@ -37,18 +37,22 @@ def save_revision(loc, cardrev = None, itemrev = None):
         rev[1] = str(cardrev)
     if itemrev:
         rev[2] = str(itemrev)
+    if len(rev) < 4:#legacy db support
+        rev += ['0']
+    if bossrev:
+        rev[3] = str(bossrev)
     rev_str = rev_str.replace(r, ','.join(rev))
     open(opath.join(getPATH0, 'db/revision.txt'), 'w').write(rev_str)
 
 def check_revision(loc, rev_tuple):
-    rev = get_revision(loc)
+    rev = get_revision(loc) + [0]#legacy db support
     if rev:
-        return rev_tuple[0] > float(rev[0]), rev_tuple[1] > float(rev[1])
+        return rev_tuple[0] > float(rev[0]), rev_tuple[1] > float(rev[1]), rev_tuple[2] > float(rev[2])
     else:
-        return False, False
+        return False, False, False
 
 def update_master(loc, need_update, poster):
-    new_rev = [None, None]
+    new_rev = [None, None, None]
     if need_update[0]:
         poster.set_timeout(240)
         a, b = poster.post('masterdata/card/update', postdata = '%s&revision=0' % poster.cookie)
@@ -89,5 +93,23 @@ def update_master(loc, need_update, poster):
             open(opath.join(getPATH0, 'db/item.%s.txt' % loc), 'w').write('\n'.join(strs))
         new_rev[1] = resp.header.revision.item_rev
         save_revision(loc, itemrev = new_rev[1])
+    if need_update[2]:
+        poster.set_timeout(240)
+        a, b = poster.post('masterdata/boss/update', postdata = '%s&revision=0' % poster.cookie)
+        resp = XML2Dict().fromstring(b).response
+        boss = resp.body.master_data.master_boss_data.boss
+        strs = []
+        for c in boss:
+            strs.append('%s,%s,%s' % (
+                c.master_boss_id,
+                c.name,
+                c.hp
+            ))
+        if PYTHON3:
+            open(opath.join(getPATH0, 'db/boss.%s.txt' % loc), 'w', encoding = 'utf-8').write('\n'.join(strs))
+        else:
+            open(opath.join(getPATH0, 'db/boss.%s.txt' % loc), 'w').write('\n'.join(strs))
+        new_rev[2] = resp.header.revision.item_rev
+        save_revision(loc, bossrev = new_rev[2])
     poster.set_timeout(15)#rollback
     return new_rev
