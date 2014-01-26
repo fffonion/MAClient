@@ -166,10 +166,10 @@ class card(object):
         # print self.cid('124')
 
     def _found_card_by_value(self, key, value):
-        res = []
-        for i in self.cards:
-            if i[key] == value:
-                res.append(i)
+        res = [c for c in self.cards if c[key] == value]
+        # for i in self.cards:
+        #     if i[key] == value:
+        #         res.append(i)
         return res
 
     def sid(self, sid):

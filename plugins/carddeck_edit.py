@@ -9,7 +9,7 @@ from xml2dict import XML2Dict
 # start meta
 __plugin_name__ = 'scratch carddeck from REAL client'
 __author = 'fffonion'
-__version__ = 0.2
+__version__ = 0.3
 hooks = {}
 extra_cmd = {'scratch_carddeck':'scratch_carddeck', 'scc':'scratch_carddeck','check_debug':'check_debug','cd':'check_debug',
 'read_decks':'read_decks','rd':'read_decks'}
@@ -34,6 +34,13 @@ def read_decks(plugin_vals):
         poster=plugin_vals['poster']
         pcard=plugin_vals['player'].card
         cf=plugin_vals['cf']
+        def write_config(sec, key, val):
+            if not cf.has_section(sec):
+                cf.add_section(sec)
+            cf.set(sec, key, val)
+            f = open(plugin_vals['configfile'], "w")
+            cf.write(f)
+            f.flush()
         list_option=cf.options
         for i in range(1,4,1):
             print(du8('卡组%d:'%i))
@@ -53,7 +60,7 @@ def read_decks(plugin_vals):
                 name = decks[int(inp) - 1]
             else:
                 name = inp
-            write_config('carddeck', name, C)
+            write_config('carddeck', name, ','.join(C))
             print(du8('保存到了%s' % name))
         #poster.post('roundtable/edit', postdata = 'move=1&deck_id=1')
     return do

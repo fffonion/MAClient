@@ -1496,8 +1496,8 @@ class maClient():
             # 回到妖精界面; 尾刀时是否回妖精界面由尾刀决定，父过程此处跳过
             if not need_tail:
                 fairy_floor()
-             # 如果是醒妖则问好
-            if bt_type == WAKE_BATTLE and self.cfg_auto_greet:
+             # 如果是醒妖且不是公会妖则问好
+            if bt_type == WAKE_BATTLE and not fairy.race_type in GUILD_RACE_TYPE and self.cfg_auto_greet :
                 self.like()
 
     @plugin.func_hook
