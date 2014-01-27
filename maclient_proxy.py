@@ -82,8 +82,8 @@ class Handler(BaseHTTPRequestHandler):
         if self.command == 'POST':
             postdata = self.rfile.read(int(self.headers['Content-Length']))
             self.remote.sendall(postdata)
-            if 'cardselect/savedeckcard' in self.requestline:
-                open('.carddeck', 'w').write(postdata)
+            # if 'cardselect/savedeckcard' in self.requestline:
+            #     open('.carddeck', 'w').write(postdata)
         response = HTTPResponse(self.remote, method = self.command)
         response.begin()
 

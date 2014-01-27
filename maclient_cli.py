@@ -9,6 +9,7 @@ import sys
 import zipimport
 sys.path.append('python27.zip')
 import time
+import socket
 # import httplib2
 import os
 import os.path as opath
@@ -67,32 +68,32 @@ class srv(threading.Thread):
         self.server.serve_forever()
 
 
-def read_proxy(work = 0):
+def read_proxy():
     serverport = 23300
     server_address = ("", serverport)
     hdl = maclient_proxy.Handler
     server = maclient_proxy.ThreadingHTTPServer(server_address, hdl)
     # Random Target Proxy Server
-    if work == 0:
-        print(du8('请将设备的代理设置为 本机ip:%s 然后随便进行一次操作' % (serverport)))
-    elif work == 1:
-        print(du8('请将设备的代理设置为 本机ip:%s 然后设定一次卡组\n除了这种办法，你还可以直接在config.ini中输入所需卡片的卡片id，如小狼女: 124\n可以在db/card.tw.txt或db/card.tw.txt中查找' % (serverport)))
+    #if work == 0:
+    print(du8('请将设备的代理设置为 %s:%s 然后随便进行一次操作' % (socket.gethostbyname(socket.gethostname()),serverport)))
+    # elif work == 1:
+    #     print(du8('请将设备的代理设置为 本机ip:%s 然后设定一次卡组\n除了这种办法，你还可以直接在config.ini中输入所需卡片的卡片id，如小狼女: 124\n可以在db/card.tw.txt或db/card.tw.txt中查找' % (serverport)))
     srver = srv(server)
     srver.setDaemon(True)
     srver.start()
     while True:
-        if work == 0 and os.path.exists('.session'):
+        if os.path.exists('.session'):
             sessionid = open('.session', 'r').read()
             print('found sessionid :%s' % sessionid)
             srver.join(1)
             os.remove('.session')
             return sessionid
-        elif work == 1 and os.path.exists('.carddeck'):
-            carddeck = open('.carddeck', 'r').read()
-            print('found carddeck change')
-            srver.join(1)
-            os.remove('.carddeck')
-            return carddeck
+        # elif work == 1 and os.path.exists('.carddeck'):
+        #     carddeck = open('.carddeck', 'r').read()
+        #     print('found carddeck change')
+        #     srver.join(1)
+        #     os.remove('.carddeck')
+        #     return carddeck
         time.sleep(1)
 
 if __name__ == '__main__':
@@ -125,6 +126,7 @@ if __name__ == '__main__':
         # auth()
         mode = ['普通', '同时在线']
         mod = 0
+        history = []
         while True:
             print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\tas.自动配卡\n2.切换模式->%s\te.刷秘境\n3.编辑卡组\t\tfyb.刷妖精\n4.编辑配置\t\tfcb.因子战\n5.更新数据库\t\tf.好友相关\n6.退出\t\t\th.命令列表%s' % (
                 mode[mod],
@@ -140,6 +142,21 @@ if __name__ == '__main__':
                 print(' \b')
             except KeyboardInterrupt:
                 maclient1._exit()
+            #history
+            if ch.startswith('!'):
+                if ch == '!!':
+                    ch = '!1'
+                if(int(ch[1:])>len(history)):
+                    maclient1.logger.warning('历史越界 idx:%s len:%d'%(ch[1:],len(history)))
+                    continue
+                else:
+                    ch = history[-int(ch[1:])]
+                    print(du8(ch))
+            else:
+                if not history or history[-1] != ch:
+                    history.append(ch)
+                    if len(history)>10:
+                        history = history[-10:]
             if ch == '1' or ch == '':
                 try:
                     dec = maclient1.login()
@@ -188,7 +205,7 @@ if __name__ == '__main__':
                 #     maclient1.tasker()
             elif ch == '2':
                 if mod == 0:
-                    session = read_proxy(work = 0)
+                    session = read_proxy()
                     maclient1._write_config('account_%s' % maclient1._read_config('system', 'server'), 'session', session)
                     maclient1.load_cookie()
                     maclient1.login()
@@ -245,10 +262,11 @@ if __name__ == '__main__':
             elif ch == '5':
                 logging.info(du8('将强制重新从服务器下载数据……'))
                 import maclient_update
-                crev, irev = maclient_update.update_master(maclient1.loc, (True, True), maclient1.poster)
-                logging.info(du8('%s%s' % (
+                crev, irev, brev = maclient_update.update_master(maclient1.loc, (True, True, True), maclient1.poster)
+                logging.info(du8('%s%s%s' % (
                     '卡片数据更新为rev.%s' % crev if crev else '',
-                    '道具数据更新为rev.%s' % irev if irev else '')))
+                    '道具数据更新为rev.%s' % irev if irev else '',
+                    '强敌数据更新为rev.%s' % brev if brev else '')))
                 # the following is deprecated
                 # getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
                 #  and sys.path[0].decode(sys.getfilesystemencoding()) \
