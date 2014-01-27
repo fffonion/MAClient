@@ -118,7 +118,10 @@ class plugins():
             glob.glob(opath.join(plugin_dir, '*.pyo'))
         # mods=[]
         modstr = ''
+        last_mod = ''
         for m in mods:
+            if m.replace('.pyc','py') in mods:#strip .pyc if .py exists
+                continue
             m = opath.splitext(opath.split(m)[1])[0]
             if m.startswith('_'):
                 continue
@@ -136,6 +139,7 @@ class plugins():
                     except AttributeError:
                         # no plugin() class
                         self.plugins_instance[m] = None
+            last_mod = m
 
     def _line_tracer(self):
         # originally from http://stackoverflow.com/questions/19227636/decorator-to-log-function-execution-line-by-line

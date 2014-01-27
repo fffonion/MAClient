@@ -126,6 +126,7 @@ if __name__ == '__main__':
         # auth()
         mode = ['普通', '同时在线']
         mod = 0
+        history = []
         while True:
             print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\tas.自动配卡\n2.切换模式->%s\te.刷秘境\n3.编辑卡组\t\tfyb.刷妖精\n4.编辑配置\t\tfcb.因子战\n5.更新数据库\t\tf.好友相关\n6.退出\t\t\th.命令列表%s' % (
                 mode[mod],
@@ -141,6 +142,21 @@ if __name__ == '__main__':
                 print(' \b')
             except KeyboardInterrupt:
                 maclient1._exit()
+            #history
+            if ch.startswith('!'):
+                if ch == '!!':
+                    ch = '!1'
+                if(int(ch[1:])>len(history)):
+                    maclient1.logger.warning('历史越界 idx:%s len:%d'%(ch[1:],len(history)))
+                    continue
+                else:
+                    ch = history[-int(ch[1:])]
+                    print(du8(ch))
+            else:
+                if not history or history[-1] != ch:
+                    history.append(ch)
+                    if len(history)>10:
+                        history = history[-10:]
             if ch == '1' or ch == '':
                 try:
                     dec = maclient1.login()
