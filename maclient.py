@@ -267,7 +267,7 @@ class maClient():
                         logging.info('%s%s%s' % (
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else '',
-                            '强敌数据更新为rev.%s' % irev if brev else ''))
+                            '强敌数据更新为rev.%s' % brev if brev else ''))
                         self.player.reload_db()
                         self.player.need_update = False, False, False
                     else:

@@ -121,10 +121,9 @@ class item(object):
             f = open(opath.join(getPATH0, 'db/item.%s.txt' % loc), encoding = 'utf8')
         else:
             f = open(opath.join(getPATH0, 'db/item.%s.txt' % loc))
-        for c in f.readlines():
+        for c in f.readlines()[:-1]:
             c = _split(c)
-            if c != ['']:
-                self.db[int(c[0])] = [c[1], 0]
+            self.db[int(c[0])] = [c[1], 0]
 
     def update(self, itemdict):
         for it in itemdict:
@@ -151,10 +150,9 @@ class card(object):
             f = open(opath.join(getPATH0, 'db/card.%s.txt' % loc), encoding = 'utf8')
         else:
             f = open(opath.join(getPATH0, 'db/card.%s.txt' % loc))
-        for c in f.readlines():
+        for c in f.readlines()[:-1]:
             c = _split(c)
-            if c != ['']:
-                self.db[int(c[0])] = [c[1], int(c[2]), int(c[3])]
+            self.db[int(c[0])] = [c[1], int(c[2]), int(c[3])]
 
     def update(self, carddict):
         self.cards = []
@@ -193,15 +191,14 @@ class boss(object):
         else:
             b = open(opath.join(getPATH0, 'db/boss.%s.txt' % loc))
         lastname = 'NOTHING'
-        for c in b.readlines():
+        for c in b.readlines()[:-1]:
             c = _split(c)
-            if c != ['']:
-                #self.hp_factor[int(c[0])] = int(c[2])
-                if lastname in c[1] and int(c[0])>2000:
-                    pref = c[1].replace(lastname, '')
-                    if pref not in self.name_wake and pref:
-                        self.name_wake = '%s|%s' %(self.name_wake, pref)
-                lastname = c[1]
+            #self.hp_factor[int(c[0])] = int(c[2])
+            if lastname in c[1] and int(c[0])>2000:
+                pref = c[1].replace(lastname, '')
+                if pref not in self.name_wake and pref:
+                    self.name_wake = '%s|%s' %(self.name_wake, pref)
+            lastname = c[1]
         lastname = None
         self.name_wake = du8(self.name_wake.lstrip('|'))
 
