@@ -81,7 +81,10 @@ def disable_proxy():
     # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyOverride')
     # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyServer')
 # opener
-opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.getproxies()))
+if PYTHON3:
+    opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.request.getproxies()))
+else:
+    opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.getproxies()))
 class Proxy(BaseHTTPRequestHandler):
     def do_HDL(self):
         req = urllib2.Request(self.path, headers = headers)

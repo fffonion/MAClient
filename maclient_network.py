@@ -32,6 +32,7 @@ serv = {'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/',
     'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/',
     'jp':'http://web.million-arthurs.com/connect/app/', 'jp_data':'',
     'kr':'http://ma.actoz.com:10001/connect/app/', 'kr_data':''}
+serv['cn1'] = serv['cn']
 serv['cn_data'] = serv['cn2_data'] = serv['cn3_data'] = 'http://MA.webpatch.sdg-china.com/'
 
 headers_main = {'User-Agent': 'Million/%d (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys', 'Connection': 'Keep-Alive', 'Accept-Encoding':'gzip,deflate'}
@@ -39,7 +40,8 @@ headers_post = {'Content-Type': 'application/x-www-form-urlencoded'}
 
 pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
 unpad = lambda s : s[0:-ord(s[-1])]
-b2u = PYTHON3 and (lambda x:x.decode(encoding = 'utf-8')) or (lambda x:x)
+b2u = PYTHON3 and (lambda x:x.decode(encoding = 'utf-8', errors = 'replace')) or (lambda x:x)
+tobytes = PYTHON3 and (lambda x:x if isinstance(x, bytes) else x.encode(encoding = 'utf-8', errors = 'replace')) or (lambda x:x)
 MOD_AES, MOD_AES_RANDOM, MOD_RSA_AES_RANDOM = 0, 1, 2
 class Crypt():
     def __init__(self,loc):
@@ -105,7 +107,7 @@ class Crypt():
             return self.random_cipher.encrypt(pad(bytein))
 
     def encode_rsa_64(self, strin):
-        return base64.encodestring(self.rsa.encrypt(strin))
+        return b2u(base64.encodestring(self.rsa.encrypt(tobytes(strin))))
 
     def encode_data64(self, bytein, mode):
         res=b2u(base64.encodestring(self.encode_data(bytein, mode))).strip('\n')
@@ -121,7 +123,7 @@ class Crypt():
             _m=lambda x:x
         if second_cipher: #replace
             self.AES2ndKey, self.cipher_data = self.cipher_data, self.AES2ndKey
-        p_enc = '%0A&'.join(['%s=%s' % (p[i].split('=')[0], self.urlunescape(_m(self.encode_data64(p[i].split('=')[1], mode)))) for i in xrange(len(p))])
+        p_enc = '%0A&'.join(['%s=%s' % (p[i].split('=')[0], self.urlunescape(_m(self.encode_data64(p[i].split('=')[1], mode)))) for i in range(len(p))])
         if second_cipher: #rollback
             self.AES2ndKey, self.cipher_data = self.cipher_data, self.AES2ndKey
         # print p_enc
@@ -244,7 +246,7 @@ class poster():
                                 self.crypt.random_cipher_plain))).rstrip('\n')
                     if postdata:#has real stuff
                         if uri in ['login','regist']:
-                            postdata = self.crypt.encode_param(postdata.encode('utf-8'), mode=MOD_RSA_AES_RANDOM)
+                            postdata = self.crypt.encode_param(postdata, mode=MOD_RSA_AES_RANDOM) #remove .encode('utf-8')
                         else:
                             postdata = self.crypt.encode_param(postdata, mode=MOD_AES_RANDOM)
                         postdata='&'.join([sign,postdata])
