@@ -49,14 +49,17 @@ eval_task = []
 #duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 logging = maclient_logging.Logging('logging')  # =sys.modules['logging']
 
-def setT(strt):
+if PYTHON3:
+   setT = lambda strt : os.system(du8('TITLE %s' % strt))
+else:
     #if not PYTHON3:
     #    strt = strt.decode('utf-8').encode('cp936', 'ignore')
     if sys.platform == 'cli':
         import System.Console
-        System.Console.Title = strt
+        def setT(strt):
+            System.Console.Title = strt
     else:
-        os.system(du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+        setT = lambda strt : os.system(du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 
 class set_title(threading.Thread):
     def __init__(self, macInstance):
@@ -267,7 +270,7 @@ class maClient():
                         logging.info('%s%s%s' % (
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else '',
-                            '强敌数据更新为rev.%s' % irev if brev else ''))
+                            '强敌数据更新为rev.%s' % brev if brev else ''))
                         self.player.reload_db()
                         self.player.need_update = False, False, False
                     else:
@@ -414,9 +417,12 @@ class maClient():
                     self.select_card_sell(' '.join(task[1:]))
                 elif task[0] == 'set_server' or task[0] == 'ss':
                     self._write_config('system', 'server', task[1])
-                    self.loc = task[1]
-                    self.poster.load_svr(self.loc)
-                    self.load_config()
+                    if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp']:
+                        logging.error('服务器"%s"无效'%(task[1]))
+                    else:
+                        self.loc = task[1]
+                        self.poster.load_svr(self.loc)
+                        self.load_config()
                 elif task[0] == 'relogin' or task[0] == 'rl':
                     self._write_config('account_%s' % self.loc, 'session', '')
                     self.login()
@@ -1278,8 +1284,7 @@ class maClient():
         if 'not_battled' not in fairy:
             ftime = (self._read_config('fairy', fairy.serial_id) + ',,').split(',')
             fairy['not_battled'] = ftime[0] == ''
-        for k in maclient_smart.name_wake_rare:
-            fairy['wake_rare'] = fairy['wake_rare'] or k in fairy.name
+        fairy['wake_rare'] = re.match(maclient_smart.name_wake_rare, du8(fairy.name)) != None
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
         disc_name = ''
         disc_id = fairy.discoverer_id
@@ -1382,11 +1387,16 @@ class maClient():
                     if 'item_id' in b:
                         # 收集品 情况1：要通过点击“立即领取”领取的，在sleep之后领取
                         # logging.debug('fairy_battle:type:%s item_id %s count %s'%(b.type,b.item_id,b.item_num))
-                        logging.info('获得收集品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
+                        if int(b.item_id) <= 3:
+                            logging.info('获得物品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
+                        else:
+                            logging.info('获得收集品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
                         nid.append(b.id)
-                    else:
+                    elif 'card_id' in b:#卡片
                         # logging.debug('fairy_battle:type:%s card_id %s holoflag %s'%(b.type,b.card_id,b.holo_flag))
                         logging.info('获得卡片 %s%s' % (self.carddb[int(b.card_id)][0], (b.holo_flag == '1' and '(闪)' or '')))
+                    # else:
+                    #     open(r'z:/hahaha.txt','w').write(str(ct))
                 # 如果是自己的妖精则设为死了
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})

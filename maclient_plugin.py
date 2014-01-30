@@ -120,7 +120,7 @@ class plugins():
         modstr = ''
         last_mod = ''
         for m in mods:
-            if m.replace('.pyc','py') in mods:#strip .pyc if .py exists
+            if '.pyc' in m and m[:-1] in mods:#strip .pyc if .py exists
                 continue
             m = opath.splitext(opath.split(m)[1])[0]
             if m.startswith('_'):

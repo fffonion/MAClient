@@ -79,14 +79,12 @@ def update_master(loc, need_update, poster):
         poster.set_timeout(240)
         a, b = poster.post('masterdata/item/update', postdata = '%s&revision=0' % poster.cookie)
         resp = XML2Dict().fromstring(b).response
-        itmes = resp.body.master_data.master_item_data.item_info
-        strs = []
-        for c in itmes:
-            strs.append('%s,%s,%s' % (
+        items = resp.body.master_data.master_item_data.item_info
+        strs = ['%s,%s,%s' % (
                 c.item_id,
                 c.name,
                 c.explanation.replace('\n','\\n')
-            ))
+            ) for c in items] + ['']
         if PYTHON3:
             open(opath.join(getPATH0, 'db/item.%s.txt' % loc), 'w', encoding = 'utf-8').write('\n'.join(strs))
         else:
@@ -98,18 +96,16 @@ def update_master(loc, need_update, poster):
         a, b = poster.post('masterdata/boss/update', postdata = '%s&revision=0' % poster.cookie)
         resp = XML2Dict().fromstring(b).response
         boss = resp.body.master_data.master_boss_data.boss
-        strs = []
-        for c in boss:
-            strs.append('%s,%s,%s' % (
+        strs = ['%s,%s,%s' % (
                 c.master_boss_id,
                 c.name,
                 c.hp
-            ))
+            ) for c in boss] + ['']
         if PYTHON3:
             open(opath.join(getPATH0, 'db/boss.%s.txt' % loc), 'w', encoding = 'utf-8').write('\n'.join(strs))
         else:
             open(opath.join(getPATH0, 'db/boss.%s.txt' % loc), 'w').write('\n'.join(strs))
-        new_rev[2] = resp.header.revision.item_rev
+        new_rev[2] = resp.header.revision.boss_rev
         save_revision(loc, bossrev = new_rev[2])
     poster.set_timeout(15)#rollback
     return new_rev
