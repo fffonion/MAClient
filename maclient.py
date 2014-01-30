@@ -1387,11 +1387,16 @@ class maClient():
                     if 'item_id' in b:
                         # 收集品 情况1：要通过点击“立即领取”领取的，在sleep之后领取
                         # logging.debug('fairy_battle:type:%s item_id %s count %s'%(b.type,b.item_id,b.item_num))
-                        logging.info('获得收集品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
+                        if int(b.item_id) <= 3:
+                            logging.info('获得物品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
+                        else:
+                            logging.info('获得收集品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
                         nid.append(b.id)
-                    else:
+                    elif 'card_id' in b:#卡片
                         # logging.debug('fairy_battle:type:%s card_id %s holoflag %s'%(b.type,b.card_id,b.holo_flag))
                         logging.info('获得卡片 %s%s' % (self.carddb[int(b.card_id)][0], (b.holo_flag == '1' and '(闪)' or '')))
+                    # else:
+                    #     open(r'z:/hahaha.txt','w').write(str(ct))
                 # 如果是自己的妖精则设为死了
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
