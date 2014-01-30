@@ -1384,19 +1384,27 @@ class maClient():
                 # 奖励
                 bonus = body.bonus_list.bonus
                 for b in bonus:
-                    if 'item_id' in b:
-                        # 收集品 情况1：要通过点击“立即领取”领取的，在sleep之后领取
-                        # logging.debug('fairy_battle:type:%s item_id %s count %s'%(b.type,b.item_id,b.item_num))
-                        if int(b.item_id) <= 3:
-                            logging.info('获得物品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
-                        else:
-                            logging.info('获得收集品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
-                        nid.append(b.id)
-                    elif 'card_id' in b:#卡片
+                    # type 1:卡片 2:道具 3:金 4:绊点 5:蛋卷
+                    if b.type == '1':#卡片
                         # logging.debug('fairy_battle:type:%s card_id %s holoflag %s'%(b.type,b.card_id,b.holo_flag))
                         logging.info('获得卡片 %s%s' % (self.carddb[int(b.card_id)][0], (b.holo_flag == '1' and '(闪)' or '')))
-                    # else:
-                    #     open(r'z:/hahaha.txt','w').write(str(ct))
+                    else:
+                        nid.append(b.id)
+                        if b.type == '2':
+                            # 收集品 情况1：要通过点击“立即领取”领取的，在sleep之后领取
+                            # logging.debug('fairy_battle:type:%s item_id %s count %s'%(b.type,b.item_id,b.item_num))
+                            if int(b.item_id) <= 3:
+                                logging.info('获得物品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
+                            else:
+                                logging.info('获得收集品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
+                        elif b.type == '3':
+                            logging.info('获得金币 %s' % b.get_money)
+                        elif b.type == '4':
+                            logging.info('获得绊点 %s' % b.get_point)
+                        elif b.type == '5':
+                            logging.info('获得蛋蛋卷')#我猜的
+                        else:
+                            logging.warning('未识别的奖励类型:%s' % b.type)
                 # 如果是自己的妖精则设为死了
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})

@@ -32,7 +32,7 @@ app_ver_tw = 200
 app_ver_kr = 105
 app_ver_jp = 250
 # wake
-name_wake_rare = '年獸比南珊'
+name_wake_rare = '年兽|比南珊'
 # snda gplus, not working
 class snda_gplus():
     # thanks to luw2007(https://github.com/luw2007/libMA/blob/master/push.py)
