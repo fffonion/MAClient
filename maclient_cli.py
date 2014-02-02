@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding:utf-8
+#qpy:console
 # maclient command line interface
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
@@ -104,7 +105,7 @@ if __name__ == '__main__':
     # ht=httplib2.Http(timeout=30)
     print(du8('%s%sv%s%s' % ('=' * int((getTerminalSize()[0] - 5 - 18) / 2), '丧心病狂的MA客户端', maclient.__version__, '=' * int((getTerminalSize()[0] - 5 - 18) / 2))))
     if len(sys.argv) > 2:
-        maclient1 = maclient.maClient(configfile = sys.argv[1], savesession = True)
+        maclient1 = maclient.MAClient(configfile = sys.argv[1], savesession = True)
         # auth()
         dec = maclient1.login()
         maclient1.initplayer(dec)
@@ -116,9 +117,24 @@ if __name__ == '__main__':
             maclient1.tasker(cmd = arg)
     else:
         if len(sys.argv) == 2:
-            maclient1 = maclient.maClient(configfile = sys.argv[1], savesession = True)
+            maclient1 = maclient.MAClient(configfile = sys.argv[1], savesession = True)
         else:
-            maclient1 = maclient.maClient(savesession = True)
+            try:
+                import androidhelper # android!
+                os.chdir(os.environ.get('ANDROID_ARGUMENT'))
+            except ImportError:
+                maclient1 = maclient.MAClient(savesession = True)
+            else:
+                if os.path.exists('config.ini'):
+                    maclient1 = maclient.MAClient(savesession = True)
+                else:
+                    droid = androidhelper.Android()
+                    line = droid.dialogGetInput("MAClient", "请输入配置文件名", "")
+                    if not line.result:
+                        sys.exit(0)
+                    else:
+                        maclient1 = maclient.MAClient(configfile = line.result, savesession = True)
+
         # 进入游戏
         # maclient1._dopost('post_token',postdata=ma.encode_param('S=nosessionid&login_id=%s&password=%s&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb'%(username,password)),usecookie=True,extraheader={'Cookie2': '$Version=1'})
         # 登陆

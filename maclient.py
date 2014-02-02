@@ -96,7 +96,7 @@ class conn_ani(threading.Thread):
             cnt = (cnt + 1) % 4
             time.sleep(0.15)
 
-class maClient():
+class MAClient():
     global plugin
     plugin = maclient_plugin.plugins(logging)
     def __init__(self, configfile = '', savesession = False):
@@ -515,7 +515,7 @@ class maClient():
         else:  # 第一次
             self.player = maclient_player.player(xmldict, self.loc)
             if not self.player.success:
-                logging.error('当前登录的用户(%s)已经运行了一个maClient' % (self.username))
+                logging.error('当前登录的用户(%s)已经运行了一个MAClient' % (self.username))
                 self._exit(2)
             self.carddb = self.player.card.db
             self.player.boss.name_wake = '|'.join((self.player.boss.name_wake,maclient_smart.name_wake_rare))
@@ -1145,7 +1145,7 @@ class maClient():
                     if hour_now in xrange(int(low), int(up)):
                         slptime = float(t)
                         break
-                if slptime * slpfactor * 60 < 20:
+                if slptime * slpfactor * 60 < 10:
                     logging.warning('间隔至少为20秒，但当前设置为%d' % (slptime * 60))
                     slptime = 1.0 / 3 / slpfactor
                 hour_last = hour_now
@@ -2011,27 +2011,27 @@ if __name__ == '__main__':
         dt=ma.decode_res(download_card(cardid,int(j),'tw'))
         open('Z:\\%d_%s.png'%(cardid,j),'wb').write(dt)'''
     if len(sys.argv) >= 2:
-        maClient1 = maClient(configfile = sys.argv[1], savesession = True)
+        MAClient1 = MAClient(configfile = sys.argv[1], savesession = True)
     else:
-        maClient1 = maClient(savesession = True)
+        MAClient1 = MAClient(savesession = True)
     # 进入游戏
-    # maClient1._dopost('notification/post_devicetoken',postdata=ma.encode_param('S=nosessionid&login_id=%s&password=%s&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb'%(username,password)),extraheader={'Cookie2': '$Version=1'})
+    # MAClient1._dopost('notification/post_devicetoken',postdata=ma.encode_param('S=nosessionid&login_id=%s&password=%s&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb'%(username,password)),extraheader={'Cookie2': '$Version=1'})
     # 登陆
     # import profile
-    # profile.run("maClient1.login()")
+    # profile.run("MAClient1.login()")
     # os._exit(0)
-    maClient1.login()
-    dec = maClient1.login()
-    maClient1.initplayer(dec)
-    # maClient1.gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
-    # maClient1._sell_card(['59775010'])
-    # maClient1.tasker()
-    # maClient1.explore()
-    # maClient1.set_card('factor')
-    # maClient1.factor_battle()
+    MAClient1.login()
+    dec = MAClient1.login()
+    MAClient1.initplayer(dec)
+    # MAClient1.gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
+    # MAClient1._sell_card(['59775010'])
+    # MAClient1.tasker()
+    # MAClient1.explore()
+    # MAClient1.set_card('factor')
+    # MAClient1.factor_battle()
     # 妖精列表
-    # maClient1._dopost('menu_fairy_sel')
-    # maClient1.set_card(['124'])
+    # MAClient1._dopost('menu_fairy_sel')
+    # MAClient1.set_card(['124'])
     # exploration/fairy_floor，check=HJQrxs%2FKaF3hyO81WS2jdA%3D%3D%0A&serial_id=W0etULbphY0EqnmoIG2Zcg%3D%3D%0A&user_id=r%2BFl%2BYcd4QrirAFwiDWIRw%3D%3D%0A
     # exploration/fairybattle,serial_id=W0etULbphY0EqnmoIG2Zcg%3D%3D%0A&user_id=r%2BFl%2BYcd4QrirAFwiDWIRw%3D%3D%0A
 
