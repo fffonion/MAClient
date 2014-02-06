@@ -198,7 +198,8 @@ class boss(object):
                 pref = c[1].replace(lastname, '')
                 if pref not in self.name_wake and pref:
                     self.name_wake = '%s|%s' %(self.name_wake, pref)
-            lastname = c[1]
+            else:
+                lastname = c[1]
         lastname = None
         self.name_wake = du8(self.name_wake.lstrip('|'))
 
