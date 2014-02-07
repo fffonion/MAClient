@@ -32,7 +32,7 @@ class plugins():
         self.extra_cmd = {}
         # 从maclient实例映射的变量
         self.val_dict = {}
-        self.load_plugins()
+        #self.load_plugins()
         # self.scan_hooks()
         self.enable = True
 

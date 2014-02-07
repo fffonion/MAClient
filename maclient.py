@@ -183,6 +183,7 @@ class MAClient():
         self.plugin = plugin  # 映射
         if (self._read_config('system', 'enable_plugin') or '1') == '1':
             disabled_plugin = self._read_config('plugin', 'disabled').split(',')
+            plugin.load_plugins()
             plugin.set_disable(disabled_plugin)
             plugin.scan_hooks()
             logging.debug('plugin:loaded %s' % (','.join(plugin.plugins.keys())) or 'NONE')
@@ -259,20 +260,20 @@ class MAClient():
                 open(self.playerfile, 'w').write(_dec)
             else:
                 # check revision update
-                if sum(self.player.need_update) >=1:
+                if sum(self.player.rev_need_update) >=1:
                     if self.cfg_auto_update:
                         logging.info('更新%s%s%s数据……' % (
-                            ' 卡片' if self.player.need_update[0] else '',
-                            ' 道具' if self.player.need_update[1] else '',
-                            ' 强敌' if self.player.need_update[2] else ''))
+                            ' 卡片' if self.player.rev_need_update[0] else '',
+                            ' 道具' if self.player.rev_need_update[1] else '',
+                            ' 强敌' if self.player.rev_need_update[2] else ''))
                         import maclient_update
-                        crev, irev, brev = maclient_update.update_master(self.loc[:2], self.player.need_update, self.poster)
+                        crev, irev, brev = maclient_update.update_master(self.loc[:2], self.player.rev_need_update, self.poster)
                         logging.info('%s%s%s' % (
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else '',
                             '强敌数据更新为rev.%s' % brev if brev else ''))
                         self.player.reload_db()
-                        self.player.need_update = False, False, False
+                        self.player.rev_need_update = False, False, False
                     else:
                         logging.warning('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库')
                 if not resp['error']:
@@ -486,7 +487,7 @@ class MAClient():
                 self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
             resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
             if resp['error']:
-                logging.info('登录失败しました')
+                logging.info('登录失败么么哒w')
                 self._exit(1)
             else:
                 pdata = ct.header.your_data
