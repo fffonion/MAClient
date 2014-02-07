@@ -29,7 +29,7 @@ from Crypto.Cipher import PKCS1_v1_5
 serv = {'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/',
     'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/', 
     'cn3':'http://game3-CBT.ma.sdo.com:10001/connect/app/',
-    'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/',
+    'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/','tw_data':'http://download.ma.mobimon.com.tw/',
     'jp':'http://web.million-arthurs.com/connect/app/', 'jp_data':'',
     'kr':'http://ma.actoz.com:10001/connect/app/', 'kr_data':''}
 serv['cn1'] = serv['cn']

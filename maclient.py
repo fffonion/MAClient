@@ -1209,8 +1209,8 @@ class MAClient():
             elif fairy.fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
             fairy['time_limit'] = int(fairy.fairy.time_limit)
-            fairy['wake'] = re.match(self.player.boss.name_wake, du8(fairy.fairy.name)) != None
-            fairy['wake_rare'] = re.match(maclient_smart.name_wake_rare, du8(fairy.fairy.name)) != None
+            fairy['wake'] = re.search(self.player.boss.name_wake, du8(fairy.fairy.name)) != None
+            fairy['wake_rare'] = re.search(maclient_smart.name_wake_rare, du8(fairy.fairy.name)) != None
             ftime = (self._read_config('fairy', fairy.fairy.serial_id) + ',,').split(',')
             fairy.fairy['not_battled'] = ftime[0] == ''
             # logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
@@ -1222,7 +1222,7 @@ class MAClient():
         logging.info(len(fairies) == 0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD' % len(fairies))
         # 依次艹
         for f in fairies:
-            logging.debug('fairy_select:select sid %s battled %s' % (f.fairy.serial_id, not f.fairy.not_battled))
+            logging.debug('fairy_select:select sid %s battled %s wake %s' % (f.fairy.serial_id, not f.fairy.not_battled, fairy.wake))
             f.fairy.discoverer_id = f.user.id
             self._fairy_battle(f.fairy, bt_type = NORMAL_BATTLE, carddeck = carddeck)
             # 走个形式
@@ -1251,8 +1251,8 @@ class MAClient():
 
     @plugin.func_hook
     def _fairy_battle(self, fairy, bt_type = NORMAL_BATTLE, carddeck = None):
-        while time.time() - self.lastfairytime < 20 and fairy.race_type != GUILD_RACE_TYPE:
-            logging.sleep('等待20s战斗冷却')
+        while time.time() - self.lastfairytime < 18 and fairy.race_type != GUILD_RACE_TYPE:
+            logging.sleep('等待战斗冷却')
             time.sleep(5)
         def fairy_floor(f = fairy):
             paramfl = 'check=1&%sserial_id=%s&user_id=%s' % (

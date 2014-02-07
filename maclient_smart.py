@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.1-build20140128'
+__version__ = '1.1-build20140207'
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = 250
 max_fp_cn = max_fp_kr = 50000
@@ -94,19 +94,19 @@ class calc():
         # return wake and 30618*(lv+25) or 7783*(lv+2)
 
     @classmethod
-    def fairy_atk(cls, lv, type = 0):
+    def fairy_atk(cls, lv, wake = 0):
         '''
         妖精预测平均攻击计算器
         '''
-        # data required
+        # 粗略估计
         # 普妖(一般)有两种，另外有醒妖和稀有妖
-        return (int(lv) - 2) * 400
+        return wake and int(lv) * 450 + 8500 or int(lv) * 115 + 1200 # or (int(lv) - 2) * 400
 
 def _defeat(fairy, delta, show = False):
     def _detail(side):
         sides = ['FAIRY', 'YOU']
         print('%-5s:' % (sides[side]))
-    fatk = calc.fairy_atk(fairy.lv, type = fairy.IS_WAKE)
+    fatk = calc.fairy_atk(fairy.lv, wake = fairy.wake)
     fhp = fairy.hp
     if show:
         detail = _detail
