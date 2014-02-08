@@ -19,7 +19,6 @@ import maclient
 import maclient_proxy
 import maclient_logging
 from cross_platform import *
-import getpass
 # look out for ironpython
 
 # def iter_printer(l, sep = '\n'):

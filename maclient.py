@@ -17,7 +17,6 @@ from xml2dict import XML2Dict
 from xml2dict import object_dict
 import random
 import threading
-import getpass
 from cross_platform import *
 if PYTHON3:
     import configparser as ConfigParser
@@ -472,7 +471,7 @@ class MAClient():
             if self.username == '':
                 self.username = raw_inputd('Username:')
             if self.password == '' or (uname != '' and pwd == ''):
-                self.password = getpass.getpass('Password:')
+                self.password = getpass('Password:')
                 if raw_inputd('是否保存密码(y/n)？') == 'y':
                     self._write_config('account_%s' % self.loc, 'password', self.password)
                     logging.warning('保存的登录信息没有加密www')
@@ -570,7 +569,7 @@ class MAClient():
 
     @plugin.func_hook
     def invoke_autoset(self, autoset_str, cur_fairy = None):
-        aim, fairy, maxline, test_mode, delta, includes, bclimit, fast_mode, sel = 'MAX_DMG', None, 1, True, 1, [], BC_LIMIT_CURRENT, True, 'card.lv>45'
+        aim, fairy, maxline, test_mode, delta, includes, bclimit, fast_mode, sel = 'MAX_DMG', None, 1, True, 1, [], BC_LIMIT_CURRENT, True, 'card.lv>=70 or card.plus_limit_count == 0'
         if cur_fairy:
             fairy = cur_fairy
         for arg in autoset_str.split(' '):
