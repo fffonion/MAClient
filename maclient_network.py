@@ -262,14 +262,17 @@ class poster():
             while trytime < ttimes:
                 try:
                     resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata, callback_hook = callback_hook, chunk_size = None)
+                    assert(len(content) > 0 or (savetraffic and self.issavetraffic))
                 except socket.error as e:
                     if e.errno == None:
                         err = 'Timed out'
                     else:
                         err = e.errno
                     self.logger.warning('post:%s got socket error:%s, retrying in %d times' % (uri, err, ttimes - trytime))
+                except AssertionError:
+                    self.logger.warning('post:%s got empty response , retrying in %d times' % (uri, ttimes - trytime))
                 except httplib.BadStatusLine:
-                    self.logger.warning('post:%s malformed response retrying in %d times' % (uri, ttimes - trytime))
+                    self.logger.warning('post:%s malformed response, retrying in %d times' % (uri, ttimes - trytime))
                 except httplib.ResponseNotReady:
                     # socket重置，不计入重试次数
                     trytime -= 1

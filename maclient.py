@@ -1145,7 +1145,7 @@ class MAClient():
                     if hour_now in xrange(int(low), int(up)):
                         slptime = float(t)
                         break
-                if slptime * slpfactor * 60 < 10:
+                if slptime * slpfactor * 60 < 20:
                     logging.warning('间隔至少为20秒，但当前设置为%d' % (slptime * 60))
                     slptime = 1.0 / 3 / slpfactor
                 hour_last = hour_now
@@ -1163,14 +1163,14 @@ class MAClient():
         if resp['error']:
             return
         time.sleep(1.2)
-        resp, ct = self._dopost('mainmenu', no2ndkey = True)
-        if resp['error']:
-            return
-        if ct.header.your_data.fairy_appearance != '1':  # 没有“妖精出现中”
-            if self.player.fairy['alive'] or  self.player.fairy['guild_alive']:
-                self.player.fairy = {'alive':False, 'id':0, 'guild_alive':False}
-            return
-        time.sleep(0.8)
+        # resp, ct = self._dopost('mainmenu', no2ndkey = True)
+        # if resp['error']:
+        #     return
+        # if ct.header.your_data.fairy_appearance != '1':  # 没有“妖精出现中”
+        #     if self.player.fairy['alive'] or  self.player.fairy['guild_alive']:
+        #         self.player.fairy = {'alive':False, 'id':0, 'guild_alive':False}
+        #     return
+        # time.sleep(0.8)
         resp, ct = self._dopost('menu/fairyselect')
         if resp['error']:
             return
