@@ -262,7 +262,7 @@ class poster():
             while trytime < ttimes:
                 try:
                     resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata, callback_hook = callback_hook, chunk_size = None)
-                    assert(len(content) > 0 or (savetraffic and self.issavetraffic))
+                    assert(len(content) > 0 or (savetraffic and self.issavetraffic) or resp['status'] == '302')
                 except socket.error as e:
                     if e.errno == None:
                         err = 'Timed out'

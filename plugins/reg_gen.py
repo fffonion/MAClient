@@ -17,7 +17,7 @@ if PYTHON3:
 from xml2dict import XML2Dict
 __plugin_name__ = 'invitation tool'
 __author = 'fffonion'
-__version__ = 0.1
+__version__ = 0.2
 hooks = {}
 extra_cmd = {"reg":"reg_gen"}
 def reg_gen(plugin_vals):
@@ -60,8 +60,9 @@ def reg_gen(plugin_vals):
             po.post('tutorial/next', postdata = 'S=%s&step=%s' % (po.cookie, 7025))
             time.sleep(3.123123)
             resp, ct = po.post('tutorial/next', postdata = 'S=%s&step=%s' % (po.cookie, 8000))
-            # httplib2 doesn't follow redirection in POSTs
-            #resp, ct = httplib2.Http().request(maclient_network.serv[loc] + 'mainmenu?fl=1', headers = GET_header)
+            if loc =='kr':
+                # httplib2 doesn't follow redirection in POSTs
+                resp, ct = httplib2.Http().request(maclient_network.serv[loc] + 'mainmenu?fl=1', headers = GET_header)
             if len(ct) > 8000:
                 cnt += 1
                 print('Success. (%d done)' % cnt)

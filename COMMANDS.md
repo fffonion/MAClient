@@ -126,6 +126,10 @@ reward_box/rb
     reward_box 3 #只领取金币奖励
     reward_box 4 #只领取绊点奖励
     reward_box 5 #只领取蛋卷奖励
+    reward_box 5> #只领取蛋卷奖励，且不打印奖励详情
+    reward_box [^級極]切 #领取所有切尔莉，不包括超级和究极
+
+支持正则表达式
 
 ###手动选择妖精战斗
 
