@@ -23,8 +23,8 @@ class player(object):
         self.loc = loc
         self.fairy = {'id':0, 'alive':False, 'guild_alive':False}
         self.id = '0'
-        self.update_checked = False
-        self.need_update = False, False
+        self.rev_update_checked = False
+        self.rev_need_update = False, False, False
         self.update_all(login_xml)
         object.__init__(self)
         self.success = check_exclusion(self.name)
@@ -32,6 +32,7 @@ class player(object):
     def reload_db(self):
         self.card.load_db(self.loc[:2])
         self.item.load_name(self.loc[:2])
+        self.boss.load_db(self.loc[2:])
 
     def update_all(self, xmldata):
         if xmldata == '':
@@ -73,7 +74,7 @@ class player(object):
             self.ex_gauge = int(playerdata.ex_gauge)
         except KeyError:  # 没有就自己算
             self.calc_ap_bc()
-        if not self.update_checked:
+        if not self.rev_update_checked:
             # try:
             cardrev = int(xmldata.header.revision.card_rev)
             itemrev = int(xmldata.header.revision.item_rev)
@@ -82,8 +83,8 @@ class player(object):
             #     pass
             # else:
             import maclient_update
-            self.need_update = maclient_update.check_revision(self.loc, (cardrev, itemrev, bossrev))
-            self.update_checked = True  # 只检查一次
+            self.rev_need_update = maclient_update.check_revision(self.loc, (cardrev, itemrev, bossrev))
+            self.rev_update_checked = True  # 只检查一次
         # print self.ap.current,self.bc.current
         return 'AP:%d/%d BC:%d/%d G:%d FP:%d' % (self.ap['current'], self.ap['max'], self.bc['current'], self.bc['max'], self.gold, self.friendship_point), True
 
@@ -181,6 +182,7 @@ class boss(object):
         self.name_wake = ''
         self.load_db(loc)
         #self.hp_factor = {}
+
     def load_db(self, loc):
         # print(open(opath.join(getPATH0,'db/card.%s.txt'%loc),encoding='utf8').read().encode(encoding="utf-8"))
         if not opath.exists(opath.join(getPATH0, 'db/boss.%s.txt' % loc)):#legacy db support
@@ -198,7 +200,8 @@ class boss(object):
                 pref = c[1].replace(lastname, '')
                 if pref not in self.name_wake and pref:
                     self.name_wake = '%s|%s' %(self.name_wake, pref)
-            lastname = c[1]
+            else:
+                lastname = c[1]
         lastname = None
         self.name_wake = du8(self.name_wake.lstrip('|'))
 

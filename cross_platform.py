@@ -39,3 +39,30 @@ raw_inputd = PYTHON3 and \
         (lambda s:input(s)) \
     or \
         (lambda s:raw_input(du8(s).encode(CODEPAGE or 'utf-8')).decode(CODEPAGE or 'utf-8').encode('utf-8'))
+        
+# from goagent.appcfg
+def _win_getpass(prompt='Password:', stream=None):
+    password = ''
+    sys.stdout.write(prompt)
+    while 1:
+        ch = msvcrt.getch()
+        if ch == '\b':
+            if password:
+                password = password[:-1]
+                sys.stdout.write('\b \b')
+            else:
+                continue
+        elif ch == '\r':
+            sys.stdout.write(os.linesep)
+            return password
+        else:
+            password += ch
+            sys.stdout.write('*')
+
+try:
+    import msvcrt
+    getpass = _win_getpass
+except ImportError:
+    import getpass
+    getpass = getpass.getpass
+

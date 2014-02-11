@@ -32,7 +32,7 @@ class plugins():
         self.extra_cmd = {}
         # 从maclient实例映射的变量
         self.val_dict = {}
-        self.load_plugins()
+        #self.load_plugins()
         # self.scan_hooks()
         self.enable = True
 
@@ -120,7 +120,7 @@ class plugins():
         modstr = ''
         last_mod = ''
         for m in mods:
-            if '.pyc' in m and m[:-1] in mods:#strip .pyc if .py exists
+            if ('.pyc' in m or '.pyo' in m) and m[:-1] in mods:#strip .pyc if .py exists
                 continue
             m = opath.splitext(opath.split(m)[1])[0]
             if m.startswith('_'):

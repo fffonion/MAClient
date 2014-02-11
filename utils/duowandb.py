@@ -11,7 +11,7 @@ cardlist = {'tw':'http://db.duowan.com/ma/card/list/', 'cn':'http://db.duowan.co
 regex = {'tw':'<img title="([^"]+)" style="height:60px" class="img-rounded" src="http://img.dwstatic.com/ma/pic/face/face_(\d+).jpg">', \
 		'cn':'<img title="([^"]+)" style="height:60px" class="img-rounded" src="http://img.dwstatic.com/ma/zh_pic/face/face_(\d+).jpg">', \
 		'extra':'width="40px">(.*?)</td'}
-dbdir = r'D:\Dev\Python\Workspace\maClient\\'
+dbdir = r'D:\Dev\Python\Workspace\MAClient\\'
 ht = httplib2.Http()
 reload(sys)
 sys.setdefaultencoding('utf-8')

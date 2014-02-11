@@ -39,7 +39,7 @@ class plugin(plugin_prototype):
             self._ori_logfile = self.logger.logfile
             self.logger.setlogfile('.IGF.log') 
         fairy=args[1]
-        if fairy.race_type == '12' and fairy.time_limit != '0':
+        if fairy.race_type in ['11', '12'] and fairy.time_limit != '0':
             print(du8("公会妖精！"))
             self.mac_instance = args[0]
             self.mac_instance.lastfairytime=0

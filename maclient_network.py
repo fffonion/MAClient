@@ -29,7 +29,7 @@ from Crypto.Cipher import PKCS1_v1_5
 serv = {'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/',
     'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/', 
     'cn3':'http://game3-CBT.ma.sdo.com:10001/connect/app/',
-    'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/',
+    'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/','tw_data':'http://download.ma.mobimon.com.tw/',
     'jp':'http://web.million-arthurs.com/connect/app/', 'jp_data':'',
     'kr':'http://ma.actoz.com:10001/connect/app/', 'kr_data':''}
 serv['cn1'] = serv['cn']
@@ -262,14 +262,17 @@ class poster():
             while trytime < ttimes:
                 try:
                     resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata, callback_hook = callback_hook, chunk_size = None)
+                    assert(len(content) > 0 or (savetraffic and self.issavetraffic) or resp['status'] == '302')
                 except socket.error as e:
                     if e.errno == None:
                         err = 'Timed out'
                     else:
                         err = e.errno
                     self.logger.warning('post:%s got socket error:%s, retrying in %d times' % (uri, err, ttimes - trytime))
+                except AssertionError:
+                    self.logger.warning('post:%s got empty response , retrying in %d times' % (uri, ttimes - trytime))
                 except httplib.BadStatusLine:
-                    self.logger.warning('post:%s malformed response retrying in %d times' % (uri, ttimes - trytime))
+                    self.logger.warning('post:%s malformed response, retrying in %d times' % (uri, ttimes - trytime))
                 except httplib.ResponseNotReady:
                     # socket重置，不计入重试次数
                     trytime -= 1
