@@ -95,7 +95,7 @@ namespace MAClientGUI
                 cbTask.Items.Add(ts.Split('=')[0].Trim());
 
             }
-
+            cbTask.Items.Add("新建");
             if (cbTask.Items.Count > 0)
             {
 
@@ -103,6 +103,10 @@ namespace MAClientGUI
                 if (idx == -1)
                     idx = 0;
                 cbTask.SelectedIndex = idx;
+            }
+            else 
+            {
+                cbTask.SelectedIndex = 0;
             }
             numTaskTimes.Value = cf.ReadInt("system", "tasker_times");
             numFactorTimes.Value = cf.ReadInt("system", "try_factor_times");
@@ -945,9 +949,9 @@ namespace MAClientGUI
         {
             txtCondSell.Text = "";
         }
+        string mcpath = System.Environment.CurrentDirectory + "\\maclient_cli.exe";
         private void start_mac(string arg = "")
         {
-            string mcpath = System.Environment.CurrentDirectory + "\\maclient_cli.exe";
             string cfgpath = cboCfgFile.Text;
             if (!File.Exists(mcpath))
             {
@@ -1009,7 +1013,7 @@ namespace MAClientGUI
             }
 
 
-            cboCfgFile.SelectedIndex = 0;
+            //cboCfgFile.SelectedIndex = 0;
             Process proc = new Process();
             proc.StartInfo.FileName = mcpath;
             proc.StartInfo.CreateNoWindow = true;
@@ -1767,17 +1771,63 @@ namespace MAClientGUI
     {
         has_load_plugins = false;
     }
-
+    int _cbTask_prev;
     private void cbTask_SelectedIndexChanged(object sender, EventArgs e)
     {
-        txtCondTasker.Text = cf.Read("tasker", cbTask.Items[cbTask.SelectedIndex].ToString());
-        if (!txtCondTasker.Text.Contains("\"") && !txtCondTasker.Text.Contains("'"))
-            txtCondTasker.Text = "'" + txtCondTasker.Text + "'";
-        label41.Text = "正在编辑任务:" + cbTask.Items[cbTask.SelectedIndex].ToString();
-        button10.Text = "开始任务 " + cbTask.Items[cbTask.SelectedIndex].ToString();
+        if (cbTask.SelectedIndex == cbTask.Items.Count - 1)
+        {
+            TextBox _txtAddNewTask = new TextBox();
+            this.grpSystem.Controls.Add(_txtAddNewTask);
+            _txtAddNewTask.Location = cbTask.Location;
+            _txtAddNewTask.Size = cbTask.Size;
+            _txtAddNewTask.BringToFront();
+            _txtAddNewTask.Focus();
+            //cbTask.Visible = false;
+            _txtAddNewTask.Leave += new System.EventHandler(this._txtAddNewTask_Leave);
+            _txtAddNewTask.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this._txtAddNewTask_CheckEnter);
+        }else
+        {
+            _cbTask_prev = cbTask.SelectedIndex;
+            txtCondTasker.Text = cf.Read("tasker", cbTask.Items[cbTask.SelectedIndex].ToString());
+            if (!txtCondTasker.Text.Contains("\"") && !txtCondTasker.Text.Contains("'"))
+                txtCondTasker.Text = "'" + txtCondTasker.Text + "'";
+            label41.Text = "正在编辑任务:" + cbTask.Items[cbTask.SelectedIndex].ToString();
+            button10.Text = "开始任务 " + cbTask.Items[cbTask.SelectedIndex].ToString();
+        }
 
     }
-
+    private void _txtAddNewTask_Leave(object sender, EventArgs e)
+    {
+        TextBox me = (TextBox)sender;
+        //if (!me.Visible)//防止按下回车时leave也被调用从而执行两次
+         //   me.Dispose();
+        if (me.Text == "")
+        {
+            cbTask.SelectedIndex = _cbTask_prev;
+        }
+        else if (cbTask.Items.IndexOf(me.Text) != -1)
+        {
+            MessageBox.Show("任务名" + me.Text + "已存在", "呵呵", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            cbTask.SelectedIndex = cbTask.Items.IndexOf(me.Text);
+        }
+        else
+        {
+            cf.Write("tasker", me.Text, "");
+            cbTask.Items.Insert(cbTask.Items.Count-1,me.Text);
+            cbTask.SelectedIndex = cbTask.Items.Count-2;
+        }
+        this.grpSystem.Controls.Remove(me);
+        cbTask.Visible = true;
+        //me.Visible=false;
+        me.Dispose();
+    }
+    private void _txtAddNewTask_CheckEnter(object sender, KeyPressEventArgs e)
+    {
+        if (e.KeyChar == (char)13)
+        {
+            this.cbTask.Focus();
+        }
+    }
     private void notifyIcon1_MouseClick(object sender, MouseEventArgs e)
     {
         if (e.Button == MouseButtons.Left)

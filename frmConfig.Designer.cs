@@ -620,9 +620,9 @@ namespace MAClientGUI
             this.label13.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label13.Location = new System.Drawing.Point(20, 138);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(78, 20);
+            this.label13.Size = new System.Drawing.Size(108, 20);
             this.label13.TabIndex = 1036;
-            this.label13.Text = "POST延迟";
+            this.label13.Text = "POST最小间隔";
             // 
             // label43
             // 
@@ -651,7 +651,7 @@ namespace MAClientGUI
             0,
             0,
             65536});
-            this.numDelay.Location = new System.Drawing.Point(116, 132);
+            this.numDelay.Location = new System.Drawing.Point(134, 132);
             this.numDelay.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numDelay.Maximum = new decimal(new int[] {
             99999,
@@ -737,7 +737,7 @@ namespace MAClientGUI
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(176, 139);
+            this.label16.Location = new System.Drawing.Point(194, 139);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(16, 19);
             this.label16.TabIndex = 1039;
@@ -1113,36 +1113,36 @@ namespace MAClientGUI
             // 
             this.chkGachaBuild.AutoSize = true;
             this.chkGachaBuild.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkGachaBuild.Location = new System.Drawing.Point(476, 90);
+            this.chkGachaBuild.Location = new System.Drawing.Point(476, 115);
             this.chkGachaBuild.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkGachaBuild.Name = "chkGachaBuild";
             this.chkGachaBuild.Size = new System.Drawing.Size(136, 24);
             this.chkGachaBuild.TabIndex = 1015;
-            this.chkGachaBuild.Text = "绊转蛋自动合成";
+            this.chkGachaBuild.Text = "基转蛋自动合成";
             this.chkGachaBuild.UseVisualStyleBackColor = true;
             // 
             // chkFairyRewards
             // 
             this.chkFairyRewards.AutoSize = true;
             this.chkFairyRewards.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkFairyRewards.Location = new System.Drawing.Point(476, 116);
+            this.chkFairyRewards.Location = new System.Drawing.Point(476, 139);
             this.chkFairyRewards.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkFairyRewards.Name = "chkFairyRewards";
-            this.chkFairyRewards.Size = new System.Drawing.Size(121, 24);
+            this.chkFairyRewards.Size = new System.Drawing.Size(136, 24);
             this.chkFairyRewards.TabIndex = 1014;
-            this.chkFairyRewards.Text = "自动领取奖励";
+            this.chkFairyRewards.Text = "领取妖精战奖励";
             this.chkFairyRewards.UseVisualStyleBackColor = true;
             // 
             // chkFPGachaBulk
             // 
             this.chkFPGachaBulk.AutoSize = true;
             this.chkFPGachaBulk.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkFPGachaBulk.Location = new System.Drawing.Point(476, 139);
+            this.chkFPGachaBulk.Location = new System.Drawing.Point(476, 91);
             this.chkFPGachaBulk.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkFPGachaBulk.Name = "chkFPGachaBulk";
-            this.chkFPGachaBulk.Size = new System.Drawing.Size(106, 24);
+            this.chkFPGachaBulk.Size = new System.Drawing.Size(136, 24);
             this.chkFPGachaBulk.TabIndex = 1013;
-            this.chkFPGachaBulk.Text = "批量绊转蛋";
+            this.chkFPGachaBulk.Text = "批量基友点转蛋";
             this.chkFPGachaBulk.UseVisualStyleBackColor = true;
             // 
             // chkAutoSellCard
@@ -1161,19 +1161,19 @@ namespace MAClientGUI
             // 
             this.chkAutoFPGacha.AutoSize = true;
             this.chkAutoFPGacha.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkAutoFPGacha.Location = new System.Drawing.Point(476, 43);
+            this.chkAutoFPGacha.Location = new System.Drawing.Point(476, 67);
             this.chkAutoFPGacha.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkAutoFPGacha.Name = "chkAutoFPGacha";
-            this.chkAutoFPGacha.Size = new System.Drawing.Size(106, 24);
+            this.chkAutoFPGacha.Size = new System.Drawing.Size(136, 24);
             this.chkAutoFPGacha.TabIndex = 1010;
-            this.chkAutoFPGacha.Text = "自动绊转蛋";
+            this.chkAutoFPGacha.Text = "自动基友点转蛋";
             this.chkAutoFPGacha.UseVisualStyleBackColor = true;
             // 
             // chkAutoExplore
             // 
             this.chkAutoExplore.AutoSize = true;
             this.chkAutoExplore.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkAutoExplore.Location = new System.Drawing.Point(476, 67);
+            this.chkAutoExplore.Location = new System.Drawing.Point(475, 43);
             this.chkAutoExplore.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkAutoExplore.Name = "chkAutoExplore";
             this.chkAutoExplore.Size = new System.Drawing.Size(121, 24);
