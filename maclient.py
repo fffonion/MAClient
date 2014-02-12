@@ -29,7 +29,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.66
+__version__ = 1.67
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
@@ -1728,7 +1728,7 @@ class MAClient():
         #    rwds=[rwds]
         strl = ''
         nid = []
-        if rw_type[-1] == '<':
+        if rw_type[-1] == '>':
             no_detail = True
             rw_type = rw_type[:-1]
         else:
@@ -1777,7 +1777,7 @@ class MAClient():
             if no_detail:
                 logging.info('领取%d件奖励' % len(nid))
             else:
-                print(du8(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' ')))
+                logging.info(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' '))
             res = self._get_rewards(nid)
             if res[0]:
                logging.info(res[1])

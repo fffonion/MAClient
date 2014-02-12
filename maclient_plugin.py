@@ -42,6 +42,8 @@ class plugins():
                     'explore', '_explore_floor', 'gacha', 'select_card_sell', 'fairy_battle_loop', 'fairy_select', '_fairy_battle',
                     'like', 'friends', 'reward_box', 'point_setting', 'factor_battle', 'invoke_autoset']
         # scan plugin hooks
+        _conflict = []
+        self.extra_cmd.clear()
         for p in self.plugins:
             if self.show_tip and not self.has_shown_tips:
                 try:
@@ -51,9 +53,14 @@ class plugins():
             # extra cmd
             ecmd = self._get_module_meta(p, 'extra_cmd')
             for e in ecmd:
-                hdl = self._get_module_meta(p, ecmd[e])
-                if hdl:
-                    self.extra_cmd[e] = hdl
+                if e in self.extra_cmd or e in _conflict:
+                    self.logger.warning('Command \"%s\" conflicted (in plugin %s).' % (e, p))
+                    _conflict.append(e)
+                    del(self.extra_cmd[e])
+                else:
+                    hdl = self._get_module_meta(p, ecmd[e])
+                    if hdl:
+                        self.extra_cmd[e] = hdl
             # function hook
             for act in ALL_ACTIONS:
                 for method in [PREF_ENTER, PREF_EXIT]:  # enter, exit
