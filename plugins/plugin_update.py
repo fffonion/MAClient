@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.1
+__version__ = 0.11
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update'}
 #是否下载dev版
@@ -56,7 +56,12 @@ def _get_temp():
     if sys.platform == 'win32':
         return os.environ.get('tmp')
     else:
-        return '/tmp'
+        try:
+            os.listdir('/tmp')
+        except OSError:
+            return '.'
+        else:
+            return '/tmp'
 
 def _http_get(uri, silent=False):
     if PYTHON3:
@@ -85,7 +90,7 @@ def _http_get(uri, silent=False):
 def _check_update(silent = False):
     check_file = opath.join(_get_temp(), '.MAClient.noupdate')
     if opath.exists(check_file):
-        if time.time() - os.path.getmtime(check_file) < 86400:#1天
+        if time.time() - os.path.getmtime(check_file) < 86400:#1天内只检查一次
             return
         os.remove(check_file)
     if not silent:
