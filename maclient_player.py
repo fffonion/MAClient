@@ -32,7 +32,7 @@ class player(object):
     def reload_db(self):
         self.card.load_db(self.loc[:2])
         self.item.load_name(self.loc[:2])
-        self.boss.load_db(self.loc[2:])
+        self.boss.load_db(self.loc[:2])
 
     def update_all(self, xmldata):
         if xmldata == '':
