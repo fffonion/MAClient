@@ -2,7 +2,6 @@ import os
 import re
 import time
 import glob
-main_ver = '1.67'
 dirpath = 'D:\Dev\Python\Workspace\MAClient'
 xml = '<?xml version="1.0" encoding="UTF-8"?><maclient><time>%d</time>' % int(time.time())
 p = '<plugin><name>%s</name><version>%s</version><dir>%s</dir></plugin>'
