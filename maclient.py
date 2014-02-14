@@ -160,7 +160,7 @@ class MAClient():
         self.password = self._read_config('account_%s' % self.loc, 'password')
         self.cfg_auto_explore = not self._read_config('tactic', 'auto_explore') == '0'
         self.cfg_auto_sell = not self._read_config('tactic', 'auto_sell_cards') == '0'
-        self.cfg_autogacha = not self._read_config('tactic', 'auto_fpgacha') == '0'
+        self.cfg_autogacha = not self._read_config('tactic', 'auto_fp_gacha') == '0'
         self.cfg_auto_fairy_rewards = not self._read_config('tactic', 'auto_fairy_rewards') == '0'
         self.cfg_auto_build = self._read_config('tactic', 'auto_build') == '1' and '1' or '0'
         self.cfg_fpgacha_buld = self._read_config('tactic', 'fp_gacha_bulk') == '1' and '1' or '0'
@@ -1318,6 +1318,9 @@ class MAClient():
         else:
             cardd = eval(self.evalstr_fairy_select_carddeck)
             logging.debug('fairy_battle:carddeck result:%s' % (cardd))
+        if cardd == 'abort':
+            logging.debug('fairy_battle:abort battle sequence.')
+            return False
         if (self.set_card(cardd, cur_fairy = fairy)):
             fairy = fairy_floor()  # 设完卡组返回时
             if not fairy:
@@ -1650,7 +1653,9 @@ class MAClient():
                 adduser = raw_inputd('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser != ['']:
                     for u in adduser:
-                        if not u.isdigit():
+                        if not u:
+                            continue
+                        if not (u.isdigit() or (u[0] == '-' and u[1:].isdigit())):
                             logging.warning('输入"%s"非数字' % u)
                             continue
                         if u.startswith('-'):
@@ -1690,16 +1695,17 @@ class MAClient():
                 usel = raw_inputd('选择要添加的好友序号, 空格分割多个，回车返回> ')
                 uids = []
                 for u in usel.split(' '):
-                    if u != '':
-                        if not u.isdigit():
-                            logging.warning('输入"%s"非数字' % u)
-                            continue
-                        if int(u) > len(users):
-                            logging.error('no.%s:下标越界XD' % u)
-                        elif users[int(u) - 1].friends == users[int(u) - 1].friend_max:
-                            logging.warning('%s %s' % (users[int(u) - 1].name, '无法成为好友ww'))
-                        else:
-                            uids.append(users[int(u) - 1].id)
+                    if not u:
+                        continue
+                    if not (u.isdigit() or (u[0] == '-' and u[1:].isdigit())):
+                        logging.warning('输入"%s"非数字' % u)
+                        continue
+                    if int(u) > len(users):
+                        logging.error('no.%s:下标越界XD' % u)
+                    elif users[int(u) - 1].friends == users[int(u) - 1].friend_max:
+                        logging.warning('%s %s' % (users[int(u) - 1].name, '无法成为好友ww'))
+                    else:
+                        uids.append(users[int(u) - 1].id)
                 if uids != []:
                     param = 'dialog=1&user_id=%s' % (','.join(uids))
                     resp, ct = self._dopost('friend/add_friend', postdata = param)
