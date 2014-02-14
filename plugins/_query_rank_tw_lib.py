@@ -1,6 +1,7 @@
 # coding:utf-8
 from datetime import datetime
 import re
+__version__ = 20140212
 tw_query_base = 'http://game.ma.mobimon.com.tw:10001/connect/web/revisions_detail?id=%d'
 tw_query_self_goto = 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_fairy?to=%s'
 tw_query_guild_goto = 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_guild_fairy?to=%s'

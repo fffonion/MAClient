@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.12
+__version__ = 0.13
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update'}
 #是否下载dev版
@@ -38,7 +38,13 @@ def plugin_update(plugin_vals):
     def do(args):
         if not opath.exists(opath.join(_get_temp(), '.MAClient.update')):
             if not _check_update():
-                print(du8('已是最新版本'))
+                check_file = opath.join(_get_temp(), '.MAClient.noupdate')
+                print(du8('已是最新版本 (上次检查%s)' % 
+                    time.strftime('%b.%d %a %M:%S', 
+                        opath.exists(check_file) and \
+                            time.localtime(os.path.getmtime(check_file)) or \
+                            time.time()
+                        )))
                 return
         _do_update()
     return do
