@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.11
+__version__ = 0.12
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update'}
 #是否下载dev版
@@ -101,7 +101,8 @@ def _check_update(silent = False):
         return
     meta = XML2Dict().fromstring(body).maclient
     xml = '<?xml version="1.0" encoding="UTF-8"?><maclient><time>%d</time>' % int(time.time())
-    single = '<update_item><name>%s</name><version>%s</version><dir>%s</dir></update_item>'
+    s_update = '<update_item><name>%s</name><version>%s</version><dir>%s</dir></update_item>'
+    s_new = '<new_item><name>%s</name><version>%s</version><dir>%s</dir></new_item>'
     new = False
     for k in meta.plugin + meta.script:
         script = opath.join(getPATH0, k.dir or '', k.name)
@@ -114,8 +115,11 @@ def _check_update(silent = False):
             _s = open(script).read()
             ver = re.findall('__version__[\s=\']*([^\'\s]+)[\']*', _s)
             if ver and ver[0] < k.version:
-                xml += single % (k.name, k.version, k.dir or '')
+                xml += s_update % (k.name, k.version, k.dir or '')
                 new = True
+        else: #new item
+            xml += s_new % (k.name, k.version, k.dir or '')
+            new = True
     if EXEBUNDLE:
         import maclient
         import maclient_smart
@@ -142,39 +146,44 @@ def _do_update(silent = False):
         os.remove(opath.join(_get_temp(), '.MAClient.update'))
         _check_update(silent)
         return _do_update(silent)
-    update_meta = XML2Dict().fromstring(_m).maclient.update_item
+    _top = XML2Dict().fromstring(_m).maclient
     _done = False
-    for k in tolist(update_meta):
-        if k.name == 'maclient.py':
-            if not silent:
-                print(du8('√ 主程序有新版本 v%s 请至以下链接查看\n'
-                          'github: https://github.com/fffonion/MAClient/\n'
-                          '百度盘: http://pan.baidu.com/s/19qI4m' % k.version))
-            continue
-        elif k.name == 'maclient_smart.py' and EXEBUNDLE:
-            new = _http_get('update/maclient_smart.bin', silent)
-            try:
-                assert(new and len(new)>28000)
-                if opath.exists(opath.join(getPATH0, 'maclient_smart.py_')):
-                    os.remove(opath.join(getPATH0, 'maclient_smart.py_'))
-                os.rename(opath.join(getPATH0, 'maclient_smart.pyd'),opath.join(getPATH0, 'maclient_smart.py_'))
-                open(opath.join(getPATH0, 'maclient_smart.pyd'),'wb').write(new)
-            except (IOError, WindowsError, AssertionError):
+    update_item = 'update_item' in _top and _top.update_item or None
+    new_item = 'new_item' in _top and _top.new_item or None
+    for (_prompt, _meta) in [('√ 已更新 %s ↑ v%s', update_item), ('√ 新增 %s v%s', new_item)]:
+        for k in tolist(_meta):
+            if not k:
+                continue
+            if k.name == 'maclient.py':
                 if not silent:
-                    print(du8('× maclient_smart有新版本但更新失败 v%s 请至以下链接下载完整包\n'
-                          'http://pan.baidu.com/s/19qI4m' % k.version))
-            else:
-                print(du8('√ 已更新 %s ↑ v%s' % (k.name, k.version)))
-            continue
-        new = _http_get((GET_DEV_UPDATE and 'dev/' or 'master/') + (k.dir or '') + '/' + k.name, silent)
-        if not new:
+                    print(du8('√ 主程序有新版本 v%s 请至以下链接查看\n'
+                              'github: https://github.com/fffonion/MAClient/\n'
+                              '百度盘: http://pan.baidu.com/s/19qI4m' % k.version))
+                continue
+            elif k.name == 'maclient_smart.py' and EXEBUNDLE:
+                new = _http_get('update/maclient_smart.bin', silent)
+                try:
+                    assert(new and len(new)>28000)
+                    if opath.exists(opath.join(getPATH0, 'maclient_smart.py_')):
+                        os.remove(opath.join(getPATH0, 'maclient_smart.py_'))
+                    os.rename(opath.join(getPATH0, 'maclient_smart.pyd'),opath.join(getPATH0, 'maclient_smart.py_'))
+                    open(opath.join(getPATH0, 'maclient_smart.pyd'),'wb').write(new)
+                except (IOError, WindowsError, AssertionError):
+                    if not silent:
+                        print(du8('× maclient_smart有新版本但更新失败 v%s 请至以下链接下载完整包\n'
+                              'http://pan.baidu.com/s/19qI4m' % k.version))
+                else:
+                    print(du8('√ 已更新 %s ↑ v%s' % (k.name, k.version)))
+                continue
+            new = _http_get((GET_DEV_UPDATE and 'dev/' or 'master/') + (k.dir or '') + '/' + k.name, silent)
+            if not new:
+                if not silent:
+                    print(du8('× %s 更新失败' % k.name))
+                continue
+            open(opath.join(getPATH0, k.dir or '', k.name),'w').write(new.replace('\r\n', '\n'))
             if not silent:
-                print(du8('× %s 更新失败' % k.name))
-            continue
-        open(opath.join(getPATH0, k.dir or '', k.name),'w').write(new.replace('\r\n', '\n'))
-        if not silent:
-            print(du8('√ 已更新 %s ↑ v%s' % (k.name, k.version)))
-            _done = True
+                print(du8(_prompt % (k.name, k.version)))
+                _done = True
     os.remove(update_file)
     if _done:
         print(du8('重新启动maclient以应用更新'))
