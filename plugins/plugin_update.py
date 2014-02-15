@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.13
+__version__ = 0.14
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update'}
 #是否下载dev版
@@ -37,14 +37,17 @@ tolist = lambda obj:isinstance(obj, list) and obj  or [obj]
 def plugin_update(plugin_vals):
     def do(args):
         if not opath.exists(opath.join(_get_temp(), '.MAClient.update')):
+            check_file = opath.join(_get_temp(), '.MAClient.noupdate')
+            if '-f' in args.split(' ') and opath.exists(check_file):
+                os.remove(check_file)
             if not _check_update():
-                check_file = opath.join(_get_temp(), '.MAClient.noupdate')
-                print(du8('已是最新版本 (上次检查%s)' % 
-                    time.strftime('%b.%d %a %M:%S', 
+                print(du8('已是最新版本 (上次检查%s)\n%s' % (
+                    time.strftime('%b.%d %a %H:%M', 
                         opath.exists(check_file) and \
                             time.localtime(os.path.getmtime(check_file)) or \
                             time.time()
-                        )))
+                        ),
+                    '' if '-f' in args.split(' ') else '可使用pu -f强制重新检查')))
                 return
         _do_update()
     return do
