@@ -29,7 +29,9 @@ python MAClient_cli.py [config file] [task]/[commands]
 
 ##配置文件说明
 
-参考config_sample.ini，或者使用图形化配置工具MAClientGUI，它可以从[这里下载](http://mac.yooooo.us/MAClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/MAClient/tree/gui)
+参考config_sample.ini，以及[**这里**](http://pan.baidu.com/s/19qI4m#dir/path=%2FApp%2FMAClient%2F%E7%A4%BA%E4%BE%8B%E9%85%8D%E7%BD%AE)有一些参考配置
+
+或者使用图形化配置工具MAClientGUI，它可以从[这里下载](http://mac.yooooo.us/MAClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/MAClient/tree/gui)
 
 ***
 
