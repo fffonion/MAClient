@@ -29,12 +29,13 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.66
+__version__ = 1.67
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
 EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -2, -1, 0, 1, 2
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
+HALF_TEA, FULL_TEA = 0, 1
 GUILD_RACE_TYPE = ['11','12']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
@@ -160,12 +161,13 @@ class MAClient():
         self.password = self._read_config('account_%s' % self.loc, 'password')
         self.cfg_auto_explore = not self._read_config('tactic', 'auto_explore') == '0'
         self.cfg_auto_sell = not self._read_config('tactic', 'auto_sell_cards') == '0'
-        self.cfg_autogacha = not self._read_config('tactic', 'auto_fpgacha') == '0'
+        self.cfg_autogacha = not self._read_config('tactic', 'auto_fp_gacha') == '0'
         self.cfg_auto_fairy_rewards = not self._read_config('tactic', 'auto_fairy_rewards') == '0'
         self.cfg_auto_build = self._read_config('tactic', 'auto_build') == '1' and '1' or '0'
         self.cfg_fpgacha_buld = self._read_config('tactic', 'fp_gacha_bulk') == '1' and '1' or '0'
         self.cfg_sell_card_warning = int(self._read_config('tactic', 'sell_card_warning') or '1')
-        self.cfg_auto_rt_level = self._read_config('tactic', 'auto_red_tea_level')
+        self.cfg_auto_rt_level = int(self._read_config('tactic', 'auto_red_tea_level'))
+        self.cfg_auto_choose_red_tea = self._read_config('tactic', 'auto_choose_red_tea') != '0'
         self.cfg_strict_bc = self._read_config('tactic', 'strict_bc') == '1'
         self.cfg_fairy_final_kill_hp = int(self._read_config('tactic', 'fairy_final_kill_hp') or '20000')
         self.cfg_save_traffic = not self._read_config('system', 'save_traffic') == '0'
@@ -411,9 +413,9 @@ class MAClient():
                     if i == len(task) - 1:
                         self.fairy_select(cond = ' '.join(task[1:]))
                 elif task[0] == 'green_tea' or task[0] == 'gt':
-                    self.green_tea()
+                    self.green_tea(tea = HALF_TEA if '/' in ' '.join(task[1:]) else FULL_TEA)
                 elif task[0] == 'red_tea' or task[0] == 'rt':
-                    self.red_tea()
+                    self.red_tea(tea = HALF_TEA if '/' in ' '.join(task[1:]) else FULL_TEA)
                 elif task[0] == 'sell_card' or task[0] == 'slc':
                     self.select_card_sell(' '.join(task[1:]))
                 elif task[0] == 'set_server' or task[0] == 'ss':
@@ -552,15 +554,14 @@ class MAClient():
                     return True
                 else:
                     logging.warning('绊点已经很多，请自行转蛋消耗www')
-                    return False
+                    return True #not fatal
         return True
 
     @plugin.func_hook
-    def check_strict_bc(self, refresh = False):
+    def check_strict_bc(self, cost = None, refresh = False):
         if not self.cfg_strict_bc:
             return False
-        last_set_bc = self._read_config('record', 'last_set_bc') or '0'
-        last_set_bc = int(last_set_bc)
+        last_set_bc = cost or int(self._read_config('record', 'last_set_bc') or '0')
         if self.player.bc['current'] < last_set_bc:
             logging.warning('strict_bc:严格BC模式已触发www')
             return True
@@ -614,9 +615,12 @@ class MAClient():
 
     @plugin.func_hook
     def set_card(self, deckkey, **kwargs):
+        '''
+        Returns: whether changes, cost
+        '''
         if deckkey == 'no_change':
             logging.debug('set_card:no_change!')
-            return False
+            return False, int(self._read_config('record', 'last_set_bc') or '0')
         elif deckkey.startswith('auto_set'):
             if len(deckkey) > 8:  # raw string : auto_set(CONDITIONS)
                 if 'cur_fairy' in kwargs:
@@ -655,21 +659,21 @@ class MAClient():
                         ))
                 else:
                     logging.error(res[0])
-                    return False
+                    return False, 0
                 if test_mode:
-                    return False
+                    return False, 0
         else:
             try:
                 cardid = self._read_config('carddeck', deckkey)
             except AttributeError:
                 logging.warning('set_card:忘记加引号了？')
-                return False
+                return False, 0
             if cardid == self._read_config('record', 'last_set_card'):
                 logging.debug('set_card:card deck satisfied, not changing.')
-                return False
+                return False, int(self._read_config('record', 'last_set_bc') or '0')
             if cardid == '':
                 logging.warning('set_card:不存在的卡组名？')
-                return False
+                return False, 0
             cardid = cardid.split(',')
             param = []
             last_set_bc = 0
@@ -711,9 +715,9 @@ class MAClient():
             self._write_config('record', 'last_set_card', self._read_config('carddeck', deckkey))
             # 记录BC
             self._write_config('record', 'last_set_bc', str(last_set_bc))
-            return True
+            return True, last_set_bc
         logging.info('卡组没有改变')
-        return False
+        return False, 0
 
 
     def _use_item(self, itemid):
@@ -727,18 +731,18 @@ class MAClient():
             return True
 
     @plugin.func_hook
-    def red_tea(self, silent = False):
+    def red_tea(self, silent = False, tea = FULL_TEA):
         auto = int(self._read_config('tactic', 'auto_red_tea') or '0')
         if auto > 0:
             self._write_config('tactic', 'auto_red_tea', str(auto - 1))
-            res = self._use_item('2')
+            res = self._use_item(('' if tea == FULL_TEA else '11') + '2')
         else:
             if silent:
                 logging.debug('red_tea:auto mode, let it go~')
                 return False
             else:
                 if raw_inputd('来一坨红茶？ y/n ') == 'y':
-                    res = self._use_item('2')
+                    res = self._use_item(('' if tea == FULL_TEA else '11') + '2')
                 else:
                     res = False
         if res:
@@ -746,18 +750,18 @@ class MAClient():
         return res
 
     @plugin.func_hook
-    def green_tea(self, silent = False):
+    def green_tea(self, silent = False, tea = FULL_TEA):
         auto = int(self._read_config('tactic', 'auto_green_tea') or '0')
         if auto > 0:
             self._write_config('tactic', 'auto_green_tea', str(auto - 1))
-            res = self._use_item('1')
+            res = self._use_item(('' if tea == FULL_TEA else '11') + '1')
         else:
             if silent:
                 logging.debug('green_tea:auto mode, let it go~')
                 return False
             else:
                 if raw_inputd('嗑一瓶绿茶？ y/n ') == 'y':
-                    res = self._use_item('1')
+                    res = self._use_item(('' if tea == FULL_TEA else '11') + '1')
                 else:
                     res = False
         if res:
@@ -1318,16 +1322,27 @@ class MAClient():
         else:
             cardd = eval(self.evalstr_fairy_select_carddeck)
             logging.debug('fairy_battle:carddeck result:%s' % (cardd))
-        if (self.set_card(cardd, cur_fairy = fairy)):
+        if cardd == 'abort':
+            logging.debug('fairy_battle:abort battle sequence.')
+            return False
+        _has_set, _last_bc = self.set_card(cardd, cur_fairy = fairy)
+        if _has_set:
             fairy = fairy_floor()  # 设完卡组返回时
             if not fairy:
                 return False
         # 判断BC
-        if self.check_strict_bc() or self.player.bc['current'] < 2:  # strict BC或者BC不足
+        if self.check_strict_bc(cost = _last_bc) or self.player.bc['current'] < 2:  # strict BC或者BC不足
             logging.warning('BC不够了TOT')
-            autored = (self.cfg_auto_rt_level == '2') or (self.cfg_auto_rt_level == '1' and fairy.rare_flg == '1')
+            autored = (self.cfg_auto_rt_level == 2) or (self.cfg_auto_rt_level == 1 and fairy.rare_flg == '1')
             if autored:
-                if not self.red_tea(True):
+                if self.cfg_auto_choose_red_tea and '112' in self.player.item.db:
+                    if _last_bc > (self.player.bc['max'] / 2 + self.player.bc['current']):#半瓶不够
+                        _tea = FULL_TEA
+                    else:
+                        _tea = HALF_TEA
+                else:
+                    _tea = FULL_TEA
+                if not self.red_tea(silent = True, tea = _tea):
                     logging.error('那就不打了哟(*￣︶￣)y ')
                     return False
             else:
@@ -1650,7 +1665,9 @@ class MAClient():
                 adduser = raw_inputd('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser != ['']:
                     for u in adduser:
-                        if not u.isdigit():
+                        if not u:
+                            continue
+                        if not (u.isdigit() or (u[0] == '-' and u[1:].isdigit())):
                             logging.warning('输入"%s"非数字' % u)
                             continue
                         if u.startswith('-'):
@@ -1690,16 +1707,17 @@ class MAClient():
                 usel = raw_inputd('选择要添加的好友序号, 空格分割多个，回车返回> ')
                 uids = []
                 for u in usel.split(' '):
-                    if u != '':
-                        if not u.isdigit():
-                            logging.warning('输入"%s"非数字' % u)
-                            continue
-                        if int(u) > len(users):
-                            logging.error('no.%s:下标越界XD' % u)
-                        elif users[int(u) - 1].friends == users[int(u) - 1].friend_max:
-                            logging.warning('%s %s' % (users[int(u) - 1].name, '无法成为好友ww'))
-                        else:
-                            uids.append(users[int(u) - 1].id)
+                    if not u:
+                        continue
+                    if not (u.isdigit() or (u[0] == '-' and u[1:].isdigit())):
+                        logging.warning('输入"%s"非数字' % u)
+                        continue
+                    if int(u) > len(users):
+                        logging.error('no.%s:下标越界XD' % u)
+                    elif users[int(u) - 1].friends == users[int(u) - 1].friend_max:
+                        logging.warning('%s %s' % (users[int(u) - 1].name, '无法成为好友ww'))
+                    else:
+                        uids.append(users[int(u) - 1].id)
                 if uids != []:
                     param = 'dialog=1&user_id=%s' % (','.join(uids))
                     resp, ct = self._dopost('friend/add_friend', postdata = param)
@@ -1728,7 +1746,7 @@ class MAClient():
         #    rwds=[rwds]
         strl = ''
         nid = []
-        if rw_type[-1] == '<':
+        if rw_type[-1] == '>':
             no_detail = True
             rw_type = rw_type[:-1]
         else:
@@ -1777,7 +1795,7 @@ class MAClient():
             if no_detail:
                 logging.info('领取%d件奖励' % len(nid))
             else:
-                print(du8(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' ')))
+                logging.info(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' '))
             res = self._get_rewards(nid)
             if res[0]:
                logging.info(res[1])

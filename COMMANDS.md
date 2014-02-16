@@ -27,6 +27,8 @@ set_card/sc
     set_card card_deck_key
     set_card auto_set(CONDITION)
 
+保留的名称 no_change 不更改卡组，abort 直接跳出不战斗
+
 card_deck_key为card_deck中已定义的项；当卡组名为auto_set时，此命令等效于auto_set CONDITION notest
 
 
@@ -79,9 +81,14 @@ fairy_battle/fyb
 
 red_tea/rt
 
+    red_tea #红茶
+    red_tea / #1/2红茶
+
 ###嗑绿茶
 
 green_tea/gt
+
+同红茶
 
 ###自动卖卡
 

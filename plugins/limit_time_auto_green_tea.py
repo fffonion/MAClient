@@ -3,8 +3,8 @@ from _prototype import plugin_prototype
 # start meta
 __plugin_name__ = '自动探索限时秘境，嗑绿'
 __author = 'fffonion'
-__version__ = 0.1
-__tip__ = '请确保 【限时】神界战争通道 已被优先选择'
+__version__ = 0.2
+__tip__ = '请确保 【限时】xxxx 已被优先选择'
 import datetime
 hooks = {'ENTER__explore_floor':1, 'EXIT_explore':1}
 # extra cmd hook
@@ -19,7 +19,7 @@ class plugin(plugin_prototype):
     def ENTER__explore_floor(self, *args, **kwargs):
         # args self,area,eval
         self.logger = args[0].logger
-        if '战争通道' in args[1].name:
+        if args[1].name.startswith('【限时】'):
             if args[1].prog_area == '100':
                 self.logger.info('plugin:限时秘境已探索完成www')
             else:
