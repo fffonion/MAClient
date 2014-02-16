@@ -35,7 +35,7 @@ EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
 EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -2, -1, 0, 1, 2
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
-FULL_TEA, HALF_TEA = 0, 1
+HALF_TEA, FULL_TEA = 0, 1
 GUILD_RACE_TYPE = ['11','12']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
@@ -166,7 +166,7 @@ class MAClient():
         self.cfg_auto_build = self._read_config('tactic', 'auto_build') == '1' and '1' or '0'
         self.cfg_fpgacha_buld = self._read_config('tactic', 'fp_gacha_bulk') == '1' and '1' or '0'
         self.cfg_sell_card_warning = int(self._read_config('tactic', 'sell_card_warning') or '1')
-        self.cfg_auto_rt_level = self._read_config('tactic', 'auto_red_tea_level')
+        self.cfg_auto_rt_level = int(self._read_config('tactic', 'auto_red_tea_level'))
         self.cfg_strict_bc = self._read_config('tactic', 'strict_bc') == '1'
         self.cfg_fairy_final_kill_hp = int(self._read_config('tactic', 'fairy_final_kill_hp') or '20000')
         self.cfg_save_traffic = not self._read_config('system', 'save_traffic') == '0'
@@ -1329,9 +1329,9 @@ class MAClient():
         # 判断BC
         if self.check_strict_bc() or self.player.bc['current'] < 2:  # strict BC或者BC不足
             logging.warning('BC不够了TOT')
-            autored = (self.cfg_auto_rt_level == '2') or (self.cfg_auto_rt_level == '1' and fairy.rare_flg == '1')
+            autored = (self.cfg_auto_rt_level > 2) or (self.cfg_auto_rt_level > 0 and fairy.rare_flg == '1')
             if autored:
-                if not self.red_tea(True):
+                if not self.red_tea(silent = True, tea = self.cfg_auto_rt_level % 2):
                     logging.error('那就不打了哟(*￣︶￣)y ')
                     return False
             else:
