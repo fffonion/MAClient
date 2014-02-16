@@ -1335,7 +1335,7 @@ class MAClient():
             logging.warning('BC不够了TOT')
             autored = (self.cfg_auto_rt_level == 2) or (self.cfg_auto_rt_level == 1 and fairy.rare_flg == '1')
             if autored:
-                if self.cfg_auto_choose_red_tea and '112' in self.player.item.db:
+                if self.cfg_auto_choose_red_tea and 112 in self.player.item.db:
                     if _last_bc > (self.player.bc['max'] / 2 + self.player.bc['current']):#半瓶不够
                         _tea = FULL_TEA
                     else:
