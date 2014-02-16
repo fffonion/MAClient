@@ -81,9 +81,14 @@ fairy_battle/fyb
 
 red_tea/rt
 
+    red_tea #红茶
+    red_tea / #1/2红茶
+
 ###嗑绿茶
 
 green_tea/gt
+
+同红茶
 
 ###自动卖卡
 

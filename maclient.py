@@ -35,6 +35,7 @@ EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
 EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -2, -1, 0, 1, 2
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
+FULL_TEA, HALF_TEA = 0, 1
 GUILD_RACE_TYPE = ['11','12']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
@@ -411,9 +412,9 @@ class MAClient():
                     if i == len(task) - 1:
                         self.fairy_select(cond = ' '.join(task[1:]))
                 elif task[0] == 'green_tea' or task[0] == 'gt':
-                    self.green_tea()
+                    self.green_tea(tea = HALF_TEA if '/' in ' '.join(task[1:]) else FULL_TEA)
                 elif task[0] == 'red_tea' or task[0] == 'rt':
-                    self.red_tea()
+                    self.red_tea(tea = HALF_TEA if '/' in ' '.join(task[1:]) else FULL_TEA)
                 elif task[0] == 'sell_card' or task[0] == 'slc':
                     self.select_card_sell(' '.join(task[1:]))
                 elif task[0] == 'set_server' or task[0] == 'ss':
@@ -552,7 +553,7 @@ class MAClient():
                     return True
                 else:
                     logging.warning('绊点已经很多，请自行转蛋消耗www')
-                    return False
+                    return True #not fatal
         return True
 
     @plugin.func_hook
@@ -727,18 +728,18 @@ class MAClient():
             return True
 
     @plugin.func_hook
-    def red_tea(self, silent = False):
+    def red_tea(self, silent = False, tea = FULL_TEA):
         auto = int(self._read_config('tactic', 'auto_red_tea') or '0')
         if auto > 0:
             self._write_config('tactic', 'auto_red_tea', str(auto - 1))
-            res = self._use_item('2')
+            res = self._use_item(('' if tea == FULL_TEA else '11') + '2')
         else:
             if silent:
                 logging.debug('red_tea:auto mode, let it go~')
                 return False
             else:
                 if raw_inputd('来一坨红茶？ y/n ') == 'y':
-                    res = self._use_item('2')
+                    res = self._use_item(('' if tea == FULL_TEA else '11') + '2')
                 else:
                     res = False
         if res:
@@ -746,18 +747,18 @@ class MAClient():
         return res
 
     @plugin.func_hook
-    def green_tea(self, silent = False):
+    def green_tea(self, silent = False, tea = FULL_TEA):
         auto = int(self._read_config('tactic', 'auto_green_tea') or '0')
         if auto > 0:
             self._write_config('tactic', 'auto_green_tea', str(auto - 1))
-            res = self._use_item('1')
+            res = self._use_item(('' if tea == FULL_TEA else '11') + '1')
         else:
             if silent:
                 logging.debug('green_tea:auto mode, let it go~')
                 return False
             else:
                 if raw_inputd('嗑一瓶绿茶？ y/n ') == 'y':
-                    res = self._use_item('1')
+                    res = self._use_item(('' if tea == FULL_TEA else '11') + '1')
                 else:
                     res = False
         if res:
