@@ -167,6 +167,7 @@ class MAClient():
         self.cfg_fpgacha_buld = self._read_config('tactic', 'fp_gacha_bulk') == '1' and '1' or '0'
         self.cfg_sell_card_warning = int(self._read_config('tactic', 'sell_card_warning') or '1')
         self.cfg_auto_rt_level = int(self._read_config('tactic', 'auto_red_tea_level'))
+        self.cfg_auto_choose_red_tea = self._read_config('tactic', 'auto_choose_red_tea') != '0'
         self.cfg_strict_bc = self._read_config('tactic', 'strict_bc') == '1'
         self.cfg_fairy_final_kill_hp = int(self._read_config('tactic', 'fairy_final_kill_hp') or '20000')
         self.cfg_save_traffic = not self._read_config('system', 'save_traffic') == '0'
@@ -557,11 +558,10 @@ class MAClient():
         return True
 
     @plugin.func_hook
-    def check_strict_bc(self, refresh = False):
+    def check_strict_bc(self, cost = None, refresh = False):
         if not self.cfg_strict_bc:
             return False
-        last_set_bc = self._read_config('record', 'last_set_bc') or '0'
-        last_set_bc = int(last_set_bc)
+        last_set_bc = cost or int(self._read_config('record', 'last_set_bc') or '0')
         if self.player.bc['current'] < last_set_bc:
             logging.warning('strict_bc:严格BC模式已触发www')
             return True
@@ -615,9 +615,12 @@ class MAClient():
 
     @plugin.func_hook
     def set_card(self, deckkey, **kwargs):
+        '''
+        Returns: whether changes, cost
+        '''
         if deckkey == 'no_change':
             logging.debug('set_card:no_change!')
-            return False
+            return False, int(self._read_config('record', 'last_set_bc') or '0')
         elif deckkey.startswith('auto_set'):
             if len(deckkey) > 8:  # raw string : auto_set(CONDITIONS)
                 if 'cur_fairy' in kwargs:
@@ -656,21 +659,21 @@ class MAClient():
                         ))
                 else:
                     logging.error(res[0])
-                    return False
+                    return False, 0
                 if test_mode:
-                    return False
+                    return False, 0
         else:
             try:
                 cardid = self._read_config('carddeck', deckkey)
             except AttributeError:
                 logging.warning('set_card:忘记加引号了？')
-                return False
+                return False, 0
             if cardid == self._read_config('record', 'last_set_card'):
                 logging.debug('set_card:card deck satisfied, not changing.')
-                return False
+                return False, int(self._read_config('record', 'last_set_bc') or '0')
             if cardid == '':
                 logging.warning('set_card:不存在的卡组名？')
-                return False
+                return False, 0
             cardid = cardid.split(',')
             param = []
             last_set_bc = 0
@@ -712,9 +715,9 @@ class MAClient():
             self._write_config('record', 'last_set_card', self._read_config('carddeck', deckkey))
             # 记录BC
             self._write_config('record', 'last_set_bc', str(last_set_bc))
-            return True
+            return True, last_set_bc
         logging.info('卡组没有改变')
-        return False
+        return False, 0
 
 
     def _use_item(self, itemid):
@@ -1322,16 +1325,24 @@ class MAClient():
         if cardd == 'abort':
             logging.debug('fairy_battle:abort battle sequence.')
             return False
-        if (self.set_card(cardd, cur_fairy = fairy)):
+        _has_set, _last_bc = self.set_card(cardd, cur_fairy = fairy)
+        if _has_set:
             fairy = fairy_floor()  # 设完卡组返回时
             if not fairy:
                 return False
         # 判断BC
-        if self.check_strict_bc() or self.player.bc['current'] < 2:  # strict BC或者BC不足
+        if self.check_strict_bc(cost = _last_bc) or self.player.bc['current'] < 2:  # strict BC或者BC不足
             logging.warning('BC不够了TOT')
-            autored = (self.cfg_auto_rt_level > 2) or (self.cfg_auto_rt_level > 0 and fairy.rare_flg == '1')
+            autored = (self.cfg_auto_rt_level == 2) or (self.cfg_auto_rt_level == 1 and fairy.rare_flg == '1')
             if autored:
-                if not self.red_tea(silent = True, tea = self.cfg_auto_rt_level % 2):
+                if self.cfg_auto_choose_red_tea and '112' in self.player.item.db:
+                    if _last_bc > (self.player.bc['max'] / 2 + self.player.bc['current']):#半瓶不够
+                        _tea = FULL_TEA
+                    else:
+                        _tea = HALF_TEA
+                else:
+                    _tea = FULL_TEA
+                if not self.red_tea(silent = True, tea = _tea):
                     logging.error('那就不打了哟(*￣︶￣)y ')
                     return False
             else:
