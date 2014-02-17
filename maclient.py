@@ -145,7 +145,7 @@ class MAClient():
             eval_fairy_select_carddeck, 'fairy')
         self.evalstr_factor = self._eval_gen(self._read_config('condition', 'factor'), [])
         # tasker须动态生成#self.evalstr_task=self._eval_gen(self._read_config('system','tasker'),[])
-        logging.debug('system:知识库版本 %s%s' % (maclient_smart.__version__, str(maclient_smart).endswith('pyd\'>') and ' C-Extension' or ''))
+        logging.debug('system:知识库版本 %s%s' % (maclient_smart.__version__, str(maclient_smart)[-5:] in ('.so\'>','pyd\'>') and ' C-Extension' or ''))
         logging.debug('system:初始化完成(服务器:%s)' % self.loc)
         self.lastposttime = 0
         self.lastfairytime = 0

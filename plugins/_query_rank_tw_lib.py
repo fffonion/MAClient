@@ -1,7 +1,7 @@
 # coding:utf-8
 from datetime import datetime
 import re
-__version__ = 20140212
+__version__ = 20140220
 tw_query_base = 'http://game.ma.mobimon.com.tw:10001/connect/web/revisions_detail?id=%d'
 tw_query_self_goto = 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_fairy?to=%s'
 tw_query_guild_goto = 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_guild_fairy?to=%s'
@@ -10,7 +10,7 @@ tw_query_guild_goto = 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_rankli
 tw_query_self_revision = [313]
 tw_query_guild_revision = [312]
 # 有效期
-tw_query_lifetime = datetime(2014, 2, 16, 10, 0, 0, 0)
+tw_query_lifetime = datetime(2014, 2, 20, 10, 0, 0, 0)
 now = datetime.now()
 
 query_title = lambda x: re.findall('class="blanklist comment_news head00">([^<]+)<', x)[0]
