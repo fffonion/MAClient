@@ -1007,30 +1007,33 @@ class MAClient():
         # if 'is_new_card' in excards:#只有一个
         #    excards=[excards]
         for card in excards:
-            mid = self.player.card.sid(card.serial_id).master_card_id
+            try:
+                mid = self.player.card.sid(card.serial_id).master_card_id
+            except IndexError:
+                logging.debug('gacha:没找到卡片，刚被卖了？')
+                excname.append('?')
+                continue
             if gacha_type > GACHA_FRIENNSHIP_POINT:
                 rare = ['R', 'R+', 'SR', 'SR+','MR']
                 rare_str = ' ' + rare[self.carddb[int(mid)][1] - 3]
             else:
                 rare = ['', '', '', 'R+', 'SR', 'SR+','MR']
                 rare_str = ' %s' % (rare[self.carddb[int(mid)][1] - 1])
-            excname.append('[%s]%s%s' % (
+            excname.append('[%s]%s%s%s' % (
                 self.carddb[int(mid)][0],
                 self.player.card.sid(card.serial_id).holography == '1' and '(闪)' or '',
-                rare_str
+                rare_str,
+                card.is_new_card =='1' and ' NEW' or ''
             ))
 
         logging.info('获得%d张新卡片: %s' % (len(excname), ', '.join(excname)))
         self.player.friendship_point = self.player.friendship_point - 200 * len(excname)
         if ab == '1' and 'auto_compound' in gacha_buy:
             try:
-                autocompcards = self.tolist(gacha_buy.auto_compound)
-                # if 'compound' in autocompcards:#只有一个
-                #    autocompcards=[autocompcards]
                 autocname = []
-                for card in autocompcards.compound:
+                for card in self.tolist(gacha_buy.auto_compound.compound):
                     mid = card.base_card.master_card_id
-                    autocname.append('[' + self.carddb[int(mid)][0] + ']')
+                    autocname.append('[%s]Lv%s' % (self.carddb[int(mid)][0], card.base_card.lv))
                 logging.info('合成了%d张新卡片: %s' % (len(autocname), ', '.join(autocname)))
             except:
                 logging.debug('gacha:no auto build')
@@ -1226,7 +1229,7 @@ class MAClient():
         logging.info(len(fairies) == 0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD' % len(fairies))
         # 依次艹
         for f in fairies:
-            logging.debug('fairy_select:select sid %s battled %s wake %s' % (f.fairy.serial_id, not f.fairy.not_battled, fairy.wake))
+            logging.debug('fairy_select:select sid %s battled %s wake %s' % (f.fairy.serial_id, not f.fairy.not_battled, f.wake))
             f.fairy.discoverer_id = f.user.id
             self._fairy_battle(f.fairy, bt_type = NORMAL_BATTLE, carddeck = carddeck)
             # 走个形式
