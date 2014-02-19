@@ -185,6 +185,7 @@ class MAClient():
         self.plugin = plugin  # 映射
         if (self._read_config('system', 'enable_plugin') or '1') == '1':
             disabled_plugin = self._read_config('plugin', 'disabled').split(',')
+            plugin.enable = True
             plugin.load_plugins()
             plugin.set_disable(disabled_plugin)
             plugin.scan_hooks()

@@ -35,12 +35,14 @@ def gen_list(loc):
 def download_card(cardid, level = CARD_NORM):
         # print serv['%s_data'%self.loc]+uri['%s_data_card'%loc]+uri['cardlevel'][level]%cardid
         rev = {'cn_card':int(maclient_update.get_revision('cn')[0]), 'tw_card':int(maclient_update.get_revision('tw')[0])}
-        card = {'cn_data_card':'MA/PROD/%d/' % rev['cn_card'], 'tw_data_card':'contents/%d/' % rev['tw_card'], \
+        card = {'cn_data_card':'MA/PROD/%d/' % rev['cn_card'], 'tw_data_card':'contents/2/', \
         'cardlevel':\
-            ['card_full/full_thumbnail_chara_%d?cyt=1', 'card_full_max/full_thumbnail_chara_5%03d?cyt=1', \
-            'card_full_h/full_thumbnail_chara_%d_horo?cyt=1', 'card_full_h_max/full_thumbnail_chara_5%03d_horo?cyt=1']
+            ['card_full/full_thumbnail_chara_%d?cyt=1', 'card_full_max/full_thumbnail_chara_%d?cyt=1', \
+            'card_full_h/full_thumbnail_chara_%d_horo?cyt=1', 'card_full_h_max/full_thumbnail_chara_%d_horo?cyt=1']
         }
-        resp, content = ht.request(maclient_network.serv['%s_data' % loc] + card['%s_data_card' % loc] + card['cardlevel'][level] % cardid, \
+        #lv full + 5000
+        resp, content = ht.request(maclient_network.serv['%s_data' % loc] + card['%s_data_card' % loc] + \
+                            card['cardlevel'][level] % (cardid + level % 2 * 5000), \
                 method = 'GET', headers = {'ua':'Million/%s' % getattr(maclient_smart, 'app_ver_%s' % loc),
                 'accept':'gzip', 'connection':'keep-alive'})
         return content
