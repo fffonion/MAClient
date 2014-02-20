@@ -736,14 +736,18 @@ class MAClient():
         auto = int(self._read_config('tactic', 'auto_red_tea') or '0')
         if auto > 0:
             self._write_config('tactic', 'auto_red_tea', str(auto - 1))
-            res = self._use_item(('' if tea == FULL_TEA else '11') + '2')
+            res = self._use_item(
+                   str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2])) + 2)
+                )
         else:
             if silent:
                 logging.debug('red_tea:auto mode, let it go~')
                 return False
             else:
                 if raw_inputd('来一坨红茶？ y/n ') == 'y':
-                    res = self._use_item(('' if tea == FULL_TEA else '11') + '2')
+                    res = self._use_item(
+                               str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2])) + 2)
+                            )
                 else:
                     res = False
         if res:
@@ -755,14 +759,18 @@ class MAClient():
         auto = int(self._read_config('tactic', 'auto_green_tea') or '0')
         if auto > 0:
             self._write_config('tactic', 'auto_green_tea', str(auto - 1))
-            res = self._use_item(('' if tea == FULL_TEA else '11') + '1')
+            res = self._use_item(
+                       str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_ap_offset_%s' % self.loc[:2])) + 1)
+                    )
         else:
             if silent:
                 logging.debug('green_tea:auto mode, let it go~')
                 return False
             else:
                 if raw_inputd('嗑一瓶绿茶？ y/n ') == 'y':
-                    res = self._use_item(('' if tea == FULL_TEA else '11') + '1')
+                    res = self._use_item(
+                           str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_ap_offset_%s' % self.loc[:2])) + 1)
+                        )
                 else:
                     res = False
         if res:
@@ -2012,6 +2020,7 @@ class MAClient():
     #             self.remote.lastprofile=0
     #     return do
 
+    @plugin.func_hook
     def _exit(self, code = 0):
         # if self.settitle:
         #     self.stitle.flag=0

@@ -43,7 +43,7 @@ class plugins():
         self.hook_reg = {}
         ALL_ACTIONS = ['tasker', 'auto_check', 'check_strict_bc', 'set_card', 'red_tea', 'green_tea',
                     'explore', '_explore_floor', 'gacha', 'select_card_sell', 'fairy_battle_loop', 'fairy_select', '_fairy_battle',
-                    'like', 'friends', 'reward_box', 'point_setting', 'factor_battle', 'invoke_autoset']
+                    'like', 'friends', 'reward_box', 'point_setting', 'factor_battle', 'invoke_autoset', '_exit']
         # scan plugin hooks
         _conflict = []
         self.extra_cmd.clear()

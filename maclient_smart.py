@@ -6,11 +6,15 @@
 import time
 import math
 import itertools
-__version__ = '1.1-build20140215'
+__version__ = '1.1-build20140220'
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = 250
 max_fp_cn = max_fp_kr = 50000
 max_fp_tw = max_fp_jp = 1000000
+half_bc_offset_cn = half_ap_offset_cn = 110
+half_bc_offset_tw = half_ap_offset_tw = 5002
+half_ap_offset_jp = 100
+half_bc_offset_jp = 109
 #key_tw = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'rBwj1MIAivVN222b'}
 key_cn = key_tw = key_kr = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'011218525486l6u1'}
 key_jp = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'uH9JF2cHf6OppaC1'}
