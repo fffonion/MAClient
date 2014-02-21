@@ -91,7 +91,7 @@ class plugins():
                 errf = StringIO()
                 traceback.print_exc(file = errf)
                 self.logger.warning('执行命令"%s"时出现错误:\n%s' % 
-                                    (cmd.rstrip(' '), errf.getvalue())
+                                    (cmd.rstrip(' '), errf.getvalue().replace('%','%%'))
                                    )
             else:
                 return ret
