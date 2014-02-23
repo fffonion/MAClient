@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.14
+__version__ = 0.15
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update'}
 #是否下载dev版
@@ -45,7 +45,7 @@ def plugin_update(plugin_vals):
                     time.strftime('%b.%d %a %H:%M', 
                         opath.exists(check_file) and \
                             time.localtime(os.path.getmtime(check_file)) or \
-                            time.time()
+                            time.localtime(time.time())
                         ),
                     '' if '-f' in args.split(' ') else '可使用pu -f强制重新检查')))
                 return

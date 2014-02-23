@@ -65,7 +65,11 @@ class Logging(type(sys)):
 
     def log(self, level, fmt, *args, **kwargs):
         # fmt=du8(fmt)
-        self.__write(convstr(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args))))
+        try:
+            self.__write(convstr(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args))))
+        except TypeError:
+            fmt = fmt.replace('%','%%')
+            self.__write(convstr(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args))))
         return '[%s] %s\n' % (time.strftime('%b %d %X', time.localtime()), fmt % args)
 
     def dummy(self, *args, **kwargs):

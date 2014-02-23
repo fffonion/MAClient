@@ -7,7 +7,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = 'query infomation of player'
 __author = 'fffonion'
-__version__ = 0.31
+__version__ = 0.32
 hooks = {}
 extra_cmd = {'q_item':'query_item', 'qi':'query_item', 'q_holo':'query_holo', 'qh':'query_holo', 'qgc':'query_guild_contribution','q_rank':'query_rank','qr':'query_rank'}
 # end meta
@@ -124,7 +124,6 @@ def query_rank(plugin_vals):
                     return
                 _url = _lib.query_base % _rev
                 x = opener.open(urllib2.Request(_url, headers = _header)).read()
-                open('z:/test.htm','w').write(x)
                 show_it(x)
                 
         else:#cn

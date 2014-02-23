@@ -722,13 +722,16 @@ class MAClient():
 
 
     def _use_item(self, itemid):
+        if self.player.item.get_count(int(itemid)) == 0 :
+            logging.error('道具 %s 数量不足' % self.player.item.get_name(int(itemid)))
+            return False
         param = 'item_id=%s' % itemid
         resp, ct = self._dopost('item/use', postdata = param)
         if resp['error']:
             return False
         else:
             logging.info('使用了道具 %s' % self.player.item.get_name(int(itemid)))
-            logging.debug('useitem:item %s : %s left' % (itemid, self.player.item.get_count(int(itemid))))
+            logging.debug('useitem:item %s : %d left' % (itemid, self.player.item.get_count(int(itemid))))
             return True
 
     @plugin.func_hook
@@ -1347,7 +1350,8 @@ class MAClient():
             logging.warning('BC不够了TOT')
             autored = (self.cfg_auto_rt_level == 2) or (self.cfg_auto_rt_level == 1 and fairy.rare_flg == '1')
             if autored:
-                if self.cfg_auto_choose_red_tea and 112 in self.player.item.db:
+                if self.cfg_auto_choose_red_tea and \
+                self.player.item.get_count(getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2]) + 2) > 0:
                     if _last_bc > (self.player.bc['max'] / 2 + self.player.bc['current']):#半瓶不够
                         _tea = FULL_TEA
                     else:
