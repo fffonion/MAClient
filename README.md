@@ -18,18 +18,25 @@ MAClient可以在python2.x和3.x上运行
 git clone --recursive https://github.com/fffonion/MAClient.git
 cd httplib2
 python setup.py install
-
+```
+子模块为针对py2x的httplib2；对py3x，你需要下载[针对py3x的httplib2](https://github.com/fffonion/httplib2-plus/tree/python3)
+```shell
 python MAClient_cli.py
 python MAClient_cli.py [config file]
 python MAClient_cli.py [config file] [task]/[commands]
 ```
-子模块为针对py2x的httplib2；对py3x，你需要下载[针对py3x的httplib2](https://github.com/fffonion/httplib2-plus/tree/python3)
+将maclient_smart编译成C模块可以提高自动配卡速度
+```shell
+python build_cython_ext.py build_ext --inplace
+```
 
 **使用打包的exe的windows用户注意**：路径不能包含中文，这是pyinstaller的缺陷
 
 ##配置文件说明
 
-参考config_sample.ini，或者使用图形化配置工具MAClientGUI，它可以从[这里下载](http://mac.yooooo.us/MAClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/MAClient/tree/gui)
+参考config_sample.ini，以及[**这里**](http://pan.baidu.com/s/19qI4m#dir/path=%2FApp%2FMAClient%2F%E7%A4%BA%E4%BE%8B%E9%85%8D%E7%BD%AE)有一些参考配置
+
+或者使用图形化配置工具MAClientGUI，它可以从[这里下载](http://mac.yooooo.us/MAClientGUI.zip)，相关源代码可以从[这里获得](https://github.com/fffonion/MAClient/tree/gui)
 
 ***
 

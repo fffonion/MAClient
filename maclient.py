@@ -145,7 +145,7 @@ class MAClient():
             eval_fairy_select_carddeck, 'fairy')
         self.evalstr_factor = self._eval_gen(self._read_config('condition', 'factor'), [])
         # tasker须动态生成#self.evalstr_task=self._eval_gen(self._read_config('system','tasker'),[])
-        logging.debug('system:知识库版本 %s%s' % (maclient_smart.__version__, str(maclient_smart).endswith('pyd\'>') and ' C-Extension' or ''))
+        logging.debug('system:知识库版本 %s%s' % (maclient_smart.__version__, str(maclient_smart)[-5:] in ('.so\'>','pyd\'>') and ' C-Extension' or ''))
         logging.debug('system:初始化完成(服务器:%s)' % self.loc)
         self.lastposttime = 0
         self.lastfairytime = 0
@@ -185,6 +185,7 @@ class MAClient():
         self.plugin = plugin  # 映射
         if (self._read_config('system', 'enable_plugin') or '1') == '1':
             disabled_plugin = self._read_config('plugin', 'disabled').split(',')
+            plugin.enable = True
             plugin.load_plugins()
             plugin.set_disable(disabled_plugin)
             plugin.scan_hooks()
@@ -721,13 +722,16 @@ class MAClient():
 
 
     def _use_item(self, itemid):
+        if self.player.item.get_count(int(itemid)) == 0 :
+            logging.error('道具 %s 数量不足' % self.player.item.get_name(int(itemid)))
+            return False
         param = 'item_id=%s' % itemid
         resp, ct = self._dopost('item/use', postdata = param)
         if resp['error']:
             return False
         else:
             logging.info('使用了道具 %s' % self.player.item.get_name(int(itemid)))
-            logging.debug('useitem:item %s : %s left' % (itemid, self.player.item.get_count(int(itemid))))
+            logging.debug('useitem:item %s : %d left' % (itemid, self.player.item.get_count(int(itemid))))
             return True
 
     @plugin.func_hook
@@ -735,14 +739,18 @@ class MAClient():
         auto = int(self._read_config('tactic', 'auto_red_tea') or '0')
         if auto > 0:
             self._write_config('tactic', 'auto_red_tea', str(auto - 1))
-            res = self._use_item(('' if tea == FULL_TEA else '11') + '2')
+            res = self._use_item(
+                   str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2])) + 2)
+                )
         else:
             if silent:
                 logging.debug('red_tea:auto mode, let it go~')
                 return False
             else:
                 if raw_inputd('来一坨红茶？ y/n ') == 'y':
-                    res = self._use_item(('' if tea == FULL_TEA else '11') + '2')
+                    res = self._use_item(
+                               str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2])) + 2)
+                            )
                 else:
                     res = False
         if res:
@@ -754,14 +762,18 @@ class MAClient():
         auto = int(self._read_config('tactic', 'auto_green_tea') or '0')
         if auto > 0:
             self._write_config('tactic', 'auto_green_tea', str(auto - 1))
-            res = self._use_item(('' if tea == FULL_TEA else '11') + '1')
+            res = self._use_item(
+                       str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_ap_offset_%s' % self.loc[:2])) + 1)
+                    )
         else:
             if silent:
                 logging.debug('green_tea:auto mode, let it go~')
                 return False
             else:
                 if raw_inputd('嗑一瓶绿茶？ y/n ') == 'y':
-                    res = self._use_item(('' if tea == FULL_TEA else '11') + '1')
+                    res = self._use_item(
+                           str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_ap_offset_%s' % self.loc[:2])) + 1)
+                        )
                 else:
                     res = False
         if res:
@@ -1007,30 +1019,33 @@ class MAClient():
         # if 'is_new_card' in excards:#只有一个
         #    excards=[excards]
         for card in excards:
-            mid = self.player.card.sid(card.serial_id).master_card_id
+            try:
+                mid = self.player.card.sid(card.serial_id).master_card_id
+            except IndexError:
+                logging.debug('gacha:没找到卡片，刚被卖了？')
+                excname.append('?')
+                continue
             if gacha_type > GACHA_FRIENNSHIP_POINT:
                 rare = ['R', 'R+', 'SR', 'SR+','MR']
                 rare_str = ' ' + rare[self.carddb[int(mid)][1] - 3]
             else:
                 rare = ['', '', '', 'R+', 'SR', 'SR+','MR']
                 rare_str = ' %s' % (rare[self.carddb[int(mid)][1] - 1])
-            excname.append('[%s]%s%s' % (
+            excname.append('[%s]%s%s%s' % (
                 self.carddb[int(mid)][0],
                 self.player.card.sid(card.serial_id).holography == '1' and '(闪)' or '',
-                rare_str
+                rare_str,
+                card.is_new_card =='1' and ' NEW' or ''
             ))
 
         logging.info('获得%d张新卡片: %s' % (len(excname), ', '.join(excname)))
         self.player.friendship_point = self.player.friendship_point - 200 * len(excname)
         if ab == '1' and 'auto_compound' in gacha_buy:
             try:
-                autocompcards = self.tolist(gacha_buy.auto_compound)
-                # if 'compound' in autocompcards:#只有一个
-                #    autocompcards=[autocompcards]
                 autocname = []
-                for card in autocompcards.compound:
+                for card in self.tolist(gacha_buy.auto_compound.compound):
                     mid = card.base_card.master_card_id
-                    autocname.append('[' + self.carddb[int(mid)][0] + ']')
+                    autocname.append('[%s]Lv%s' % (self.carddb[int(mid)][0], card.base_card.lv))
                 logging.info('合成了%d张新卡片: %s' % (len(autocname), ', '.join(autocname)))
             except:
                 logging.debug('gacha:no auto build')
@@ -1226,7 +1241,7 @@ class MAClient():
         logging.info(len(fairies) == 0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD' % len(fairies))
         # 依次艹
         for f in fairies:
-            logging.debug('fairy_select:select sid %s battled %s wake %s' % (f.fairy.serial_id, not f.fairy.not_battled, fairy.wake))
+            logging.debug('fairy_select:select sid %s battled %s wake %s' % (f.fairy.serial_id, not f.fairy.not_battled, f.wake))
             f.fairy.discoverer_id = f.user.id
             self._fairy_battle(f.fairy, bt_type = NORMAL_BATTLE, carddeck = carddeck)
             # 走个形式
@@ -1335,7 +1350,8 @@ class MAClient():
             logging.warning('BC不够了TOT')
             autored = (self.cfg_auto_rt_level == 2) or (self.cfg_auto_rt_level == 1 and fairy.rare_flg == '1')
             if autored:
-                if self.cfg_auto_choose_red_tea and '112' in self.player.item.db:
+                if self.cfg_auto_choose_red_tea and \
+                self.player.item.get_count(getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2]) + 2) > 0:
                     if _last_bc > (self.player.bc['max'] / 2 + self.player.bc['current']):#半瓶不够
                         _tea = FULL_TEA
                     else:
@@ -2008,6 +2024,7 @@ class MAClient():
     #             self.remote.lastprofile=0
     #     return do
 
+    @plugin.func_hook
     def _exit(self, code = 0):
         # if self.settitle:
         #     self.stitle.flag=0

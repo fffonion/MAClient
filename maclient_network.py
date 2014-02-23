@@ -275,7 +275,7 @@ class poster():
                     self.logger.warning('post:%s malformed response, retrying in %d times' % (uri, ttimes - trytime))
                 except httplib.ResponseNotReady:
                     # socket重置，不计入重试次数
-                    trytime -= 1
+                    trytime -= ( 1 if trytime > 1 else 0 )
                     self.logger.warning('post:socket closed, retrying in %d times' % (ttimes - trytime))
                 except httplib2.ServerNotFoundError:
                     self.logger.warning('post:no internet, retrying in %d times' % (ttimes - trytime))

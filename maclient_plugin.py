@@ -6,11 +6,14 @@
 import os, os.path as opath
 import sys
 import glob
+import traceback
 from cross_platform import *
 # for plugin use
 if PYTHON3:
+    from io import StringIO
     import urllib.request as urllib2
 else:
+    from cStringIO import StringIO
     import urllib2
 sys.path.append(opath.join(getPATH0, 'plugins'))
 # os.chdir(opath.join(getPATH0(),'plugins'))
@@ -40,7 +43,7 @@ class plugins():
         self.hook_reg = {}
         ALL_ACTIONS = ['tasker', 'auto_check', 'check_strict_bc', 'set_card', 'red_tea', 'green_tea',
                     'explore', '_explore_floor', 'gacha', 'select_card_sell', 'fairy_battle_loop', 'fairy_select', '_fairy_battle',
-                    'like', 'friends', 'reward_box', 'point_setting', 'factor_battle', 'invoke_autoset']
+                    'like', 'friends', 'reward_box', 'point_setting', 'factor_battle', 'invoke_autoset', '_exit']
         # scan plugin hooks
         _conflict = []
         self.extra_cmd.clear()
@@ -80,7 +83,18 @@ class plugins():
     def do_extra_cmd(self, cmd):
         ops = cmd.split(' ')
         if self.enable:
-            return self.extra_cmd[ops[0]](self.val_dict)(' '.join(ops[1:]))
+            try:
+                ret = self.extra_cmd[ops[0]](self.val_dict)(' '.join(ops[1:]))
+            except KeyboardInterrupt:
+                pass
+            except:
+                errf = StringIO()
+                traceback.print_exc(file = errf)
+                self.logger.warning('执行命令"%s"时出现错误:\n%s' % 
+                                    (cmd.rstrip(' '), errf.getvalue().replace('%','%%'))
+                                   )
+            else:
+                return ret
         else:
             self.logger.warning('Plugins not enabled.')
 
@@ -110,10 +124,20 @@ class plugins():
             for plugin in sorted(self.hook_reg[action].items(), key = lambda d:d[1], reverse = True):  # high priority first
                 f = self._get_plugin_attr(plugin[0], action)
                 if f:
-                    ret = f(*args, **kwargs)
-                    if ret:  # has mod on params
-                        args, kwargs = ret
-                        args = args[1:]  # cut off caller instance variable
+                    try:
+                        ret = f(*args, **kwargs)
+                    except KeyboardInterrupt:
+                        pass
+                    except:
+                        errf = StringIO()
+                        traceback.print_exc(file = errf)
+                        self.logger.warning('挂钩%s时出现错误:\n%s' % 
+                                            (action, errf.getvalue())
+                                           )
+                    else:
+                        if ret:  # has mod on params
+                            args, kwargs = ret
+                            args = args[1:]  # cut off caller instance variable
         return args, kwargs
 
     def load_plugins(self):

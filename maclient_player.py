@@ -129,7 +129,7 @@ class item(object):
     def update(self, itemdict):
         for it in itemdict:
             try:
-                self.db[int(it.item_id)][1] = it.num
+                self.db[int(it.item_id)][1] = int(it.num)
             except KeyError:
                 pass#self.db[int(it.item_id)][1] = 0
 

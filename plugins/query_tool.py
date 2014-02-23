@@ -7,7 +7,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = 'query infomation of player'
 __author = 'fffonion'
-__version__ = 0.3
+__version__ = 0.32
 hooks = {}
 extra_cmd = {'q_item':'query_item', 'qi':'query_item', 'q_holo':'query_holo', 'qh':'query_holo', 'qgc':'query_guild_contribution','q_rank':'query_rank','qr':'query_rank'}
 # end meta
@@ -90,35 +90,41 @@ def query_rank(plugin_vals):
             _header = _lib.broswer_headers
             _header['cookie'] = plugin_vals['cookie']
             _header['User-Agent'] = plugin_vals['poster'].header['User-Agent']
-            _guild_mode = raw_inputd('查询个人排名(s)还是公会排名(g)> ') == 'g'
+            _guild_mode = 2 if raw_inputd('查询个人排名(s)(默认)还是公会排名(g)> ') == 'g' else 0
             _goto = raw_inputd('输入要查询的排名开始数，按回车显示自己所在区域> ')
+            if (_guild_mode and _lib.query_rev[2] and _lib.query_rev[3]) or \
+                (not _guild_mode and _lib.query_rev[0] and _lib.query_rev[1]) or _goto:
+                _coll_mode = 1 if raw_inputd('查询收集品排名(c)(默认)还是妖精加权排名(f)> ') != 'f' else 0
+            else:
+                _coll_mode = 0
             def show_it(content):
                 strl = '\n%s\n%s\n' %(_lib.query_title(content),'-'*20)
-                for (k, v) in (_guild_mode and _lib.query_guild or _lib.query_self):
+                for (k, v) in _lib.query_regex[_guild_mode + _coll_mode]:
                     try:
                         strl += '%s %s\n' % (k, v(content))
                     except IndexError:
                         pass
                 logger.info(strl)
             if _goto:
+                _gurl = _lib.query_goto[_guild_mode + _coll_mode]
                 if not _goto.isdigit() or \
                     (int(_goto)>20000 and not _guild_mode) or (int(_goto)>2000 and _guild_mode) or \
                     int(_goto)<=0:
                     logger.error('请输入%d以内0以上的数字' % (2000 if _guild_mode else 20000))
                     return
-                x = opener.open(urllib2.Request(
-                        (_guild_mode and _lib.tw_query_guild_goto or _lib.tw_query_self_goto) % _goto,
-                         headers = _header)
-                    ).read()
+                x = opener.open(urllib2.Request(_gurl % _goto,headers = _header)).read()
                 show_it(x)
             else:
-                if _lib.now >= _lib.tw_query_lifetime:
-                    logger.error('查询库已过期，请使用web_helper插件查询\n或升级_query_rank_tw_lib为新版本')
+                _rev = _lib.query_rev[_guild_mode + _coll_mode]
+                if not _rev:
+                    logger.error('版本不存在,，请升级_query_rank_lib为新版本\n或指定排名区域查询')
                     return
-                for _url in [_lib.tw_query_base % v for v in 
-                        (_guild_mode and _lib.tw_query_guild_revision or _lib.tw_query_self_revision)]:
-                    x = opener.open(urllib2.Request(_url, headers = _header)).read()
-                    show_it(x)
+                if _lib.now >= _lib.query_lifetime:
+                    logger.error('查询库已过期，请升级_query_rank_lib为新版本\n或指定排名区域查询')
+                    return
+                _url = _lib.query_base % _rev
+                x = opener.open(urllib2.Request(_url, headers = _header)).read()
+                show_it(x)
                 
         else:#cn
             from xml2dict import XML2Dict
