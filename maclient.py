@@ -1241,7 +1241,10 @@ class MAClient():
         logging.info(len(fairies) == 0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD' % len(fairies))
         # 依次艹
         for f in fairies:
-            logging.debug('fairy_select:select sid %s battled %s wake %s' % (f.fairy.serial_id, not f.fairy.not_battled, f.wake))
+            logging.debug('fairy_select:select sid %s%s%s' % (
+                f.fairy.serial_id,
+                '' if f.fairy.not_battled else ' battled',
+                ' wake' if f.wake else ''))
             f.fairy.discoverer_id = f.user.id
             self._fairy_battle(f.fairy, bt_type = NORMAL_BATTLE, carddeck = carddeck)
             # 走个形式
