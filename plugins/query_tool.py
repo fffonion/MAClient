@@ -139,7 +139,10 @@ def query_rank(plugin_vals):
                 ranktype_id = int(ct.ranktype_id)
                 allranks = ct.ranktype_list.ranktype
                 rank_name = allranks[ranktype_id - 1].title
-                _user = ct.user_list.user
+                try:
+                    _user = ct.user_list.user
+                except KeyError:
+                    logging.warning('暂未列入排行榜，请继续努力ww')
                 if not to_top:
                     me = [_i for _i in _user if _i.id == plugin_vals['player'].id][0]
                 logger.info(rank_name + 

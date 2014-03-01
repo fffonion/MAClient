@@ -275,6 +275,8 @@ if __name__ == '__main__':
                             print(du8('已保存~'))
                             maclient1.load_config()
             elif ch == '5':
+                dec = maclient1.login()
+                maclient1.initplayer(dec)
                 logging.info(du8('将强制重新从服务器下载数据……'))
                 import maclient_update
                 crev, irev, brev = maclient_update.update_master(maclient1.loc, (True, True, True), maclient1.poster)
