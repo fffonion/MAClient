@@ -7,7 +7,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = 'query infomation of player'
 __author = 'fffonion'
-__version__ = 0.32
+__version__ = 0.33
 hooks = {}
 extra_cmd = {'q_item':'query_item', 'qi':'query_item', 'q_holo':'query_holo', 'qh':'query_holo', 'qgc':'query_guild_contribution','q_rank':'query_rank','qr':'query_rank'}
 # end meta
@@ -130,14 +130,41 @@ def query_rank(plugin_vals):
             from xml2dict import XML2Dict
             po = plugin_vals['poster']
             po.post('menu/menulist')
-            resp, ct = po.post('ranking/ranking', postdata='move=1&ranktype_id=0&top=0')
-            ct = XML2Dict().fromstring(ct).response.body.ranking
-            _user = ct.user_list.user
-            me = [_i for _i in _user if _i.id == plugin_vals['player'].id][0]
-            logger.info('%s:%s 收集品数量:%s\n'
-                        '可见区域内 Up:%s/%s Down:%s/%s' % (
-                            ct.ranktype_list.ranktype[-1].title, me.rank, me.battle_event_point,
-                            _user[0].rank, _user[0].battle_event_point,
-                            _user[-1].rank, _user[-1].battle_event_point)
-                        )
+            sel_rankid = 0
+            to_top = False
+            while True:
+                resp, ct = po.post('ranking/ranking', postdata='move=%d&ranktype_id=%d&top=%d' % (
+                                1 if sel_rankid == 0 else 0, sel_rankid, 1 if to_top else 0))
+                ct = XML2Dict().fromstring(ct).response.body.ranking
+                ranktype_id = int(ct.ranktype_id)
+                allranks = ct.ranktype_list.ranktype
+                rank_name = allranks[ranktype_id - 1].title
+                try:
+                    _user = ct.user_list.user
+                except KeyError:
+                    logging.warning('暂未列入排行榜，请继续努力ww')
+                if not to_top:
+                    me = [_i for _i in _user if _i.id == plugin_vals['player'].id][0]
+                logger.info(rank_name + 
+                            (not to_top and '\n排名:%s 点数:%s\n' % (me.rank, me.battle_event_point) or '\n') + 
+                            '可见区域内 Up:%s/%s Down:%s/%s' % (
+                                _user[0].rank, _user[0].battle_event_point,
+                                _user[-1].rank, _user[-1].battle_event_point)
+                            )
+                while True:
+                    _inp = raw_inputd('\n输入序号查询其他排行:(9.排名至顶 0.退出)\n%s\n> ' % 
+                                    ('\n'.join(map(lambda x : '%s.%s' % (x.id, x.title), allranks)))
+                                ) or '0'
+                    if not _inp.isdigit():
+                        continue
+                    else:
+                        if _inp == '0':
+                            return
+                        if _inp == '9':
+                            to_top = True
+                        else:
+                            sel_rankid = int(_inp)
+                            to_top = False
+                        break
+                    
     return do

@@ -35,7 +35,7 @@ serv = {'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/',
 serv['cn1'] = serv['cn']
 serv['cn_data'] = serv['cn2_data'] = serv['cn3_data'] = 'http://MA.webpatch.sdg-china.com/'
 
-headers_main = {'User-Agent': 'Million/%d (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys', 'Connection': 'Keep-Alive', 'Accept-Encoding':'gzip,deflate'}
+headers_main = {'User-Agent': 'Million/%d (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys', 'Connection': 'Keep-Alive'}#, 'Accept-Encoding':'gzip,deflate'}
 headers_post = {'Content-Type': 'application/x-www-form-urlencoded'}
 
 pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
@@ -47,7 +47,7 @@ class Crypt():
     def __init__(self,loc):
         self.init_cipher(loc=loc)
         self.random_cipher_plain=''
-        if loc in ['cn','tw']:
+        if not loc == 'jp':
             self.gen_rsa_pubkey()
         self.AES2ndKey = None
 
@@ -67,7 +67,8 @@ class Crypt():
         #self.rsa = RSA.load_pub_key_bio(bio)
 
     def gen_random_cipher(self):
-        self.random_cipher_plain=os.urandom(16)
+        #self.random_cipher_plain=os.urandom(16)
+        self.random_cipher_plain='ZlP8aHoFj4uax9Ado5dtXg=='.decode('base64')
         self.random_cipher = self._gen_cipher(self.random_cipher_plain)
 
     def _gen_cipher(self,plain):
@@ -237,7 +238,7 @@ class poster():
             if usecookie:
                 header.update({'Cookie':self.cookie})
             if not noencrypt :
-                if self.shortloc in ['cn','tw']:#pass key to server
+                if not self.shortloc == 'jp':#pass key to server
                     #add sign to param
                     self.crypt.gen_random_cipher()
                     sign='K=%s'%self.crypt.urlunescape(
@@ -245,7 +246,7 @@ class poster():
                             base64.encodestring(
                                 self.crypt.random_cipher_plain))).rstrip('\n')
                     if postdata:#has real stuff
-                        if uri in ['login','regist']:
+                        if uri in ['login','regist'] and self.shortloc != 'kr':
                             postdata = self.crypt.encode_param(postdata, mode=MOD_RSA_AES_RANDOM) #remove .encode('utf-8')
                         else:
                             postdata = self.crypt.encode_param(postdata, mode=MOD_AES_RANDOM)
@@ -315,4 +316,4 @@ class poster():
 
 if __name__ == "__main__":
     p = Crypt('cn')
-    p.gen_random_cipher() 
+    p.gen_random_cipher()

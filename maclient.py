@@ -485,8 +485,8 @@ class MAClient():
                 ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
                 # self.poster.update_server(ct)
                 pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
-                if self.loc == 'kr':
-                     pdata='S=nosessionid&%s' % pdata
+                # if self.loc == 'kr':
+                #      pdata='S=nosessionid&%s' % pdata
                 self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
             resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
             if resp['error']:
@@ -1241,7 +1241,10 @@ class MAClient():
         logging.info(len(fairies) == 0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD' % len(fairies))
         # 依次艹
         for f in fairies:
-            logging.debug('fairy_select:select sid %s battled %s wake %s' % (f.fairy.serial_id, not f.fairy.not_battled, f.wake))
+            logging.debug('fairy_select:select sid %s%s%s' % (
+                f.fairy.serial_id,
+                '' if f.fairy.not_battled else ' battled',
+                ' wake' if f.wake else ''))
             f.fairy.discoverer_id = f.user.id
             self._fairy_battle(f.fairy, bt_type = NORMAL_BATTLE, carddeck = carddeck)
             # 走个形式
