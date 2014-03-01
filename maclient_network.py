@@ -67,8 +67,7 @@ class Crypt():
         #self.rsa = RSA.load_pub_key_bio(bio)
 
     def gen_random_cipher(self):
-        #self.random_cipher_plain=os.urandom(16)
-        self.random_cipher_plain='ZlP8aHoFj4uax9Ado5dtXg=='.decode('base64')
+        self.random_cipher_plain=os.urandom(16)
         self.random_cipher = self._gen_cipher(self.random_cipher_plain)
 
     def _gen_cipher(self,plain):
