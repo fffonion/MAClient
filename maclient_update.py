@@ -4,6 +4,7 @@
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
 import os
+import re
 import os.path as opath
 import sys
 from xml2dict import XML2Dict
@@ -52,11 +53,12 @@ def check_revision(loc, rev_tuple):
         return False, False, False
 
 def update_master(loc, need_update, poster):
+    replace_AND = re.compile('&')#no CDATA, sad
     new_rev = [None, None, None]
     if need_update[0]:
         poster.set_timeout(240)
         a, b = poster.post('masterdata/card/update', postdata = '%s&revision=0' % poster.cookie)
-        resp = XML2Dict().fromstring(b.replace('&', '--').replace('--#', '&#')).response  # 不替换会解析出错摔
+        resp = XML2Dict().fromstring(replace_AND.sub('--', b)).response  # 不替换会解析出错摔
         cards = resp.body.master_data.master_card_data.card
         strs = []
         for c in cards:
@@ -78,12 +80,12 @@ def update_master(loc, need_update, poster):
     if need_update[1]:
         poster.set_timeout(240)
         a, b = poster.post('masterdata/item/update', postdata = '%s&revision=0' % poster.cookie)
-        resp = XML2Dict().fromstring(b).response
+        resp = XML2Dict().fromstring(replace_AND.sub('--', b)).response
         items = resp.body.master_data.master_item_data.item_info
         strs = ['%s,%s,%s' % (
                 c.item_id,
-                c.name,
-                c.explanation.replace('\n','\\n')
+                c.name.replace('--', '&'),
+                c.explanation.replace('\n','\\n').replace('--', '&')
             ) for c in items] + ['']
         if PYTHON3:
             open(opath.join(getPATH0, 'db/item.%s.txt' % loc), 'w', encoding = 'utf-8').write('\n'.join(strs))
@@ -94,11 +96,11 @@ def update_master(loc, need_update, poster):
     if need_update[2]:
         poster.set_timeout(240)
         a, b = poster.post('masterdata/boss/update', postdata = '%s&revision=0' % poster.cookie)
-        resp = XML2Dict().fromstring(b).response
+        resp = XML2Dict().fromstring(replace_AND.sub('--', b)).response
         boss = resp.body.master_data.master_boss_data.boss
         strs = ['%s,%s,%s' % (
                 c.master_boss_id,
-                c.name,
+                c.name.replace('--', '&'),
                 c.hp
             ) for c in boss] + ['']
         if PYTHON3:
