@@ -1760,7 +1760,7 @@ class MAClient():
         resp, ct = self._dopost('menu/rewardbox', xmlresp = False)  # 只能额外处理
         # if resp['error']:
         #    return False
-        rwds = self.tolist(XML2Dict().fromstring(ct.replace('&', '--')).response.body.rewardbox_list.rewardbox)  # .replace('&','--')
+        rwds = self.tolist(XML2Dict().fromstring(re.sub('&(?!#)', '--', ct)).response.body.rewardbox_list.rewardbox)  # .replace('&','--')
         # if 'id' in rwds:#只有一个
         #    rwds=[rwds]
         strl = ''
