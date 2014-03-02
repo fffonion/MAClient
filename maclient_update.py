@@ -53,7 +53,7 @@ def check_revision(loc, rev_tuple):
         return False, False, False
 
 def update_master(loc, need_update, poster):
-    replace_AND = re.compile('&')#no CDATA, sad
+    replace_AND = re.compile('&(?!#)')#no CDATA, sad
     new_rev = [None, None, None]
     if need_update[0]:
         poster.set_timeout(240)
