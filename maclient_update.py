@@ -60,9 +60,7 @@ def update_master(loc, need_update, poster):
         a, b = poster.post('masterdata/card/update', postdata = '%s&revision=0' % poster.cookie)
         resp = XML2Dict().fromstring(replace_AND.sub('--', b)).response  # 不替换会解析出错摔
         cards = resp.body.master_data.master_card_data.card
-        strs = []
-        for c in cards:
-            strs.append('%s,%s,%s,%s,%s,%s,%s,%s' % (
+        strs = ['%s,%s,%s,%s,%s,%s,%s,%s' % (
                 c.master_card_id,
                 c.name.replace('--', '&'),
                 c.rarity,
@@ -70,7 +68,8 @@ def update_master(loc, need_update, poster):
                 str(c.char_description).strip('\n').strip(' ').replace('\n', '\\n'),
                 c.skill_kana,
                 c.skill_name,
-                str(c.skill_description).replace('\n', '\\n')))
+                str(c.skill_description).replace('\n', '\\n')
+              ) for c in cards] + ['']
         if PYTHON3:
             f = open(opath.join(getPATH0, 'db/card.%s.txt' % loc), 'w', encoding = 'utf-8').write('\n'.join(strs))
         else:
