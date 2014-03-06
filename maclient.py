@@ -257,7 +257,7 @@ class MAClient():
                     elif err.code == '1020':
                         logging.sleep('因为服务器维护，休息约30分钟')
                         time.sleep(random.randint(28, 32) * 60)
-                        self.player.update_checked = False  # 置为未检查
+                        self.player.rev_update_checked = False  # 置为未检查
                         return resp, dec
             if not self.player_initiated :
                 open(self.playerfile, 'w').write(_dec)
