@@ -53,6 +53,7 @@ hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
     set_card 设置卡组
     red_tea 嗑红茶
     green_tea 嗑绿茶
+    _use_item 使用道具 (1.68及以上版本)
     explore 探索：选择地区
     _explore_floor 探索：走路
     gacha 转蛋
@@ -66,7 +67,7 @@ hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
     point_setting 分配点数
     factor_battle 因子战
     invoke_autoset 自动配卡
-    _exit 程序退出
+    _exit 程序退出 (1.67及以上版本)
 
 冒号后的数值表示钩子的优先级，越大则越先被调用
 

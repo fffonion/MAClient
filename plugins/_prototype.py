@@ -1,4 +1,5 @@
 # import dbm
+__version__ = 0.2
 class plugin_prototype():
     def __init__(self):
         self.hooks = {}

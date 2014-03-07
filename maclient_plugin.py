@@ -22,11 +22,12 @@ sys.path.append(opath.join(getPATH0, 'plugins'))
 PREF_ENTER = 'ENTER_'
 PREF_EXIT = 'EXIT_'
 class plugins():
-    def __init__(self, logger, show_tip = True):
+    def __init__(self, logger, mac_ver, show_tip = True):
         self.logger = logger
         # 是否显示插件tip
         self.show_tip = show_tip
         self.has_shown_tips = False
+        self.mac_ver = mac_ver
         # 所有插件模块对象
         self.plugins = {}
         # 所有插件模块中的plugin实例
@@ -43,9 +44,10 @@ class plugins():
         self.hook_reg = {}
         ALL_ACTIONS = ['tasker', 'auto_check', 'check_strict_bc', 'set_card', 'red_tea', 'green_tea',
                     'explore', '_explore_floor', 'gacha', 'select_card_sell', 'fairy_battle_loop', 'fairy_select', '_fairy_battle',
-                    'like', 'friends', 'reward_box', 'point_setting', 'factor_battle', 'invoke_autoset', '_exit']
+                    'like', 'friends', 'reward_box', 'point_setting', 'factor_battle', 'invoke_autoset', '_exit', '_use_item']
         # scan plugin hooks
         _conflict = []
+        _plugins_to_del = []
         self.extra_cmd.clear()
         for p in self.plugins:
             if self.show_tip and not self.has_shown_tips:
@@ -53,6 +55,11 @@ class plugins():
                     print('%s:%s' % (p, du8(self.plugins[p].__tip__)))
                 except AttributeError:
                     pass
+            req_ver = self._get_module_meta(p, 'require_version', nowarning = True)
+            if req_ver and req_ver > self.mac_ver:
+                self.logger.warning('Plugin %s requires MAClient v%.2f or up.' % (p, req_ver))
+                _plugins_to_del.append(p)
+                continue
             # extra cmd
             ecmd = self._get_module_meta(p, 'extra_cmd')
             for e in ecmd:
@@ -74,6 +81,8 @@ class plugins():
                         # priority record
                         self.hook_reg[key][p] = self._get_module_meta(p, 'hooks')[key]
         self.has_shown_tips = True
+        for p in _plugins_to_del:
+            del(self.plugins[p])
 
     # def set_enable(self,lst):
     #     pass
@@ -103,20 +112,22 @@ class plugins():
             if p and (p in self.plugins):
                 del(self.plugins[p])
 
-    def _get_module_meta(self, mod, key):
+    def _get_module_meta(self, mod, key, nowarning = False):
         # module.xxx
         try:
            return getattr(self.plugins[mod], key)
         except AttributeError:
-            self.logger.warning('"%s" not found in module "%s"' % (key, mod))
+            if not nowarning:
+                self.logger.warning('"%s" not found in module "%s"' % (key, mod))
             return []
 
-    def _get_plugin_attr(self, mod, attr):
+    def _get_plugin_attr(self, mod, attr, nowarning = False):
         # module.plugin.xxx
         try:
            return getattr(self.plugins_instance[mod], attr)
         except AttributeError:
-            self.logger.warning('Get "%s" failed from "%s" ' % (attr, mod))
+            if not nowarning:
+                self.logger.warning('Get "%s" failed from "%s" ' % (attr, mod))
             return []
 
     def _do_hook(self, action, *args, **kwargs):
@@ -137,7 +148,7 @@ class plugins():
                     else:
                         if ret:  # has mod on params
                             args, kwargs = ret
-                            args = args[1:]  # cut off caller instance variable
+                            #args = args[1:]  # cut off caller instance variable
         return args, kwargs
 
     def load_plugins(self):

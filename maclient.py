@@ -98,7 +98,7 @@ class conn_ani(threading.Thread):
 
 class MAClient():
     global plugin
-    plugin = maclient_plugin.plugins(logging)
+    plugin = maclient_plugin.plugins(logging, __version__)
     def __init__(self, configfile = '', savesession = False):
         if not PYTHON3:
             reload(sys)
@@ -720,8 +720,10 @@ class MAClient():
         logging.info('卡组没有改变')
         return False, 0
 
-
+    @plugin.func_hook
     def _use_item(self, itemid):
+        print(itemid)
+        return
         if self.player.item.get_count(int(itemid)) == 0 :
             logging.error('道具 %s 数量不足' % self.player.item.get_name(int(itemid)))
             return False
