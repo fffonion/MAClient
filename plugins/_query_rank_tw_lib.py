@@ -1,16 +1,16 @@
 # coding:utf-8
 from datetime import datetime
 import re
-__version__ = 20140221
+__version__ = 20140307
 query_base = 'http://game.ma.mobimon.com.tw:10001/connect/web/revisions_detail?id=%d'
-# self.fairy, self.collect, guild.goto, guild.fairy
+# self.fairy, self.collect, guild.fairy, guild.collect
 query_goto = ['http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_fairy?to=%s',
 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist?to=%s',
 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_guild_fairy?to=%s',
 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_guild?to=%s']
-query_rev = [320, 321, None, None]
+query_rev = [None, 330, 329, None]
 # 有效期
-query_lifetime = datetime(2014, 3, 6, 18, 0, 0, 0)
+query_lifetime = datetime(2014, 3, 20, 18, 0, 0, 0)
 now = datetime.now()
 #觉醒次数
 wake_level = 2

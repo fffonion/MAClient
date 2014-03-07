@@ -3,7 +3,7 @@ from _prototype import plugin_prototype
 # start meta
 __plugin_name__ = '台服优先嗑限时红绿茶'
 __author = 'fffonion'
-__version__ = 0.12
+__version__ = 0.13
 hooks = {'ENTER__use_item':1}
 extra_cmd = {}
 require_version = 1.68
@@ -37,10 +37,17 @@ class plugin(plugin_prototype):
         elif int(itemid) == self.half_offset + 1:
             iid= 5006
             cnt = min(10, minor_ap_cnt)
+        if cnt == 0:
+            self.already_inhook = False
+            return
         mac.logger.info('将使用%d瓶"%s"' % (cnt, mac.player.item.get_name(iid)))
         args = (mac, iid)
         for i in range(cnt - 1):
-            mac._use_item(iid)
-            time.sleep(1.414)
+            try:
+                mac._use_item(iid)
+                time.sleep(1.414)
+            except KeyboardInterrupt:
+                break
+        args = (mac, iid)
         self.already_inhook = False
         return args, kwargs
