@@ -8,6 +8,8 @@ p = '<plugin><name>%s</name><version>%s</version><dir>%s</dir></plugin>'
 s = '<script><name>%s</name><version>%s</version><dir>%s</dir></script>'
 for (pos, temp) in [('', s), ('plugins', p)]:
     for script in glob.glob(os.path.join(dirpath, pos,'*.py')):
+        if 'maclient_cli.py' in script:
+            continue
         _s = open(script).read()
         ver = re.findall('__version__[\s=\']*([^\'\s]+)[\']*', _s)
         if ver:
