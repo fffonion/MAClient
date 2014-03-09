@@ -237,7 +237,10 @@ class MAClient():
         if not xmlresp:
             dec = _dec
         else:
-            dec = XML2Dict().fromstring(_dec).response
+            try:
+                dec = XML2Dict().fromstring(_dec).response
+            except:
+                dec = XML2Dict().fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
             try:
                 err = dec.header.error
             except:
