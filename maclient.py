@@ -551,7 +551,7 @@ class MAClient():
                     logging.warning('卡片已经放不下了，请自行卖卡www')
                     return False
             if self.player.friendship_point > getattr(maclient_smart, 'max_fp_%s' % self.loc[:2]) * 0.95 and \
-                not doingwhat in ['gacha/buy', 'gacha/select/getcontents']:
+                doingwhat != 'gacha/buy':
                 if self.cfg_autogacha:
                     logging.info('绊点有点多，自动转蛋(*￣▽￣)y ')
                     self.gacha(gacha_type = GACHA_FRIENNSHIP_POINT)
@@ -817,7 +817,7 @@ class MAClient():
 
             area = random.choice(areasel)
             logging.debug('explore:area id:%s' % area.id)
-            logging.info('选择了秘境 %s' % area.name)
+            logging.info('选择了秘境 %s(%s%%/%s%%)' % (area.name, area.prog_area, area.prog_item))
             next_floor = 'PLACE-HOLDER'
             while next_floor:
                 next_floor, msg = self._explore_floor(area, next_floor)

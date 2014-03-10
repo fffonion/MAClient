@@ -96,8 +96,8 @@ def query_rank(plugin_vals):
                 (not _guild_mode and _lib.query_rev[0] and _lib.query_rev[1]) or _goto:
                 _coll_mode = 1 if raw_inputd('查询收集品排名(c)(默认)还是妖精加权排名(f)> ') != 'f' else 0
             else:
-                _coll_mode = _guild_mode and (1 if _lib.query_rev[3] else 0) or \
-                            (1 if _lib.query_rev[1] else 0)  
+                _coll_mode = (1 if _lib.query_rev[3] else 0) if _guild_mode else \
+                            (1 if _lib.query_rev[1] else 0)
             def show_it(content):
                 strl = '\n%s\n%s\n' %(_lib.query_title(content),'-'*20)
                 for (k, v) in _lib.query_regex[_guild_mode + _coll_mode]:
