@@ -118,7 +118,12 @@ namespace MAClientGUI
             chkUsePlugins.Checked = cf.ReadBool("system", "enable_plugin");
             chkAllowLongSleep.Checked = cf.ReadBool("system", "allow_long_sleep");
             txtReconnectGap.Text = cf.Read("system", "reconnect_gap");
-            if (new Regex(@"\d+\:\d+", RegexOptions.Compiled).IsMatch(txtReconnectGap.Text))
+            if (txtReconnectGap.Text == "")
+            {
+                txtReconnectGap.Text = "0";
+                cboReconnectGapIndicator.SelectedIndex = 0;
+            }
+            else if (new Regex(@"\d+\:\d+", RegexOptions.Compiled).IsMatch(txtReconnectGap.Text))
                 cboReconnectGapIndicator.SelectedIndex = 2;
             else if (txtReconnectGap.Text == "0")
                 cboReconnectGapIndicator.SelectedIndex = 0;
@@ -1901,7 +1906,10 @@ namespace MAClientGUI
         private void cboReconnectGapIndicator_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cboReconnectGapIndicator.SelectedIndex == 0)
-                txtReconnectGap.Enabled=false;
+            {
+                txtReconnectGap.Enabled = false;
+                txtReconnectGap.Text = "0";
+            }
             else
                 txtReconnectGap.Enabled = true;
             txtReconnectGap_TextChanged(sender, e);
