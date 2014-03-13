@@ -122,7 +122,7 @@ class item(object):
             f = open(opath.join(getPATH0, 'db/item.%s.txt' % loc), encoding = 'utf8')
         else:
             f = open(opath.join(getPATH0, 'db/item.%s.txt' % loc))
-        for c in f.readlines()[:-1]:
+        for c in f.readlines():
             c = _split(c)
             self.db[int(c[0])] = [c[1], 0]
 
@@ -151,7 +151,7 @@ class card(object):
             f = open(opath.join(getPATH0, 'db/card.%s.txt' % loc), encoding = 'utf8')
         else:
             f = open(opath.join(getPATH0, 'db/card.%s.txt' % loc))
-        for c in f.readlines()[:-1]:
+        for c in f.readlines():
             c = _split(c)
             self.db[int(c[0])] = [c[1], int(c[2]), int(c[3])]
 
@@ -193,7 +193,7 @@ class boss(object):
         else:
             b = open(opath.join(getPATH0, 'db/boss.%s.txt' % loc))
         lastname = 'NOTHING'
-        for c in b.readlines()[:-1]:
+        for c in b.readlines():
             c = _split(c)
             #self.hp_factor[int(c[0])] = int(c[2])
             if lastname in c[1] and int(c[0])>2000:

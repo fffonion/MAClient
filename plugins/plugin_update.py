@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.15
+__version__ = 0.16
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update'}
 #是否下载dev版
@@ -120,6 +120,8 @@ def _check_update(silent = False):
             mainitm = k
         elif k.name == 'maclient_smart.py':
             smtitm = k
+        if EXEBUNDLE and k.name in ['maclient_cli.py', 'maclient_smart.py']:
+            continue
         if opath.exists(script):
             _s = open(script).read()
             ver = re.findall('__version__[\s=\']*([^\'\s]+)[\']*', _s)
@@ -129,15 +131,15 @@ def _check_update(silent = False):
         else: #new item
             xml += s_new % (k.name, k.version, k.dir or '')
             new = True
-    if EXEBUNDLE:
-        import maclient
-        import maclient_smart
-        if str(maclient.__version__) < mainitm.version:
-            xml += single % (mainitm.name, mainitm.version, '')
-            new = True
-        if str(maclient_smart.__version__) < smtitm.version:
-            xml += single % (smtitm.name, smtitm.version, '')
-            new = True
+    # if EXEBUNDLE:
+    #     import maclient
+    #     import maclient_smart
+    #     if str(maclient.__version__) < mainitm.version:
+    #         xml += s_update % (mainitm.name, mainitm.version, '')
+    #         new = True
+    #     if str(maclient_smart.__version__) < smtitm.version:
+    #         xml += s_update % (smtitm.name, smtitm.version, '')
+    #         new = True
     if new:
         open(opath.join(_get_temp(), '.MAClient.update'), 'w').write(xml+'</maclient>')
         return True

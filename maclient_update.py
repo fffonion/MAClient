@@ -58,19 +58,18 @@ def update_master(loc, need_update, poster):
     if need_update[0]:
         poster.set_timeout(240)
         a, b = poster.post('masterdata/card/update', postdata = '%s&revision=0' % poster.cookie)
-        resp = XML2Dict().fromstring(replace_AND.sub('--', b)).response  # 不替换会解析出错摔
+        resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response  # 不替换会解析出错摔
         cards = resp.body.master_data.master_card_data.card
-        strs = []
-        for c in cards:
-            strs.append('%s,%s,%s,%s,%s,%s,%s,%s' % (
+        strs = ['%s,%s,%s,%s,%s,%s,%s,%s' % (
                 c.master_card_id,
-                c.name.replace('--', '&'),
+                c.name,
                 c.rarity,
                 c.cost,
                 str(c.char_description).strip('\n').strip(' ').replace('\n', '\\n'),
                 c.skill_kana,
                 c.skill_name,
-                str(c.skill_description).replace('\n', '\\n')))
+                str(c.skill_description).replace('\n', '\\n')
+              ) for c in cards] + ['']
         if PYTHON3:
             f = open(opath.join(getPATH0, 'db/card.%s.txt' % loc), 'w', encoding = 'utf-8').write('\n'.join(strs))
         else:
@@ -80,12 +79,12 @@ def update_master(loc, need_update, poster):
     if need_update[1]:
         poster.set_timeout(240)
         a, b = poster.post('masterdata/item/update', postdata = '%s&revision=0' % poster.cookie)
-        resp = XML2Dict().fromstring(replace_AND.sub('--', b)).response
+        resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response
         items = resp.body.master_data.master_item_data.item_info
         strs = ['%s,%s,%s' % (
                 c.item_id,
-                c.name.replace('--', '&'),
-                c.explanation.replace('\n','\\n').replace('--', '&')
+                c.name,
+                c.explanation.replace('\n','\\n')
             ) for c in items] + ['']
         if PYTHON3:
             open(opath.join(getPATH0, 'db/item.%s.txt' % loc), 'w', encoding = 'utf-8').write('\n'.join(strs))
@@ -96,11 +95,11 @@ def update_master(loc, need_update, poster):
     if need_update[2]:
         poster.set_timeout(240)
         a, b = poster.post('masterdata/boss/update', postdata = '%s&revision=0' % poster.cookie)
-        resp = XML2Dict().fromstring(replace_AND.sub('--', b)).response
+        resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response
         boss = resp.body.master_data.master_boss_data.boss
         strs = ['%s,%s,%s' % (
                 c.master_boss_id,
-                c.name.replace('--', '&'),
+                c.name,
                 c.hp
             ) for c in boss] + ['']
         if PYTHON3:

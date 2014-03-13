@@ -29,7 +29,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.67
+__version__ = 1.68
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
@@ -98,7 +98,7 @@ class conn_ani(threading.Thread):
 
 class MAClient():
     global plugin
-    plugin = maclient_plugin.plugins(logging)
+    plugin = maclient_plugin.plugins(logging, __version__)
     def __init__(self, configfile = '', savesession = False):
         if not PYTHON3:
             reload(sys)
@@ -176,6 +176,7 @@ class MAClient():
             self.loc == 'tw' and random.choice(['大家好.', '問好']) or random.choice(['你好！', '你好！请多指教！']))
         self.cfg_factor_getnew = not self._read_config('tactic', 'factor_getnew') == '0'
         self.cfg_auto_update = not self._read_config('system', 'auto_update') == '0'
+        self.cfg_allow_long_sleep = not self._read_config('system', 'allow_long_sleep') == '0'
         logging.basicConfig(level = self._read_config('system', 'loglevel') or '2')
         logging.setlogfile('events_%s.log' % self.loc)
         self.cfg_delay = float(self._read_config('system', 'delay'))
@@ -237,7 +238,10 @@ class MAClient():
         if not xmlresp:
             dec = _dec
         else:
-            dec = XML2Dict().fromstring(_dec).response
+            try:
+                dec = XML2Dict().fromstring(_dec).response
+            except:
+                dec = XML2Dict().fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
             try:
                 err = dec.header.error
             except:
@@ -252,12 +256,30 @@ class MAClient():
                     if err.code == '9000':
                         self._write_config('account_%s' % self.loc, 'session', '')
                         logging.info('A一个新的小饼干……')
+                        #重连策略
+                        _gap = self._read_config('system', 'reconnect_gap')
+                        if re.match('\d+\:\d+', _gap):
+                            _gap = _gap.split(':')
+                            _gap = 60 * (int(_gap[0]) - datetime.datetime.now().hour) +\
+                                        int(_gap[1]) - datetime.datetime.now().minute
+                            if _gap < 0:#明天
+                                _gap += 1440
+                        elif _gap.isdigit():
+                            _gap = int(_gap)
+                        else:
+                            logging.warning('reconnect_gap配置错误')
+                            _gap = 0
+                        if _gap:
+                            logging.sleep('将在%s%d分钟后重连' % 
+                                ((_gap >60 and ("%d小时" % (_gap / 60)) or '') , (_gap > 60 and (_gap % 60) or _gap))
+                            )
+                            self.sleeper(_gap * 60)
                         self.login(fast = True)
                         return self._dopost(urikey, postdata, usecookie, setcookie, extraheader, xmlresp, noencrypt)
                     elif err.code == '1020':
                         logging.sleep('因为服务器维护，休息约30分钟')
                         time.sleep(random.randint(28, 32) * 60)
-                        self.player.update_checked = False  # 置为未检查
+                        self.player.rev_update_checked = False  # 置为未检查
                         return resp, dec
             if not self.player_initiated :
                 open(self.playerfile, 'w').write(_dec)
@@ -345,7 +367,7 @@ class MAClient():
         self.cf.write(open(f, "w"))
 
     def _eval_gen(self, streval, repllst = [], super_prefix = None):
-        repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('FAIRY_ALIVE', 'self.player.fairy["alive"]'), ('GUILD_ALIVE', "self.player.fairy['guild_alive']"), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('GOLD', 'self.player.gold'), ('FP', 'self.friendship_point')]
+        repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('FAIRY_ALIVE', 'self.player.fairy["alive"]'), ('GUILD_ALIVE', "self.player.fairy['guild_alive']"), ('BC%', '1.0*self.player.bc["current"]/self.player.bc["max"]'), ('AP%', '1.0*self.player.ap["current"]/self.player.ap["max"]'), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('GOLD', 'self.player.gold'), ('FP', 'self.friendship_point')]
         if streval == '':
             return 'True'
         if super_prefix:
@@ -359,6 +381,17 @@ class MAClient():
             return [obj]
         else:
             return obj
+
+    @plugin.func_hook
+    def sleeper(self, length):#, override_long_sleep = False):
+        if length > 60 and (self.cfg_allow_long_sleep or override_long_sleep):
+            #抽风唤醒
+            while length > 60:
+                time.sleep(60)
+                length -= 60
+            time.sleep(length)
+        else:
+            time.sleep(length)
 
     @plugin.func_hook
     def tasker(self, taskname = '', cmd = ''):
@@ -455,7 +488,7 @@ class MAClient():
                 elif task[0] in ['sleep', 'slp']:
                     slptime = float(eval(self._eval_gen(task[1])))
                     logging.sleep('睡觉%s分' % slptime)
-                    time.sleep(slptime * 60)
+                    self.sleeper(slptime * 60)
                 else:
                     logging.warning('command "%s" not recognized.' % task[0])
                 if cnt != 1:
@@ -548,7 +581,7 @@ class MAClient():
                     logging.warning('卡片已经放不下了，请自行卖卡www')
                     return False
             if self.player.friendship_point > getattr(maclient_smart, 'max_fp_%s' % self.loc[:2]) * 0.95 and \
-                not doingwhat in ['gacha/buy', 'gacha/select/getcontents']:
+                doingwhat != 'gacha/buy':
                 if self.cfg_autogacha:
                     logging.info('绊点有点多，自动转蛋(*￣▽￣)y ')
                     self.gacha(gacha_type = GACHA_FRIENNSHIP_POINT)
@@ -720,7 +753,7 @@ class MAClient():
         logging.info('卡组没有改变')
         return False, 0
 
-
+    @plugin.func_hook
     def _use_item(self, itemid):
         if self.player.item.get_count(int(itemid)) == 0 :
             logging.error('道具 %s 数量不足' % self.player.item.get_name(int(itemid)))
@@ -814,7 +847,7 @@ class MAClient():
 
             area = random.choice(areasel)
             logging.debug('explore:area id:%s' % area.id)
-            logging.info('选择了秘境 %s' % area.name)
+            logging.info('选择了秘境 %s(%s%%/%s%%)' % (area.name, area.prog_area, area.prog_item))
             next_floor = 'PLACE-HOLDER'
             while next_floor:
                 next_floor, msg = self._explore_floor(area, next_floor)
@@ -1174,7 +1207,7 @@ class MAClient():
             if looptime != l + 1:  # 没有立即刷新
                 s = random.randint(int(60 * slptime * 0.8 * slpfactor), int(60 * slptime * 1.2 * slpfactor))
                 logging.sleep('%d秒后刷新……' % s)
-                time.sleep(s)
+                self.sleeper(s)
 
     @plugin.func_hook
     def fairy_select(self, cond = '', carddeck = None):

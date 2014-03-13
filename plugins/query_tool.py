@@ -7,7 +7,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = 'query infomation of player'
 __author = 'fffonion'
-__version__ = 0.33
+__version__ = 0.34
 hooks = {}
 extra_cmd = {'q_item':'query_item', 'qi':'query_item', 'q_holo':'query_holo', 'qh':'query_holo', 'qgc':'query_guild_contribution','q_rank':'query_rank','qr':'query_rank'}
 # end meta
@@ -96,7 +96,8 @@ def query_rank(plugin_vals):
                 (not _guild_mode and _lib.query_rev[0] and _lib.query_rev[1]) or _goto:
                 _coll_mode = 1 if raw_inputd('查询收集品排名(c)(默认)还是妖精加权排名(f)> ') != 'f' else 0
             else:
-                _coll_mode = 0
+                _coll_mode = (1 if _lib.query_rev[3] else 0) if _guild_mode else \
+                            (1 if _lib.query_rev[1] else 0)
             def show_it(content):
                 strl = '\n%s\n%s\n' %(_lib.query_title(content),'-'*20)
                 for (k, v) in _lib.query_regex[_guild_mode + _coll_mode]:
