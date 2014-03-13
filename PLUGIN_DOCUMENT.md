@@ -68,6 +68,7 @@ hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
     factor_battle 因子战
     invoke_autoset 自动配卡
     _exit 程序退出 (1.67及以上版本)
+    sleeper 睡眠调度器 (1.68及以上版本)
 
 冒号后的数值表示钩子的优先级，越大则越先被调用
 

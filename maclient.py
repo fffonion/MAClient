@@ -176,6 +176,7 @@ class MAClient():
             self.loc == 'tw' and random.choice(['大家好.', '問好']) or random.choice(['你好！', '你好！请多指教！']))
         self.cfg_factor_getnew = not self._read_config('tactic', 'factor_getnew') == '0'
         self.cfg_auto_update = not self._read_config('system', 'auto_update') == '0'
+        self.cfg_allow_long_sleep = not self._read_config('system', 'allow_long_sleep') == '0'
         logging.basicConfig(level = self._read_config('system', 'loglevel') or '2')
         logging.setlogfile('events_%s.log' % self.loc)
         self.cfg_delay = float(self._read_config('system', 'delay'))
@@ -255,6 +256,24 @@ class MAClient():
                     if err.code == '9000':
                         self._write_config('account_%s' % self.loc, 'session', '')
                         logging.info('A一个新的小饼干……')
+                        #重连策略
+                        _gap = self._read_config('system', 'reconnect_gap')
+                        if re.match('\d+\:\d+', _gap):
+                            _gap = _gap.split(':')
+                            _gap = 60 * (int(_gap[0]) - datetime.datetime.now().hour) +\
+                                        int(_gap[1]) - datetime.datetime.now().minute
+                            if _gap < 0:#明天
+                                _gap += 1440
+                        elif _gap.isdigit():
+                            _gap = int(_gap)
+                        else:
+                            logging.warning('reconnect_gap配置错误')
+                            _gap = 0
+                        if _gap:
+                            logging.sleep('将在%s%d分钟后重连' % 
+                                ((_gap >60 and ("%d小时" % (_gap / 60)) or '') , (_gap > 60 and (_gap % 60) or _gap))
+                            )
+                            self.sleeper(_gap * 60)
                         self.login(fast = True)
                         return self._dopost(urikey, postdata, usecookie, setcookie, extraheader, xmlresp, noencrypt)
                     elif err.code == '1020':
@@ -364,6 +383,17 @@ class MAClient():
             return obj
 
     @plugin.func_hook
+    def sleeper(self, length):#, override_long_sleep = False):
+        if length > 60 and (self.cfg_allow_long_sleep or override_long_sleep):
+            #抽风唤醒
+            while length > 60:
+                time.sleep(60)
+                length -= 60
+            time.sleep(length)
+        else:
+            time.sleep(length)
+
+    @plugin.func_hook
     def tasker(self, taskname = '', cmd = ''):
         cnt = int(self._read_config('system', 'tasker_times') or '1')
         if cnt == 0:
@@ -458,7 +488,7 @@ class MAClient():
                 elif task[0] in ['sleep', 'slp']:
                     slptime = float(eval(self._eval_gen(task[1])))
                     logging.sleep('睡觉%s分' % slptime)
-                    time.sleep(slptime * 60)
+                    self.sleeper(slptime * 60)
                 else:
                     logging.warning('command "%s" not recognized.' % task[0])
                 if cnt != 1:
@@ -1177,7 +1207,7 @@ class MAClient():
             if looptime != l + 1:  # 没有立即刷新
                 s = random.randint(int(60 * slptime * 0.8 * slpfactor), int(60 * slptime * 1.2 * slpfactor))
                 logging.sleep('%d秒后刷新……' % s)
-                time.sleep(s)
+                self.sleeper(s)
 
     @plugin.func_hook
     def fairy_select(self, cond = '', carddeck = None):
