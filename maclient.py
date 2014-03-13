@@ -257,7 +257,7 @@ class MAClient():
                         self._write_config('account_%s' % self.loc, 'session', '')
                         logging.info('A一个新的小饼干……')
                         #重连策略
-                        _gap = self._read_config('system', 'reconnect_gap')
+                        _gap = self._read_config('system', 'reconnect_gap') or '0'
                         if re.match('\d+\:\d+', _gap):
                             _gap = _gap.split(':')
                             _gap = 60 * (int(_gap[0]) - datetime.datetime.now().hour) +\
@@ -384,7 +384,7 @@ class MAClient():
 
     @plugin.func_hook
     def sleeper(self, length):#, override_long_sleep = False):
-        if length > 60 and (self.cfg_allow_long_sleep or override_long_sleep):
+        if length > 60 and not self.cfg_allow_long_sleep:
             #抽风唤醒
             while length > 60:
                 time.sleep(60)
