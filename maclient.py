@@ -301,7 +301,7 @@ class MAClient():
                         self.player.rev_need_update = False, False, False
                     else:
                         logging.warning('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库')
-                if not resp['error']:
+                if not resp['error'] or resp['errno'] == 8000:
                     # update profile
                     update_dt = self.player.update_all(dec)
                     # self.remoteHdl(method='PROFILE')
