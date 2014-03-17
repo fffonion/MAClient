@@ -187,7 +187,10 @@ class poster():
         self.cookie = cookie
 
     def enable_savetraffic(self):
-        self.issavetraffic = True
+        if httplib2.__version__.endswith('+'):
+            self.issavetraffic = True
+        else:
+            self.logger.warning('你正在使用官方版的httplib2，因此省流模式将无法正常工作')
 
     def gen_2nd_key(self, uid, loc='jp'):
         self.crypt.AES2ndKey = self.crypt.gen_cipher_with_uid(uid, loc)
@@ -279,11 +282,11 @@ class poster():
                     self.logger.warning('post:socket closed, retrying in %d times' % (ttimes - trytime))
                 except httplib2.ServerNotFoundError:
                     self.logger.warning('post:no internet, retrying in %d times' % (ttimes - trytime))
-                except TypeError:  # 使用了官方版的httplib2
-                    self.logger.warning(du8('你正在使用官方版的httplib2，因此省流模式将无法正常工作'))
-                    self.issavetraffic = False
-                    extra_kwargs = {}
-                    trytime += 1 #不算
+                # except TypeError:  # 使用了官方版的httplib2
+                #     self.logger.warning(du8('你正在使用官方版的httplib2，因此省流模式将无法正常工作'))
+                #     self.issavetraffic = False
+                #     extra_kwargs = {}
+                #     trytime += 1 #不算
                 else:
                     if int(resp['status']) < 400:
                         break
