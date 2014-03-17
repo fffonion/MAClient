@@ -3,7 +3,7 @@ from _prototype import plugin_prototype
 # start meta
 __plugin_name__ = '台服优先嗑限时红绿茶'
 __author = 'fffonion'
-__version__ = 0.13
+__version__ = 0.14
 hooks = {'ENTER__use_item':1}
 extra_cmd = {}
 require_version = 1.68
@@ -47,6 +47,8 @@ class plugin(plugin_prototype):
                 mac._use_item(iid)
                 time.sleep(1.414)
             except KeyboardInterrupt:
+                break
+            except ValueError:#ctrl+c caused incomplete read
                 break
         args = (mac, iid)
         self.already_inhook = False
