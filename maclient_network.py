@@ -256,12 +256,12 @@ class poster():
                     postdata = self.crypt.encode_param(postdata, second_cipher = self.has_2ndkey and not no2ndkey)  
             trytime = 0
             ttimes = 3
-            callback_hook = None
+            extra_kwargs = {}
             if savetraffic and self.issavetraffic:
-                callback_hook = lambda x:x
+                extra_kwargs = {'callback_hook' : lambda x:x, 'chunk_size' : None}
             while trytime < ttimes:
                 try:
-                    resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata, callback_hook = callback_hook, chunk_size = None)
+                    resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata, **extra_kwargs)
                     assert(len(content) > 0 or (savetraffic and self.issavetraffic) or resp['status'] == '302')
                 except socket.error as e:
                     if e.errno == None:
@@ -280,10 +280,10 @@ class poster():
                 except httplib2.ServerNotFoundError:
                     self.logger.warning('post:no internet, retrying in %d times' % (ttimes - trytime))
                 except TypeError:  # 使用了官方版的httplib2
-                    if savetraffic and self.issavetraffic:
-                        self.logger.warning(du8('你正在使用官方版的httplib2，因此省流模式将无法正常工作'))
-                    resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata)
-                    break
+                    self.logger.warning(du8('你正在使用官方版的httplib2，因此省流模式将无法正常工作'))
+                    self.issavetraffic = False
+                    extra_kwargs = {}
+                    trytime += 1 #不算
                 else:
                     if int(resp['status']) < 400:
                         break
