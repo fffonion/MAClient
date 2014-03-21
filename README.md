@@ -4,7 +4,7 @@
 
 [插件制作文档](PLUGIN_DOCUMENT.md)
 
-[在root过的android手机上运行MAClient](https://github.com/fffonion/MAClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8CMAClient)
+[在Android设备上运行MAClient](https://github.com/fffonion/MAClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8CMAClient)
 
 Windows用户可以从[这里](http://pan.baidu.com/s/19qI4m)获得二进制文件，或者从[release](https://github.com/fffonion/MAClient/releases)下载
 
