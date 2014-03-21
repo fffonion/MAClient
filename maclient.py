@@ -1255,9 +1255,9 @@ class MAClient():
             fairy.fairy['not_battled'] = ftime[0] == ''
             # logging.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
             if eval(evalstr):
-                if time.time() - int(ftime[1] or '0') < 180 and cond == '':  # 若手动选择则不受3min限制
-                    logging.debug('fairy_select:sid %s battled in less than 3 min' % fairy.fairy.serial_id)
-                    continue
+                # if time.time() - int(ftime[1] or '0') < 180 and cond == '':  # 若手动选择则不受3min限制
+                #     logging.debug('fairy_select:sid %s battled in less than 3 min' % fairy.fairy.serial_id)
+                #     continue
                 fairies.append(fairy)
         logging.info(len(fairies) == 0 and '木有符合条件的妖精-v-' or '符合条件的有%d只妖精XD' % len(fairies))
         # 依次艹

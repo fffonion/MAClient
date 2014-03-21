@@ -142,8 +142,11 @@ class item(object):
 class card(object):
     def __init__(self, loc):
         self.db = {}
+        self.multi = {}
         self.load_db(loc)
+        self.load_multi(loc)
         self.count = 0
+
 
     def load_db(self, loc):
         # print(open(opath.join(getPATH0,'db/card.%s.txt'%loc),encoding='utf8').read().encode(encoding="utf-8"))
@@ -154,6 +157,23 @@ class card(object):
         for c in f.readlines():
             c = _split(c)
             self.db[int(c[0])] = [c[1], int(c[2]), int(c[3])]
+
+    def load_multi(self, loc):
+        _f = opath.join(getPATH0, 'db/card.multi.txt')
+        if not opath.exists(_f):
+            return
+        if PYTHON3:
+            f = open(_f, encoding = 'utf8')
+        else:
+            f = open(_f)
+        for c in f.readlines():
+            if c.startswith(loc):
+                c = c[3:].rstrip('\n')
+                break
+            c = ''
+        #变量名是不是很给力！
+        if c:
+            self.multi = dict(map(lambda d: map(lambda e: int(e), d.split(',')), c.split(';')))
 
     def update(self, carddict):
         self.cards = []

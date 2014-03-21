@@ -277,13 +277,20 @@ if __name__ == '__main__':
             elif ch == '5':
                 dec = maclient1.login()
                 maclient1.initplayer(dec)
-                logging.info(du8('将强制重新从服务器下载数据……'))
+                print(du8('更新游戏数据(g/默认)还是倍卡数据(b)?'))
+                inp = raw_input('> ') or 'g'
                 import maclient_update
-                crev, irev, brev = maclient_update.update_master(maclient1.loc, (True, True, True), maclient1.poster)
-                logging.info(du8('%s%s%s' % (
-                    '卡片数据更新为rev.%s' % crev if crev else '',
-                    '道具数据更新为rev.%s' % irev if irev else '',
-                    '强敌数据更新为rev.%s' % brev if brev else '')))
+                if inp == 'g':
+                    logging.info(du8('将强制重新从服务器下载数据……'))
+                    crev, irev, brev = maclient_update.update_master(maclient1.loc[:2], (True, True, True), maclient1.poster)
+                    logging.info(du8('%s%s%s' % (
+                        '卡片数据更新为rev.%s' % crev if crev else '',
+                        '道具数据更新为rev.%s' % irev if irev else '',
+                        '强敌数据更新为rev.%s' % brev if brev else '')))
+                elif inp == 'b':
+                    logging.info(du8('将从多玩数据库下载倍卡信息……'))
+                    getnew = maclient_update.update_multi(maclient1.loc[:2])
+                    logging.info('获得%d条倍卡信息' % getnew)
                 # the following is deprecated
                 # getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
                 #  and sys.path[0].decode(sys.getfilesystemencoding()) \

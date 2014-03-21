@@ -110,3 +110,54 @@ def update_master(loc, need_update, poster):
         save_revision(loc, bossrev = new_rev[2])
     poster.set_timeout(15)#rollback
     return new_rev
+
+def update_multi(loc):
+    '''抓多玩倍卡数据
+    see utils/duowandb.py'''
+    from httplib2 import Http
+    import base64
+    import time
+    ht = Http()
+    clist = []
+    maxpage = 1
+    i = 1
+    if loc == 'cn':
+        qurl = 'http://db.duowan.com/ma/cn/card/list/%s.html'
+        idx = 0
+    elif loc == 'tw':
+        qurl = 'http://db.duowan.com/ma/card/list/%s.html'
+        idx = 1
+    else:
+        return 0
+    def dwb64(str):
+        return base64.encodestring(str).replace('=','_3_').rstrip('\n')
+    while (i <= maxpage):
+        resp, ct = ht.request(qurl % dwb64('{"beishu":"all","p":%d,"sort":"quality.desc"}' % i),
+                              headers = {'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                                        'Accept-Language':'zh-CN',
+                                        'Cache-Control':'no-cache',
+                                        'Connection':'keep-alive',
+                                        'DNT':'1',
+                                        'Host':'db.duowan.com',
+                                        'Pragma':'no-cache',
+                                        'User-Agent':'Mozilla/5.0 AppleWebKit/535.12 (KHTML, like Gecko) Chrome/33.0.1782.121 Safari/535.12'}
+                                )
+        nav = re.findall('mod-page center.*?</div>', ct, re.DOTALL)[0]
+        maxpage = len(re.findall('href', nav)) - 2
+        i += 1
+        tr = re.findall('tr[^c]*class="even">(.*?)<\/tr', ct, re.DOTALL)
+        for t in tr:
+            mid = re.findall('src="http://img.dwstatic.com/ma/[zh_]*pic/face/face_(\d+).jpg">', t)[0]
+            beishu = re.findall('class="icon(\d+)">', t)[0]#哈哈哈哈
+            clist.append(','.join([mid, beishu]))
+        time.sleep(1.414)
+    new = '%s=%s\n' % (loc, ';'.join(clist))
+    _f = opath.join(getPATH0, 'db/card.multi.txt')
+    if PYTHON3:
+        kw = {'encoding' : 'utf-8'}
+    else:
+        kw = {}
+    lines = open(_f, **kw).readlines()
+    lines[idx] = new
+    open(_f, 'w', **kw).write(''.join(lines))
+    return len(clist)
