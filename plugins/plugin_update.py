@@ -18,9 +18,9 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.17
+__version__ = 0.18
 hooks = {}
-extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update'}
+extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update', 'us':'update_self'}
 #是否下载dev版
 GET_DEV_UPDATE = True
 
@@ -41,15 +41,32 @@ def plugin_update(plugin_vals):
             if '-f' in args.split(' ') and opath.exists(check_file):
                 os.remove(check_file)
             if not _check_update():
-                print(du8('已是最新版本 (上次检查%s)\n%s' % (
+                print(du8('已是最新版本 (上次检查%s)%s%s' % (
                     time.strftime('%b.%d %a %H:%M', 
                         opath.exists(check_file) and \
                             time.localtime(os.path.getmtime(check_file)) or \
                             time.localtime(time.time())
                         ),
-                    '' if '-f' in args.split(' ') else '可使用pu -f强制重新检查')))
+                    '\n' if '-f' in args.split(' ') else '\n可使用pu -f强制重新检查\n还',
+                    '' if EXEBUNDLE else '可通过us命令来更新本体到最新版')))
                 return
         _do_update()
+    return do
+
+def update_self(plugin_vals):
+    def do(args):
+        if EXEBUNDLE:
+            print(du8('exe版不能使用此功能'))
+            return
+        global repos
+        repos = repos[::-1]#use github first
+        for s in ["maclient.py", "maclient_network.py", "maclient_smart.py", "maclient_player.py", 
+                "maclient_proxy.py", "maclient_update.py", "maclient_logging.py", "maclient_plugin.py", "cross_platform.py"]:
+            py = _http_get((GET_DEV_UPDATE and 'dev/' or 'master/') + s)
+            open(opath.join(getPATH0, s), 'w').write(py.replace('\r\n', '\n'))
+            print(du8('√ 已获取 %s' % s))
+        print(du8('重新启动maclient以应用更新'))
+        repos = repos[::-1]
     return do
 
 class _bg_check(threading.Thread):
@@ -179,9 +196,12 @@ def _do_update(silent = False):
                 continue
             if k.name == 'maclient.py':
                 if not silent:
-                    print(du8('√ 主程序有新版本 v%s 请至以下链接查看\n'
+                    if EXEBUNDLE:
+                        print(du8('√ 主程序有新版本 v%s 请至以下链接查看\n'
                               'github: https://github.com/fffonion/MAClient/\n'
                               '百度盘: http://pan.baidu.com/s/19qI4m' % k.version))
+                    else:
+                        update_self({})('')
                 continue
             elif k.name == 'maclient_smart.py' and EXEBUNDLE:
                 new = _http_get('update/maclient_smart.bin', silent)
@@ -207,6 +227,8 @@ def _do_update(silent = False):
             if not silent:
                 print(du8(_prompt % (k.name, k.version)))
                 _done = True
+    if not EXEBUNDLE:
+        print(du8('你可以通过us命令来更新本体到最新版'))
     os.remove(update_file)
     if _done:
         print(du8('重新启动maclient以应用更新'))
