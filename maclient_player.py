@@ -146,7 +146,8 @@ class card(object):
         self.load_db(loc)
         self.load_multi(loc)
         self.count = 0
-
+        self.latest_multi = opath.getmtime(opath.join(getPATH0, 'db/card.multi.txt')) > \
+                            opath.getmtime(opath.join(getPATH0, 'db/card.%s.txt' % loc))
 
     def load_db(self, loc):
         # print(open(opath.join(getPATH0,'db/card.%s.txt'%loc),encoding='utf8').read().encode(encoding="utf-8"))

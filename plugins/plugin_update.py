@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.16
+__version__ = 0.17
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update'}
 #是否下载dev版
@@ -120,7 +120,19 @@ def _check_update(silent = False):
             mainitm = k
         elif k.name == 'maclient_smart.py':
             smtitm = k
-        if EXEBUNDLE and k.name in ['maclient_cli.py', 'maclient_smart.py']:
+        if EXEBUNDLE:
+            if k.name == 'maclient_cli.py':
+                continue
+            elif k.name == 'maclient.py':
+                import maclient
+                if str(maclient.__version__) < k.version:
+                    xml += s_update % (k.name, k.version, k.dir or '')
+                    new = True
+            elif k.name == 'maclient_smart.py':
+                import maclient_smart
+                if str(maclient_smart.__version__) < k.version:
+                    xml += s_update % (k.name, k.version, k.dir or '')
+                    new = True
             continue
         if opath.exists(script):
             _s = open(script).read()

@@ -557,6 +557,8 @@ class MAClient():
             self.stitle = set_title(self)
             self.stitle.setDaemon(True)
             self.stitle.start()
+        if self.loc[:2] in ['cn', 'tw'] and not self.player.card.latest_multi:
+            logging.warning('倍卡数据可能已过期，请通过"更新数据库"选项更新\n一般请在维护后一天左右使用更新')
 
     @plugin.func_hook
     def auto_check(self, doingwhat):
