@@ -968,6 +968,14 @@ class MAClient():
                             next_floor = info.next_floor.floor_info
                             return next_floor, EXPLORE_OK
                         else:
+                            if 'bonus_list' in ct.body:
+                                msg = ct.body.bonus_list.message
+                                rwds = []
+                                for b in self.tolist(ct.body.bonus_list.bonus):
+                                    msg += '%sx%s' % (self.player.item.get_name(int(b.item_id)), b.item_num)
+                                    rwds.append(b.id)
+                                logging.info(msg)
+                                self._get_rewards(rwds)
                             return None, EXPLORE_OK
                     elif info.event_type == '12':
                         logging.info('AP回复~')
@@ -1668,11 +1676,8 @@ class MAClient():
                             confirm = True
                 else:
                     u = raw_inputd('没有要删除的好友\n输入序号可以手动删除好友，按回车返回> ')
-                    try:
-                        int(u)
-                    except ValueError:
-                        if u:
-                            logging.warning('输入"%s"非数字' % u)
+                    if not u.isdigit():
+                        logging.warning('输入"%s"非数字' % u)
                     else:
                         deluser = users[int(u) - 1]
                         if not autodel:
@@ -1854,7 +1859,7 @@ class MAClient():
             return
         free_points = int(ct.header.your_data.free_ap_bc_point)
         if free_points == 0:
-            logging.info('没有未分配点数233')
+            logging.info('没有未分配的点数233')
             return False
         else:
             logging.info('还有%d点未分配点数' % free_points)
