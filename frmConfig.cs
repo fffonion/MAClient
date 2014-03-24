@@ -109,6 +109,13 @@ namespace MAClientGUI
             {
                 cbTask.SelectedIndex = 0;
             }
+            cboDeckList.Items.Clear();
+            List<string> lst2 = cf.EnumIniKey("carddeck");
+            foreach (string ts in lst2)
+            {
+                cboDeckList.Items.Add(ts.Split('=')[0].Trim());
+
+            }
             numTaskTimes.Value = cf.ReadInt("system", "tasker_times");
             numFactorTimes.Value = cf.ReadInt("system", "try_factor_times");
             numFactorSleep.Value = cf.ReadInt("system", "factor_sleep");
@@ -152,7 +159,6 @@ namespace MAClientGUI
             txtFairySleep.Text = cf.Read("system", "fairy_battle_sleep");
             numFairySleepFactor.Value = (decimal)cf.ReadFloat("system", "fairy_battle_sleep_factor");
             txtGreetWords.Text = cf.Read("tactic", "greet_words");
-            label23.Text = "刷妖精战" + numFactorTimes.Value + "次";
 
             txtDisabledPlugins.Text = cf.Read("plugin", "disabled");
             //button10.Text = "开始任务" + txtTaskName.Text;
@@ -450,7 +456,6 @@ namespace MAClientGUI
             numFairySleepFactor.Value = 1;
             txtGreetWords.Text = "你好！";
 
-            label23.Text = "刷妖精战" + numFactorTimes.Value + "次";
             //button10.Text = "开始任务" + txtTaskName.Text;
             setToolTipText();
         }
@@ -867,9 +872,9 @@ namespace MAClientGUI
         {
             if (lblCarddeckCache.Text != "")
             {
-                if (textBox23.Text == "")
+                if (cboDeckList.Text == "")
                 {
-                    textBox23.Focus();
+                    cboDeckList.Focus();
                     return;
                 }
                 if (textBox20.Text == "")
@@ -877,13 +882,16 @@ namespace MAClientGUI
                     textBox20.Focus();
                     return;
                 }
+                if (cboDeckList.Items.IndexOf(cboDeckList.Text) == -1 &&
+                (MessageBox.Show("卡组名不存在，是否继续添加？\n你也可以稍后添加卡组" + cboDeckList.Text, "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No))
+                    return;
                 if (txtCondCarddeck.Text == "")
                     txtCondCarddeck.Text = "'" + textBox20.Text + "'";
                 txtCondCarddeck.Text =
                     txtCondCarddeck.Text.Replace(" or '" + textBox20.Text + "'", " or ('" + textBox20.Text + "')");
                 txtCondCarddeck.Text =
                     txtCondCarddeck.Text.Replace("'" + textBox20.Text + "'",
-                    "(" + lblCarddeckCache.Text + ") and '" + textBox23.Text + "' or '" + textBox20.Text + "'");
+                    "(" + lblCarddeckCache.Text + ") and '" + cboDeckList.Text + "' or '" + textBox20.Text + "'");
 
                 lblCarddeckCache.Text = "";
                 button35.Enabled = true;
@@ -939,6 +947,11 @@ namespace MAClientGUI
                 return;
             refreshAll();
             refreshCond();
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/fffonion/MAClient/wiki/%E5%85%B3%E4%BA%8E%E6%8F%92%E4%BB%B6-carddeck_edit");
         }
         /// <summary>
         /// 清除
@@ -1382,8 +1395,8 @@ namespace MAClientGUI
 
         private void frmConfig_FormClosing(object sender, FormClosingEventArgs e)
         {
-            button59.Text = "恢复";
-            button59_Click(sender, e);
+            WndHdl.WndInfo[] res = WndHdl.findHwndbyTitleReg(@"\[[^\]]+\] AP\:");
+            WndHdl.showWndIfHided(res);
             Process.GetCurrentProcess().Kill();
             //System.Environment.Exit(0);
         }
@@ -1393,44 +1406,46 @@ namespace MAClientGUI
         {
             if (!groupBox11.Enabled)//左边group设为可用
             {
-                textBox23.Text = "auto_set";
+                cboDeckList.Text = "auto_set";
                 cboAim.SelectedIndex = cboAim.SelectedIndex == -1 ? 0 : cboAim.SelectedIndex;
                 cboBCLimit.SelectedIndex = cboBCLimit.SelectedIndex == -1 ? 0 : cboBCLimit.SelectedIndex;
                 cboLineCnt.SelectedIndex = cboLineCnt.SelectedIndex == -1 ? 0 : cboLineCnt.SelectedIndex;
+                button60.Font = new Font(button60.Font, FontStyle.Bold); 
                 button60.Text = "←←确认参数";
             }
             else//确认
             {
-                textBox23.Text = "";
+                cboDeckList.Text = "";
                 switch (cboBCLimit.SelectedIndex)
                 {
                     case 1:
-                        textBox23.Text += " bc:max";
+                        cboDeckList.Text += " bc:max";
                         break;
                     case 2:
-                        textBox23.Text += " bc:" + txtBCLimit.Text;
+                        cboDeckList.Text += " bc:" + txtBCLimit.Text;
                         break;
                 }
                 if (cboLineCnt.SelectedIndex != 0)
-                    textBox23.Text += " line:" + (cboLineCnt.SelectedIndex + 1).ToString();
+                    cboDeckList.Text += " line:" + (cboLineCnt.SelectedIndex + 1).ToString();
                 switch (cboAim.SelectedIndex)
                 {
                     case 1:
-                        textBox23.Text += " aim:MAX_CP";
+                        cboDeckList.Text += " aim:MAX_CP";
                         break;
                     case 2:
-                        textBox23.Text += " aim:DEFEAT";
+                        cboDeckList.Text += " aim:DEFEAT";
                         break;
                 }
                 if (!chkIsTest.Checked)
-                    textBox23.Text += " notest";
+                    cboDeckList.Text += " notest";
                 if (!chkIsFast.Checked)
-                    textBox23.Text += " nofast";
+                    cboDeckList.Text += " nofast";
                 if (txtCardEval.Text != "$.lv>=45")
-                    textBox23.Text += " sel:" + txtCardEval.Text;
+                    cboDeckList.Text += " sel:" + txtCardEval.Text;
                 if (txtCardIncl.Text != "")
-                    textBox23.Text += " incl:" + txtCardIncl.Text;
-                textBox23.Text = "auto_set(" + textBox23.Text.Trim() + ")";
+                    cboDeckList.Text += " incl:" + txtCardIncl.Text;
+                cboDeckList.Text = "auto_set(" + cboDeckList.Text.Trim() + ")";
+                button60.Font = new Font(button60.Font, FontStyle.Regular); 
                 button60.Text = "使用自动配卡";
             }
             groupBox11.Enabled = !groupBox11.Enabled;
@@ -1875,7 +1890,7 @@ namespace MAClientGUI
         {
             if (cboReservedName.SelectedIndex != 0)
             {
-                textBox23.Text = cboReservedName.SelectedIndex == 1 ? "no_change" : "abort";
+                cboDeckList.Text = cboReservedName.SelectedIndex == 1 ? "no_change" : "abort";
             }
 
         }
@@ -1914,6 +1929,20 @@ namespace MAClientGUI
                 txtReconnectGap.Enabled = true;
             txtReconnectGap_TextChanged(sender, e);
 
+        }
+
+        private void numFairyTimes_ValueChanged(object sender, EventArgs e)
+        {
+            if (numFairyTimes.Value == 0)
+            {
+                label23.Text = "无限刷妖精战";
+                lblInfiniteWarning.Visible = true;
+            }
+            else
+            {
+                label23.Text = "刷妖精战" + numFairyTimes.Value + "次";
+                lblInfiniteWarning.Visible = false;
+            }
         }
     }
 }

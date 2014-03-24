@@ -263,6 +263,14 @@ namespace MAClientGUI
             }
         }
 
+        public static void showWndIfHided(WndInfo[] wnds)
+        {
+            foreach (WndInfo w in wnds)
+            {
+                if(!isVisible(w.hwnd))
+                    ShowWindowAsync(w.hwnd, SW_RESTORE);
+            }
+        }
 
         public static WndInfo refreshTitle(WndInfo wnd)
         {
