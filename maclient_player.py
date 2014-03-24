@@ -206,9 +206,9 @@ class boss(object):
 
     def load_db(self, loc):
         # print(open(opath.join(getPATH0,'db/card.%s.txt'%loc),encoding='utf8').read().encode(encoding="utf-8"))
-        if not opath.exists(opath.join(getPATH0, 'db/boss.%s.txt' % loc)):#legacy db support
-            print(du8('强敌数据不存在，请更新一次数据库'))
-            return
+        # if not opath.exists(opath.join(getPATH0, 'db/boss.%s.txt' % loc)):#legacy db support
+        #     print(du8('强敌数据不存在，请更新一次数据库'))
+        #     return
         if PYTHON3:
             b = open(opath.join(getPATH0, 'db/boss.%s.txt' % loc), encoding = 'utf8')
         else:
