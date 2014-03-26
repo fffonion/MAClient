@@ -24,7 +24,7 @@ MAClient可以在支持websocket的浏览器上运行![chaojibang](http://ww1.si
 
 参见 [在Android设备上运行MAClient](https://github.com/fffonion/MAClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8CMAClient)
 
-###Linux/OS X/BSD
+###Linux/OS X/wwww
 需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)，自行编译PyCrypto库
 
 MAClient可以在python2.x和3.x上运行
