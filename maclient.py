@@ -29,7 +29,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.68
+__version__ = 1.69
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
@@ -40,7 +40,7 @@ GUILD_RACE_TYPE = ['11','12']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
 eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'fairy.not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type in GUILD_RACE_TYPE")]
-eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('NOT_BATTLED', 'not_battled')]
+eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('NOT_BATTLED', 'not_battled'),('fairy.hp%', 'float(fairy.hp)/float(fairy.hp_max)')]
 eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"')]
 eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale_price'), ('sid', 'serial_id'), ('holo', 'holography==1')]
@@ -978,9 +978,9 @@ class MAClient():
                                 rwds = []
                                 msg = ""
                                 for b in range(len(bns)):
-                                    msg += '%s:%s' % (msgs[b].value ,self._parse_reward(bns[b]))
+                                    msg += '%s:%s , ' % (msgs[b].value ,self._parse_reward(bns[b]))
                                     rwds.append(bns[b].id)
-                                logging.info(msg)
+                                logging.info(msg.rstrip(' , '))
                                 self._get_rewards(rwds)
                             return None, EXPLORE_OK
                     elif info.event_type == '12':
@@ -1791,7 +1791,7 @@ class MAClient():
                 else:
                     strl = ('%s:%s , ' % (r.content, cname))
             else:#秘境完成奖励
-                strl = ('%s%s , ' % (cname, '(闪)' if r.holo_flag=='1' else ''))
+                strl = ('%s%s' % (cname, '(闪)' if r.holo_flag=='1' else ''))
         else:
             if 'content' in r :
                 strl = ('%s:' % r.content)
@@ -1799,13 +1799,13 @@ class MAClient():
                 strl = ""
                 r['get_num'] = r.item_num
             if r.type == '2':
-                strl = '%sx%s , ' % (self.player.item.get_name(int(r.item_id)), r.get_num)
+                strl = '%sx%s' % (self.player.item.get_name(int(r.item_id)), r.get_num)
             elif r.type == '3':
-                strl = '%sG , ' % r.point
+                strl = '%sG' % r.point
             elif r.type == '4':
-                strl = '%sFP , ' % r.point
+                strl = '%sFP' % r.point
             elif r.type == '5':
-                strl = '%sx%s , ' % ('蛋蛋卷', r.get_num)
+                strl = '%sx%s' % ('蛋蛋卷', r.get_num)
             else:
                 strl = r.type
         return strl
@@ -1843,7 +1843,7 @@ class MAClient():
             else:
                 if r.type in rw_type:
                     nid.append(r.id)
-                strl += self._parse_reward(r)
+                strl += ' , ' + self._parse_reward(r)
         if nid == []:
             logging.info('没有符合筛选的奖励(%d)' % (len(rwds)))
         else:
