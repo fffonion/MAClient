@@ -355,6 +355,11 @@ namespace MAClientGUI
             this.dockMenu_head = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.chkUseNiceTerm = new System.Windows.Forms.CheckBox();
+            this.label93 = new System.Windows.Forms.Label();
+            this.textBox23 = new System.Windows.Forms.TextBox();
+            this.textBox33 = new System.Windows.Forms.TextBox();
+            this.label94 = new System.Windows.Forms.Label();
+            this.button76 = new System.Windows.Forms.Button();
             this.grpSystem.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFairySleepFactor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
@@ -2036,6 +2041,11 @@ namespace MAClientGUI
             // 
             // groupBox9
             // 
+            this.groupBox9.Controls.Add(this.label93);
+            this.groupBox9.Controls.Add(this.textBox23);
+            this.groupBox9.Controls.Add(this.textBox33);
+            this.groupBox9.Controls.Add(this.label94);
+            this.groupBox9.Controls.Add(this.button76);
             this.groupBox9.Controls.Add(this.label88);
             this.groupBox9.Controls.Add(this.button72);
             this.groupBox9.Controls.Add(this.button73);
@@ -2147,7 +2157,7 @@ namespace MAClientGUI
             // 
             this.label62.AutoSize = true;
             this.label62.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label62.Location = new System.Drawing.Point(213, 104);
+            this.label62.Location = new System.Drawing.Point(213, 80);
             this.label62.Name = "label62";
             this.label62.Size = new System.Drawing.Size(19, 20);
             this.label62.TabIndex = 26;
@@ -2157,7 +2167,7 @@ namespace MAClientGUI
             // 
             this.label61.AutoSize = true;
             this.label61.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label61.Location = new System.Drawing.Point(213, 58);
+            this.label61.Location = new System.Drawing.Point(213, 46);
             this.label61.Name = "label61";
             this.label61.Size = new System.Drawing.Size(19, 20);
             this.label61.TabIndex = 26;
@@ -2167,7 +2177,7 @@ namespace MAClientGUI
             // 
             this.label59.AutoSize = true;
             this.label59.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label59.Location = new System.Drawing.Point(260, 152);
+            this.label59.Location = new System.Drawing.Point(260, 161);
             this.label59.Name = "label59";
             this.label59.Size = new System.Drawing.Size(12, 20);
             this.label59.TabIndex = 25;
@@ -2177,7 +2187,7 @@ namespace MAClientGUI
             // 
             this.label60.AutoSize = true;
             this.label60.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label60.Location = new System.Drawing.Point(213, 152);
+            this.label60.Location = new System.Drawing.Point(213, 161);
             this.label60.Name = "label60";
             this.label60.Size = new System.Drawing.Size(12, 20);
             this.label60.TabIndex = 24;
@@ -2230,7 +2240,7 @@ namespace MAClientGUI
             // textBox29
             // 
             this.textBox29.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox29.Location = new System.Drawing.Point(275, 148);
+            this.textBox29.Location = new System.Drawing.Point(275, 157);
             this.textBox29.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox29.Name = "textBox29";
             this.textBox29.Size = new System.Drawing.Size(28, 27);
@@ -2241,7 +2251,7 @@ namespace MAClientGUI
             // textBox30
             // 
             this.textBox30.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox30.Location = new System.Drawing.Point(229, 148);
+            this.textBox30.Location = new System.Drawing.Point(229, 157);
             this.textBox30.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox30.Name = "textBox30";
             this.textBox30.Size = new System.Drawing.Size(28, 27);
@@ -2252,7 +2262,7 @@ namespace MAClientGUI
             // textBox31
             // 
             this.textBox31.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox31.Location = new System.Drawing.Point(188, 148);
+            this.textBox31.Location = new System.Drawing.Point(188, 157);
             this.textBox31.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox31.Name = "textBox31";
             this.textBox31.Size = new System.Drawing.Size(24, 27);
@@ -2263,7 +2273,7 @@ namespace MAClientGUI
             // button30
             // 
             this.button30.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button30.Location = new System.Drawing.Point(23, 142);
+            this.button30.Location = new System.Drawing.Point(23, 151);
             this.button30.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button30.Name = "button30";
             this.button30.Size = new System.Drawing.Size(147, 32);
@@ -2287,7 +2297,7 @@ namespace MAClientGUI
             // textBox24
             // 
             this.textBox24.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox24.Location = new System.Drawing.Point(165, 99);
+            this.textBox24.Location = new System.Drawing.Point(165, 75);
             this.textBox24.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox24.Name = "textBox24";
             this.textBox24.Size = new System.Drawing.Size(47, 27);
@@ -2297,7 +2307,7 @@ namespace MAClientGUI
             // textBox25
             // 
             this.textBox25.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox25.Location = new System.Drawing.Point(232, 99);
+            this.textBox25.Location = new System.Drawing.Point(232, 75);
             this.textBox25.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox25.Name = "textBox25";
             this.textBox25.Size = new System.Drawing.Size(67, 27);
@@ -2307,7 +2317,7 @@ namespace MAClientGUI
             // textBox26
             // 
             this.textBox26.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox26.Location = new System.Drawing.Point(232, 52);
+            this.textBox26.Location = new System.Drawing.Point(232, 40);
             this.textBox26.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox26.Name = "textBox26";
             this.textBox26.Size = new System.Drawing.Size(47, 27);
@@ -2317,7 +2327,7 @@ namespace MAClientGUI
             // textBox27
             // 
             this.textBox27.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox27.Location = new System.Drawing.Point(165, 52);
+            this.textBox27.Location = new System.Drawing.Point(165, 40);
             this.textBox27.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox27.Name = "textBox27";
             this.textBox27.Size = new System.Drawing.Size(47, 27);
@@ -2328,7 +2338,7 @@ namespace MAClientGUI
             // 
             this.label39.AutoSize = true;
             this.label39.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label39.Location = new System.Drawing.Point(91, 101);
+            this.label39.Location = new System.Drawing.Point(91, 77);
             this.label39.Name = "label39";
             this.label39.Size = new System.Drawing.Size(54, 20);
             this.label39.TabIndex = 3;
@@ -2338,7 +2348,7 @@ namespace MAClientGUI
             // 
             this.label40.AutoSize = true;
             this.label40.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label40.Location = new System.Drawing.Point(91, 52);
+            this.label40.Location = new System.Drawing.Point(91, 40);
             this.label40.Name = "label40";
             this.label40.Size = new System.Drawing.Size(54, 20);
             this.label40.TabIndex = 2;
@@ -2347,7 +2357,7 @@ namespace MAClientGUI
             // button35
             // 
             this.button35.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button35.Location = new System.Drawing.Point(23, 98);
+            this.button35.Location = new System.Drawing.Point(23, 74);
             this.button35.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button35.Name = "button35";
             this.button35.Size = new System.Drawing.Size(61, 32);
@@ -2359,7 +2369,7 @@ namespace MAClientGUI
             // button36
             // 
             this.button36.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button36.Location = new System.Drawing.Point(23, 49);
+            this.button36.Location = new System.Drawing.Point(23, 37);
             this.button36.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button36.Name = "button36";
             this.button36.Size = new System.Drawing.Size(61, 32);
@@ -4436,6 +4446,58 @@ namespace MAClientGUI
             this.chkUseNiceTerm.Text = "使用终端模拟器";
             this.chkUseNiceTerm.UseVisualStyleBackColor = true;
             // 
+            // label93
+            // 
+            this.label93.AutoSize = true;
+            this.label93.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label93.Location = new System.Drawing.Point(213, 117);
+            this.label93.Name = "label93";
+            this.label93.Size = new System.Drawing.Size(19, 20);
+            this.label93.TabIndex = 36;
+            this.label93.Text = "~";
+            // 
+            // textBox23
+            // 
+            this.textBox23.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox23.Location = new System.Drawing.Point(165, 112);
+            this.textBox23.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox23.Name = "textBox23";
+            this.textBox23.Size = new System.Drawing.Size(47, 27);
+            this.textBox23.TabIndex = 35;
+            this.textBox23.Text = "0";
+            // 
+            // textBox33
+            // 
+            this.textBox33.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox33.Location = new System.Drawing.Point(232, 112);
+            this.textBox33.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox33.Name = "textBox33";
+            this.textBox33.Size = new System.Drawing.Size(45, 27);
+            this.textBox33.TabIndex = 34;
+            this.textBox33.Text = "100";
+            // 
+            // label94
+            // 
+            this.label94.AutoSize = true;
+            this.label94.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label94.Location = new System.Drawing.Point(91, 114);
+            this.label94.Name = "label94";
+            this.label94.Size = new System.Drawing.Size(54, 20);
+            this.label94.TabIndex = 33;
+            this.label94.Text = "在范围";
+            // 
+            // button76
+            // 
+            this.button76.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button76.Location = new System.Drawing.Point(23, 111);
+            this.button76.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button76.Name = "button76";
+            this.button76.Size = new System.Drawing.Size(61, 32);
+            this.button76.TabIndex = 32;
+            this.button76.Text = "HP%";
+            this.button76.UseVisualStyleBackColor = true;
+            this.button76.Click += new System.EventHandler(this.button76_Click);
+            // 
             // frmConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -4863,6 +4925,11 @@ namespace MAClientGUI
         private System.Windows.Forms.Label lblInfiniteWarning;
         private System.Windows.Forms.Label label91;
         private System.Windows.Forms.CheckBox chkUseNiceTerm;
+        private System.Windows.Forms.Label label93;
+        private System.Windows.Forms.TextBox textBox23;
+        private System.Windows.Forms.TextBox textBox33;
+        private System.Windows.Forms.Label label94;
+        private System.Windows.Forms.Button button76;
     }
 }
 

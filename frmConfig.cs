@@ -790,7 +790,11 @@ namespace MAClientGUI
             addCarddeckCond(textBox24.Text + "<=$.hp<=" + textBox25.Text);
             button35.Enabled = false;
         }
-
+        private void button76_Click(object sender, EventArgs e)
+        {
+            addCarddeckCond(float.Parse(textBox23.Text)/100 + "<=$.hp%<=" + float.Parse(textBox33.Text)/100);
+            button76.Enabled = false;
+        }
         private void button37_Click(object sender, EventArgs e)
         {
             addCarddeckCond("BC>" + textBox32.Text);
@@ -889,11 +893,13 @@ namespace MAClientGUI
                     textBox20.Focus();
                     return;
                 }
-                if (cboDeckList.Items.IndexOf(cboDeckList.Text) == -1 &&
+                if (cboDeckList.Items.IndexOf(cboDeckList.Text) == -1 && !cboDeckList.Text.StartsWith("auto_set") &&
                 (MessageBox.Show("卡组名不存在，是否继续添加？\n你也可以稍后添加卡组" + cboDeckList.Text, "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No))
                     return;
                 if (txtCondCarddeck.Text == "")
                     txtCondCarddeck.Text = "'" + textBox20.Text + "'";
+                if (cboDeckList.Text == "auto_set")
+                    cboDeckList.Text = "auto_set()";
                 txtCondCarddeck.Text =
                     txtCondCarddeck.Text.Replace(" or '" + textBox20.Text + "'", " or ('" + textBox20.Text + "')");
                 txtCondCarddeck.Text =
@@ -915,6 +921,7 @@ namespace MAClientGUI
                 button63.Enabled = true;
                 button72.Enabled = true;
                 button73.Enabled = true;
+                button76.Enabled = true;
                 cboReservedName.SelectedIndex = 0;
             }
         }
@@ -936,6 +943,7 @@ namespace MAClientGUI
             button63.Enabled = true;
             button72.Enabled = true;
             button73.Enabled = true;
+            button76.Enabled = true;
             cboReservedName.SelectedIndex = 0;
         }
 
