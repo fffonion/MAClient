@@ -379,6 +379,8 @@ class MAClient():
 
     def tolist(self, obj):
         if not isinstance(obj, list):
+            if isinstance(obj, unicode):
+                return [object_dict({'value':obj})]
             return [obj]
         else:
             return obj
@@ -971,11 +973,13 @@ class MAClient():
                             return next_floor, EXPLORE_OK
                         else:
                             if 'bonus_list' in ct.body:
-                                msg = ct.body.bonus_list.message
+                                msgs = self.tolist(ct.body.bonus_list.message)
+                                bns = self.tolist(ct.body.bonus_list.bonus)
                                 rwds = []
-                                for b in self.tolist(ct.body.bonus_list.bonus):
-                                    msg += ' %s' % self._parse_reward(b)
-                                    rwds.append(b.id)
+                                msg = ""
+                                for b in range(len(bns)):
+                                    msg += '%s:%s' % (msgs[b].value ,self._parse_reward(bns[b]))
+                                    rwds.append(bns[b].id)
                                 logging.info(msg)
                                 self._get_rewards(rwds)
                             return None, EXPLORE_OK
@@ -1786,10 +1790,14 @@ class MAClient():
                     strl = ('%s:%s , ' % (r.title, r.content))
                 else:
                     strl = ('%s:%s , ' % (r.content, cname))
-            else:
-                strl = ('%s:%s , ' % (r.title, cname))
+            else:#秘境完成奖励
+                strl = ('%s%s , ' % (cname, '(闪)' if r.holo_flag=='1' else ''))
         else:
-            strl = ('%s:' % r.content)
+            if 'content' in r :
+                strl = ('%s:' % r.content)
+            else:
+                strl = ""
+                r['get_num'] = r.item_num
             if r.type == '2':
                 strl = '%sx%s , ' % (self.player.item.get_name(int(r.item_id)), r.get_num)
             elif r.type == '3':
