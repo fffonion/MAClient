@@ -12,6 +12,7 @@ IRONPYTHON = sys.platform == 'cli'
 EXEBUNDLE = opath.split(sys.argv[0])[1].find('py') == -1
 LOCALE = locale.getdefaultlocale()[0]
 CODEPAGE = locale.getdefaultlocale()[1]
+NICE_TERM = 'NICE_TERM' in os.environ
 convhans = lambda x:x
 try:
     import ZhConversion

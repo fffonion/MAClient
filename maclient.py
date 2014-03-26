@@ -50,7 +50,9 @@ eval_task = []
 logging = maclient_logging.Logging('logging')  # =sys.modules['logging']
 
 if PYTHON3:
-   setT = lambda strt : os.system(du8('TITLE %s' % strt))
+    setT = lambda strt : os.system(du8('TITLE %s' % strt))
+elif NICE_TERM:
+    setT = lambda strt : print(du8('[SET-TITLE]%s'%strt))
 else:
     #if not PYTHON3:
     #    strt = strt.decode('utf-8').encode('cp936', 'ignore')
@@ -1779,10 +1781,13 @@ class MAClient():
         # type 1:卡片 2:道具 3:金 4:绊点 5:蛋卷
         if r.type == '1':
             cname = self.carddb[int(r.card_id)][0]
-            if cname in r.content:  # 物品为卡片有时content是卡片名称（吧
-                strl = ('%s:%s , ' % (r.title, r.content))
+            if 'content' in r :
+                if cname in r.content:  # 物品为卡片有时content是卡片名称（吧
+                    strl = ('%s:%s , ' % (r.title, r.content))
+                else:
+                    strl = ('%s:%s , ' % (r.content, cname))
             else:
-                strl = ('%s:%s , ' % (r.content, cname))
+                strl = ('%s:%s , ' % (r.title, cname))
         else:
             strl = ('%s:' % r.content)
             if r.type == '2':
