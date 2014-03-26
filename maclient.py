@@ -379,6 +379,8 @@ class MAClient():
 
     def tolist(self, obj):
         if not isinstance(obj, list):
+            if isinstance(obj, unicode):
+                return [object_dict({'value':obj})]
             return [obj]
         else:
             return obj
