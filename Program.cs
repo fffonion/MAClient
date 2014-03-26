@@ -241,6 +241,7 @@ namespace MAClientGUI
             public int procid;
             public int threadid;
         }
+
         public static void hideWnd(WndInfo[] wnds)
         {
             foreach (WndInfo w in wnds)

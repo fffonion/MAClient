@@ -103,6 +103,12 @@
     <Compile Include="frmConfig.Designer.cs">
       <DependentUpon>frmConfig.cs</DependentUpon>
     </Compile>
+    <Compile Include="frmNiceTerm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmNiceTerm.Designer.cs">
+      <DependentUpon>frmNiceTerm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextBoxEx.cs">
@@ -119,6 +125,9 @@
     </Compile>
     <EmbeddedResource Include="frmConfig.resx">
       <DependentUpon>frmConfig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmNiceTerm.resx">
+      <DependentUpon>frmNiceTerm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

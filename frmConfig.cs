@@ -18,10 +18,13 @@ namespace MAClientGUI
     {
         configParser cf;
         string server;
-        string maclient_path = System.Environment.CurrentDirectory + "\\maclient_cli.exe";
+        string maclient_path;
+        List<frmNiceTerm> niceterms = new List<frmNiceTerm>();
         public frmConfig()
         {
             InitializeComponent();
+            maclient_path = System.Environment.CurrentDirectory + "\\maclient_cli.exe";
+            
         }
 
         private void btnChooseCfg_Click(object sender, EventArgs e)
@@ -293,6 +296,10 @@ namespace MAClientGUI
             string[] slist = { "cn", "cn2", "cn3", "tw", "kr", "jp" };
             server = slist[cboServer.SelectedIndex];
             refreshAccount();
+            if (cboServer.SelectedIndex >= 4)
+                chkUseNiceTerm.Checked = true;
+            else
+                chkUseNiceTerm.Checked = false;
         }
 
         private void cboCfgFile_SelectedIndexChanged(object sender, EventArgs e)
@@ -990,11 +997,10 @@ namespace MAClientGUI
         {
             txtCondSell.Text = "";
         }
-        string mcpath = System.Environment.CurrentDirectory + "\\maclient_cli.exe";
         private void start_mac(string arg = "")
         {
             string cfgpath = cboCfgFile.Text;
-            if (!File.Exists(mcpath))
+            if (!File.Exists(maclient_path))
             {
                 if (MessageBox.Show("当前目录下木有maclient_cli.exe或maclient_cli.py，是否手动寻找？", "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
                 {
@@ -1004,7 +1010,7 @@ namespace MAClientGUI
                     fileDialog1.RestoreDirectory = true;
                     if (fileDialog1.ShowDialog() == DialogResult.OK)
                     {
-                        mcpath = fileDialog1.FileName;
+                        maclient_path = fileDialog1.FileName;
                     }
                     else
                     {
@@ -1052,17 +1058,29 @@ namespace MAClientGUI
                 }
 
             }
-
-
             //cboCfgFile.SelectedIndex = 0;
-            Process proc = new Process();
-            proc.StartInfo.FileName = mcpath;
-            proc.StartInfo.CreateNoWindow = true;
-            proc.StartInfo.UseShellExecute = true;
-            proc.StartInfo.Arguments = "\"" + cfgpath + "\" " + arg;
-            proc.EnableRaisingEvents = true;
-            proc.Start();
-
+            if (chkUseNiceTerm.Checked)
+            {
+                frmNiceTerm f = new frmNiceTerm();
+                f.Show();
+                niceterms.Add(f);
+                int _cur = niceterms.Count;
+                f.kill_callback = () => niceterms.RemoveAt(_cur - 1);
+                if(maclient_path.EndsWith("py"))
+                    f.StartProcess("python.exe", maclient_path+" \"" + cfgpath + "\" " + arg);
+                else
+                    f.StartProcess(maclient_path, "\"" + cfgpath + "\" " + arg);
+            }
+            else
+            {
+                Process proc = new Process();
+                proc.StartInfo.FileName = maclient_path;
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.UseShellExecute = true;
+                proc.StartInfo.Arguments = "\"" + cfgpath + "\" " + arg;
+                proc.EnableRaisingEvents = true;
+                proc.Start();
+            }
 
         }
         private void button3_Click(object sender, EventArgs e)
@@ -1395,6 +1413,22 @@ namespace MAClientGUI
 
         private void frmConfig_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (niceterms.Count > 0){
+                if (MessageBox.Show("在终端模拟器中还运行着" + niceterms.Count + "个MAClient，退出后将终止他们的运行\n红豆泥要继续嘛？","咦",MessageBoxButtons.YesNo,MessageBoxIcon.Exclamation)==DialogResult.Yes)
+                {
+                    foreach (frmNiceTerm nt in niceterms)
+                    {
+                        if (nt.process != null && !nt.process.HasExited)
+                        {
+                            nt.process.Kill();
+                            nt.outputWorker.CancelAsync();
+                        }
+                    }
+                }else{
+                    e.Cancel=true;
+                    return;
+                }
+            }
             WndHdl.WndInfo[] res = WndHdl.findHwndbyTitleReg(@"\[[^\]]+\] AP\:");
             WndHdl.showWndIfHided(res);
             Process.GetCurrentProcess().Kill();
