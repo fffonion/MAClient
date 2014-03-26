@@ -50,7 +50,9 @@ eval_task = []
 logging = maclient_logging.Logging('logging')  # =sys.modules['logging']
 
 if PYTHON3:
-   setT = lambda strt : os.system(du8('TITLE %s' % strt))
+    setT = lambda strt : os.system(du8('TITLE %s' % strt))
+elif NICE_TERM:
+    setT = lambda strt : print(du8('[SET-TITLE]%s'%strt))
 else:
     #if not PYTHON3:
     #    strt = strt.decode('utf-8').encode('cp936', 'ignore')
@@ -557,6 +559,8 @@ class MAClient():
             self.stitle = set_title(self)
             self.stitle.setDaemon(True)
             self.stitle.start()
+        if self.loc[:2] in ['cn', 'tw'] and not self.player.card.latest_multi:
+            logging.warning('倍卡数据可能已过期，请通过"更新数据库"选项更新\n一般请在维护后一天左右使用更新')
 
     @plugin.func_hook
     def auto_check(self, doingwhat):
@@ -947,8 +951,8 @@ class MAClient():
                     elif info.event_type == '3':
                         usercard = info.user_card
                         logging.debug('explore:cid %s sid %s' % (usercard.master_card_id, usercard.serial_id))
-                        logging.info('获得了 %s ☆%s' % (self.carddb[int(usercard.master_card_id)][0],
-                            self.carddb[int(usercard.master_card_id)][1]))
+                        logging.info('获得了 %s %s' % (self.carddb[int(usercard.master_card_id)][0],
+                            '☆' * self.carddb[int(usercard.master_card_id)][1]))
                     elif info.event_type == '15':
                         compcard = info.autocomp_card[-1]
                         logging.debug('explore:cid %s sid %s' % (
@@ -966,6 +970,14 @@ class MAClient():
                             next_floor = info.next_floor.floor_info
                             return next_floor, EXPLORE_OK
                         else:
+                            if 'bonus_list' in ct.body:
+                                msg = ct.body.bonus_list.message
+                                rwds = []
+                                for b in self.tolist(ct.body.bonus_list.bonus):
+                                    msg += ' %s' % self._parse_reward(b)
+                                    rwds.append(b.id)
+                                logging.info(msg)
+                                self._get_rewards(rwds)
                             return None, EXPLORE_OK
                     elif info.event_type == '12':
                         logging.info('AP回复~')
@@ -1102,16 +1114,16 @@ class MAClient():
             evalres = eval(self.evalstr_selcard) and not card.master_card_id in [390, 391, 392, 404]  # 切尔莉
             if evalres:
                 if card.star > 3:
-                    warning_card.append('%s lv%d ☆%s' % (
+                    warning_card.append('%s lv%d %s' % (
                         self.carddb[int(card.master_card_id)][0],
                         card.lv,
-                        self.carddb[int(card.master_card_id)][1])
+                        '☆' * self.carddb[int(card.master_card_id)][1])
                     )
                 sid.append(card.serial_id)
-                cinfo.append('%s lv%d ☆%s' % (
+                cinfo.append('%s lv%d %s' % (
                     self.carddb[int(card.master_card_id)][0],
                     card.lv,
-                    self.carddb[int(card.master_card_id)][1])
+                    '☆' * self.carddb[int(card.master_card_id)][1])
                 )
         if len(sid) == 0:
             logging.info('没有要贩卖的卡片')
@@ -1666,11 +1678,8 @@ class MAClient():
                             confirm = True
                 else:
                     u = raw_inputd('没有要删除的好友\n输入序号可以手动删除好友，按回车返回> ')
-                    try:
-                        int(u)
-                    except ValueError:
-                        if u:
-                            logging.warning('输入"%s"非数字' % u)
+                    if not u.isdigit():
+                        logging.warning('输入"%s"非数字' % u)
                     else:
                         deluser = users[int(u) - 1]
                         if not autodel:
@@ -1768,6 +1777,31 @@ class MAClient():
                 logging.error('木有这个选项哟0w0')
             choice = ''
 
+    def _parse_reward(self, r):
+        # type 1:卡片 2:道具 3:金 4:绊点 5:蛋卷
+        if r.type == '1':
+            cname = self.carddb[int(r.card_id)][0]
+            if 'content' in r :
+                if cname in r.content:  # 物品为卡片有时content是卡片名称（吧
+                    strl = ('%s:%s , ' % (r.title, r.content))
+                else:
+                    strl = ('%s:%s , ' % (r.content, cname))
+            else:
+                strl = ('%s:%s , ' % (r.title, cname))
+        else:
+            strl = ('%s:' % r.content)
+            if r.type == '2':
+                strl = '%sx%s , ' % (self.player.item.get_name(int(r.item_id)), r.get_num)
+            elif r.type == '3':
+                strl = '%sG , ' % r.point
+            elif r.type == '4':
+                strl = '%sFP , ' % r.point
+            elif r.type == '5':
+                strl = '%sx%s , ' % ('蛋蛋卷', r.get_num)
+            else:
+                strl = r.type
+        return strl
+
     @plugin.func_hook
     def reward_box(self, rw_type = '12345'):
         if self._dopost('menu/menulist')[0]['error']:
@@ -1793,42 +1827,15 @@ class MAClient():
             no_detail = False
         rw_type = du8(rw_type)
         real_desc_match = not rw_type.isdigit()
-        # type 1:卡片 2:道具 3:金 4:绊点 5:蛋卷
         for r in rwds:
             if real_desc_match:
                 if re.search(rw_type, r.content + r.title + (r.type == '1' and self.carddb[int(r.card_id)][0] or '')):
                     strl += ('%s:%s , ' % (r.title, r.content))
                     nid.append(r.id)
             else:
-                if r.type == '1':
-                    cname = self.carddb[int(r.card_id)][0]
-                    if cname in r.content:  # 物品为卡片有时content是卡片名称（吧
-                        strl += ('%s:%s , ' % (r.title, r.content))
-                    else:
-                        strl += ('%s:%s , ' % (r.content, cname))
-                    # strl+='%s'%()
-                    if '1' in rw_type:
-                        nid.append(r.id)
-                else:
-                    strl += ('%s:' % r.content)
-                    if r.type == '2':
-                        strl += '%sx%s , ' % (self.player.item.get_name(int(r.item_id)), r.get_num)
-                        if '2' in rw_type:
-                            nid.append(r.id)
-                    elif r.type == '3':
-                        strl += '%sG , ' % r.point
-                        if '3' in rw_type:
-                            nid.append(r.id)
-                    elif r.type == '4':
-                        strl += '%sFP , ' % r.point
-                        if '4' in rw_type:
-                           nid.append(r.id)
-                    elif r.type == '5':
-                        strl += '%sx%s , ' % ('蛋蛋卷', r.get_num)
-                        if '5' in rw_type:
-                            nid.append(r.id)
-                    else:
-                        strl += r.type
+                if r.type in rw_type:
+                    nid.append(r.id)
+                strl += self._parse_reward(r)
         if nid == []:
             logging.info('没有符合筛选的奖励(%d)' % (len(rwds)))
         else:
@@ -1852,7 +1859,7 @@ class MAClient():
             return
         free_points = int(ct.header.your_data.free_ap_bc_point)
         if free_points == 0:
-            logging.info('没有未分配点数233')
+            logging.info('没有未分配的点数233')
             return False
         else:
             logging.info('还有%d点未分配点数' % free_points)

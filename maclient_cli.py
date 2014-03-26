@@ -32,6 +32,8 @@ from cross_platform import *
 def getTerminalSize():
     # http://stackoverflow.com/questions/566746/how-to-get-console-window-width-in-python
     if os.name == 'nt':
+        if NICE_TERM:
+            return 100,80
         env = os.environ
         dres = None
         try:
@@ -49,7 +51,7 @@ def getTerminalSize():
             sizey = bottom - top + 1
             return sizex, sizey
         else:
-            return None
+            return 120, 80
     else:
         try:
             x, y = os.popen('stty size', 'r').read().split()

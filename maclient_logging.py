@@ -7,7 +7,7 @@ import logging
 import logging.handlers
 from cross_platform import *
 
-convstr = (sys.platform.startswith('cli') or PYTHON3)and \
+convstr = (sys.platform.startswith('cli') or PYTHON3 or NICE_TERM)and \
         (lambda str: str) or \
         (lambda str: str.decode('utf-8').encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 
@@ -24,8 +24,8 @@ class Logging(type(sys)):
     NOTSET = 0
     def __init__(self, *args, **kwargs):
         self.level = self.__class__.INFO
-        self.__write = __write = sys.stderr.write
-        self.isatty = getattr(sys.stderr, 'isatty', lambda: False)()
+        self.__write = __write = sys.stdout.write
+        self.isatty = getattr(sys.stdout, 'isatty', lambda: False)()
         self.__set_error_color = lambda: None
         self.__set_warning_color = lambda: None
         self.__set_debug_color = lambda: None
@@ -70,6 +70,7 @@ class Logging(type(sys)):
         except TypeError:
             fmt = fmt.replace('%','%%')
             self.__write(convstr(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args))))
+        sys.stdout.flush()
         return '[%s] %s\n' % (time.strftime('%b %d %X', time.localtime()), fmt % args)
 
     def dummy(self, *args, **kwargs):

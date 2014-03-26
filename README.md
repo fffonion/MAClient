@@ -1,17 +1,31 @@
 ﻿MAClient是一个可以用来装B的百万亚瑟王客户端。支持台服、国服全区、韩服和日服。
 
+##文档
+
 [更新历史](https://github.com/fffonion/MAClient/wiki/HISTORY)
 
 [插件制作文档](PLUGIN_DOCUMENT.md)
 
-[在Android设备上运行MAClient](https://github.com/fffonion/MAClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8CMAClient)
+##运行
+
+###Windows
 
 Windows用户可以从[这里](http://pan.baidu.com/s/19qI4m)获得二进制文件，或者从[release](https://github.com/fffonion/MAClient/releases)下载
 
-其他平台用户：需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)，和PyCrypto库
+**注意1**：路径不能包含中文，这是pyinstaller的缺陷
 
-##运行
+**注意2**：运行韩服和日服时，推荐使用[MAClientGUI](http://mac.yooooo.us/MAClientGUI.zip)中的**终端模拟器**
+
+###网页版
+
 MAClient可以在支持websocket的浏览器上运行![chaojibang](http://ww1.sinaimg.cn/bmiddle/436919cbjw1ebx3ktnokkg200m00k741.gif)[炒鸡棒在线版](http://ma.mengsky.net/)
+
+###Android
+
+参见 [在Android设备上运行MAClient](https://github.com/fffonion/MAClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8CMAClient)
+
+###Linux/OS X/BSD
+需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)，自行编译PyCrypto库
 
 MAClient可以在python2.x和3.x上运行
 ```shell
@@ -19,7 +33,7 @@ git clone --recursive https://github.com/fffonion/MAClient.git
 cd httplib2
 python setup.py install
 ```
-子模块为针对py2x的httplib2；对py3x，你需要下载[针对py3x的httplib2](https://github.com/fffonion/httplib2-plus/tree/python3)
+子模块为针对py2x的httplib2；对py3x，你需要下载[py3x适用的httplib2](https://github.com/fffonion/httplib2-plus/tree/python3)
 ```shell
 python MAClient_cli.py
 python MAClient_cli.py [config file]
@@ -30,7 +44,6 @@ python MAClient_cli.py [config file] [task]/[commands]
 python build_cython_ext.py build_ext --inplace
 ```
 
-**使用打包的exe的windows用户注意**：路径不能包含中文，这是pyinstaller的缺陷
 
 ##配置文件说明
 
