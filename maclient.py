@@ -978,6 +978,8 @@ class MAClient():
                                 rwds = []
                                 msg = ""
                                 for b in range(len(bns)):
+                                    if bns[b].type == '1' and not self.cfg_auto_fairy_rewards:#借用一下吧ww
+                                        continue
                                     msg += '%s:%s , ' % (msgs[b].value ,self._parse_reward(bns[b]))
                                     rwds.append(bns[b].id)
                                 logging.info(msg.rstrip(' , '))
@@ -1795,19 +1797,29 @@ class MAClient():
         else:
             if 'content' in r :
                 strl = ('%s:' % r.content)
-            else:
+                if r.type == '2':
+                    strl = '%sx%s' % (self.player.item.get_name(int(r.item_id)), r.get_num)
+                elif r.type == '3':
+                    strl = '%sG' % r.point
+                elif r.type == '4':
+                    strl = '%sFP' % r.point
+                elif r.type == '5':
+                    strl = '%sx%s' % ('蛋蛋卷', r.get_num)
+                else:
+                    strl = r.type
+            else:#秘境完成奖励
+                print(r)
                 strl = ""
-                r['get_num'] = r.item_num
-            if r.type == '2':
-                strl = '%sx%s' % (self.player.item.get_name(int(r.item_id)), r.get_num)
-            elif r.type == '3':
-                strl = '%sG' % r.point
-            elif r.type == '4':
-                strl = '%sFP' % r.point
-            elif r.type == '5':
-                strl = '%sx%s' % ('蛋蛋卷', r.get_num)
-            else:
-                strl = r.type
+                if r.type == '2':
+                    strl = '%sx%s' % (self.player.item.get_name(int(r.item_id)), r.item_num)
+                elif r.type == '3':
+                    strl = '%sG' % r.get_money
+                elif r.type == '4':
+                    strl = '%sFP' % r.point#?
+                elif r.type == '5':
+                    strl = '%sx%s' % ('蛋蛋卷', r.item_num)
+                else:
+                    strl = r.type
         return strl
 
     @plugin.func_hook
