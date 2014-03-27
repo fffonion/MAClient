@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.2-build20140327'
+__version__ = '1.2-build20140327+'
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = 250
 max_fp_cn = max_fp_kr = 50000
@@ -34,7 +34,7 @@ key_rsa_pool = [
 app_ver_cn = 102
 app_ver_tw = 200
 app_ver_kr = 107
-app_ver_jp = 302
+app_ver_jp = 304
 # wake
 name_wake_rare = '魅．'
 # snda gplus, not working
