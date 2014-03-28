@@ -1789,24 +1789,24 @@ class MAClient():
             cname = self.carddb[int(r.card_id)][0]
             if 'content' in r :
                 if cname in r.content:  # 物品为卡片有时content是卡片名称（吧
-                    strl = ('%s:%s , ' % (r.title, r.content))
+                    strl = ('%s:%s' % (r.title, r.content))
                 else:
-                    strl = ('%s:%s , ' % (r.content, cname))
+                    strl = ('%s:%s' % (r.content, cname))
             else:#秘境完成奖励
                 strl = ('%s%s' % (cname, '(闪)' if r.holo_flag=='1' else ''))
         else:
             if 'content' in r :
-                strl = ('%s:' % r.content)
+                strl = '%s:' % r.title
                 if r.type == '2':
-                    strl = '%sx%s' % (self.player.item.get_name(int(r.item_id)), r.get_num)
+                    strl += '%sx%s' % (self.player.item.get_name(int(r.item_id)), r.get_num)
                 elif r.type == '3':
-                    strl = '%sG' % r.point
+                    strl += '%sG' % r.point
                 elif r.type == '4':
-                    strl = '%sFP' % r.point
+                    strl += '%sFP' % r.point
                 elif r.type == '5':
-                    strl = '%sx%s' % ('蛋蛋卷', r.get_num)
+                    strl += '%sx%s' % ('蛋蛋卷', r.get_num)
                 else:
-                    strl = r.type
+                    strl += r.type
             else:#秘境完成奖励
                 print(r)
                 strl = ""
@@ -1855,7 +1855,7 @@ class MAClient():
             else:
                 if r.type in rw_type:
                     nid.append(r.id)
-                strl += ' , ' + self._parse_reward(r)
+                strl += self._parse_reward(r) + ' , ' 
         if nid == []:
             logging.info('没有符合筛选的奖励(%d)' % (len(rwds)))
         else:

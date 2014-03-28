@@ -144,10 +144,8 @@ class card(object):
         self.db = {}
         self.multi = {}
         self.load_db(loc)
-        self.load_multi(loc)
         self.count = 0
-        self.latest_multi = opath.getmtime(opath.join(getPATH0, 'db/card.multi.txt')) > \
-                            opath.getmtime(opath.join(getPATH0, 'db/card.%s.txt' % loc))
+        self.latest_multi = self.load_multi(loc)
 
     def load_db(self, loc):
         # print(open(opath.join(getPATH0,'db/card.%s.txt'%loc),encoding='utf8').read().encode(encoding="utf-8"))
@@ -162,7 +160,7 @@ class card(object):
     def load_multi(self, loc):
         _f = opath.join(getPATH0, 'db/card.multi.txt')
         if not opath.exists(_f):
-            return
+            return False
         if PYTHON3:
             f = open(_f, encoding = 'utf8')
         else:
@@ -175,6 +173,8 @@ class card(object):
         #变量名是不是很给力！
         if c:
             self.multi = dict(map(lambda d: map(lambda e: int(e), d.split(',')), c.split(';')))
+        return opath.getmtime(opath.join(getPATH0, 'db/card.multi.txt')) > \
+                    opath.getmtime(opath.join(getPATH0, 'db/card.%s.txt' % loc))
 
     def update(self, carddict):
         self.cards = []
