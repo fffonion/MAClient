@@ -914,7 +914,7 @@ class MAClient():
                 logging.debug('explore:event_type:' + info.event_type)
                 if info.event_type != '6':
                     logging.info('获得:%sG %sEXP, 进度:%s, 升级剩余:%s' % (info.gold, info.get_exp, info.progress, info.next_exp))
-                    # 已记录1 2 3 4 5 12 13 15 19
+                    # 已记录1 2 3 4 5 7(打秘境守护者胜利) 12 13 15 19
                     if info.event_type == '1':
                         '''<fairy>
                                 <serial_id>20840184</serial_id>

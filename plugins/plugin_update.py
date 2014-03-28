@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.18
+__version__ = 0.19
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update', 'us':'update_self'}
 #是否下载dev版
@@ -60,6 +60,7 @@ def update_self(plugin_vals):
             return
         global repos
         repos = repos[::-1]#use github first
+        print(du8('当前分支:%s' % 'dev' if GET_DEV_UPDATE else 'master'))
         for s in ["maclient.py", "maclient_network.py", "maclient_smart.py", "maclient_player.py", 
                 "maclient_proxy.py", "maclient_update.py", "maclient_logging.py", "maclient_plugin.py", "cross_platform.py"]:
             py = _http_get((GET_DEV_UPDATE and 'dev/' or 'master/') + s)
@@ -107,7 +108,7 @@ def _http_get(uri, silent=False):
                 pass
         except urllib2.HTTPError as e:
             if not silent:
-                print('HTTP Error %s when fetching ' + url + '' % e.code)
+                print('HTTP Error %s when fetching %s' % (e.code, url))
         except urllib2.URLError as e:
             pass
         else:
