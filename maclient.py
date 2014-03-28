@@ -1808,14 +1808,13 @@ class MAClient():
                 else:
                     strl += r.type
             else:#秘境完成奖励
-                print(r)
                 strl = ""
                 if r.type == '2':
                     strl = '%sx%s' % (self.player.item.get_name(int(r.item_id)), r.item_num)
                 elif r.type == '3':
                     strl = '%sG' % r.get_money
                 elif r.type == '4':
-                    strl = '%sFP' % r.point#?
+                    strl = '%sFP' % r.get_point
                 elif r.type == '5':
                     strl = '%sx%s' % ('蛋蛋卷', r.item_num)
                 else:
