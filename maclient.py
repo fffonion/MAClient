@@ -42,7 +42,8 @@ GUILD_RACE_TYPE = ['11','12']
 eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'fairy.not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type in GUILD_RACE_TYPE")]
 eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('NOT_BATTLED', 'not_battled'),('fairy.hp%', 'float(fairy.hp)/float(fairy.hp_max)')]
 eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
-eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"')]
+eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"'), ('not floor.IS_GUILD', "not area_race_type or area_race_type not in GUILD_RACE_TYPE"),
+('floor.IS_GUILD', "not area_race_type or area_race_type in GUILD_RACE_TYPE")]#little hack, 进入时area_race_type=0
 eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale_price'), ('sid', 'serial_id'), ('holo', 'holography==1')]
 
 eval_task = []
@@ -856,9 +857,9 @@ class MAClient():
             else:  # NO_FLOOR or ERROR
                 break
 
-    def _check_floor_eval(self, floors):
+    def _check_floor_eval(self, floors, area_race_type):
         sel_floor = []
-        cond_floor = self.evalstr_floor.split('|')
+        cond_floor = self.evalstr_floor.split('|')       
         while len(cond_floor) > 0:
             if cond_floor[0] == '':
                 cond_floor[0] = 'True'
@@ -886,7 +887,7 @@ class MAClient():
                 # if 'found_item_list' in floors:#只有一个
                 #    floors=[floors]
                 # 选择地区，结果在floor中
-                nofloorselect, floor = self._check_floor_eval(floors)
+                nofloorselect, floor = self._check_floor_eval(floors, 0)
                 if nofloorselect:
                     msg = EXPLORE_NO_FLOOR
                     break  # 更换秘境
@@ -940,7 +941,7 @@ class MAClient():
                         time.sleep(3)
                         self._fairy_battle(info.fairy, bt_type = EXPLORE_BATTLE)
                         time.sleep(5.5)
-                        if self._check_floor_eval([floor])[0]:  # 若已不符合条件
+                        if self._check_floor_eval([floor], ct.body.race_type)[0]:  # 若已不符合条件
                             return None, EXPLORE_OK
                         # 回到探索界面
                         if self._dopost('exploration/get_floor',
