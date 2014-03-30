@@ -43,7 +43,8 @@ eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'fairy.not_battled
 eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('NOT_BATTLED', 'not_battled'),('fairy.hp%', 'float(fairy.hp)/float(fairy.hp_max)')]
 eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"'), ('not floor.IS_GUILD', "(not area_race_type or area_race_type not in GUILD_RACE_TYPE)"),
-('floor.IS_GUILD', "(not area_race_type or area_race_type in GUILD_RACE_TYPE)")]#little hack, 进入时area_race_type=0
+('floor.IS_GUILD', "(not area_race_type or area_race_type in GUILD_RACE_TYPE)"),#little hack, 进入时area_race_type=0
+('floor.HAS_FACTOR', '[floor.found_item_list.found_item[z] for z in range(len(floor.found_item_list.found_item)) if floor.found_item_list.found_item[z].type=="2"]')]
 eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale_price'), ('sid', 'serial_id'), ('holo', 'holography==1')]
 
 eval_task = []
