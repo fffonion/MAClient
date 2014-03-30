@@ -416,7 +416,7 @@ class MAClient():
                     if task[1] == '':
                         logging.error('set_card need 1 argument')
                     else:
-                        self.set_card(task[1])
+                        self.set_card(' '.join(task[1:-1]))
                 elif task[0] == 'auto_set' or task[0] == 'as':
                     self.invoke_autoset(' '.join(task[1:]))
                 elif task[0] == 'explore' or task[0] == 'e':
