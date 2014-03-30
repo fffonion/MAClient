@@ -1959,9 +1959,10 @@ class MAClient():
                 if self.player.bc['current'] <= minbc:
                     logging.info('BC已突破下限%d，退出o(*≧▽≦)ツ ' % minbc)
                     return
-                logging.info('选择因子 %s:%s, 碎片id %d%s' % (
+                logging.info('选择因子 %s:%s(%s), 碎片id %d%s' % (
                     l.lake_id,
                     l.lake_id == '0' and 'NONE' or l.title,
+                    self.carddb[int(l.master_card_id)][0],
                     0 if (l.event_id != '0') else partid,
                     ' 待选:%d' % (len(partids) - battle_win) if self.cfg_factor_getnew else ''
                 ))
@@ -2026,6 +2027,7 @@ class MAClient():
                                 return
                             if int(resp['content-length']) > 10000:
                                 logging.info('收集碎片合成了新的骑士卡片！')
+                                return
                             # print bc,self.player.bc.current
                             logging.info((result == '0' and '擦输了QAQ' or '赢了XDDD') +
                                 ' AP:%+d/%s/%s' % (
