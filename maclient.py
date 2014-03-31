@@ -1004,7 +1004,7 @@ class MAClient():
                     elif info.event_type == '4':
                         logging.info('获得了因子碎片 湖:%s 碎片:%s' % (
                             info.parts_one.lake_id, info.parts_one.parts.parts_num))
-                        if len(ct) > 10000:
+                        if int(resp['content-length']) > 10000:
                             logging.info('收集碎片合成了新的骑士卡片！')
                 else:
                     logging.warning('AP不够了TUT')
@@ -2047,7 +2047,7 @@ class MAClient():
                             break
                 time.sleep(int(self._read_config('system', 'factor_sleep')))
             logging.sleep('换一个碎片……：-/')
-            time.sleep(int(self._read_config('system', 'factor_sleep')))
+            #time.sleep(int(self._read_config('system', 'factor_sleep')))
 
     # def remote_Hdl_(self):
     #     def do(method=None,fairy=''):

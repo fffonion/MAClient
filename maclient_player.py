@@ -27,7 +27,7 @@ class player(object):
         self.rev_need_update = False, False, False
         self.update_all(login_xml)
         object.__init__(self)
-        self.success = check_exclusion(self.name)
+        self.success = check_exclusion(self.name + loc)
 
     def reload_db(self):
         self.card.load_db(self.loc[:2])
