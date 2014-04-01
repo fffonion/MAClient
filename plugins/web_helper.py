@@ -7,14 +7,21 @@ if PYTHON3:
     from io import StringIO
     import _webbrowser3 as webbrowser
     import urllib.request as urllib2
-    import winreg
+    try:
+        import winreg
+    except ImportError:
+        winreg = None
 else:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
     from SocketServer import ThreadingMixIn
     from cStringIO import StringIO
     import _webbrowser as webbrowser
     import urllib2
-    import _winreg as winreg
+    try:
+        import _winreg as winreg
+    except ImportError:
+        winreg = None
+import os, os.path as opath
 import gzip
 import socket
 import urllib
@@ -22,7 +29,7 @@ import urllib
 # start meta
 __plugin_name__ = 'web broswer helper'
 __author = 'fffonion'
-__version__ = 0.3
+__version__ = 0.41
 hooks = {}
 extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy'}
 # end meta
@@ -32,6 +39,7 @@ weburl = {'cn':'http://game1-cbt.ma.sdo.com:10001/connect/web/?%s',
         'tw':'http://game.ma.mobimon.com.tw:10001/connect/web/?%s',
         'jp':'http://web.million-arthurs.com/connect/web/?%s',
         'kr':'http://ma.actoz.com:10001/connect/web/?%s'}
+servers = ['static.sdg-china.com' ,'ma.webpatch.sdg-china.com', 'game.ma.mobimon.com.tw', 'web.million-arthurs.com', 'ma.actoz.com']
 # other stuffs
 headers = {'Pragma': 'no-cache',
     'Cache-Control': 'no-cache',
@@ -41,8 +49,19 @@ headers = {'Pragma': 'no-cache',
     'Accept-Language': 'zh-CN, en-US',
     'Accept-Charset': 'utf-8, iso-8859-1, utf-16, *;q=0.7', }
     # 'Accept-Encoding':'gzip,deflate'}
+
+def _get_temp():
+    if sys.platform == 'win32':
+        return opath.join(os.environ.get('tmp'), '.MAClient.webhelper_cache')
+    else:
+        return './.MAClient.webhelper_cache'
+
+TEMP_PATH = _get_temp()
+
 def start_webproxy(plugin_vals):
     def do(args):
+        if not opath.exists(TEMP_PATH):
+            os.mkdir(TEMP_PATH)
         headers['cookie'] = plugin_vals['cookie']
         headers['User-Agent'] = plugin_vals['poster'].header['User-Agent']
         headers['X-Requested-With'] += plugin_vals['loc']
@@ -64,22 +83,25 @@ def start_webproxy(plugin_vals):
     return do
 
 def enable_proxy():
-    INTERNET_SETTINGS = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-        r'Software\Microsoft\Windows\CurrentVersion\Internet Settings',
-        0, winreg.KEY_ALL_ACCESS)
-
-    winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyEnable', 0, winreg.REG_DWORD, 1)
-    winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyOverride', 0, winreg.REG_SZ, u'127.0.0.1')  # Bypass the proxy for localhost
-    winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyServer', 0, winreg.REG_SZ, u'127.0.0.1:23301')
+    if winreg:
+        INTERNET_SETTINGS = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+            r'Software\Microsoft\Windows\CurrentVersion\Internet Settings',
+            0, winreg.KEY_ALL_ACCESS)
+        winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyEnable', 0, winreg.REG_DWORD, 1)
+        winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyOverride', 0, winreg.REG_SZ, u'127.0.0.1')  # Bypass the proxy for localhost
+        winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyServer', 0, winreg.REG_SZ, u'127.0.0.1:23301')
 
 def disable_proxy():
-    INTERNET_SETTINGS = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-        r'Software\Microsoft\Windows\CurrentVersion\Internet Settings',
-        0, winreg.KEY_ALL_ACCESS)
+    if winreg:
+        INTERNET_SETTINGS = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
+            r'Software\Microsoft\Windows\CurrentVersion\Internet Settings',
+            0, winreg.KEY_ALL_ACCESS)
+        winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyEnable', 0, winreg.REG_DWORD, 0)
+        # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyOverride')
+        # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyServer')
 
-    winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyEnable', 0, winreg.REG_DWORD, 0)
-    # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyOverride')
-    # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyServer')
+MIME_MAP = {'js' : 'application/x-javascript', 'css' : 'text/css',
+'jpg' : 'image/jpeg', 'png' : 'image/png', 'gif' : 'image/gif'}
 # opener
 if PYTHON3:
     opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.request.getproxies()))
@@ -87,12 +109,34 @@ else:
     opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.getproxies()))
 class Proxy(BaseHTTPRequestHandler):
     def do_HDL(self):
-        req = urllib2.Request(self.path, headers = headers)
-        if self.command == 'POST':
-            data = self.rfile.read(int(self.headers['Content-Length']))
-            resp = opener.open(req, data)
+        ext = opath.splitext(self.path)[1][1:]
+        if ext in ['jpg', 'png', 'css', 'js', 'gif'] and self.headers['Host'].rstrip(':10001') in servers:
+            url = self.path.lstrip('http://')
+            d, f = opath.split(url)
+            cache_file = opath.join(TEMP_PATH, opath.join(d.replace('/', '#').replace(':10001', ''), f))
         else:
-            resp = opener.open(req)
+            cache_file = None
+        #try to read cache?
+        if cache_file and opath.exists(cache_file):
+            body = open(cache_file, 'rb').read()
+            self.send_response(200)
+            self.send_header('Content-Encoding'.encode('ascii'), 'indentity'.encode('ascii'))
+            self.send_header('Content-Length'.encode('ascii'), len(body))
+            self.send_header('Content-Type'.encode('ascii'), MIME_MAP[ext].encode('ascii'))
+            self.end_headers()
+            self.wfile.write(body)
+            print('Cache hit : %s' % self.path)
+            return
+        #no cache
+        req = urllib2.Request(self.path, headers = headers)
+        try:
+            if self.command == 'POST':
+                data = self.rfile.read(int(self.headers['Content-Length']))
+                resp = opener.open(req, data)
+            else:
+                resp = opener.open(req)
+        except urllib2.HTTPError as e:
+            return
         body = resp.read()
         self.send_response(resp.getcode())
         for h in resp.info().items():
@@ -106,6 +150,13 @@ class Proxy(BaseHTTPRequestHandler):
         # except:
         #     data = body
         self.wfile.write(body)
+        #write to cache
+        if cache_file:
+            if not opath.exists(opath.split(cache_file)[0]):
+                os.makedirs(opath.split(cache_file)[0])
+            with open(cache_file, 'wb') as f:
+                f.write(body)
+                f.close()
     do_GET = do_POST = do_HDL
 
 class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
@@ -114,4 +165,4 @@ class ThreadingHTTPServer(ThreadingMixIn, HTTPServer):
 
 if __name__ == "__main__":
     c = start_webproxy({'cookie':'1=2', 'loc':'cn'})
-    c()
+    c('')
