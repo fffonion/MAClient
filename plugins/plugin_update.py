@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.19
+__version__ = 0.21
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update', 'us':'update_self'}
 #是否下载dev版
@@ -60,7 +60,11 @@ def update_self(plugin_vals):
             return
         global repos
         repos = repos[::-1]#use github first
+        global GET_DEV_UPDATE
         print(du8('当前分支:%s' % 'dev' if GET_DEV_UPDATE else 'master'))
+        if GET_DEV_UPDATE and raw_inputd('是否继续?输入n可切换为master分支y/n') == 'n':
+            GET_DEV_UPDATE = False
+            print(du8('当前分支:master'))
         for s in ["maclient.py", "maclient_network.py", "maclient_smart.py", "maclient_player.py", 
                 "maclient_proxy.py", "maclient_update.py", "maclient_logging.py", "maclient_plugin.py", "cross_platform.py"]:
             py = _http_get((GET_DEV_UPDATE and 'dev/' or 'master/') + s)
@@ -84,7 +88,7 @@ def _get_temp():
         return os.environ.get('tmp')
     else:
         try:
-            os.listdir('/tmp')
+            open('/tmp/.MAClient.test', 'w')
         except OSError:
             return '.'
         else:

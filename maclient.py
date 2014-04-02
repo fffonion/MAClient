@@ -740,7 +740,7 @@ class MAClient():
             #if self.loc != 'tw':#cn, jp, kr:
             if self._dopost('cardselect/savedeckcard', postdata = postparam)[0]['error']:
                 break
-            logging.info('成功更换卡组为%s cost%d' % (deckkey, last_set_bc))
+            logging.info('更换卡组为%s cost%d' % (deckkey, last_set_bc))
             # 保存
             self._write_config('record', 'last_set_card', self._read_config('carddeck', deckkey))
             # 记录BC

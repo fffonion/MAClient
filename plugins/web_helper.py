@@ -29,7 +29,7 @@ import urllib
 # start meta
 __plugin_name__ = 'web broswer helper'
 __author = 'fffonion'
-__version__ = 0.41
+__version__ = 0.42
 hooks = {}
 extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy'}
 # end meta
@@ -54,9 +54,17 @@ def _get_temp():
     if sys.platform == 'win32':
         return opath.join(os.environ.get('tmp'), '.MAClient.webhelper_cache')
     else:
-        return './.MAClient.webhelper_cache'
+        try:
+            open('/tmp/.MAClient.test', 'w')
+        except OSError:
+            return './.MAClient.webhelper_cache'
+        else:
+            return '/tmp/.MAClient.webhelper_cache'
 
 TEMP_PATH = _get_temp()
+MIME_MAP = {'js' : 'application/x-javascript', 'css' : 'text/css',
+'jpg' : 'image/jpeg', 'png' : 'image/png', 'gif' : 'image/gif'}
+#MITM_MODE = ''
 
 def start_webproxy(plugin_vals):
     def do(args):
@@ -67,6 +75,9 @@ def start_webproxy(plugin_vals):
         headers['X-Requested-With'] += plugin_vals['loc']
         homeurl = weburl[plugin_vals['loc']] % (plugin_vals['cookie'].rstrip(';'))
         enable_proxy()
+        #if not winreg or True:
+        #    global MITM_MODE
+        #    MITM_MODE = weburl[plugin_vals['loc']].rstrip('/connect/web/?%s')
         print(('现在将打开浏览器窗口\n'
               '如果没有，请手动打开主页:\n'
               '%s\n'
@@ -99,9 +110,6 @@ def disable_proxy():
         winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyEnable', 0, winreg.REG_DWORD, 0)
         # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyOverride')
         # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyServer')
-
-MIME_MAP = {'js' : 'application/x-javascript', 'css' : 'text/css',
-'jpg' : 'image/jpeg', 'png' : 'image/png', 'gif' : 'image/gif'}
 # opener
 if PYTHON3:
     opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.request.getproxies()))
@@ -109,6 +117,8 @@ else:
     opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.getproxies()))
 class Proxy(BaseHTTPRequestHandler):
     def do_HDL(self):
+        #if MITM_MODE and not self.path.startswith(MITM_MODE):
+        #    self.path = MITM_MODE + self.path
         ext = opath.splitext(self.path)[1][1:]
         if ext in ['jpg', 'png', 'css', 'js', 'gif'] and self.headers['Host'].rstrip(':10001') in servers:
             url = self.path.lstrip('http://')
