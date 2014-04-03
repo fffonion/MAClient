@@ -406,6 +406,9 @@ class MAClient():
             if cmd == '':
                 tasks = eval(taskeval)
                 logging.debug('tasker:eval result:%s' % (tasks))
+            if isinstance(tasks, bool):
+                logging.error('任务表达式格式错误，可使用GUI作参考:\n表达式 %s\n输出 %s' % (taskeval, tasks))
+                self._exit(1)
             for task in tasks.split('|'):
                 task = (task + ' ').split(' ')
                 logging.debug('tasker:%s' % task[0])

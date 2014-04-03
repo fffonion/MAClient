@@ -29,7 +29,7 @@ import urllib
 # start meta
 __plugin_name__ = 'web broswer helper'
 __author = 'fffonion'
-__version__ = 0.42
+__version__ = 0.44
 hooks = {}
 extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy'}
 # end meta
@@ -58,16 +58,19 @@ def _get_temp():
             open('/tmp/.MAClient.test', 'w')
         except OSError:
             return './.MAClient.webhelper_cache'
+        except IOError:
+            return './.MAClient.webhelper_cache'
         else:
             return '/tmp/.MAClient.webhelper_cache'
 
-TEMP_PATH = _get_temp()
+
 MIME_MAP = {'js' : 'application/x-javascript', 'css' : 'text/css',
 'jpg' : 'image/jpeg', 'png' : 'image/png', 'gif' : 'image/gif'}
 #MITM_MODE = ''
 
 def start_webproxy(plugin_vals):
     def do(args):
+        TEMP_PATH = _get_temp()
         if not opath.exists(TEMP_PATH):
             os.mkdir(TEMP_PATH)
         headers['cookie'] = plugin_vals['cookie']
@@ -117,6 +120,7 @@ else:
     opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.getproxies()))
 class Proxy(BaseHTTPRequestHandler):
     def do_HDL(self):
+        TEMP_PATH = _get_temp()
         #if MITM_MODE and not self.path.startswith(MITM_MODE):
         #    self.path = MITM_MODE + self.path
         ext = opath.splitext(self.path)[1][1:]
