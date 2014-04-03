@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.21
+__version__ = 0.22
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update', 'us':'update_self'}
 #是否下载dev版
@@ -90,6 +90,8 @@ def _get_temp():
         try:
             open('/tmp/.MAClient.test', 'w')
         except OSError:
+            return '.'
+        except IOError:
             return '.'
         else:
             return '/tmp'
