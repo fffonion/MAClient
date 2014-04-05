@@ -2098,40 +2098,10 @@ class MAClient():
 
 
 if __name__ == '__main__':
-    '''cardid=int(raw_inputd('cardid > '))
-    level=raw_inputd('level > ')
-    for j in level.split(','):
-        dt=ma.decode_res(download_card(cardid,int(j),'tw'))
-        open('Z:\\%d_%s.png'%(cardid,j),'wb').write(dt)'''
     if len(sys.argv) >= 2:
         MAClient1 = MAClient(configfile = sys.argv[1], savesession = True)
     else:
         MAClient1 = MAClient(savesession = True)
-    # 进入游戏
-    # MAClient1._dopost('notification/post_devicetoken',postdata=ma.encode_param('S=nosessionid&login_id=%s&password=%s&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb'%(username,password)),extraheader={'Cookie2': '$Version=1'})
-    # 登陆
-    # import profile
-    # profile.run("MAClient1.login()")
-    # os._exit(0)
     MAClient1.login()
     dec = MAClient1.login()
     MAClient1.initplayer(dec)
-    # MAClient1.gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
-    # MAClient1._sell_card(['59775010'])
-    # MAClient1.tasker()
-    # MAClient1.explore()
-    # MAClient1.set_card('factor')
-    # MAClient1.factor_battle()
-    # 妖精列表
-    # MAClient1._dopost('menu_fairy_sel')
-    # MAClient1.set_card(['124'])
-    # exploration/fairy_floor，check=HJQrxs%2FKaF3hyO81WS2jdA%3D%3D%0A&serial_id=W0etULbphY0EqnmoIG2Zcg%3D%3D%0A&user_id=r%2BFl%2BYcd4QrirAFwiDWIRw%3D%3D%0A
-    # exploration/fairybattle,serial_id=W0etULbphY0EqnmoIG2Zcg%3D%3D%0A&user_id=r%2BFl%2BYcd4QrirAFwiDWIRw%3D%3D%0A
-
-    # exploration/area
-    # exploration/floor,area_id=Q5E9%2FUAjnkmbZhPSCR6nnw%3D%3D%0A
-    # exploration/get_floor，area_id=Q5E9%2FUAjnkmbZhPSCR6nnw%3D%3D%0A&check=HJQrxs%2FKaF3hyO81WS2jdA%3D%3D%0A&floor_id=3sJ7qONwz5JawDpnsoUDJQ%3D%3D%0A
-    # exploration/explore，area_id=Q5E9%2FUAjnkmbZhPSCR6nnw%3D%3D%0A&auto_build=HJQrxs%2FKaF3hyO81WS2jdA%3D%3D%0A&floor_id=3sJ7qONwz5JawDpnsoUDJQ%3D%3D%0A
-
-    # roundtable/edit，move=HJQrxs%2FKaF3hyO81WS2jdA%3D%3D%0A 返回？
-    # app/cardselect/savedeckcard，C=%2BRsca9Zy2x8L1yprbkM494x7rw%2B0vUKp%2Fpc%2BN%2B2sFH3zGeMHnPJkwThx3cDEbfVXEAjoR9k2p7EF%0A6D31AT9oQ2PWUTs9pdB0p4%2FNZmMBHEQ%3D%0A&lr=9ZeY%2BCMCjZpBgiMOHfyTRg%3D%3D%0A
