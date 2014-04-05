@@ -55,7 +55,9 @@ def check_revision(loc, rev_tuple):
 def update_master(loc, need_update, poster):
     replace_AND = re.compile('&(?!#)')#no CDATA, sad
     new_rev = [None, None, None]
-    poster.ht.connections = {}#cleanup socket pool
+    for s in poster.ht.connections:#cleanup socket pool
+        poster.ht.connections[s].close()
+    poster.ht.connections = {}
     poster.set_timeout(240)
     if need_update[0]:
         a, b = poster.post('masterdata/card/update', postdata = '%s&revision=0' % poster.cookie)
@@ -107,6 +109,8 @@ def update_master(loc, need_update, poster):
             open(opath.join(getPATH0, 'db/boss.%s.txt' % loc), 'w').write('\n'.join(strs))
         new_rev[2] = resp.header.revision.boss_rev
         save_revision(loc, bossrev = new_rev[2])
+    for s in poster.ht.connections:#cleanup socket pool
+        poster.ht.connections[s].close()
     poster.ht.connections = {}
     poster.set_timeout(20)#rollback
     return new_rev
