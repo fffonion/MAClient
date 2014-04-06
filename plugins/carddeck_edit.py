@@ -9,7 +9,7 @@ from xml2dict import XML2Dict
 # start meta
 __plugin_name__ = 'scratch carddeck from REAL client'
 __author = 'fffonion'
-__version__ = 0.3
+__version__ = 0.4
 hooks = {}
 extra_cmd = {'scratch_carddeck':'scratch_carddeck', 'scc':'scratch_carddeck','check_debug':'check_debug','cd':'check_debug',
 'read_decks':'read_decks','rd':'read_decks'}
@@ -30,7 +30,10 @@ def iter_printer(l, sep = '\n'):
 
 def read_decks(plugin_vals):
     def do(*args):
-        get=lambda x:XML2Dict().fromstring(x).response.body.roundtable_edit.deck_cards
+        if plugin_vals['loc'] == 'jp':
+            get=lambda x, y:XML2Dict().fromstring(x).response.body.roundtable_edit.deck[y - 1].deck_cards
+        else:
+            get=lambda x, y:XML2Dict().fromstring(x).response.body.roundtable_edit.deck_cards
         poster=plugin_vals['poster']
         pcard=plugin_vals['player'].card
         cf=plugin_vals['cf']
@@ -42,14 +45,32 @@ def read_decks(plugin_vals):
             cf.write(f)
             f.flush()
         list_option=cf.options
-        for i in range(1,4,1):
-            print(du8('卡组%d:'%i))
-            C=get(poster.post('roundtable/edit', postdata = 'move=1%s'%(i>1 and '&deck_id=%s'%i or ''))[1]).rstrip(',empty').split(',')
+        _jp_cache = None
+        for i in (plugin_vals['loc'] == 'jp' and range(1,5,1) or range(1,4,1)):
+            if i == 4:
+                print(du8('推荐卡组:'))
+            else:
+                print(du8('卡组%d:' % i))
+            if plugin_vals['loc'] == 'jp':
+                if not _jp_cache:
+                    _jp_cache = poster.post('roundtable/edit', postdata = 'move=1')[1]
+                _data = _jp_cache
+            else:
+                _data = poster.post('roundtable/edit', postdata = 'move=1%s'%(i>1 and '&deck_id=%s'%i or ''))[1]
+            try:
+                C=get(_data, i).rstrip(',empty').split(',')
+                assert(C != [''])
+            except AssertionError:
+                print(du8('卡组为空，跳过ww'))
+                continue
+            # except:
+            #     print(du8('读取卡组失败，请输入rl重新登录'))
+            #     return
             CL=tolist(C)
             print(du8('\n'.join(['|'.join(map(
                     lambda x:'   %-12s' % pcard.db[pcard.sid(x).master_card_id][0],
                     C[i:min(i + 3, len(CL))]
-                 )) for i in range(0, len(CL), 3)])))
+                 )) for i in range(0, len(CL), 3)])).encode(CODEPAGE or 'utf-8', 'replace'))
             decks = list_option('carddeck')
             print(du8('\n选择卡组，输入卡组名以添加新卡组，按回车跳过'))
             print(iter_printer(decks))
