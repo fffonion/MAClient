@@ -70,7 +70,7 @@ class Logging(type(sys)):
         except TypeError:
             fmt = fmt.replace('%','%%')
             self.__write(convstr(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args))))
-        sys.stdout.flush()
+        #sys.stdout.flush()
         return '[%s] %s\n' % (time.strftime('%b %d %X', time.localtime()), fmt % args)
 
     def dummy(self, *args, **kwargs):

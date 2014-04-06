@@ -29,7 +29,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.68
+__version__ = 1.69
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
@@ -40,9 +40,11 @@ GUILD_RACE_TYPE = ['11','12']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
 eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'fairy.not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type in GUILD_RACE_TYPE")]
-eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('NOT_BATTLED', 'not_battled')]
+eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('NOT_BATTLED', 'not_battled'),('fairy.hp%', 'float(fairy.hp)/float(fairy.hp_max)')]
 eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
-eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"')]
+eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"'), ('not floor.IS_GUILD', "(not area_race_type or area_race_type not in GUILD_RACE_TYPE)"),
+('floor.IS_GUILD', "(not area_race_type or area_race_type in GUILD_RACE_TYPE)"),#little hack, 进入时area_race_type=0
+('floor.HAS_FACTOR', '[floor.found_item_list.found_item[z] for z in range(len(floor.found_item_list.found_item)) if floor.found_item_list.found_item[z].type=="2"]')]
 eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale_price'), ('sid', 'serial_id'), ('holo', 'holography==1')]
 
 eval_task = []
@@ -404,6 +406,9 @@ class MAClient():
             if cmd == '':
                 tasks = eval(taskeval)
                 logging.debug('tasker:eval result:%s' % (tasks))
+            if isinstance(tasks, bool):
+                logging.error('任务表达式格式错误，可使用GUI作参考:\n表达式 %s\n输出 %s' % (taskeval, tasks))
+                self._exit(1)
             for task in tasks.split('|'):
                 task = (task + ' ').split(' ')
                 logging.debug('tasker:%s' % task[0])
@@ -414,7 +419,7 @@ class MAClient():
                     if task[1] == '':
                         logging.error('set_card need 1 argument')
                     else:
-                        self.set_card(task[1])
+                        self.set_card(' '.join(task[1:-1]))
                 elif task[0] == 'auto_set' or task[0] == 'as':
                     self.invoke_autoset(' '.join(task[1:]))
                 elif task[0] == 'explore' or task[0] == 'e':
@@ -458,7 +463,7 @@ class MAClient():
                 elif task[0] == 'login' or task[0] == 'l':
                     if len(task) == 2:
                         task.append('')
-                    self.initplayer(self.login(uname = task[1], pwd = task[2]))
+                    self.login(uname = task[1], pwd = task[2])
                 elif task[0] == 'friend' or task[0] == 'f':
                     if len(task) == 2:
                         task = [task[0], '', '']
@@ -490,59 +495,71 @@ class MAClient():
 
     def login(self, uname = '', pwd = '', fast = False):
         # sessionfile='.%s.session'%self.loc
-        if os.path.exists(self.playerfile) and self._read_config('account_%s' % self.loc, 'session') != '' and uname == '':
-            logging.info('加载了保存的账户XD')
-            dec = open(self.playerfile, 'r').read()  # .encode('utf-8')
-            ct = xmldict = XML2Dict().fromstring(dec).response
-        else:
-            self.username = uname or self.username
-            self.password = pwd or self.password
-            if self.username == '':
-                self.username = raw_inputd('Username:')
-            if self.password == '' or (uname != '' and pwd == ''):
-                self.password = getpass('Password:')
-                if raw_inputd('是否保存密码(y/n)？') == 'y':
-                    self._write_config('account_%s' % self.loc, 'password', self.password)
-                    logging.warning('保存的登录信息没有加密www')
-            token = self._read_config('system', 'device_token').replace('\\n', '\n') or \
-            'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
-            if not fast:
-                ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
-                # self.poster.update_server(ct)
-                pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
-                # if self.loc == 'kr':
-                #      pdata='S=nosessionid&%s' % pdata
-                self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
-            resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
-            if resp['error']:
-                logging.info('登录失败么么哒w')
-                self._exit(1)
+        while True:
+            if os.path.exists(self.playerfile) and self._read_config('account_%s' % self.loc, 'session') != '' \
+                and (time.time() - os.path.getmtime(self.playerfile) < 43200) and uname == '':
+                logging.info('加载了保存的账户XD')
+                dec = open(self.playerfile, 'r').read()  # .encode('utf-8')
+                ct = xmldict = XML2Dict().fromstring(dec).response
             else:
-                pdata = ct.header.your_data
-                logging.info('[%s] 登录成功!\n' % self.username + \
-                    'AP:%s/%s BC:%s/%s 金:%s 基友点:%s %s\n' % (
-                        pdata.ap.current, pdata.ap.max,
-                        pdata.bc.current, pdata.bc.max,
-                        pdata.gold, pdata.friendship_point,
-                        pdata.fairy_appearance == '1' and '妖精出现中!!' or '') +
-                    '蛋蛋卷:%s 等级:%s 完成度:%s %s%s%s\n' % (
-                        pdata.gacha_ticket,
-                        pdata.town_level,
-                        pdata.percentage,
-                        pdata.free_ap_bc_point != '0' and '有未分配的点数yo~ ' or '',
-                        pdata.friends_invitations != '0' and '收到好友邀请了呢 ' or '',
-                        ct.body.mainmenu.rewards == '1' and '收到礼物了~' or '')
-                )
-                self._write_config('account_%s' % self.loc, 'username', self.username)
-                self._write_config('record', 'last_set_card', '')
-                self._write_config('record', 'last_set_bc', '0')
-        return ct
+                self.username = uname or self.username
+                self.password = pwd or self.password
+                if self.username == '':
+                    self.username = raw_inputd('Username:')
+                if self.password == '' or (uname != '' and pwd == ''):
+                    self.password = getpass('Password:')
+                    if raw_inputd('是否保存密码(y/n)？') == 'y':
+                        self._write_config('account_%s' % self.loc, 'password', self.password)
+                        logging.warning('保存的登录信息没有加密www')
+                token = self._read_config('system', 'device_token').replace('\\n', '\n') or \
+                'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
+                if not fast:
+                    ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
+                    # self.poster.update_server(ct)
+                    pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
+                    # if self.loc == 'kr':
+                    #      pdata='S=nosessionid&%s' % pdata
+                    self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
+                resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
+                if resp['error']:
+                    logging.info('登录失败么么哒w')
+                    self._exit(1)
+                else:
+                    pdata = ct.header.your_data
+                    logging.info('[%s] 登录成功!\n' % self.username + \
+                        'AP:%s/%s BC:%s/%s 金:%s 基友点:%s %s\n' % (
+                            pdata.ap.current, pdata.ap.max,
+                            pdata.bc.current, pdata.bc.max,
+                            pdata.gold, pdata.friendship_point,
+                            pdata.fairy_appearance == '1' and '妖精出现中!!' or '') +
+                        '蛋蛋卷:%s 等级:%s 完成度:%s %s%s%s\n' % (
+                            pdata.gacha_ticket,
+                            pdata.town_level,
+                            pdata.percentage,
+                            pdata.free_ap_bc_point != '0' and '有未分配的点数yo~ ' or '',
+                            pdata.friends_invitations != '0' and '收到好友邀请了呢 ' or '',
+                            ct.body.mainmenu.rewards == '1' and '收到礼物了~' or '')
+                    )
+                    self._write_config('account_%s' % self.loc, 'username', self.username)
+                    self._write_config('record', 'last_set_card', '')
+                    self._write_config('record', 'last_set_bc', '0')
+            if self.initplayer(ct):
+                break
 
     def initplayer(self, xmldict):
         if self.player_initiated:  # 刷新
-            self.player.update_all(xmldict)
+            try:
+                self.player.update_all(xmldict)
+            except AttributeError:
+                logging.warning('error parsing playerdata')
         else:  # 第一次
-            self.player = maclient_player.player(xmldict, self.loc)
+            try:
+                self.player = maclient_player.player(xmldict, self.loc)
+            except AttributeError:
+                logging.warning('保存的登录信息有误，将重新登录')
+                if opath.exists(self.playerfile):
+                    os.remove(self.playerfile)
+                return False
             if not self.player.success:
                 logging.error('当前登录的用户(%s)已经运行了一个MAClient' % (self.username))
                 self._exit(2)
@@ -563,6 +580,7 @@ class MAClient():
             self.stitle.start()
         if self.loc[:2] in ['cn', 'tw'] and not self.player.card.latest_multi:
             logging.warning('倍卡数据可能已过期，请通过"更新数据库"选项更新\n一般请在维护后一天左右使用更新')
+        return True
 
     @plugin.func_hook
     def auto_check(self, doingwhat):
@@ -738,7 +756,7 @@ class MAClient():
             #if self.loc != 'tw':#cn, jp, kr:
             if self._dopost('cardselect/savedeckcard', postdata = postparam)[0]['error']:
                 break
-            logging.info('成功更换卡组为%s cost%d' % (deckkey, last_set_bc))
+            logging.info('更换卡组为%s cost%d' % (deckkey, last_set_bc))
             # 保存
             self._write_config('record', 'last_set_card', self._read_config('carddeck', deckkey))
             # 记录BC
@@ -856,9 +874,9 @@ class MAClient():
             else:  # NO_FLOOR or ERROR
                 break
 
-    def _check_floor_eval(self, floors):
+    def _check_floor_eval(self, floors, area_race_type):
         sel_floor = []
-        cond_floor = self.evalstr_floor.split('|')
+        cond_floor = self.evalstr_floor.split('|')       
         while len(cond_floor) > 0:
             if cond_floor[0] == '':
                 cond_floor[0] = 'True'
@@ -886,7 +904,7 @@ class MAClient():
                 # if 'found_item_list' in floors:#只有一个
                 #    floors=[floors]
                 # 选择地区，结果在floor中
-                nofloorselect, floor = self._check_floor_eval(floors)
+                nofloorselect, floor = self._check_floor_eval(floors, 0)
                 if nofloorselect:
                     msg = EXPLORE_NO_FLOOR
                     break  # 更换秘境
@@ -913,7 +931,7 @@ class MAClient():
                 logging.debug('explore:event_type:' + info.event_type)
                 if info.event_type != '6':
                     logging.info('获得:%sG %sEXP, 进度:%s, 升级剩余:%s' % (info.gold, info.get_exp, info.progress, info.next_exp))
-                    # 已记录1 2 3 4 5 12 13 15 19
+                    # 已记录1 2 3 4 5 7(打秘境守护者胜利) 12 13 15 19
                     if info.event_type == '1':
                         '''<fairy>
                                 <serial_id>20840184</serial_id>
@@ -940,7 +958,7 @@ class MAClient():
                         time.sleep(3)
                         self._fairy_battle(info.fairy, bt_type = EXPLORE_BATTLE)
                         time.sleep(5.5)
-                        if self._check_floor_eval([floor])[0]:  # 若已不符合条件
+                        if self._check_floor_eval([floor], ct.body.race_type)[0]:  # 若已不符合条件
                             return None, EXPLORE_OK
                         # 回到探索界面
                         if self._dopost('exploration/get_floor',
@@ -978,9 +996,11 @@ class MAClient():
                                 rwds = []
                                 msg = ""
                                 for b in range(len(bns)):
-                                    msg += '%s:%s' % (msgs[b].value ,self._parse_reward(bns[b]))
+                                    if bns[b].type == '1' and not self.cfg_auto_fairy_rewards:#借用一下吧ww
+                                        continue
+                                    msg += '%s:%s , ' % (msgs[b].value ,self._parse_reward(bns[b]))
                                     rwds.append(bns[b].id)
-                                logging.info(msg)
+                                logging.info(msg.rstrip(' , '))
                                 self._get_rewards(rwds)
                             return None, EXPLORE_OK
                     elif info.event_type == '12':
@@ -1000,7 +1020,7 @@ class MAClient():
                     elif info.event_type == '4':
                         logging.info('获得了因子碎片 湖:%s 碎片:%s' % (
                             info.parts_one.lake_id, info.parts_one.parts.parts_num))
-                        if len(ct) > 10000:
+                        if int(resp['content-length']) > 10000:
                             logging.info('收集碎片合成了新的骑士卡片！')
                 else:
                     logging.warning('AP不够了TUT')
@@ -1787,27 +1807,36 @@ class MAClient():
             cname = self.carddb[int(r.card_id)][0]
             if 'content' in r :
                 if cname in r.content:  # 物品为卡片有时content是卡片名称（吧
-                    strl = ('%s:%s , ' % (r.title, r.content))
+                    strl = ('%s:%s' % (r.title, r.content))
                 else:
-                    strl = ('%s:%s , ' % (r.content, cname))
+                    strl = ('%s:%s' % (r.content, cname))
             else:#秘境完成奖励
-                strl = ('%s%s , ' % (cname, '(闪)' if r.holo_flag=='1' else ''))
+                strl = ('%s%s' % (cname, '(闪)' if r.holo_flag=='1' else ''))
         else:
             if 'content' in r :
-                strl = ('%s:' % r.content)
-            else:
+                strl = '%s:' % r.title
+                if r.type == '2':
+                    strl += '%sx%s' % (self.player.item.get_name(int(r.item_id)), r.get_num)
+                elif r.type == '3':
+                    strl += '%sG' % r.point
+                elif r.type == '4':
+                    strl += '%sFP' % r.point
+                elif r.type == '5':
+                    strl += '%sx%s' % ('蛋蛋卷', r.get_num)
+                else:
+                    strl += r.type
+            else:#秘境完成奖励
                 strl = ""
-                r['get_num'] = r.item_num
-            if r.type == '2':
-                strl = '%sx%s , ' % (self.player.item.get_name(int(r.item_id)), r.get_num)
-            elif r.type == '3':
-                strl = '%sG , ' % r.point
-            elif r.type == '4':
-                strl = '%sFP , ' % r.point
-            elif r.type == '5':
-                strl = '%sx%s , ' % ('蛋蛋卷', r.get_num)
-            else:
-                strl = r.type
+                if r.type == '2':
+                    strl = '%sx%s' % (self.player.item.get_name(int(r.item_id)), r.item_num)
+                elif r.type == '3':
+                    strl = '%sG' % r.get_money
+                elif r.type == '4':
+                    strl = '%sFP' % r.get_point
+                elif r.type == '5':
+                    strl = '%sx%s' % ('蛋蛋卷', r.item_num)
+                else:
+                    strl = r.type
         return strl
 
     @plugin.func_hook
@@ -1843,7 +1872,7 @@ class MAClient():
             else:
                 if r.type in rw_type:
                     nid.append(r.id)
-                strl += self._parse_reward(r)
+                strl += self._parse_reward(r) + ' , ' 
         if nid == []:
             logging.info('没有符合筛选的奖励(%d)' % (len(rwds)))
         else:
@@ -1947,9 +1976,10 @@ class MAClient():
                 if self.player.bc['current'] <= minbc:
                     logging.info('BC已突破下限%d，退出o(*≧▽≦)ツ ' % minbc)
                     return
-                logging.info('选择因子 %s:%s, 碎片id %d%s' % (
+                logging.info('选择因子 %s:%s(%s), 碎片id %d%s' % (
                     l.lake_id,
                     l.lake_id == '0' and 'NONE' or l.title,
+                    self.carddb[int(l.master_card_id)][0],
                     0 if (l.event_id != '0') else partid,
                     ' 待选:%d' % (len(partids) - battle_win) if self.cfg_factor_getnew else ''
                 ))
@@ -2014,6 +2044,7 @@ class MAClient():
                                 return
                             if int(resp['content-length']) > 10000:
                                 logging.info('收集碎片合成了新的骑士卡片！')
+                                return
                             # print bc,self.player.bc.current
                             logging.info((result == '0' and '擦输了QAQ' or '赢了XDDD') +
                                 ' AP:%+d/%s/%s' % (
@@ -2032,7 +2063,7 @@ class MAClient():
                             break
                 time.sleep(int(self._read_config('system', 'factor_sleep')))
             logging.sleep('换一个碎片……：-/')
-            time.sleep(int(self._read_config('system', 'factor_sleep')))
+            #time.sleep(int(self._read_config('system', 'factor_sleep')))
 
     # def remote_Hdl_(self):
     #     def do(method=None,fairy=''):
@@ -2080,40 +2111,8 @@ class MAClient():
 
 
 if __name__ == '__main__':
-    '''cardid=int(raw_inputd('cardid > '))
-    level=raw_inputd('level > ')
-    for j in level.split(','):
-        dt=ma.decode_res(download_card(cardid,int(j),'tw'))
-        open('Z:\\%d_%s.png'%(cardid,j),'wb').write(dt)'''
     if len(sys.argv) >= 2:
         MAClient1 = MAClient(configfile = sys.argv[1], savesession = True)
     else:
         MAClient1 = MAClient(savesession = True)
-    # 进入游戏
-    # MAClient1._dopost('notification/post_devicetoken',postdata=ma.encode_param('S=nosessionid&login_id=%s&password=%s&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb'%(username,password)),extraheader={'Cookie2': '$Version=1'})
-    # 登陆
-    # import profile
-    # profile.run("MAClient1.login()")
-    # os._exit(0)
     MAClient1.login()
-    dec = MAClient1.login()
-    MAClient1.initplayer(dec)
-    # MAClient1.gacha(gacha_type=GACHA_FRIENNSHIP_POINT)
-    # MAClient1._sell_card(['59775010'])
-    # MAClient1.tasker()
-    # MAClient1.explore()
-    # MAClient1.set_card('factor')
-    # MAClient1.factor_battle()
-    # 妖精列表
-    # MAClient1._dopost('menu_fairy_sel')
-    # MAClient1.set_card(['124'])
-    # exploration/fairy_floor，check=HJQrxs%2FKaF3hyO81WS2jdA%3D%3D%0A&serial_id=W0etULbphY0EqnmoIG2Zcg%3D%3D%0A&user_id=r%2BFl%2BYcd4QrirAFwiDWIRw%3D%3D%0A
-    # exploration/fairybattle,serial_id=W0etULbphY0EqnmoIG2Zcg%3D%3D%0A&user_id=r%2BFl%2BYcd4QrirAFwiDWIRw%3D%3D%0A
-
-    # exploration/area
-    # exploration/floor,area_id=Q5E9%2FUAjnkmbZhPSCR6nnw%3D%3D%0A
-    # exploration/get_floor，area_id=Q5E9%2FUAjnkmbZhPSCR6nnw%3D%3D%0A&check=HJQrxs%2FKaF3hyO81WS2jdA%3D%3D%0A&floor_id=3sJ7qONwz5JawDpnsoUDJQ%3D%3D%0A
-    # exploration/explore，area_id=Q5E9%2FUAjnkmbZhPSCR6nnw%3D%3D%0A&auto_build=HJQrxs%2FKaF3hyO81WS2jdA%3D%3D%0A&floor_id=3sJ7qONwz5JawDpnsoUDJQ%3D%3D%0A
-
-    # roundtable/edit，move=HJQrxs%2FKaF3hyO81WS2jdA%3D%3D%0A 返回？
-    # app/cardselect/savedeckcard，C=%2BRsca9Zy2x8L1yprbkM494x7rw%2B0vUKp%2Fpc%2BN%2B2sFH3zGeMHnPJkwThx3cDEbfVXEAjoR9k2p7EF%0A6D31AT9oQ2PWUTs9pdB0p4%2FNZmMBHEQ%3D%0A&lr=9ZeY%2BCMCjZpBgiMOHfyTRg%3D%3D%0A

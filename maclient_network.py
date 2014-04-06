@@ -173,7 +173,7 @@ def htmlescape(htmlstr):
 class poster():
     def __init__(self, loc, logger, ua):
         self.cookie = ''
-        self.ht = httplib2.Http(timeout = 15)
+        self.ht = httplib2.Http(timeout = 20)
         # ironpython版的httplib2的iri2uri中用utf-8代替了idna，因此手动变回来
         self.rollback_utf8 = sys.platform.startswith('cli') and \
                 (lambda dt:dt.decode('utf-8')) or\

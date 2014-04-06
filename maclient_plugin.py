@@ -171,8 +171,8 @@ class plugins():
                 # module object
                 try:
                     self.plugins[m] = __import__(m)
-                except ImportError:
-                    self.logger.warning('%s is disabled due to an Import Error' % m)
+                except:
+                    self.logger.warning('%s is disabled due to an Error' % m)
                 else:
                     # plugin instance
                     try:
@@ -183,23 +183,23 @@ class plugins():
                         self.plugins_instance[m] = None
             last_mod = m
 
-    def _line_tracer(self):
-        # originally from http://stackoverflow.com/questions/19227636/decorator-to-log-function-execution-line-by-line
-        # it works almostly the same as module 'memory_profiler'
-        # not working yet
-        traced_func.add(func.func_code)
-        def _wrapper(*args, **kwargs):  # need a wrap
-            old_trace_function = sys.gettrace()
-            sys.settrace(logging_tracer)
-            try:
-                result = func(*args, **kwargs)
-            except:
-                raise
-            else:
-                return result
-            finally:
-                sys.settrace(old_trace_function)
-        return _wrapper
+    # def _line_tracer(self):
+    #     # originally from http://stackoverflow.com/questions/19227636/decorator-to-log-function-execution-line-by-line
+    #     # it works almostly the same as module 'memory_profiler'
+    #     # not working yet
+    #     traced_func.add(func.func_code)
+    #     def _wrapper(*args, **kwargs):  # need a wrap
+    #         old_trace_function = sys.gettrace()
+    #         sys.settrace(logging_tracer)
+    #         try:
+    #             result = func(*args, **kwargs)
+    #         except:
+    #             raise
+    #         else:
+    #             return result
+    #         finally:
+    #             sys.settrace(old_trace_function)
+    #     return _wrapper
 
     def func_hook(self, func):
         def do(*args, **kwargs):

@@ -55,8 +55,11 @@ def check_revision(loc, rev_tuple):
 def update_master(loc, need_update, poster):
     replace_AND = re.compile('&(?!#)')#no CDATA, sad
     new_rev = [None, None, None]
+    for s in poster.ht.connections:#cleanup socket pool
+        poster.ht.connections[s].close()
+    poster.ht.connections = {}
+    poster.set_timeout(240)
     if need_update[0]:
-        poster.set_timeout(240)
         a, b = poster.post('masterdata/card/update', postdata = '%s&revision=0' % poster.cookie)
         resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response  # 不替换会解析出错摔
         cards = resp.body.master_data.master_card_data.card
@@ -77,7 +80,6 @@ def update_master(loc, need_update, poster):
         new_rev[0] = resp.header.revision.card_rev
         save_revision(loc, cardrev = new_rev[0])
     if need_update[1]:
-        poster.set_timeout(240)
         a, b = poster.post('masterdata/item/update', postdata = '%s&revision=0' % poster.cookie)
         resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response
         items = resp.body.master_data.master_item_data.item_info
@@ -93,7 +95,6 @@ def update_master(loc, need_update, poster):
         new_rev[1] = resp.header.revision.item_rev
         save_revision(loc, itemrev = new_rev[1])
     if need_update[2]:
-        poster.set_timeout(240)
         a, b = poster.post('masterdata/boss/update', postdata = '%s&revision=0' % poster.cookie)
         resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response
         boss = resp.body.master_data.master_boss_data.boss
@@ -108,7 +109,10 @@ def update_master(loc, need_update, poster):
             open(opath.join(getPATH0, 'db/boss.%s.txt' % loc), 'w').write('\n'.join(strs))
         new_rev[2] = resp.header.revision.boss_rev
         save_revision(loc, bossrev = new_rev[2])
-    poster.set_timeout(15)#rollback
+    for s in poster.ht.connections:#cleanup socket pool
+        poster.ht.connections[s].close()
+    poster.ht.connections = {}
+    poster.set_timeout(20)#rollback
     return new_rev
 
 def update_multi(loc):

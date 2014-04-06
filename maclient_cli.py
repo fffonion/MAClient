@@ -108,8 +108,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 2:
         maclient1 = maclient.MAClient(configfile = sys.argv[1], savesession = True)
         # auth()
-        dec = maclient1.login()
-        maclient1.initplayer(dec)
+        maclient1.login()
         arg = ' '.join(sys.argv[2:])
         pos = arg.find('t:')
         if pos != -1:
@@ -176,8 +175,7 @@ if __name__ == '__main__':
                         history = history[-10:]
             if ch == '1' or ch == '':
                 try:
-                    dec = maclient1.login()
-                    maclient1.initplayer(dec)
+                    maclient1.login()
                     maclient1.tasker()
                 except KeyboardInterrupt:
                     continue
@@ -277,8 +275,7 @@ if __name__ == '__main__':
                             print(du8('已保存~'))
                             maclient1.load_config()
             elif ch == '5':
-                dec = maclient1.login()
-                maclient1.initplayer(dec)
+                maclient1.login()
                 print(du8('更新游戏数据(g/默认)还是倍卡数据(b)?'))
                 inp = raw_input('> ') or 'g'
                 import maclient_update
@@ -328,8 +325,7 @@ if __name__ == '__main__':
                     maclient1.tasker(cmd = ch)
                 else:
                     if not maclient1.player_initiated:
-                        dec = maclient1.login()
-                        maclient1.initplayer(dec)
+                        maclient1.login()
                     try:
                         if ch.startswith('t:'):
                             maclient1.tasker(taskname = ch[2:])

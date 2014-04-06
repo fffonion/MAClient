@@ -27,7 +27,7 @@ class player(object):
         self.rev_need_update = False, False, False
         self.update_all(login_xml)
         object.__init__(self)
-        self.success = check_exclusion(self.name)
+        self.success = check_exclusion(self.name + loc)
 
     def reload_db(self):
         self.card.load_db(self.loc[:2])
@@ -144,10 +144,8 @@ class card(object):
         self.db = {}
         self.multi = {}
         self.load_db(loc)
-        self.load_multi(loc)
         self.count = 0
-        self.latest_multi = opath.getmtime(opath.join(getPATH0, 'db/card.multi.txt')) > \
-                            opath.getmtime(opath.join(getPATH0, 'db/card.%s.txt' % loc))
+        self.latest_multi = self.load_multi(loc)
 
     def load_db(self, loc):
         # print(open(opath.join(getPATH0,'db/card.%s.txt'%loc),encoding='utf8').read().encode(encoding="utf-8"))
@@ -162,7 +160,7 @@ class card(object):
     def load_multi(self, loc):
         _f = opath.join(getPATH0, 'db/card.multi.txt')
         if not opath.exists(_f):
-            return
+            return False
         if PYTHON3:
             f = open(_f, encoding = 'utf8')
         else:
@@ -175,6 +173,8 @@ class card(object):
         #变量名是不是很给力！
         if c:
             self.multi = dict(map(lambda d: map(lambda e: int(e), d.split(',')), c.split(';')))
+        return opath.getmtime(opath.join(getPATH0, 'db/card.multi.txt')) > \
+                    opath.getmtime(opath.join(getPATH0, 'db/card.%s.txt' % loc))
 
     def update(self, carddict):
         self.cards = []
@@ -276,22 +276,4 @@ if __name__ == '__main__':
         if not os.path.isdir(i):
             save = i.replace(os.path.split(input_path)[0], output_dir)
             decrypt_file(i, save)
-    # #import binascii
-    # #hexlify=lambda x: binascii.hexlify(x)
-    # print decode_param('S=tAS5lPt7ftw8HlSUflkJFA%3D%3D%0A&login_id=8lIlKXItI6T3p7zAORJJSw%3D%3D%0A&password=v%2FCxxyFKqD5NahTXKACSkg%3D%3D%0A&app=dpa7%2FriPmmGftWfXGdEv2Q%3D%3D%0A&token=fRqY08WorSorOWR8188aGceoMhi1v5NUjKV9Vu4SspgVyyotBRSo%2Bj%2FpYH3NxSS5p96kBK2%2FQz2N%0AGmf0rHmspgT9DiDBH4wkSvpAJdbRExFM8yxS41SPimTpl99QmVCv0fhSOV8Kztx9eseMD4jbWbcU%0AXthkY4ALLLFdZ3xpnJbpOxFiQku6Ovyw0MnSG4dxDsy4n6ybmIrPin3W%2BSU%2FLr7Wk0s5RXJF3iTI%0AQDTmN1SGmmZM1kqReNhMdx74EiYxvRXr51EsPJEvDSPfu%2F542DM2By584uiANhpify5iFRXZisI7%0AyGZp8QGNr1NIego5aBG8KsXmX%2BgzcaAx3wL8nw%3D%3D%0A')
-    # #print decode_param('notice_id=bfOK21o6f0flO9OlO1dRkByUK8bPymhd4cjvNVkto3Q%3D%0A')
-    # #area_id=90115
-    # #area_id=90115%0A&check=1%0A&floor_id=3
-    # #area_id=90115%0A&auto_build=1%0A&floor_id=3
-    # import random
-    # p='invitation_id=8204a&login_id=%s&param=&password=%s&param=%s'%('goodevening','zcn19920492','35'+(''.join([str(random.randint(0,10)+i-i) for i in range(10)])))
-    # print encode_param(p),len(encode_param(p))
-    # #Million/100 (Samsung; Gallaxy S; 4.2) generic/Gallaxy S/Gallaxy S:4.2/stock/com.littlewithe.20130402.good/stable-keys
-    # #print c.db['cn']['72']
-    # #knight_id=0%0A&move=1%0A&parts_id=0
-    # #S=nosessionid&login_id=zzh930916&password=19930917&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb
-    # #59247865
-    # #xmld=open(r'D:\Dev\Python\Workspace\maClient\login','r').read()
-    # #pl=player(xmld)
-    # #print pl.card.cid('9999')
 
