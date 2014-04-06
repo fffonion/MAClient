@@ -463,7 +463,7 @@ class MAClient():
                 elif task[0] == 'login' or task[0] == 'l':
                     if len(task) == 2:
                         task.append('')
-                    self.initplayer(self.login(uname = task[1], pwd = task[2]))
+                    self.login(uname = task[1], pwd = task[2])
                 elif task[0] == 'friend' or task[0] == 'f':
                     if len(task) == 2:
                         task = [task[0], '', '']
@@ -495,59 +495,71 @@ class MAClient():
 
     def login(self, uname = '', pwd = '', fast = False):
         # sessionfile='.%s.session'%self.loc
-        if os.path.exists(self.playerfile) and self._read_config('account_%s' % self.loc, 'session') != '' and uname == '':
-            logging.info('加载了保存的账户XD')
-            dec = open(self.playerfile, 'r').read()  # .encode('utf-8')
-            ct = xmldict = XML2Dict().fromstring(dec).response
-        else:
-            self.username = uname or self.username
-            self.password = pwd or self.password
-            if self.username == '':
-                self.username = raw_inputd('Username:')
-            if self.password == '' or (uname != '' and pwd == ''):
-                self.password = getpass('Password:')
-                if raw_inputd('是否保存密码(y/n)？') == 'y':
-                    self._write_config('account_%s' % self.loc, 'password', self.password)
-                    logging.warning('保存的登录信息没有加密www')
-            token = self._read_config('system', 'device_token').replace('\\n', '\n') or \
-            'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
-            if not fast:
-                ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
-                # self.poster.update_server(ct)
-                pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
-                # if self.loc == 'kr':
-                #      pdata='S=nosessionid&%s' % pdata
-                self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
-            resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
-            if resp['error']:
-                logging.info('登录失败么么哒w')
-                self._exit(1)
+        while True:
+            if os.path.exists(self.playerfile) and self._read_config('account_%s' % self.loc, 'session') != '' \
+                and (time.time() - os.path.getmtime(self.playerfile) < 43200) and uname == '':
+                logging.info('加载了保存的账户XD')
+                dec = open(self.playerfile, 'r').read()  # .encode('utf-8')
+                ct = xmldict = XML2Dict().fromstring(dec).response
             else:
-                pdata = ct.header.your_data
-                logging.info('[%s] 登录成功!\n' % self.username + \
-                    'AP:%s/%s BC:%s/%s 金:%s 基友点:%s %s\n' % (
-                        pdata.ap.current, pdata.ap.max,
-                        pdata.bc.current, pdata.bc.max,
-                        pdata.gold, pdata.friendship_point,
-                        pdata.fairy_appearance == '1' and '妖精出现中!!' or '') +
-                    '蛋蛋卷:%s 等级:%s 完成度:%s %s%s%s\n' % (
-                        pdata.gacha_ticket,
-                        pdata.town_level,
-                        pdata.percentage,
-                        pdata.free_ap_bc_point != '0' and '有未分配的点数yo~ ' or '',
-                        pdata.friends_invitations != '0' and '收到好友邀请了呢 ' or '',
-                        ct.body.mainmenu.rewards == '1' and '收到礼物了~' or '')
-                )
-                self._write_config('account_%s' % self.loc, 'username', self.username)
-                self._write_config('record', 'last_set_card', '')
-                self._write_config('record', 'last_set_bc', '0')
-        return ct
+                self.username = uname or self.username
+                self.password = pwd or self.password
+                if self.username == '':
+                    self.username = raw_inputd('Username:')
+                if self.password == '' or (uname != '' and pwd == ''):
+                    self.password = getpass('Password:')
+                    if raw_inputd('是否保存密码(y/n)？') == 'y':
+                        self._write_config('account_%s' % self.loc, 'password', self.password)
+                        logging.warning('保存的登录信息没有加密www')
+                token = self._read_config('system', 'device_token').replace('\\n', '\n') or \
+                'nuigiBoiNuinuijIUJiubHOhUIbKhuiGVIKIhoNikUGIbikuGBVININihIUniYTdRTdREujhbjhj'
+                if not fast:
+                    ct = self._dopost('check_inspection', xmlresp = False, extraheader = {}, usecookie = False, no2ndkey = True)[1]
+                    # self.poster.update_server(ct)
+                    pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
+                    # if self.loc == 'kr':
+                    #      pdata='S=nosessionid&%s' % pdata
+                    self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
+                resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
+                if resp['error']:
+                    logging.info('登录失败么么哒w')
+                    self._exit(1)
+                else:
+                    pdata = ct.header.your_data
+                    logging.info('[%s] 登录成功!\n' % self.username + \
+                        'AP:%s/%s BC:%s/%s 金:%s 基友点:%s %s\n' % (
+                            pdata.ap.current, pdata.ap.max,
+                            pdata.bc.current, pdata.bc.max,
+                            pdata.gold, pdata.friendship_point,
+                            pdata.fairy_appearance == '1' and '妖精出现中!!' or '') +
+                        '蛋蛋卷:%s 等级:%s 完成度:%s %s%s%s\n' % (
+                            pdata.gacha_ticket,
+                            pdata.town_level,
+                            pdata.percentage,
+                            pdata.free_ap_bc_point != '0' and '有未分配的点数yo~ ' or '',
+                            pdata.friends_invitations != '0' and '收到好友邀请了呢 ' or '',
+                            ct.body.mainmenu.rewards == '1' and '收到礼物了~' or '')
+                    )
+                    self._write_config('account_%s' % self.loc, 'username', self.username)
+                    self._write_config('record', 'last_set_card', '')
+                    self._write_config('record', 'last_set_bc', '0')
+            if self.initplayer(ct):
+                break
 
     def initplayer(self, xmldict):
         if self.player_initiated:  # 刷新
-            self.player.update_all(xmldict)
+            try:
+                self.player.update_all(xmldict)
+            except AttributeError:
+                logging.warning('error parsing playerdata')
         else:  # 第一次
-            self.player = maclient_player.player(xmldict, self.loc)
+            try:
+                self.player = maclient_player.player(xmldict, self.loc)
+            except AttributeError:
+                logging.warning('保存的登录信息有误，将重新登录')
+                if opath.exists(self.playerfile):
+                    os.remove(self.playerfile)
+                return False
             if not self.player.success:
                 logging.error('当前登录的用户(%s)已经运行了一个MAClient' % (self.username))
                 self._exit(2)
@@ -568,6 +580,7 @@ class MAClient():
             self.stitle.start()
         if self.loc[:2] in ['cn', 'tw'] and not self.player.card.latest_multi:
             logging.warning('倍卡数据可能已过期，请通过"更新数据库"选项更新\n一般请在维护后一天左右使用更新')
+        return True
 
     @plugin.func_hook
     def auto_check(self, doingwhat):
@@ -2103,5 +2116,3 @@ if __name__ == '__main__':
     else:
         MAClient1 = MAClient(savesession = True)
     MAClient1.login()
-    dec = MAClient1.login()
-    MAClient1.initplayer(dec)
