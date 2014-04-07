@@ -87,6 +87,9 @@ namespace MAClientGUI
                 case "jp":
                     cboServer.SelectedIndex = 5;
                     break;
+                case "sg":
+                    cboServer.SelectedIndex = 6;
+                    break;
             }
             refreshAccount();
             cboLogLevel.SelectedIndex = cf.ReadInt("system", "loglevel");
@@ -267,7 +270,7 @@ namespace MAClientGUI
         private void frmConfig_Load(object sender, EventArgs e)
         {
             //setToolTipText();
-            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.68+)");
+            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.69+)");
             tabControl1.Enabled = false;
             DirectoryInfo folder = new DirectoryInfo(System.Environment.CurrentDirectory);
             foreach (FileInfo file in folder.GetFiles("*.ini"))
@@ -293,10 +296,10 @@ namespace MAClientGUI
 
         private void cboServer_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string[] slist = { "cn", "cn2", "cn3", "tw", "kr", "jp" };
+            string[] slist = { "cn", "cn2", "cn3", "tw", "kr", "jp","sg" };
             server = slist[cboServer.SelectedIndex];
             refreshAccount();
-            if (cboServer.SelectedIndex >= 4)
+            if (cboServer.SelectedIndex >= 4 && cboServer.SelectedIndex <6)
                 chkUseNiceTerm.Checked = true;
             else
                 chkUseNiceTerm.Checked = false;
@@ -616,7 +619,10 @@ namespace MAClientGUI
         {
             addFloorCond("$.NOT_FINNISHED");
         }
-
+        private void button80_Click(object sender, EventArgs e)
+        {
+            addFloorCond("$.HAS_FACTOR");
+        }
 
         private void button12_Click(object sender, EventArgs e)
         {
@@ -636,6 +642,20 @@ namespace MAClientGUI
         private void button75_Click(object sender, EventArgs e)
         {
             addFloorCond("not GUILD_ALIVE");
+        }
+        private void button77_Click(object sender, EventArgs e)
+        {
+            addFloorCond("(not GUILD_ALIVE and $.IS_GUILD)");
+        }
+
+        private void button78_Click(object sender, EventArgs e)
+        {
+            addFloorCond("(not FAIRY_ALIVE and not $.IS_GUILD)");
+        }
+
+        private void button79_Click(object sender, EventArgs e)
+        {
+            addFloorCond("((not GUILD_ALIVE and $.IS_GUILD) or (not FAIRY_ALIVE and not $.IS_GUILD))");
         }
 
         private void button57_Click(object sender, EventArgs e)
@@ -1986,5 +2006,7 @@ namespace MAClientGUI
                 lblInfiniteWarning.Visible = false;
             }
         }
+
+
     }
 }

@@ -38,6 +38,7 @@ namespace MAClientGUI
             this.button48 = new System.Windows.Forms.Button();
             this.button31 = new System.Windows.Forms.Button();
             this.button63 = new System.Windows.Forms.Button();
+            this.label95 = new System.Windows.Forms.Label();
             this.cboCfgFile = new System.Windows.Forms.ComboBox();
             this.grpSystem = new System.Windows.Forms.GroupBox();
             this.label91 = new System.Windows.Forms.Label();
@@ -158,6 +159,11 @@ namespace MAClientGUI
             this.label46 = new System.Windows.Forms.Label();
             this.cboDeckList = new System.Windows.Forms.ComboBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.label93 = new System.Windows.Forms.Label();
+            this.textBox23 = new System.Windows.Forms.TextBox();
+            this.textBox33 = new System.Windows.Forms.TextBox();
+            this.label94 = new System.Windows.Forms.Label();
+            this.button76 = new System.Windows.Forms.Button();
             this.label88 = new System.Windows.Forms.Label();
             this.button72 = new System.Windows.Forms.Button();
             this.button73 = new System.Windows.Forms.Button();
@@ -195,12 +201,12 @@ namespace MAClientGUI
             this.label36 = new System.Windows.Forms.Label();
             this.cboReservedName = new System.Windows.Forms.ComboBox();
             this.tabPage7 = new System.Windows.Forms.TabPage();
-            this.label92 = new System.Windows.Forms.Label();
-            this.lblInfiniteWarning = new System.Windows.Forms.Label();
-            this.btnTaskerSave = new System.Windows.Forms.Button();
             this.label41 = new System.Windows.Forms.Label();
             this.button39 = new System.Windows.Forms.Button();
             this.txtCondTasker = new System.Windows.Forms.TextBox();
+            this.label92 = new System.Windows.Forms.Label();
+            this.lblInfiniteWarning = new System.Windows.Forms.Label();
+            this.btnTaskerSave = new System.Windows.Forms.Button();
             this.lblTaskerCache = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label23 = new System.Windows.Forms.Label();
@@ -295,13 +301,16 @@ namespace MAClientGUI
             this.chkSuperPrefFloor = new System.Windows.Forms.CheckBox();
             this.button57 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button80 = new System.Windows.Forms.Button();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.button79 = new System.Windows.Forms.Button();
+            this.button77 = new System.Windows.Forms.Button();
+            this.button78 = new System.Windows.Forms.Button();
             this.label89 = new System.Windows.Forms.Label();
             this.button74 = new System.Windows.Forms.Button();
             this.button75 = new System.Windows.Forms.Button();
-            this.label65 = new System.Windows.Forms.Label();
             this.textBox14 = new System.Windows.Forms.TextBox();
             this.textBox15 = new System.Windows.Forms.TextBox();
-            this.label28 = new System.Windows.Forms.Label();
             this.button11 = new System.Windows.Forms.Button();
             this.button12 = new System.Windows.Forms.Button();
             this.button13 = new System.Windows.Forms.Button();
@@ -355,11 +364,6 @@ namespace MAClientGUI
             this.dockMenu_head = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.chkUseNiceTerm = new System.Windows.Forms.CheckBox();
-            this.label93 = new System.Windows.Forms.Label();
-            this.textBox23 = new System.Windows.Forms.TextBox();
-            this.textBox33 = new System.Windows.Forms.TextBox();
-            this.label94 = new System.Windows.Forms.Label();
-            this.button76 = new System.Windows.Forms.Button();
             this.grpSystem.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFairySleepFactor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
@@ -398,6 +402,7 @@ namespace MAClientGUI
             this.groupBox2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox12.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.groupBox5.SuspendLayout();
             this.tabPage6.SuspendLayout();
@@ -503,6 +508,19 @@ namespace MAClientGUI
             this.toolTip1.SetToolTip(this.button63, "公会妖精");
             this.button63.UseVisualStyleBackColor = true;
             this.button63.Click += new System.EventHandler(this.button63_Click);
+            // 
+            // label95
+            // 
+            this.label95.AutoSize = true;
+            this.label95.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.label95.Location = new System.Drawing.Point(432, 272);
+            this.label95.Name = "label95";
+            this.label95.Size = new System.Drawing.Size(61, 23);
+            this.label95.TabIndex = 33;
+            this.label95.Text = "←说明";
+            this.toolTip1.SetToolTip(this.label95, "你可以使用跳出条件来决定遇到妖精时退出探索\r\n如(not GUILD_FAIRY_ALIVE and $.IS_GUILD)\r\n假如在秘境中开出了一个公会妖，上一" +
+        "表达式会变成False，因此结束探索\r\n同理对普通秘境可以写成(not FAIRY_ALIVE and not $.IS_GUILD)\r\n可以把这两个表达式用o" +
+        "r连接");
             // 
             // cboCfgFile
             // 
@@ -900,7 +918,8 @@ namespace MAClientGUI
             "国服3区",
             "台服",
             "韩服",
-            "日服"});
+            "日服",
+            "东南亚服"});
             this.cboServer.Location = new System.Drawing.Point(116, 22);
             this.cboServer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cboServer.Name = "cboServer";
@@ -2087,6 +2106,58 @@ namespace MAClientGUI
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "如果";
             // 
+            // label93
+            // 
+            this.label93.AutoSize = true;
+            this.label93.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label93.Location = new System.Drawing.Point(213, 117);
+            this.label93.Name = "label93";
+            this.label93.Size = new System.Drawing.Size(19, 20);
+            this.label93.TabIndex = 36;
+            this.label93.Text = "~";
+            // 
+            // textBox23
+            // 
+            this.textBox23.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox23.Location = new System.Drawing.Point(165, 112);
+            this.textBox23.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox23.Name = "textBox23";
+            this.textBox23.Size = new System.Drawing.Size(47, 27);
+            this.textBox23.TabIndex = 35;
+            this.textBox23.Text = "0";
+            // 
+            // textBox33
+            // 
+            this.textBox33.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox33.Location = new System.Drawing.Point(232, 112);
+            this.textBox33.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox33.Name = "textBox33";
+            this.textBox33.Size = new System.Drawing.Size(45, 27);
+            this.textBox33.TabIndex = 34;
+            this.textBox33.Text = "100";
+            // 
+            // label94
+            // 
+            this.label94.AutoSize = true;
+            this.label94.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label94.Location = new System.Drawing.Point(91, 114);
+            this.label94.Name = "label94";
+            this.label94.Size = new System.Drawing.Size(54, 20);
+            this.label94.TabIndex = 33;
+            this.label94.Text = "在范围";
+            // 
+            // button76
+            // 
+            this.button76.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button76.Location = new System.Drawing.Point(23, 111);
+            this.button76.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button76.Name = "button76";
+            this.button76.Size = new System.Drawing.Size(61, 32);
+            this.button76.TabIndex = 32;
+            this.button76.Text = "HP%";
+            this.button76.UseVisualStyleBackColor = true;
+            this.button76.Click += new System.EventHandler(this.button76_Click);
+            // 
             // label88
             // 
             this.label88.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -2478,12 +2549,12 @@ namespace MAClientGUI
             // tabPage7
             // 
             this.tabPage7.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage7.Controls.Add(this.label92);
-            this.tabPage7.Controls.Add(this.lblInfiniteWarning);
-            this.tabPage7.Controls.Add(this.btnTaskerSave);
             this.tabPage7.Controls.Add(this.label41);
             this.tabPage7.Controls.Add(this.button39);
             this.tabPage7.Controls.Add(this.txtCondTasker);
+            this.tabPage7.Controls.Add(this.label92);
+            this.tabPage7.Controls.Add(this.lblInfiniteWarning);
+            this.tabPage7.Controls.Add(this.btnTaskerSave);
             this.tabPage7.Controls.Add(this.lblTaskerCache);
             this.tabPage7.Controls.Add(this.groupBox1);
             this.tabPage7.Controls.Add(this.grpTaskerThen);
@@ -2495,41 +2566,6 @@ namespace MAClientGUI
             this.tabPage7.Size = new System.Drawing.Size(781, 547);
             this.tabPage7.TabIndex = 9;
             this.tabPage7.Text = "任务";
-            // 
-            // label92
-            // 
-            this.label92.AutoSize = true;
-            this.label92.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.label92.Font = new System.Drawing.Font("微软雅黑", 8F);
-            this.label92.Location = new System.Drawing.Point(382, 492);
-            this.label92.Name = "label92";
-            this.label92.Size = new System.Drawing.Size(177, 40);
-            this.label92.TabIndex = 12;
-            this.label92.Text = "上一任务已完成后\r\n才会重新判断接下来的任务";
-            // 
-            // lblInfiniteWarning
-            // 
-            this.lblInfiniteWarning.AutoSize = true;
-            this.lblInfiniteWarning.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.lblInfiniteWarning.ForeColor = System.Drawing.Color.Crimson;
-            this.lblInfiniteWarning.Location = new System.Drawing.Point(580, 435);
-            this.lblInfiniteWarning.Name = "lblInfiniteWarning";
-            this.lblInfiniteWarning.Size = new System.Drawing.Size(189, 38);
-            this.lblInfiniteWarning.TabIndex = 11;
-            this.lblInfiniteWarning.Text = "注意：由于妖精战循环次数\r\n为无限，可能陷入死循环";
-            this.lblInfiniteWarning.Visible = false;
-            // 
-            // btnTaskerSave
-            // 
-            this.btnTaskerSave.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.btnTaskerSave.Location = new System.Drawing.Point(578, 492);
-            this.btnTaskerSave.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnTaskerSave.Name = "btnTaskerSave";
-            this.btnTaskerSave.Size = new System.Drawing.Size(91, 40);
-            this.btnTaskerSave.TabIndex = 5;
-            this.btnTaskerSave.Text = "添加";
-            this.btnTaskerSave.UseVisualStyleBackColor = true;
-            this.btnTaskerSave.Click += new System.EventHandler(this.btnTaskerSave_Click);
             // 
             // label41
             // 
@@ -2567,6 +2603,41 @@ namespace MAClientGUI
             this.txtCondTasker.TabIndex = 1;
             this.txtCondTasker.Enter += new System.EventHandler(this.txtCondTasker_Enter);
             this.txtCondTasker.Leave += new System.EventHandler(this.txtCondTasker_Leave);
+            // 
+            // label92
+            // 
+            this.label92.AutoSize = true;
+            this.label92.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.label92.Font = new System.Drawing.Font("微软雅黑", 8F);
+            this.label92.Location = new System.Drawing.Point(382, 492);
+            this.label92.Name = "label92";
+            this.label92.Size = new System.Drawing.Size(177, 40);
+            this.label92.TabIndex = 12;
+            this.label92.Text = "上一任务已完成后\r\n才会重新判断接下来的任务";
+            // 
+            // lblInfiniteWarning
+            // 
+            this.lblInfiniteWarning.AutoSize = true;
+            this.lblInfiniteWarning.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblInfiniteWarning.ForeColor = System.Drawing.Color.Crimson;
+            this.lblInfiniteWarning.Location = new System.Drawing.Point(580, 435);
+            this.lblInfiniteWarning.Name = "lblInfiniteWarning";
+            this.lblInfiniteWarning.Size = new System.Drawing.Size(189, 38);
+            this.lblInfiniteWarning.TabIndex = 11;
+            this.lblInfiniteWarning.Text = "注意：由于妖精战循环次数\r\n为无限，可能陷入死循环";
+            this.lblInfiniteWarning.Visible = false;
+            // 
+            // btnTaskerSave
+            // 
+            this.btnTaskerSave.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.btnTaskerSave.Location = new System.Drawing.Point(578, 492);
+            this.btnTaskerSave.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnTaskerSave.Name = "btnTaskerSave";
+            this.btnTaskerSave.Size = new System.Drawing.Size(91, 40);
+            this.btnTaskerSave.TabIndex = 5;
+            this.btnTaskerSave.Text = "添加";
+            this.btnTaskerSave.UseVisualStyleBackColor = true;
+            this.btnTaskerSave.Click += new System.EventHandler(this.btnTaskerSave_Click);
             // 
             // lblTaskerCache
             // 
@@ -3728,13 +3799,14 @@ namespace MAClientGUI
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.button80);
+            this.groupBox3.Controls.Add(this.label95);
+            this.groupBox3.Controls.Add(this.groupBox12);
             this.groupBox3.Controls.Add(this.label89);
             this.groupBox3.Controls.Add(this.button74);
             this.groupBox3.Controls.Add(this.button75);
-            this.groupBox3.Controls.Add(this.label65);
             this.groupBox3.Controls.Add(this.textBox14);
             this.groupBox3.Controls.Add(this.textBox15);
-            this.groupBox3.Controls.Add(this.label28);
             this.groupBox3.Controls.Add(this.button11);
             this.groupBox3.Controls.Add(this.button12);
             this.groupBox3.Controls.Add(this.button13);
@@ -3744,10 +3816,71 @@ namespace MAClientGUI
             this.groupBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.groupBox3.Size = new System.Drawing.Size(520, 320);
+            this.groupBox3.Size = new System.Drawing.Size(514, 320);
             this.groupBox3.TabIndex = 16;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "探索这些地区";
+            // 
+            // button80
+            // 
+            this.button80.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button80.Location = new System.Drawing.Point(164, 69);
+            this.button80.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button80.Name = "button80";
+            this.button80.Size = new System.Drawing.Size(91, 39);
+            this.button80.TabIndex = 34;
+            this.button80.Text = "有因子";
+            this.button80.UseVisualStyleBackColor = true;
+            this.button80.Click += new System.EventHandler(this.button80_Click);
+            // 
+            // groupBox12
+            // 
+            this.groupBox12.Controls.Add(this.button79);
+            this.groupBox12.Controls.Add(this.button77);
+            this.groupBox12.Controls.Add(this.button78);
+            this.groupBox12.Font = new System.Drawing.Font("微软雅黑", 8F);
+            this.groupBox12.Location = new System.Drawing.Point(16, 235);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(410, 80);
+            this.groupBox12.TabIndex = 32;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "仅用于跳出条件，进入地区时恒为True";
+            // 
+            // button79
+            // 
+            this.button79.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.button79.Location = new System.Drawing.Point(321, 23);
+            this.button79.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button79.Name = "button79";
+            this.button79.Size = new System.Drawing.Size(83, 52);
+            this.button79.TabIndex = 32;
+            this.button79.Text = "两个都要";
+            this.button79.UseVisualStyleBackColor = true;
+            this.button79.Click += new System.EventHandler(this.button79_Click);
+            // 
+            // button77
+            // 
+            this.button77.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.button77.Location = new System.Drawing.Point(10, 23);
+            this.button77.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button77.Name = "button77";
+            this.button77.Size = new System.Drawing.Size(147, 52);
+            this.button77.TabIndex = 30;
+            this.button77.Text = "公会秘境地区，且开出公会妖则退出";
+            this.button77.UseVisualStyleBackColor = true;
+            this.button77.Click += new System.EventHandler(this.button77_Click);
+            // 
+            // button78
+            // 
+            this.button78.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.button78.Location = new System.Drawing.Point(163, 23);
+            this.button78.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button78.Name = "button78";
+            this.button78.Size = new System.Drawing.Size(151, 52);
+            this.button78.TabIndex = 31;
+            this.button78.Text = "非公会秘境地区，开出一般妖则退出";
+            this.button78.UseVisualStyleBackColor = true;
+            this.button78.Click += new System.EventHandler(this.button78_Click);
             // 
             // label89
             // 
@@ -3762,7 +3895,7 @@ namespace MAClientGUI
             // button74
             // 
             this.button74.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button74.Location = new System.Drawing.Point(280, 129);
+            this.button74.Location = new System.Drawing.Point(256, 130);
             this.button74.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button74.Name = "button74";
             this.button74.Size = new System.Drawing.Size(156, 39);
@@ -3774,7 +3907,7 @@ namespace MAClientGUI
             // button75
             // 
             this.button75.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button75.Location = new System.Drawing.Point(280, 188);
+            this.button75.Location = new System.Drawing.Point(256, 189);
             this.button75.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button75.Name = "button75";
             this.button75.Size = new System.Drawing.Size(156, 39);
@@ -3783,50 +3916,30 @@ namespace MAClientGUI
             this.button75.UseVisualStyleBackColor = true;
             this.button75.Click += new System.EventHandler(this.button75_Click);
             // 
-            // label65
-            // 
-            this.label65.AutoSize = true;
-            this.label65.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label65.Location = new System.Drawing.Point(371, 266);
-            this.label65.Name = "label65";
-            this.label65.Size = new System.Drawing.Size(19, 20);
-            this.label65.TabIndex = 27;
-            this.label65.Text = "~";
-            // 
             // textBox14
             // 
             this.textBox14.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox14.Location = new System.Drawing.Point(397, 260);
+            this.textBox14.Location = new System.Drawing.Point(395, 76);
             this.textBox14.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox14.Name = "textBox14";
-            this.textBox14.Size = new System.Drawing.Size(39, 27);
+            this.textBox14.Size = new System.Drawing.Size(20, 27);
             this.textBox14.TabIndex = 10;
             this.textBox14.Text = "6";
             // 
             // textBox15
             // 
             this.textBox15.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox15.Location = new System.Drawing.Point(329, 260);
+            this.textBox15.Location = new System.Drawing.Point(261, 76);
             this.textBox15.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox15.Name = "textBox15";
-            this.textBox15.Size = new System.Drawing.Size(39, 27);
+            this.textBox15.Size = new System.Drawing.Size(20, 27);
             this.textBox15.TabIndex = 9;
             this.textBox15.Text = "0";
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label28.Location = new System.Drawing.Point(253, 260);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(69, 25);
-            this.label28.TabIndex = 8;
-            this.label28.Text = "在范围";
             // 
             // button11
             // 
             this.button11.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button11.Location = new System.Drawing.Point(91, 129);
+            this.button11.Location = new System.Drawing.Point(67, 130);
             this.button11.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(156, 39);
@@ -3838,7 +3951,7 @@ namespace MAClientGUI
             // button12
             // 
             this.button12.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button12.Location = new System.Drawing.Point(91, 188);
+            this.button12.Location = new System.Drawing.Point(67, 189);
             this.button12.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(156, 39);
@@ -3849,23 +3962,23 @@ namespace MAClientGUI
             // 
             // button13
             // 
-            this.button13.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button13.Location = new System.Drawing.Point(91, 253);
+            this.button13.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.button13.Location = new System.Drawing.Point(287, 69);
             this.button13.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(123, 39);
+            this.button13.Size = new System.Drawing.Size(102, 39);
             this.button13.TabIndex = 3;
-            this.button13.Text = "COST";
+            this.button13.Text = "<=COST<=";
             this.button13.UseVisualStyleBackColor = true;
             this.button13.Click += new System.EventHandler(this.button13_Click);
             // 
             // button16
             // 
             this.button16.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button16.Location = new System.Drawing.Point(91, 74);
+            this.button16.Location = new System.Drawing.Point(67, 69);
             this.button16.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button16.Name = "button16";
-            this.button16.Size = new System.Drawing.Size(123, 39);
+            this.button16.Size = new System.Drawing.Size(91, 39);
             this.button16.TabIndex = 0;
             this.button16.Text = "未完成";
             this.button16.UseVisualStyleBackColor = true;
@@ -4446,58 +4559,6 @@ namespace MAClientGUI
             this.chkUseNiceTerm.Text = "使用终端模拟器";
             this.chkUseNiceTerm.UseVisualStyleBackColor = true;
             // 
-            // label93
-            // 
-            this.label93.AutoSize = true;
-            this.label93.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label93.Location = new System.Drawing.Point(213, 117);
-            this.label93.Name = "label93";
-            this.label93.Size = new System.Drawing.Size(19, 20);
-            this.label93.TabIndex = 36;
-            this.label93.Text = "~";
-            // 
-            // textBox23
-            // 
-            this.textBox23.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox23.Location = new System.Drawing.Point(165, 112);
-            this.textBox23.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.textBox23.Name = "textBox23";
-            this.textBox23.Size = new System.Drawing.Size(47, 27);
-            this.textBox23.TabIndex = 35;
-            this.textBox23.Text = "0";
-            // 
-            // textBox33
-            // 
-            this.textBox33.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox33.Location = new System.Drawing.Point(232, 112);
-            this.textBox33.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.textBox33.Name = "textBox33";
-            this.textBox33.Size = new System.Drawing.Size(45, 27);
-            this.textBox33.TabIndex = 34;
-            this.textBox33.Text = "100";
-            // 
-            // label94
-            // 
-            this.label94.AutoSize = true;
-            this.label94.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label94.Location = new System.Drawing.Point(91, 114);
-            this.label94.Name = "label94";
-            this.label94.Size = new System.Drawing.Size(54, 20);
-            this.label94.TabIndex = 33;
-            this.label94.Text = "在范围";
-            // 
-            // button76
-            // 
-            this.button76.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button76.Location = new System.Drawing.Point(23, 111);
-            this.button76.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button76.Name = "button76";
-            this.button76.Size = new System.Drawing.Size(61, 32);
-            this.button76.TabIndex = 32;
-            this.button76.Text = "HP%";
-            this.button76.UseVisualStyleBackColor = true;
-            this.button76.Click += new System.EventHandler(this.button76_Click);
-            // 
             // frmConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -4583,6 +4644,7 @@ namespace MAClientGUI
             this.tabPage3.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox12.ResumeLayout(false);
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
             this.groupBox5.ResumeLayout(false);
@@ -4716,7 +4778,6 @@ namespace MAClientGUI
         private System.Windows.Forms.Button button13;
         private System.Windows.Forms.TextBox textBox14;
         private System.Windows.Forms.TextBox textBox15;
-        private System.Windows.Forms.Label label28;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.TextBox textBox16;
         private System.Windows.Forms.Button button15;
@@ -4858,7 +4919,6 @@ namespace MAClientGUI
         private System.Windows.Forms.Label label61;
         private System.Windows.Forms.Label label64;
         private System.Windows.Forms.Label label63;
-        private System.Windows.Forms.Label label65;
         private System.Windows.Forms.Label label66;
         private System.Windows.Forms.Label label69;
         private System.Windows.Forms.Label label68;
@@ -4930,6 +4990,12 @@ namespace MAClientGUI
         private System.Windows.Forms.TextBox textBox33;
         private System.Windows.Forms.Label label94;
         private System.Windows.Forms.Button button76;
+        private System.Windows.Forms.Button button78;
+        private System.Windows.Forms.Button button77;
+        private System.Windows.Forms.GroupBox groupBox12;
+        private System.Windows.Forms.Label label95;
+        private System.Windows.Forms.Button button79;
+        private System.Windows.Forms.Button button80;
     }
 }
 
