@@ -253,7 +253,7 @@ class MAClient():
                 if err.code != '0':
                     resp['errmsg'] = err.message
                     # 1050木有BC 1010卖了卡或妖精已被消灭 8000基友点或卡满了 1020维护 1030有新版本
-                    if not err.code in ['1050', '1010']:  # ,'8000']:
+                    if not err.code in ['1050', '1010'] and not (err.code == '1000' and self.loc == 'jp'):  # ,'8000']:
                         logging.error('code:%s msg:%s' % (err.code, err.message))
                         resp.update({'error':True, 'errno':int(err.code)})
                     if err.code == '9000':
@@ -451,7 +451,7 @@ class MAClient():
                     self.select_card_sell(' '.join(task[1:]))
                 elif task[0] == 'set_server' or task[0] == 'ss':
                     self._write_config('system', 'server', task[1])
-                    if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp']:
+                    if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp','sg']:
                         logging.error('服务器"%s"无效'%(task[1]))
                     else:
                         self.loc = task[1]
@@ -1925,7 +1925,11 @@ class MAClient():
             trycnt = '999'
         sel_lake = sel_lake.split(',')
         battle_win = 1
-        resp, cmp_parts_ct = self._dopost('battle/area')
+        if self.loc == 'jp':
+            self._dopost('battle/area', xmlresp = False)
+            resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
+        else:
+            resp, cmp_parts_ct = self._dopost('battle/area')
         if resp['error']:
             return
         cmp_parts = cmp_parts_ct.body.competition_parts

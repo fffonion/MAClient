@@ -16,7 +16,7 @@ half_bc_offset_tw = half_ap_offset_tw = 5002
 half_ap_offset_jp = 100
 half_bc_offset_jp = 109
 #key_tw = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'rBwj1MIAivVN222b'}
-key_cn = key_tw = key_kr = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'011218525486l6u1'}
+key_cn = key_tw = key_kr = key_sg = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'011218525486l6u1'}
 key_jp = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'uH9JF2cHf6OppaC1'}
 key_rsa_pool = [
 "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANV2ohKiVs/2cOiGN7TICmQ/NbkuellbTtcKbuDbIlBMocH+Eu0n2nBYZQ2xQbAv+E9na8K2FyMyVY4+RIYEJ+0CAwEAAQ==",
@@ -35,8 +35,9 @@ app_ver_cn = 102
 app_ver_tw = 200
 app_ver_kr = 107
 app_ver_jp = 304
+app_ver_sg = 100
 # wake
-name_wake_rare = '魅．|覺醒莉絲蒂'
+name_wake_rare = '魅．'
 # snda gplus, not working
 class snda_gplus():
     # thanks to luw2007(https://github.com/luw2007/libMA/blob/master/push.py)

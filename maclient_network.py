@@ -31,7 +31,8 @@ serv = {'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/',
     'cn3':'http://game3-CBT.ma.sdo.com:10001/connect/app/',
     'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/','tw_data':'http://download.ma.mobimon.com.tw/',
     'jp':'http://web.million-arthurs.com/connect/app/', 'jp_data':'',
-    'kr':'http://ma.actoz.com:10001/connect/app/', 'kr_data':''}
+    'kr':'http://ma.actoz.com:10001/connect/app/', 'kr_data':'',
+    'sg':'http://playma.cherrycredits.com:10001/connect/app/', 'sg_data':''}
 serv['cn1'] = serv['cn']
 serv['cn_data'] = serv['cn2_data'] = serv['cn3_data'] = 'http://MA.webpatch.sdg-china.com/'
 
@@ -49,6 +50,12 @@ class Crypt():
         self.random_cipher_plain=''
         if not loc == 'jp':
             self.gen_rsa_pubkey()
+            # if loc in ['kr', 'sg']:
+            #     import string
+            #     import random
+            #     self._gen_rnd_key = lambda x = 16 : ''.join([random.choice(string.letters + string.digits) for i in range(x)])
+            # else:
+            #     self._gen_rnd_key = lambda x = 16 : os.urandom(x)
         self.AES2ndKey = None
 
     def gen_cipher_with_uid(self, uid, loc):
@@ -67,7 +74,7 @@ class Crypt():
         #self.rsa = RSA.load_pub_key_bio(bio)
 
     def gen_random_cipher(self):
-        self.random_cipher_plain=os.urandom(16)
+        self.random_cipher_plain = os.urandom(16)
         self.random_cipher = self._gen_cipher(self.random_cipher_plain)
 
     def _gen_cipher(self,plain):
@@ -207,7 +214,7 @@ class poster():
                 self.header['User-Agent'] = ua
         else:
             self.header['User-Agent'] = self.header['User-Agent'] % getattr(maclient_smart, 'app_ver_%s' % self.shortloc)
-        if self.shortloc in ['cn','kr']:
+        if self.shortloc in ['cn','kr','sg']:
             self.ht.add_credentials("iW7B5MWJ", "8KdtjVfX")
         elif self.servloc == 'jp':
             self.ht.add_credentials("eWa25vrE", "2DbcAh3G")
@@ -248,7 +255,7 @@ class poster():
                             base64.encodestring(
                                 self.crypt.random_cipher_plain))).rstrip('\n')
                     if postdata:#has real stuff
-                        if uri in ['login','regist'] and self.shortloc != 'kr':
+                        if uri in ['login','regist'] and self.shortloc not in ['kr', 'sg']:
                             postdata = self.crypt.encode_param(postdata, mode=MOD_RSA_AES_RANDOM) #remove .encode('utf-8')
                         else:
                             postdata = self.crypt.encode_param(postdata, mode=MOD_AES_RANDOM)
