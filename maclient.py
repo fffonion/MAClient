@@ -451,7 +451,7 @@ class MAClient():
                     self.select_card_sell(' '.join(task[1:]))
                 elif task[0] == 'set_server' or task[0] == 'ss':
                     self._write_config('system', 'server', task[1])
-                    if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp']:
+                    if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp','sg']:
                         logging.error('服务器"%s"无效'%(task[1]))
                     else:
                         self.loc = task[1]

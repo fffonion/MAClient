@@ -1,0 +1,128 @@
+1,Giant Cyborg,14352
+2,Rience Soldier,16560
+3,Rience,19320
+4,Second - Garlon,29808
+5,Second - Launfal,29808
+6,Second - Damas,29808
+7,Arthur: Blade Protector,42504
+8,Arthur: Techno Smith,42504
+9,Arthur: Sorcery King,42504
+10,Green Knight,49128
+11,Queen of Avalon,49128
+12,Arbitrator Knight,49128
+13,Ban,45816
+14,Giant Cyborg,45816
+15,Tarasque,58512
+16,Brandegoris Soldier,51888
+17,Brandegoris Soldier,51888
+18,Brandegoris,55200
+19,Urien Soldier,55200
+20,Urien Soldier,55200
+21,Uryens,58512
+22,Uryens,61824
+23,Morgan,65136
+24,Morgan,71760
+25,Rience Soldier,51888
+26,Rience Soldier,51888
+27,Lot Soldier,51888
+28,Lot Soldier,51888
+29,Morgause,71760
+30,Morgause,75072
+31,Lot,71760
+32,Lot,75072
+33,Lot,78384
+34,Level 1 Dragon,78384
+35,Level 1 Dragon,81696
+36,Level 1 Dragon,88320
+37,Nimue,91632
+38,Constantine,91632
+39,Second - Meliot,94944
+40,Specific - Hannibal,98256
+41,Support - Ganeida,101568
+42,Merlin,104880
+89,Green Knight,9999999
+1001,Special - Rowena,15088
+1002,Support - Lunete,19136
+1003,Support - Ortrud,25760
+1004,Prototype - Vortigern,32384
+1005,Second - Colgrevance,39008
+1006,Support - Evaine,45632
+1100,Merlin,17664
+1101,Merlin,25944
+1102,Merlin,34224
+1103,Merlin,42504
+1104,Merlin,50784
+2002,Silky,22080
+2010,Arousal Kelpie,27821
+2011,Kelpie,9660
+3000,Arthur: Sorcery King,167440
+3001,Arthur: Techno Smith,189520
+3002,Arthur: Blade Protector,167440
+3003,Arthur: Sorcery King,189520
+3004,Arthur: Techno Smith,167440
+3005,Arthur: Blade Protector,189520
+3006,Gawain,196880
+3007,Arthur: Techno Smith,218960
+3008,Arthur: Blade Protector,196880
+3009,Morgause,218960
+3010,Specific - Hannibal,196880
+3011,Morgause,218960
+3012,Gawain,196420
+3013,Arthur: Techno Smith,229540
+3014,Lacelot,207460
+3015,Arthur: Blade Protector,229540
+3016,Second - Launfal,207460
+3017,Peg Powler,229540
+3018,Arthur: Sorcery King,223560
+3019,Galahad,234600
+3020,Arthur: Sorcery King,245640
+3021,Arthur: Sorcery King,223560
+3022,Galahad,234600
+3023,Arthur: Sorcery King,245640
+3024,Maleagant Soldier,234600
+3025,Arthur: Blade Protector,245640
+3026,Lacelot,267260
+3027,Lacelot,267260
+3028,Arthur: Blade Protector,351072
+3029,Arthur: Techno Smith,267260
+3030,Mordred Soldier,286120
+3031,Mordred Soldier,288420
+3032,Mordred Soldier,286120
+3033,Mordred Soldier,288420
+3034,Mordred Soldier,286120
+3035,Mordred Soldier,288420
+3036,Mordred Soldier,310040
+3037,Class 1 Dragon,312340
+3038,Mordred Soldier,310040
+3039,Class 1 Dragon,312340
+3040,Mordred Soldier,310040
+3041,Class 1 Dragon,312340
+3045,Mordred Final Form 1,188784
+3046,Mordred Final Form 1,188784
+3047,Mordred最終形態2,188784
+3048,Mordred Final Form 1,188784
+3049,Mordred最終形態2,188784
+3050,Puca,381984
+3051,Shellycoat,384744
+3052,Puca,381984
+3053,Shellycoat,384744
+3054,Puca,381984
+3055,Shellycoat,384744
+3056,Morgan,407376
+3059,Morgan,407376
+3062,Morgan,407376
+3065,Mordred Final Form 1,188784
+3066,Rience Soldier,386400
+3067,Rience Soldier,392840
+3068,Rience Soldier,9999999
+3069,Rience Soldier,9999999
+10000,Giant Cyborg,15456
+10001,Support - Ither,13248
+60001,Leviathan,10672
+60002,Arousal Leviathan,13984
+60003,Mermaid,10856
+60004,Arousal Mermaid,14168
+60005,Ganeida,11739
+60006,Arousal Ganeida,15382
+60007,Gareth,11942
+60008,Arousal Gareth,15585

@@ -17,7 +17,7 @@ if PYTHON3:
 from xml2dict import XML2Dict
 __plugin_name__ = 'invitation tool'
 __author = 'fffonion'
-__version__ = 0.2
+__version__ = 0.3
 hooks = {}
 extra_cmd = {"reg":"reg_gen"}
 def reg_gen(plugin_vals):
@@ -42,7 +42,13 @@ def reg_gen(plugin_vals):
                     uname = raw_input('user-name: ')
                 while len(pwd) < 8 or len(pwd) > 14:
                     pwd = raw_input('password: ')
-                p = 'invitation_id=%s&login_id=%s&param=&password=%s&param=%s' % (invid, uname, pwd, '35' + (''.join([str(random.randint(0, 10) + i - i) for i in range(10)])))
+                if loc == 'sg':
+                    p = 'email=%s@%s&invitation_id=%s&login_id=%s&param=&password=%s&password_confirm=%s&platform=1&param=%s' % (
+                        uname, random.choice(['google.com', 'yahoo.com', 'live.com']), invid, uname, pwd, pwd, 
+                        '35' + (''.join([str(random.randint(0, 9)) for i in range(10)]))
+                        )
+                else:
+                    p = 'invitation_id=%s&login_id=%s&param=&password=%s&param=%s' % (invid, uname, pwd, '35' + (''.join([str(random.randint(0, 9)) for i in range(10)])))
                 # print maclient_network.encode_param(p)
                 r, d = po.post('regist', postdata = p)
                 if(XML2Dict().fromstring(d).response.header.error.code != '0'):
@@ -60,7 +66,7 @@ def reg_gen(plugin_vals):
             po.post('tutorial/next', postdata = 'S=%s&step=%s' % (po.cookie, 7025))
             time.sleep(3.123123)
             resp, ct = po.post('tutorial/next', postdata = 'S=%s&step=%s' % (po.cookie, 8000))
-            if loc =='kr':
+            if loc in ['kr', 'sg']:
                 # httplib2 doesn't follow redirection in POSTs
                 resp, ct = httplib2.Http().request(maclient_network.serv[loc] + 'mainmenu?fl=1', headers = GET_header)
             if len(ct) > 8000:
