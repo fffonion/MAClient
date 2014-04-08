@@ -893,6 +893,9 @@ class MAClient():
 
     @plugin.func_hook
     def _explore_floor(self, area, floor = None):
+        EXPLORE_URI = 'exploration/explore' if self.loc == 'jp' else 'exploration/explore'
+        EXPLORE_PARAM = 'area_id=%s&auto_build=1&auto_explore=0&floor_id=%s' if self.loc == 'jp' \
+                    else 'area_id=%s&auto_build=1&floor_id=%s'
         while True:
             if floor == None or floor == 'PLACE-HOLDER':  # 没有指定
                 # 选择地区
@@ -922,9 +925,9 @@ class MAClient():
             if self._dopost('exploration/get_floor', postdata = param)[0]['error']:
                 return None, EXPLORE_ERROR
             # 走路
-            param = 'area_id=%s&auto_build=1&floor_id=%s' % (area.id, floor.id)
+            param = EXPLORE_PARAM % (area.id, floor.id)
             while True:
-                resp, ct = self._dopost('exploration/explore', postdata = param)
+                resp, ct = self._dopost(EXPLORE_URI, postdata = param)
                 if resp['error']:
                     return None, EXPLORE_ERROR
                 info = ct.body.explore
@@ -1235,6 +1238,7 @@ class MAClient():
 
     @plugin.func_hook
     def fairy_select(self, cond = '', carddeck = None):
+        FAIRY_SELECT_URI = 'private_fairy/private_fairy_select' if self.loc == 'jp' else 'menu/fairyselect'
         # 走个形式
         resp, ct = self._dopost('menu/menulist')
         if resp['error']:
@@ -1248,7 +1252,7 @@ class MAClient():
                 self.player.fairy = {'alive':False, 'id':0, 'guild_alive':False}
             return
         time.sleep(0.8)
-        resp, ct = self._dopost('menu/fairyselect')
+        resp, ct = self._dopost(FAIRY_SELECT_URI)
         if resp['error']:
             return
         fs = ct.body.fairy_select
@@ -1280,6 +1284,10 @@ class MAClient():
                 continue
             fairy.fairy.lv = int(fairy.fairy.lv)
             # (sid相同，或未记录的)且不是公会妖
+            if self.loc == 'jp':
+                fairy['user'] = object_dict()
+                fairy.user['id'] = fairy.fairy.discoverer_id
+                fairy.fairy['race_type'] =  0#日服没有工会
             if (fitemp == fairy.fairy.serial_id or fairy.user.id == self.player.id) and fairy.fairy.race_type not in GUILD_RACE_TYPE:
                 self.player.fairy.update({'alive':True, 'id':fairy.fairy.serial_id})
             elif fairy.fairy.race_type in GUILD_RACE_TYPE:
@@ -1330,18 +1338,26 @@ class MAClient():
 
     @plugin.func_hook
     def _fairy_battle(self, fairy, bt_type = NORMAL_BATTLE, carddeck = None):
+        FAIRY_FLOOR_URI = 'private_fairy/private_fairy_top' if self.loc == 'jp' else 'exploration/fairy_floor'
+        FAIRY_FLOOR_PARAM = '%sserial_id=%s&user_id=%s' if self.loc == 'jp' else 'check=1&%sserial_id=%s&user_id=%s'
+        FAIRY_BATTLE_URI = 'private_fairy/private_fairy_battle' if self.loc == 'jp' else 'exploration/fairybattle'
+        FAIRY_BATTLE_PARAM = 'no=0&%sserial_id=%s&user_id=%s' if self.loc == 'jp' else '%sserial_id=%s&user_id=%s'
+        #jp no -> carddeck number
         while time.time() - self.lastfairytime < 18 and fairy.race_type != GUILD_RACE_TYPE:
             logging.sleep('等待战斗冷却')
             time.sleep(5)
         def fairy_floor(f = fairy):
-            paramfl = 'check=1&%sserial_id=%s&user_id=%s' % (
-                'race_type' in fairy and 'race_type=%s&' % fairy.race_type or '',
+            paramfl = FAIRY_FLOOR_PARAM % (
+                'race_type' in fairy and ('race_type=%s&' % fairy.race_type) or '',
                 f.serial_id, f.discoverer_id)
-            resp, ct = self._dopost('exploration/fairy_floor', postdata = paramfl)
+            resp, ct = self._dopost(FAIRY_FLOOR_URI, postdata = paramfl)
             if resp['error']:
                 return None
             else:
-                return ct.body.fairy_floor.explore.fairy
+                if self.loc == 'jp':
+                    return ct.body.private_fairy_top.private_fairy.fairy
+                else:
+                    return ct.body.fairy_floor.explore.fairy
         if bt_type == NORMAL_BATTLE or bt_type == TAIL_BATTLE:
             # 列表打开时，传入的fairy只有部分信息，因此客户端都会POST一个fairy_floor来取得完整信息
             # 尾刀需要重新获得妖精血量等
@@ -1368,6 +1384,9 @@ class MAClient():
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
         disc_name = ''
         disc_id = fairy.discoverer_id
+        if self.loc == 'jp':
+            fairy['attacker_history'] = []
+            fairy['race_type'] = 0#日服没有工会
         if disc_id == self.player.id:
             disc_name = self.player.name
         if 'attacker' not in fairy.attacker_history:  # 没人打过的
@@ -1431,10 +1450,10 @@ class MAClient():
         self.lastfairytime = time.time()
         savet = (cardd == 'min')
         #race_type?
-        paramf = '%sserial_id=%s&user_id=%s' % (
-            'race_type' in fairy and 'race_type=%s&'%fairy.race_type or '',
+        paramf =  FAIRY_BATTLE_PARAM % (
+            'race_type' in fairy and ('race_type=%s&' % fairy.race_type) or '',
             fairy.serial_id, fairy.discoverer_id)
-        resp, ct = self._dopost('exploration/fairybattle', postdata = paramf, savetraffic = savet)
+        resp, ct = self._dopost(FAIRY_BATTLE_URI, postdata = paramf, savetraffic = savet)
         if len(ct) == 0:
             logging.info('舔刀卡组，省流模式开启')
         else:
@@ -1504,7 +1523,7 @@ class MAClient():
                 elif fairy.race_type in GUILD_RACE_TYPE:
                     self.player.fairy['guild_alive'] = False
             else:  # 输了
-                hpleft = int(ct.body.explore.fairy.hp)
+                hpleft = int(ct.body.explore.ex_fairy.fairy.hp) if self.loc == 'jp' else int(ct.body.explore.fairy.hp)
                 logging.info('YOU LOSE- - Fairy-HP:%d' % hpleft)
                 # 立即尾刀触发,如果补刀一次还没打死，就不打了-v-
                 if self.cfg_fairy_final_kill_hp >= hpleft and (not bt_type == TAIL_BATTLE or hpleft < 5000):
