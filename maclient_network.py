@@ -191,6 +191,8 @@ class poster():
         
 
     def set_cookie(self, cookie):
+        if not cookie.endswith(';'):
+            cookie += ';'
         self.cookie = cookie
 
     def enable_savetraffic(self):
@@ -245,7 +247,7 @@ class poster():
             header = {}
             header.update(self.header)
             header.update(extraheader)
-            if usecookie:
+            if usecookie and not self.has_2ndkey:
                 header.update({'Cookie':self.cookie})
             if not noencrypt :
                 if not self.shortloc == 'jp':#pass key to server
@@ -263,10 +265,15 @@ class poster():
                         postdata='&'.join([sign,postdata])
                     else:
                         postdata=sign
-                elif postdata != '':
-                    postdata =  self.crypt.encode_param('%s%s&v=%s'% (postdata, not noencrypt and '&cyt=1' or '', self.v),
-                     second_cipher = self.has_2ndkey and not no2ndkey)
-                        
+                else:#for jp
+                    #S=cookie&cyt=1&v=encrypted(x.x.x)&encoded_param
+                    if postdata:
+                        postdata += '&'
+                    postdata =  '%s%s&%s' % (
+                        self.cookie[:-1], not noencrypt and '&cyt=1' or '',
+                        self.crypt.encode_param('%sv=%s'% (postdata, self.v), second_cipher = self.has_2ndkey and not no2ndkey)
+                        )
+                    extraheader = {}
             trytime = 0
             ttimes = 3
             extra_kwargs = {}

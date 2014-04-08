@@ -519,7 +519,8 @@ class MAClient():
                     pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
                     # if self.loc == 'kr':
                     #      pdata='S=nosessionid&%s' % pdata
-                    self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
+                    if self.loc != 'jp':
+                        self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
                 resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
                 if resp['error']:
                     logging.info('登录失败么么哒w')
@@ -893,7 +894,7 @@ class MAClient():
 
     @plugin.func_hook
     def _explore_floor(self, area, floor = None):
-        EXPLORE_URI = 'exploration/explore' if self.loc == 'jp' else 'exploration/explore'
+        EXPLORE_URI = 'exploration/guild_explore' if self.loc == 'jp' else 'exploration/explore'
         EXPLORE_PARAM = 'area_id=%s&auto_build=1&auto_explore=0&floor_id=%s' if self.loc == 'jp' \
                     else 'area_id=%s&auto_build=1&floor_id=%s'
         while True:
@@ -934,8 +935,13 @@ class MAClient():
                 logging.debug('explore:event_type:' + info.event_type)
                 if info.event_type != '6':
                     logging.info('获得:%sG %sEXP, 进度:%s, 升级剩余:%s' % (info.gold, info.get_exp, info.progress, info.next_exp))
-                    # 已记录1 2 3 4 5 7(打秘境守护者胜利) 12 13 15 19
-                    if info.event_type == '1':
+                    # 已记录1 2 3 4 5 6(AP不足) 7(打秘境守护者胜利) 12 13 15 19; 22jp = 1
+                    if info.event_type == '1' or info.event_type == '22':
+                        if info.event_type == '22':
+                            fairy_info = ct.body.explore.ex_fairy.fairy
+                            fairy_info['race_type'] = '0'
+                        else:
+                            fairy_info = info.fairy
                         '''<fairy>
                                 <serial_id>20840184</serial_id>
                                 <master_boss_id>2043</master_boss_id>
@@ -946,20 +952,20 @@ class MAClient():
                                 <rare_flg>0</rare_flg>
                                 <event_chara_flg>0</event_chara_flg>
                         </fairy>'''
-                        info.fairy.lv, info.fairy.hp = int(info.fairy.lv), int(info.fairy.hp)
-                        logging.info('碰到只妖精:%s lv%d hp%d' % (info.fairy.name, info.fairy.lv, info.fairy.hp))
-                        logging.debug('sid' + info.fairy.serial_id + ' mid' + info.fairy.master_boss_id + ' uid' + info.fairy.discoverer_id)
-                        if info.fairy.race_type in GUILD_RACE_TYPE:
+                        fairy_info.lv, fairy_info.hp = int(fairy_info.lv), int(fairy_info.hp)
+                        logging.info('碰到只妖精:%s lv%d hp%d' % (fairy_info.name, fairy_info.lv, fairy_info.hp))
+                        logging.debug('sid' + fairy_info.serial_id + ' mid' + fairy_info.master_boss_id + ' uid' + fairy_info.discoverer_id)
+                        if fairy_info.race_type in GUILD_RACE_TYPE:
                             self.player.fairy['guild_alive'] = True
                         else:
-                            self.player.fairy.update({'id':info.fairy.serial_id, 'alive':True})
+                            self.player.fairy.update({'id':fairy_info.serial_id, 'alive':True})
                         # evalfight=self._eval_gen(self._read_config('condition','encounter_fairy'),\
                         #    {'fairy':'info.fairy'})
                         # logging.debug('eval:%s result:%s'%(evalfight,eval(evalfight)))
                         # if eval(evalfight):
                         logging.sleep('3秒后开始战斗www')
                         time.sleep(3)
-                        self._fairy_battle(info.fairy, bt_type = EXPLORE_BATTLE)
+                        self._fairy_battle(fairy_info, bt_type = EXPLORE_BATTLE)
                         time.sleep(5.5)
                         if self._check_floor_eval([floor], ct.body.race_type)[0]:  # 若已不符合条件
                             return None, EXPLORE_OK
@@ -1007,9 +1013,9 @@ class MAClient():
                                 self._get_rewards(rwds)
                             return None, EXPLORE_OK
                     elif info.event_type == '12':
-                        logging.info('AP回复~')
+                        logging.info('AP回复[%s]~' % info.recover)
                     elif info.event_type == '13':
-                        logging.info('BC回复~')
+                        logging.info('BC回复[%s]~' % info.recover)
                     elif info.event_type == '19':
                         try:
                             itemid = info.special_item.item_id
@@ -1025,6 +1031,8 @@ class MAClient():
                             info.parts_one.lake_id, info.parts_one.parts.parts_num))
                         if int(resp['content-length']) > 10000:
                             logging.info('收集碎片合成了新的骑士卡片！')
+                    elif info.event_type != '0':
+                        logging.warning('unrecognized event_type:%s' % info.event_type)
                 else:
                     logging.warning('AP不够了TUT')
                     if not self.green_tea(self.cfg_auto_explore):
@@ -1321,6 +1329,9 @@ class MAClient():
             # fairy.start_time,fairy.fairy.time_limit
 
     def _fairy_rewards(self):
+        if self.loc == 'jp':
+            resp, ct = self._dopost('private_fairy/private_fairy_rewards')
+            return
         resp, ct = self._dopost('menu/fairyrewards')
         if resp['errno'] == 8000:
             pass  # logging.warning(resp['errmsg'])
