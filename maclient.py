@@ -967,6 +967,8 @@ class MAClient():
                         time.sleep(3)
                         self._fairy_battle(fairy_info, bt_type = EXPLORE_BATTLE)
                         time.sleep(5.5)
+                        if self.loc == 'jp':
+                            ct.body['race_type'] = '0'
                         if self._check_floor_eval([floor], ct.body.race_type)[0]:  # 若已不符合条件
                             return None, EXPLORE_OK
                         # 回到探索界面
@@ -983,11 +985,18 @@ class MAClient():
                         logging.info('获得了 %s %s' % (self.carddb[int(usercard.master_card_id)][0],
                             '☆' * self.carddb[int(usercard.master_card_id)][1]))
                     elif info.event_type == '15':
-                        compcard = info.autocomp_card[-1]
-                        logging.debug('explore:cid %s sid %s' % (
-                            compcard.master_card_id,
-                            compcard.serial_id))
-                        logging.info('合成了 %s lv%s exp%s nextexp%s' % (
+                        if self.loc == 'jp':
+                            compcard = info.autocomp_card.base_card
+                            logging.info('合成了 %s lv%s exp%s%%' % (
+                                self.carddb[int(compcard.master_card_id)][0],
+                                compcard.lv,
+                                compcard.exp_per))
+                        else:
+                            compcard = info.autocomp_card[-1]
+                            # logging.debug('explore:cid %s sid %s' % (
+                            #     compcard.master_card_id,
+                            #     compcard.serial_id))
+                            logging.info('合成了 %s lv%s exp%s nextexp%s' % (
                                 self.carddb[int(compcard.master_card_id)][0],
                                 compcard.lv,
                                 compcard.exp,
@@ -1817,9 +1826,9 @@ class MAClient():
                         continue
                     if int(u) > len(users):
                         logging.error('no.%s:下标越界XD' % u)
-                    elif users[int(u) - 1].friends == users[int(u) - 1].friend_max:
-                        logging.warning('%s %s' % (users[int(u) - 1].name, '无法成为好友ww'))
                     else:
+                        if users[int(u) - 1].friends == users[int(u) - 1].friend_max:
+                            logging.warning('%s %s' % (users[int(u) - 1].name, '对方好友已满ww'))
                         uids.append(users[int(u) - 1].id)
                 if uids != []:
                     param = 'dialog=1&user_id=%s' % (','.join(uids))
