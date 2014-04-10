@@ -98,6 +98,11 @@ def read_proxy():
         #     return carddeck
         time.sleep(1)
 
+def release_socket(socket_pool):
+    for s in socket_pool:
+        socket_pool[s].close()
+    socket_pool = {}
+
 if __name__ == '__main__':
     logging = maclient_logging.Logging('logging')
     if not PYTHON3:
@@ -178,6 +183,7 @@ if __name__ == '__main__':
                     maclient1.login()
                     maclient1.tasker()
                 except KeyboardInterrupt:
+                    release_socket(maclient1.poster.ht.connections)
                     continue
             elif ch == 'h':
                 print(du8('登陆 login/l,设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,'
@@ -332,6 +338,7 @@ if __name__ == '__main__':
                         else:
                             maclient1.tasker(cmd = ch)
                     except KeyboardInterrupt:
+                        release_socket(maclient1.poster.ht.connections)
                         continue
             else:
                 maclient.logging.error(du8('嗯-v-？'))

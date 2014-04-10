@@ -191,6 +191,8 @@ class poster():
         
 
     def set_cookie(self, cookie):
+        if not cookie.endswith(';'):
+            cookie += ';'
         self.cookie = cookie
 
     def enable_savetraffic(self):
@@ -220,6 +222,7 @@ class poster():
             self.ht.add_credentials("eWa25vrE", "2DbcAh3G")
             if (not self.header['User-Agent'].endswith('GooglePlay')):
                 self.header['User-Agent'] += 'GooglePlay'
+            self.v = '.'.join(list(str(maclient_smart.app_ver_jp)))#like 304 -> 3.0.4
         self.has_2ndkey = loc =='jp'
         self.crypt=Crypt(self.shortloc)
 
@@ -244,7 +247,7 @@ class poster():
             header = {}
             header.update(self.header)
             header.update(extraheader)
-            if usecookie:
+            if usecookie and not self.has_2ndkey:
                 header.update({'Cookie':self.cookie})
             if not noencrypt :
                 if not self.shortloc == 'jp':#pass key to server
@@ -262,8 +265,15 @@ class poster():
                         postdata='&'.join([sign,postdata])
                     else:
                         postdata=sign
-                elif postdata != '':
-                    postdata = self.crypt.encode_param(postdata, second_cipher = self.has_2ndkey and not no2ndkey)  
+                else:#for jp
+                    #S=cookie&cyt=1&v=encrypted(x.x.x)&encoded_param
+                    if postdata:
+                        postdata += '&'
+                    postdata =  '%s%s&%s' % (
+                        self.cookie[:-1], not noencrypt and '&cyt=1' or '',
+                        self.crypt.encode_param('%sv=%s'% (postdata, self.v), second_cipher = self.has_2ndkey and not no2ndkey)
+                        )
+                    extraheader = {}
             trytime = 0
             ttimes = 3
             extra_kwargs = {}
@@ -271,7 +281,9 @@ class poster():
                 extra_kwargs = {'callback_hook' : lambda x:x, 'chunk_size' : None}
             while trytime < ttimes:
                 try:
-                    resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, not noencrypt and '?cyt=1' or ''), method = 'POST', headers = header, body = postdata, **extra_kwargs)
+                    resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, \
+                        (not noencrypt and not self.has_2ndkey) and '?cyt=1' or ''), \
+                        method = 'POST', headers = header, body = postdata, **extra_kwargs)
                     assert(len(content) > 0 or (savetraffic and self.issavetraffic) or resp['status'] == '302')
                 except socket.error as e:
                     if e.errno == None:

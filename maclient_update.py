@@ -59,8 +59,12 @@ def update_master(loc, need_update, poster):
         poster.ht.connections[s].close()
     poster.ht.connections = {}
     poster.set_timeout(240)
+    if loc == 'jp':
+        postdata = ''
+    else:
+        postdata = '%s&revision=0' % poster.cookie
     if need_update[0]:
-        a, b = poster.post('masterdata/card/update', postdata = '%s&revision=0' % poster.cookie)
+        a, b = poster.post('masterdata/card/update', postdata = postdata)
         resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response  # 不替换会解析出错摔
         cards = resp.body.master_data.master_card_data.card
         strs = ['%s,%s,%s,%s,%s,%s,%s,%s' % (
@@ -80,7 +84,7 @@ def update_master(loc, need_update, poster):
         new_rev[0] = resp.header.revision.card_rev
         save_revision(loc, cardrev = new_rev[0])
     if need_update[1]:
-        a, b = poster.post('masterdata/item/update', postdata = '%s&revision=0' % poster.cookie)
+        a, b = poster.post('masterdata/item/update', postdata = postdata)
         resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response
         items = resp.body.master_data.master_item_data.item_info
         strs = ['%s,%s,%s' % (
@@ -95,7 +99,7 @@ def update_master(loc, need_update, poster):
         new_rev[1] = resp.header.revision.item_rev
         save_revision(loc, itemrev = new_rev[1])
     if need_update[2]:
-        a, b = poster.post('masterdata/boss/update', postdata = '%s&revision=0' % poster.cookie)
+        a, b = poster.post('masterdata/boss/update', postdata = postdata)
         resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response
         boss = resp.body.master_data.master_boss_data.boss
         strs = ['%s,%s,%s' % (
