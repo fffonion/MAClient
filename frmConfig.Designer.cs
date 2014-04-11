@@ -106,6 +106,8 @@ namespace MAClientGUI
             this.grpAccount = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage0 = new System.Windows.Forms.TabPage();
+            this.chkNoEncWarning = new System.Windows.Forms.CheckBox();
+            this.lblEncWarning = new System.Windows.Forms.LinkLabel();
             this.btnDefault = new System.Windows.Forms.Button();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.chkAutoChooseRT = new System.Windows.Forms.CheckBox();
@@ -350,6 +352,16 @@ namespace MAClientGUI
             this.label32 = new System.Windows.Forms.Label();
             this.btnSellLv = new System.Windows.Forms.Button();
             this.btnSellStar = new System.Windows.Forms.Button();
+            this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.label97 = new System.Windows.Forms.Label();
+            this.groupBox13 = new System.Windows.Forms.GroupBox();
+            this.lblCfgEnc = new System.Windows.Forms.Label();
+            this.label96 = new System.Windows.Forms.Label();
+            this.lblCodePage = new System.Windows.Forms.Label();
+            this.label65 = new System.Windows.Forms.Label();
+            this.label28 = new System.Windows.Forms.Label();
+            this.button81 = new System.Windows.Forms.Button();
+            this.button82 = new System.Windows.Forms.Button();
             this.button20 = new System.Windows.Forms.Button();
             this.button38 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -407,6 +419,8 @@ namespace MAClientGUI
             this.groupBox5.SuspendLayout();
             this.tabPage6.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.tabPage9.SuspendLayout();
+            this.groupBox13.SuspendLayout();
             this.dockMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -1380,6 +1394,7 @@ namespace MAClientGUI
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage6);
+            this.tabControl1.Controls.Add(this.tabPage9);
             this.tabControl1.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.tabControl1.HotTrack = true;
             this.tabControl1.Location = new System.Drawing.Point(12, 48);
@@ -1394,18 +1409,43 @@ namespace MAClientGUI
             // tabPage0
             // 
             this.tabPage0.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage0.Controls.Add(this.chkNoEncWarning);
             this.tabPage0.Controls.Add(this.btnDefault);
             this.tabPage0.Controls.Add(this.groupBox10);
             this.tabPage0.Controls.Add(this.grpAccount);
             this.tabPage0.Controls.Add(this.grpSystem);
             this.tabPage0.Controls.Add(this.btnGoBack);
             this.tabPage0.Controls.Add(this.btnSave);
+            this.tabPage0.Controls.Add(this.lblEncWarning);
             this.tabPage0.Location = new System.Drawing.Point(4, 29);
             this.tabPage0.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.tabPage0.Name = "tabPage0";
             this.tabPage0.Size = new System.Drawing.Size(781, 547);
             this.tabPage0.TabIndex = 8;
             this.tabPage0.Text = "液~";
+            // 
+            // chkNoEncWarning
+            // 
+            this.chkNoEncWarning.AutoSize = true;
+            this.chkNoEncWarning.Location = new System.Drawing.Point(715, 353);
+            this.chkNoEncWarning.Name = "chkNoEncWarning";
+            this.chkNoEncWarning.Size = new System.Drawing.Size(18, 17);
+            this.chkNoEncWarning.TabIndex = 1059;
+            this.chkNoEncWarning.UseVisualStyleBackColor = true;
+            this.chkNoEncWarning.Visible = false;
+            this.chkNoEncWarning.CheckedChanged += new System.EventHandler(this.chkNoEncWarning_CheckedChanged);
+            // 
+            // lblEncWarning
+            // 
+            this.lblEncWarning.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.lblEncWarning.Location = new System.Drawing.Point(663, 311);
+            this.lblEncWarning.Name = "lblEncWarning";
+            this.lblEncWarning.Size = new System.Drawing.Size(87, 64);
+            this.lblEncWarning.TabIndex = 1058;
+            this.lblEncWarning.TabStop = true;
+            this.lblEncWarning.Text = "当前配置编码不能用于手机！";
+            this.lblEncWarning.Visible = false;
+            this.lblEncWarning.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
             // 
             // btnDefault
             // 
@@ -4405,6 +4445,111 @@ namespace MAClientGUI
             this.btnSellStar.UseVisualStyleBackColor = true;
             this.btnSellStar.Click += new System.EventHandler(this.btnSellStar_Click);
             // 
+            // tabPage9
+            // 
+            this.tabPage9.BackColor = System.Drawing.SystemColors.Control;
+            this.tabPage9.Controls.Add(this.label97);
+            this.tabPage9.Controls.Add(this.groupBox13);
+            this.tabPage9.Location = new System.Drawing.Point(4, 29);
+            this.tabPage9.Name = "tabPage9";
+            this.tabPage9.Size = new System.Drawing.Size(781, 547);
+            this.tabPage9.TabIndex = 11;
+            this.tabPage9.Text = "工具";
+            // 
+            // label97
+            // 
+            this.label97.AutoSize = true;
+            this.label97.Location = new System.Drawing.Point(318, 293);
+            this.label97.Name = "label97";
+            this.label97.Size = new System.Drawing.Size(165, 20);
+            this.label97.TabIndex = 3;
+            this.label97.Text = "这里以后会有东西的XD";
+            // 
+            // groupBox13
+            // 
+            this.groupBox13.Controls.Add(this.lblCfgEnc);
+            this.groupBox13.Controls.Add(this.label96);
+            this.groupBox13.Controls.Add(this.lblCodePage);
+            this.groupBox13.Controls.Add(this.label65);
+            this.groupBox13.Controls.Add(this.label28);
+            this.groupBox13.Controls.Add(this.button81);
+            this.groupBox13.Controls.Add(this.button82);
+            this.groupBox13.Location = new System.Drawing.Point(24, 19);
+            this.groupBox13.Name = "groupBox13";
+            this.groupBox13.Size = new System.Drawing.Size(376, 126);
+            this.groupBox13.TabIndex = 2;
+            this.groupBox13.TabStop = false;
+            this.groupBox13.Text = "配置文件重编码";
+            // 
+            // lblCfgEnc
+            // 
+            this.lblCfgEnc.AutoSize = true;
+            this.lblCfgEnc.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblCfgEnc.Location = new System.Drawing.Point(90, 99);
+            this.lblCfgEnc.Name = "lblCfgEnc";
+            this.lblCfgEnc.Size = new System.Drawing.Size(15, 20);
+            this.lblCfgEnc.TabIndex = 6;
+            this.lblCfgEnc.Text = "/";
+            // 
+            // label96
+            // 
+            this.label96.AutoSize = true;
+            this.label96.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label96.Location = new System.Drawing.Point(6, 99);
+            this.label96.Name = "label96";
+            this.label96.Size = new System.Drawing.Size(84, 19);
+            this.label96.TabIndex = 5;
+            this.label96.Text = "配置编码：";
+            // 
+            // lblCodePage
+            // 
+            this.lblCodePage.AutoSize = true;
+            this.lblCodePage.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblCodePage.Location = new System.Drawing.Point(98, 77);
+            this.lblCodePage.Name = "lblCodePage";
+            this.lblCodePage.Size = new System.Drawing.Size(15, 20);
+            this.lblCodePage.TabIndex = 4;
+            this.lblCodePage.Text = "/";
+            // 
+            // label65
+            // 
+            this.label65.AutoSize = true;
+            this.label65.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label65.Location = new System.Drawing.Point(6, 77);
+            this.label65.Name = "label65";
+            this.label65.Size = new System.Drawing.Size(99, 19);
+            this.label65.TabIndex = 3;
+            this.label65.Text = "系统代码页：";
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(6, 32);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(223, 40);
+            this.label28.TabIndex = 2;
+            this.label28.Text = "windows请使用系统代码页保存\r\n其他系统如手机使用UTF-8";
+            // 
+            // button81
+            // 
+            this.button81.Location = new System.Drawing.Point(235, 23);
+            this.button81.Name = "button81";
+            this.button81.Size = new System.Drawing.Size(135, 38);
+            this.button81.TabIndex = 0;
+            this.button81.Text = "转成Windows用";
+            this.button81.UseVisualStyleBackColor = true;
+            this.button81.Click += new System.EventHandler(this.button81_Click);
+            // 
+            // button82
+            // 
+            this.button82.Location = new System.Drawing.Point(274, 69);
+            this.button82.Name = "button82";
+            this.button82.Size = new System.Drawing.Size(96, 38);
+            this.button82.TabIndex = 1;
+            this.button82.Text = "转成手机用";
+            this.button82.UseVisualStyleBackColor = true;
+            this.button82.Click += new System.EventHandler(this.button82_Click);
+            // 
             // button20
             // 
             this.button20.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -4604,6 +4749,7 @@ namespace MAClientGUI
             this.grpAccount.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage0.ResumeLayout(false);
+            this.tabPage0.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             this.tabPage8.ResumeLayout(false);
@@ -4653,6 +4799,10 @@ namespace MAClientGUI
             this.tabPage6.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            this.tabPage9.ResumeLayout(false);
+            this.tabPage9.PerformLayout();
+            this.groupBox13.ResumeLayout(false);
+            this.groupBox13.PerformLayout();
             this.dockMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -4996,6 +5146,18 @@ namespace MAClientGUI
         private System.Windows.Forms.Label label95;
         private System.Windows.Forms.Button button79;
         private System.Windows.Forms.Button button80;
+        private System.Windows.Forms.TabPage tabPage9;
+        private System.Windows.Forms.GroupBox groupBox13;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Button button81;
+        private System.Windows.Forms.Button button82;
+        private System.Windows.Forms.Label lblCodePage;
+        private System.Windows.Forms.Label label65;
+        private System.Windows.Forms.Label label96;
+        private System.Windows.Forms.Label lblCfgEnc;
+        private System.Windows.Forms.Label label97;
+        private System.Windows.Forms.LinkLabel lblEncWarning;
+        private System.Windows.Forms.CheckBox chkNoEncWarning;
     }
 }
 

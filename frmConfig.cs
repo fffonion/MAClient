@@ -281,7 +281,7 @@ namespace MAClientGUI
                 cboCfgFile.SelectedIndex = 0;
             Control.CheckForIllegalCrossThreadCalls = false;//丑就丑点吧www
             cboReservedName.SelectedIndex = 0;
-
+            lblCodePage.Text = Encoding.Default.CodePage + "/" + Encoding.Default.EncodingName;
         }
 
         private void btnGoBack_Click(object sender, EventArgs e)
@@ -311,6 +311,11 @@ namespace MAClientGUI
             tabControl1.Enabled = true;
             refreshAll();
             refreshCond();
+            lblCfgEnc.Text = GetEncType(cboCfgFile.Text).EncodingName;
+            if (lblCfgEnc.Text != "Unicode (UTF-8)" && !cf.ReadBool("MAClientGUI","no_enc_warning"))
+                lblEncWarning.Visible = true;
+            else lblEncWarning.Visible = false;
+            chkNoEncWarning.Visible = lblEncWarning.Visible;
         }
 
 
@@ -2007,6 +2012,99 @@ namespace MAClientGUI
             }
         }
 
+        public static Encoding GetEncType(string fname)
+        {
+            byte[] b = File.ReadAllBytes(fname);
+            return GetEncType(b);
+        }
 
+        public static Encoding GetEncType(byte[] bytes)
+        {
+            byte[] Unicode = new byte[] { 0xFF, 0xFE, 0x41 };
+            byte[] UnicodeBIG = new byte[] { 0xFE, 0xFF, 0x00 };
+            byte[] UTF8 = new byte[] { 0xEF, 0xBB, 0xBF }; //带BOM
+            Encoding enc = Encoding.Default;
+            if (IsUTF8Bytes(bytes) || (bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF))
+                enc = Encoding.UTF8;
+            else if (bytes[0] == 0xFE && bytes[1] == 0xFF && bytes[2] == 0x00)
+                enc = Encoding.BigEndianUnicode;
+            else if (bytes[0] == 0xFF && bytes[1] == 0xFE && bytes[2] == 0x41)
+                enc = Encoding.Unicode;
+            return enc;
+
+        }
+        private static bool IsUTF8Bytes(byte[] data)
+        {
+            int cnt = 1; 
+            byte cur;
+            for (int i = 0; i < data.Length; i++)
+            {
+                cur = data[i];
+                if (cnt == 1)
+                {
+                    if (cur >= 0x80)
+                    {
+                        while (((cur <<= 1) & 0x80) != 0)   cnt++;
+                        if (cnt == 1 || cnt > 6)    return false;
+                    }
+                }
+                else
+                {
+                    if ((cur & 0xC0) != 0x80)   return false;
+                    cnt--;
+                }
+            }
+            if (cnt > 1)
+            {
+                throw new Exception("这特么什么编码");
+            }
+            return true;
+        }
+
+        private void button81_Click(object sender, EventArgs e)
+        {
+            string dst = cboCfgFile.Text;
+            byte[] b = File.ReadAllBytes(dst);
+            File.WriteAllText(dst, GetEncType(b).GetString(b), Encoding.Default);
+            lblCfgEnc.Text = Encoding.Default.EncodingName;
+            MessageBox.Show("搞定", "呵呵", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            lblEncWarning.Visible = false;
+        }
+
+        private void button82_Click(object sender, EventArgs e)
+        {
+            string dst = cboCfgFile.Text;
+            byte[] b = File.ReadAllBytes(dst);
+            StreamWriter sw = null;
+            try
+            {
+                UTF8Encoding utf8 = new UTF8Encoding(false);
+                using (sw = new StreamWriter(dst, false, utf8)) //no BOM
+                {
+                    sw.Write(GetEncType(b).GetString(b));
+                }
+            }catch{}
+            lblCfgEnc.Text = Encoding.UTF8.EncodingName;
+            MessageBox.Show("搞定", "呵呵",MessageBoxButtons.OK, MessageBoxIcon.Information);
+            lblEncWarning.Visible = true;
+        }
+
+        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            tabControl1.SelectedIndex = 9;
+        }
+
+        private void chkNoEncWarning_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!chkNoEncWarning.Checked) return;
+
+            if (MessageBox.Show("不再显示此警告？", "呵呵", MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                cf.Write("MAClientGUI", "no_enc_warning", "1");
+            }
+            else
+                chkNoEncWarning.Checked = false;
+        }
     }
 }
