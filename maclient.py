@@ -1896,29 +1896,35 @@ class MAClient():
         #    rwds=[rwds]
         strl = ''
         nid = []
+        no_detail = False
+        no_get = False
         if rw_type[-1] == '>':
             no_detail = True
             rw_type = rw_type[:-1]
-        else:
-            no_detail = False
+        if rw_type[-1] == '<':
+            no_get = True
+            rw_type = rw_type[:-1]
         rw_type = du8(rw_type)
-        real_desc_match = not rw_type.isdigit()
+        real_desc_match = not rw_type.isdigit() or not rw_type
         for r in rwds:
-            if real_desc_match:
-                if re.search(rw_type, r.content + r.title + (r.type == '1' and self.carddb[int(r.card_id)][0] or '')):
-                    strl += ('%s:%s , ' % (r.title, r.content))
-                    nid.append(r.id)
-            else:
-                if r.type in rw_type:
-                    nid.append(r.id)
+            if (real_desc_match and \
+                    re.search(rw_type, r.content + r.title + (r.type == '1' and self.carddb[int(r.card_id)][0] or ''))
+                ) or (\
+                    not real_desc_match and \
+                    r.type in rw_type
+                ):
                 strl += self._parse_reward(r) + ' , ' 
-        if nid == []:
+                if not no_get:
+                    nid.append(r.id)
+        if not strl:
             logging.info('没有符合筛选的奖励(%d)' % (len(rwds)))
         else:
             if no_detail:
-                logging.info('领取%d件奖励' % len(nid))
+                logging.info('将领取%d件奖励' % len(strl.split(' , ')))
             else:
                 logging.info(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' '))
+            if no_get:
+                return
             res = self._get_rewards(nid)
             if res[0]:
                logging.info(res[1])
@@ -1999,12 +2005,16 @@ class MAClient():
                     l = random.choice(lakes)
             if 'event_id' not in l:
                 l['event_id'] = '0'
+                partids = [0]
+
             # if battle_win>0:#赢过至少一次则重新筛选
             partids = []
             battle_win = 0
             if l.lake_id == '0':
                 l['event_id'] = '0'  # 补全参数
-                partids = [0]
+                partids = [0] #未选择湖只有一个碎片
+            elif l.event_id != '0':
+                partids = [0] #pvp只有一个碎片
             else:
                 # 只打没有的碎片
                 if self.cfg_factor_getnew:
@@ -2022,7 +2032,7 @@ class MAClient():
                 logging.info('选择因子 %s:%s(%s), 碎片id %d%s' % (
                     l.lake_id,
                     l.lake_id == '0' and 'NONE' or l.title,
-                    self.carddb[int(l.master_card_id)][0],
+                    self.carddb[int(l.master_card_id)][0] if 'master_card_id' in l else 'x',
                     0 if (l.event_id != '0') else partid,
                     ' 待选:%d' % (len(partids) - battle_win) if self.cfg_factor_getnew else ''
                 ))

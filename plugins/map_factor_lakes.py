@@ -4,7 +4,7 @@ from _prototype import plugin_prototype
 # start meta
 __plugin_name__ = '显示湖id与因子卡片'
 __author = 'fffonion'
-__version__ = 0.1
+__version__ = 0.2
 __help__ = 'mf显示所有湖及对应卡片，mf 湖id (如mf 10)显示碎片数量'
 from cross_platform import *
 from xml2dict import XML2Dict
@@ -24,8 +24,10 @@ def map_factor(plugin_vals):
         lakes = resp.body.competition_parts.lake
         if not args[0]:#mf
             print(du8('湖id    湖名称       合成卡片\n' + '-' * 30))
-            lakes = sorted(lakes, key = lambda x : int(x.lake_id))
+            lakes = sorted(lakes, key = lambda x : int(x.lake_id if 'lake_id' in x else x.event_id))
             for l in lakes:
+                if 'lake_id' not in l:
+                    l['lake_id'] = l.event_id
                 if l.lake_id == '0':
                     continue
                 n = l.title.encode('utf-8')
@@ -36,8 +38,8 @@ def map_factor(plugin_vals):
                     l.lake_id,
                     '/活动' if l.event_id != '0' else '     ',
                     n, ' ' * int(13 - l2 - (l1 - l2) / 2),
-                    l.master_card_id,
-                    carddb[int(l.master_card_id)][0]
+                    l.master_card_id if 'master_card_id' in l else '',
+                    carddb[int(l.master_card_id)][0] if 'master_card_id' in l else ''
                     )))
         else:#mf 20
             lake = [lakes[i] for i in range(len(lakes)) if lakes[i].lake_id == args[0].strip()]
