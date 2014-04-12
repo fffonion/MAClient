@@ -76,7 +76,7 @@
   <PropertyGroup />
   <PropertyGroup />
   <PropertyGroup>
-    <ApplicationIcon>imageres.dll%2894%29.ico</ApplicationIcon>
+    <ApplicationIcon>imageres.dll%2894%29-small.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <Win32Resource>
@@ -169,6 +169,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="imageres.dll%2894%29-small.ico" />
     <Content Include="imageres.dll%2894%29.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

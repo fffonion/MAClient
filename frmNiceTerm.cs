@@ -136,7 +136,7 @@ namespace MAClientGUI
         {
             MessageBox.Show("NiceTerm是一个简单的终端模拟器，作为MAClientGUI的一部分开源。\n"+
             "https://github.com/fffonion/MAClient/tree/gui\n"+
-            "图标来自https://github.com/jackpal/Android-Terminal-Emulator"
+            "图标来自Windows8的imageres.dll"
                 ,"哈哈",MessageBoxButtons.OK,MessageBoxIcon.Information);
         }
 

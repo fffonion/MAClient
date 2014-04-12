@@ -315,7 +315,7 @@ namespace MAClientGUI
             if (lblCfgEnc.Text != "Unicode (UTF-8)" && !cf.ReadBool("MAClientGUI","no_enc_warning"))
                 lblEncWarning.Visible = true;
             else lblEncWarning.Visible = false;
-            chkNoEncWarning.Visible = lblEncWarning.Visible;
+            lblEncWarningQuestion.Visible = lblEncWarning.Visible;
         }
 
 
@@ -1964,7 +1964,7 @@ namespace MAClientGUI
 
         private void chkAutoGreet_CheckedChanged(object sender, EventArgs e)
         {
-            txtGreetWords.Enabled = chkAutoGreet.Enabled;
+            txtGreetWords.Enabled = chkAutoGreet.Checked;
         }
 
         private void txtReconnectGap_TextChanged(object sender, EventArgs e)
@@ -2069,6 +2069,7 @@ namespace MAClientGUI
             lblCfgEnc.Text = Encoding.Default.EncodingName;
             MessageBox.Show("搞定", "呵呵", MessageBoxButtons.OK, MessageBoxIcon.Information);
             lblEncWarning.Visible = false;
+            lblEncWarningQuestion.Visible = false;
         }
 
         private void button82_Click(object sender, EventArgs e)
@@ -2087,24 +2088,25 @@ namespace MAClientGUI
             lblCfgEnc.Text = Encoding.UTF8.EncodingName;
             MessageBox.Show("搞定", "呵呵",MessageBoxButtons.OK, MessageBoxIcon.Information);
             lblEncWarning.Visible = true;
+            lblEncWarningQuestion.Visible = true;
         }
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            tabControl1.SelectedIndex = 9;
-        }
-
-        private void chkNoEncWarning_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!chkNoEncWarning.Checked) return;
-
             if (MessageBox.Show("不再显示此警告？", "呵呵", MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 cf.Write("MAClientGUI", "no_enc_warning", "1");
+                lblEncWarningQuestion.Visible = false;
+                lblEncWarning.Visible = false;
             }
-            else
-                chkNoEncWarning.Checked = false;
         }
+
+        private void lblEncWarningQuestion_Click(object sender, EventArgs e)
+        {
+            tabControl1.SelectedIndex = 9;
+        }
+
+
     }
 }

@@ -106,14 +106,14 @@ namespace MAClientGUI
             this.grpAccount = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage0 = new System.Windows.Forms.TabPage();
-            this.chkNoEncWarning = new System.Windows.Forms.CheckBox();
-            this.lblEncWarning = new System.Windows.Forms.LinkLabel();
+            this.lblEncWarningQuestion = new System.Windows.Forms.Label();
             this.btnDefault = new System.Windows.Forms.Button();
             this.groupBox10 = new System.Windows.Forms.GroupBox();
             this.chkAutoChooseRT = new System.Windows.Forms.CheckBox();
             this.chkAutoGreet = new System.Windows.Forms.CheckBox();
             this.chkNewFactor = new System.Windows.Forms.CheckBox();
             this.txtGreetWords = new System.Windows.Forms.TextBox();
+            this.lblEncWarning = new System.Windows.Forms.LinkLabel();
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.label53 = new System.Windows.Forms.Label();
             this.lblPluginState = new System.Windows.Forms.Label();
@@ -1145,7 +1145,7 @@ namespace MAClientGUI
             this.numAutoDelFriend.Location = new System.Drawing.Point(341, 105);
             this.numAutoDelFriend.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numAutoDelFriend.Maximum = new decimal(new int[] {
-            30,
+            999,
             0,
             0,
             0});
@@ -1409,7 +1409,7 @@ namespace MAClientGUI
             // tabPage0
             // 
             this.tabPage0.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage0.Controls.Add(this.chkNoEncWarning);
+            this.tabPage0.Controls.Add(this.lblEncWarningQuestion);
             this.tabPage0.Controls.Add(this.btnDefault);
             this.tabPage0.Controls.Add(this.groupBox10);
             this.tabPage0.Controls.Add(this.grpAccount);
@@ -1424,28 +1424,17 @@ namespace MAClientGUI
             this.tabPage0.TabIndex = 8;
             this.tabPage0.Text = "液~";
             // 
-            // chkNoEncWarning
+            // lblEncWarningQuestion
             // 
-            this.chkNoEncWarning.AutoSize = true;
-            this.chkNoEncWarning.Location = new System.Drawing.Point(715, 353);
-            this.chkNoEncWarning.Name = "chkNoEncWarning";
-            this.chkNoEncWarning.Size = new System.Drawing.Size(18, 17);
-            this.chkNoEncWarning.TabIndex = 1059;
-            this.chkNoEncWarning.UseVisualStyleBackColor = true;
-            this.chkNoEncWarning.Visible = false;
-            this.chkNoEncWarning.CheckedChanged += new System.EventHandler(this.chkNoEncWarning_CheckedChanged);
-            // 
-            // lblEncWarning
-            // 
-            this.lblEncWarning.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.lblEncWarning.Location = new System.Drawing.Point(663, 311);
-            this.lblEncWarning.Name = "lblEncWarning";
-            this.lblEncWarning.Size = new System.Drawing.Size(87, 64);
-            this.lblEncWarning.TabIndex = 1058;
-            this.lblEncWarning.TabStop = true;
-            this.lblEncWarning.Text = "当前配置编码不能用于手机！";
-            this.lblEncWarning.Visible = false;
-            this.lblEncWarning.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
+            this.lblEncWarningQuestion.Cursor = System.Windows.Forms.Cursors.Help;
+            this.lblEncWarningQuestion.Image = ((System.Drawing.Image)(resources.GetObject("lblEncWarningQuestion.Image")));
+            this.lblEncWarningQuestion.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.lblEncWarningQuestion.Location = new System.Drawing.Point(709, 350);
+            this.lblEncWarningQuestion.Name = "lblEncWarningQuestion";
+            this.lblEncWarningQuestion.Size = new System.Drawing.Size(36, 25);
+            this.lblEncWarningQuestion.TabIndex = 1059;
+            this.lblEncWarningQuestion.Visible = false;
+            this.lblEncWarningQuestion.Click += new System.EventHandler(this.lblEncWarningQuestion_Click);
             // 
             // btnDefault
             // 
@@ -1540,6 +1529,18 @@ namespace MAClientGUI
             this.txtGreetWords.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtGreetWords.Size = new System.Drawing.Size(156, 35);
             this.txtGreetWords.TabIndex = 1050;
+            // 
+            // lblEncWarning
+            // 
+            this.lblEncWarning.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.lblEncWarning.Location = new System.Drawing.Point(663, 311);
+            this.lblEncWarning.Name = "lblEncWarning";
+            this.lblEncWarning.Size = new System.Drawing.Size(87, 64);
+            this.lblEncWarning.TabIndex = 1058;
+            this.lblEncWarning.TabStop = true;
+            this.lblEncWarning.Text = "当前配置编码不能用于手机！";
+            this.lblEncWarning.Visible = false;
+            this.lblEncWarning.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
             // 
             // tabPage8
             // 
@@ -4749,7 +4750,6 @@ namespace MAClientGUI
             this.grpAccount.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage0.ResumeLayout(false);
-            this.tabPage0.PerformLayout();
             this.groupBox10.ResumeLayout(false);
             this.groupBox10.PerformLayout();
             this.tabPage8.ResumeLayout(false);
@@ -5157,7 +5157,7 @@ namespace MAClientGUI
         private System.Windows.Forms.Label lblCfgEnc;
         private System.Windows.Forms.Label label97;
         private System.Windows.Forms.LinkLabel lblEncWarning;
-        private System.Windows.Forms.CheckBox chkNoEncWarning;
+        private System.Windows.Forms.Label lblEncWarningQuestion;
     }
 }
 
