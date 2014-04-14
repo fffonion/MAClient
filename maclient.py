@@ -1920,7 +1920,7 @@ class MAClient():
             logging.info('没有符合筛选的奖励(%d)' % (len(rwds)))
         else:
             if no_detail:
-                logging.info('将领取%d件奖励' % len(strl.split(' , ')))
+                logging.info('将领取%d件奖励' % (len(strl.split(' , ')) - 1) )
             else:
                 logging.info(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' '))
             if no_get:

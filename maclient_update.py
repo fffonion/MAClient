@@ -67,7 +67,7 @@ def update_master(loc, need_update, poster):
         a, b = poster.post('masterdata/card/update', postdata = postdata)
         resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response  # 不替换会解析出错摔
         cards = resp.body.master_data.master_card_data.card
-        strs = [','.join(
+        strs = ['%s,%s,%s,%s,%s,%s,%s,%s' % (
                 c.master_card_id,
                 c.name,
                 c.rarity,
@@ -87,7 +87,7 @@ def update_master(loc, need_update, poster):
         a, b = poster.post('masterdata/item/update', postdata = postdata)
         resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response
         items = resp.body.master_data.master_item_data.item_info
-        strs = [','.join(
+        strs = ['%s,%s,%s' % (
                 c.item_id,
                 c.name,
                 c.explanation.replace('\n','\\n')
@@ -102,7 +102,7 @@ def update_master(loc, need_update, poster):
         a, b = poster.post('masterdata/boss/update', postdata = postdata)
         resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response
         boss = resp.body.master_data.master_boss_data.boss
-        strs = [','.join(
+        strs = ['%s,%s,%s' % (
                 c.master_boss_id,
                 c.name,
                 c.hp
