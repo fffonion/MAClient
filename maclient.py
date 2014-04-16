@@ -1176,22 +1176,16 @@ class MAClient():
         if len(warning_card) > 0:
             if self.cfg_sell_card_warning >= 1:
                 logging.warning('存在稀有以上卡片：%s\n真的要继续吗？y/n' % (', '.join(warning_card)))
-                if raw_inputd('> ') == 'y':
-                    return self._sell_card(sid)
-                else:
+                if raw_inputd('> ') != 'y':
                     logging.debug('select_card:user aborted')
-            else:
-                    logging.debug('select_card:auto aborted')
+                    return False
         else:
             if self.cfg_sell_card_warning == 2:
                 logging.warning('根据卖卡警告设置，需要亚瑟大人的确认\n真的要继续吗？y/n')
-                if raw_inputd('> ') == 'y':
-                    self._sell_card(sid)
-                else:
+                if raw_inputd('> ') != 'y':
                     logging.debug('select_card:user aborted')
-            else:
-               return self._sell_card(sid)
-        return False
+                    return False
+        return self._sell_card(sid)
 
     def _sell_card(self, serial_id):
         if serial_id == []:

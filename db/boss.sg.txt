@@ -52,9 +52,6 @@
 1102,Merlin,34224
 1103,Merlin,42504
 1104,Merlin,50784
-2002,Silky,22080
-2010,Arousal Kelpie,27821
-2011,Kelpie,9660
 3000,Arthur: Sorcery King,167440
 3001,Arthur: Techno Smith,189520
 3002,Arthur: Blade Protector,167440
@@ -126,3 +123,7 @@
 60006,Arousal Ganeida,15382
 60007,Gareth,11942
 60008,Arousal Gareth,15585
+60009,Kelpie,8537
+60010,Arousal Kelpie,15585
+60011,Silky,8537
+60012,Arousal Silky,15585
