@@ -5,11 +5,14 @@
     HH 当前(24小时制的)小时
     MM 当前分钟
     BC 剩余bc
+    BC% 剩余bc百分比，小数
     AP 剩余ap
+    AP% 剩余ap百分比，小数
     SUPER 累积的super值
     GOLD 金币
     FP 友情点数
-    FAIRY_ALIVE 自己的妖精是否存活
+    FAIRY_ALIVE 自己发现的妖精是否存活
+    GUILD_ALIVE 公会的妖精是否存活
 
 ###登陆
 

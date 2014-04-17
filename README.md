@@ -177,7 +177,7 @@ session不用管它
 
 ####sell_card_warning
 
-卖卡提醒，可设置2:全提醒 ，1:R+提醒，0:不提醒(此时只卖R以下卡)
+卖卡提醒，可设置2:全提醒 ，1:R+提醒，0:不提醒
 
 ####del_friend_day
 
@@ -254,7 +254,7 @@ eg:
 
 属性：
 
-活动秘境 `IS_EVENT`, 每日秘境 `IS_DAILY_EVENT`, 公会秘境 `IS_GUILD`, 未刷完 `NOT_FINNISHED`, 秘境名称 `name`
+活动秘境 `IS_EVENT`, ~~每日秘境 `IS_DAILY_EVENT`~~, 公会秘境 `IS_GUILD`, 未刷完 `NOT_FINNISHED`, 秘境名称 `name`
 
 eg.：
 

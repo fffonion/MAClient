@@ -295,7 +295,10 @@ if __name__ == '__main__':
                 elif inp == 'b':
                     logging.info(du8('将从多玩数据库下载倍卡信息……'))
                     getnew = maclient_update.update_multi(maclient1.loc[:2])
-                    logging.info('获得%d条倍卡信息' % getnew)
+                    if not getnew:
+                        logging.warning('无法获得倍卡信息\n对于国服/台服以外的用户请使用am或add_multi命令添加倍卡')
+                    else:
+                        logging.info('获得%d条倍卡信息' % getnew)
                 # the following is deprecated
                 # getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
                 #  and sys.path[0].decode(sys.getfilesystemencoding()) \
