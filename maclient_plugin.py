@@ -21,6 +21,7 @@ sys.path.append(opath.join(getPATH0, 'plugins'))
 
 PREF_ENTER = 'ENTER_'
 PREF_EXIT = 'EXIT_'
+EXTRAS_STACK_SIZE = 10
 class plugins():
     def __init__(self, logger, mac_ver, show_tip = True):
         self.logger = logger
@@ -39,6 +40,10 @@ class plugins():
         #self.load_plugins()
         # self.scan_hooks()
         self.enable = True
+        # 在被装饰函数内赋值，用于反向的传值
+        self.extras = [{}]
+        # 用于鉴别extras所属
+        self.extras_last_token = ''
 
     def scan_hooks(self):
         self.hook_reg = {}
@@ -200,6 +205,29 @@ class plugins():
     #         finally:
     #             sys.settrace(old_trace_function)
     #     return _wrapper
+    
+    def pop_extra(self, key):
+        try:
+            return self.extras[-1].pop(key)
+        except IndexError:
+            return None
+        except KeyError:
+            return None
+
+    def pop_extra_current(self):
+        #抛弃当前token未取完的所有extras
+        self.extras.pop()
+
+    def set_extras(self, token, key, val):
+        #use a stack structure
+        if token != self.extras_last_token:
+            #上一次的可能还没取走，先保存起来
+            self.extras.append({})
+            self.extras_last_token = token
+            if len(self.extras) > EXTRAS_STACK_SIZE:
+                self.extras.pop(0)
+        self.extras[-1][key] = val
+
 
     def func_hook(self, func):
         def do(*args, **kwargs):
@@ -207,7 +235,10 @@ class plugins():
                 ret = self._do_hook('%s%s' % (PREF_ENTER, func.__name__), *args, **kwargs)
                 args, kwargs = ret
                 ret = func(*args, **kwargs)
+                kwargs['pop_extras'] = self.pop_extra
                 self._do_hook('%s%s' % (PREF_EXIT, func.__name__), *args, **kwargs)
+                if not self.extras[-1] and len(self.extras) > 1:#已经取完了，且不是底
+                    self.extras.pop()
                 return ret
             else:
                 return func(*args, **kwargs)  # passby

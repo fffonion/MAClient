@@ -29,7 +29,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.69
+__version__ = 1.70
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
@@ -290,18 +290,20 @@ class MAClient():
                 # check revision update
                 if sum(self.player.rev_need_update) >=1:
                     if self.cfg_auto_update:
-                        logging.info('更新%s%s%s数据……' % (
+                        logging.info('更新%s%s%s%s数据……' % (
                             ' 卡片' if self.player.rev_need_update[0] else '',
                             ' 道具' if self.player.rev_need_update[1] else '',
-                            ' 强敌' if self.player.rev_need_update[2] else ''))
+                            ' 强敌' if self.player.rev_need_update[2] else '',
+                            ' Combo' if self.player.rev_need_update[3] else ''))
                         import maclient_update
-                        crev, irev, brev = maclient_update.update_master(self.loc[:2], self.player.rev_need_update, self.poster)
-                        logging.info('%s%s%s' % (
+                        crev, irev, brev, cbrev = maclient_update.update_master(self.loc[:2], self.player.rev_need_update, self.poster)
+                        logging.info('%s%s%s%s' % (
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else '',
-                            '强敌数据更新为rev.%s' % brev if brev else ''))
+                            '强敌数据更新为rev.%s' % brev if brev else '',
+                            'Combo数据更新为rev.%s' % cbrev if brev else ''))
                         self.player.reload_db()
-                        self.player.rev_need_update = False, False, False
+                        self.player.rev_need_update = False, False, False, False
                     else:
                         logging.warning('检测到服务器游戏数据与游戏数据不一致，请手动更新数据库')
                 if not resp['error'] or resp['errno'] == 8000:
@@ -759,7 +761,7 @@ class MAClient():
                 break
             logging.info('更换卡组为%s cost%d' % (deckkey, last_set_bc))
             # 保存
-            self._write_config('record', 'last_set_card', self._read_config('carddeck', deckkey))
+            self._write_config('record', 'last_set_card', self._read_config('carddeck', deckkey) or ','.join(param).rstrip(',empty'))
             # 记录BC
             self._write_config('record', 'last_set_bc', str(last_set_bc))
             return True, last_set_bc
@@ -968,8 +970,8 @@ class MAClient():
                         self._fairy_battle(fairy_info, bt_type = EXPLORE_BATTLE)
                         time.sleep(5.5)
                         if self.loc == 'jp':
-                            ct.body['race_type'] = '0'
-                        if self._check_floor_eval([floor], ct.body.race_type)[0]:  # 若已不符合条件
+                            fairy_info['race_type'] = '0'
+                        if self._check_floor_eval([floor], fairy_info.race_type)[0]:  # 若已不符合条件
                             return None, EXPLORE_OK
                         # 回到探索界面
                         if self._dopost('exploration/get_floor',
@@ -1130,6 +1132,8 @@ class MAClient():
 
     def _get_rewards(self, notice_id):
         hasgot = False
+        if not notice_id:
+            return False,  None
         while len(notice_id) > 0:
             # 一次20个
             if len(notice_id) > 20:
@@ -1574,6 +1578,9 @@ class MAClient():
                 cbos = []
                 skill_type = ['0', 'ATK↑', 'HP↑', '3', '4', '5']
                 blist = ct.body.battle_battle.battle_action_list
+                token = os.urandom(8)
+                self.plugin.set_extras(token, 'battle_result', blist)
+                self.plugin.set_extras(token, 'battle_player', ct.body.battle_battle.battle_player_list)
                 for l in blist:
                     if 'turn' in l:  # 回合数
                         rnd = float(l.turn) - 0.5
@@ -1598,7 +1605,8 @@ class MAClient():
                             )
                         if 'combo_name' in l:
                             cbos.append('%s.%s' % (
-                                skill_type[int(l.combo_type)], l.combo_name)
+                                skill_type[int(l.combo_type)] + ('' if l.combo_hp_player == '0' else l.combo_hp_player),
+                                l.combo_name)
                             )
                 logging.info('战斗详情:\nROUND:%d/%d 平均ATK:%.1f/%.1f%s %s %s %s' %
                     (math.ceil(rnd), math.floor(rnd),

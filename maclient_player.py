@@ -24,7 +24,7 @@ class player(object):
         self.fairy = {'id':0, 'alive':False, 'guild_alive':False}
         self.id = '0'
         self.rev_update_checked = False
-        self.rev_need_update = False, False, False
+        self.rev_need_update = False, False, False, False
         self.update_all(login_xml)
         object.__init__(self)
         self.success = check_exclusion(self.name + loc)
@@ -79,11 +79,12 @@ class player(object):
             cardrev = int(xmldata.header.revision.card_rev)
             itemrev = int(xmldata.header.revision.item_rev)
             bossrev = int(xmldata.header.revision.boss_rev)
+            cborev = int(xmldata.header.revision.combo_rev)
             # except KeyError:
             #     pass
             # else:
             import maclient_update
-            self.rev_need_update = maclient_update.check_revision(self.loc, (cardrev, itemrev, bossrev))
+            self.rev_need_update = maclient_update.check_revision(self.loc, (cardrev, itemrev, bossrev, cborev))
             self.rev_update_checked = True  # 只检查一次
         # print self.ap.current,self.bc.current
         return 'AP:%d/%d BC:%d/%d G:%d FP:%d' % (self.ap['current'], self.ap['max'], self.bc['current'], self.bc['max'], self.gold, self.friendship_point), True

@@ -40,6 +40,7 @@ _pending
 release
 android
 debug
+battle_detail
 *.exe
 *.playerdata
 .session

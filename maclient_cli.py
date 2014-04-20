@@ -287,11 +287,12 @@ if __name__ == '__main__':
                 import maclient_update
                 if inp == 'g':
                     logging.info(du8('将强制重新从服务器下载数据……'))
-                    crev, irev, brev = maclient_update.update_master(maclient1.loc[:2], (True, True, True), maclient1.poster)
-                    logging.info(du8('%s%s%s' % (
-                        '卡片数据更新为rev.%s' % crev if crev else '',
-                        '道具数据更新为rev.%s' % irev if irev else '',
-                        '强敌数据更新为rev.%s' % brev if brev else '')))
+                    crev, irev, brev, cbrev = maclient_update.update_master(maclient1.loc[:2], (True, True, True, True), maclient1.poster)
+                    logging.info('%s%s%s%s' % (
+                            '卡片数据更新为rev.%s' % crev if crev else '',
+                            '道具数据更新为rev.%s' % irev if irev else '',
+                            '强敌数据更新为rev.%s' % brev if brev else '',
+                            'Combo数据更新为rev.%s' % cbrev if brev else ''))
                 elif inp == 'b':
                     logging.info(du8('将从多玩数据库下载倍卡信息……'))
                     getnew = maclient_update.update_multi(maclient1.loc[:2])
