@@ -103,7 +103,7 @@ class conn_ani(threading.Thread):
 class MAClient():
     global plugin
     plugin = maclient_plugin.plugins(logging, __version__)
-    def __init__(self, configfile = '', savesession = False):
+    def __init__(self, configfile = '', savesession = False, servloc = None):
         if not PYTHON3:
             reload(sys)
             sys.setdefaultencoding('utf-8')
@@ -120,7 +120,11 @@ class MAClient():
             self.configfile = configfile
         # configuration
         self.cf.read(self.configfile)
-        self.load_config()
+        self.load_config(loc_override = servloc)
+        # websocket对象
+        self.ws = None
+        self.shellbyweb = False
+        self.offline = False
         # 映射变量
         plugin.set_maclient_val(self.__dict__)
         # 添加引用
@@ -156,9 +160,9 @@ class MAClient():
         self.errortimes = 0
         self.player_initiated = False
 
-    def load_config(self):
+    def load_config(self, loc_override = None):
         # configurations
-        self.loc = self._read_config('system', 'server')
+        self.loc = loc_override or self._read_config('system', 'server')
         self.uid = self._read_config('account_%s' % self.loc, 'user_id')
         self.playerfile = '.%s-%s.playerdata' % (self.loc, self.uid) if self.uid not in '0' else '--PLACE-HOLDER--'
         self.username = self._read_config('account_%s' % self.loc, 'username')

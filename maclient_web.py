@@ -3,45 +3,63 @@
 import time
 import socket
 import gevent
+import traceback
 import gevent.monkey
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from webob import Request
+import os.path as opath
+import sys
 from cross_platform import *
-
-from maclient import maClient
+from maclient import MAClient
 import maclient
 
-class WebSocketBot(maClient):
+class WebSocketBot(MAClient):
     connected = 0
     maxconnected = 233
 
     def __init__(self, ws, serv):
-        maClient.__init__(self, configfile = 'config_web.ini', servloc = serv)
+        self.cfgfile = opath.join(getPATH0, 'config_web.ini')
+        MAClient.__init__(self, configfile = self.cfgfile, servloc = serv)
         self.ws = ws
         self.shellbyweb = True
         self.offline = False
+        #redirect
+        self.logger.logfile = None
+        self.logger.logpipe(self.logpipe)
         self.last_offline_keepalive_time = time.time()
         self.__class__.connected += 1
         #Bot.__init__(self)
 
+    def logpipe(self, _str):
+        if self.shellbyweb:
+            if self.ws != None or self.offline == False:
+            #mac.ws == None mac.offline == False should throw a ex
+                self.ws.send(_str)
+            else:
+                sys.stdout.write(_str)
+
     def run(self, username, password):
-        dec = self.login(username, password)
-        self.initplayer(dec)
-        self.tasker('w')
+        try:
+            dec = self.login(username, password)
+            self.initplayer(dec)
+            self.tasker('w')
+        except:
+            self.logpipe("".join(traceback.format_exception(*sys.exc_info())))
 
     def __del__(self):
         self.__class__.connected -= 1
         print "conn-1=%d" % self.connected
 
 offline_bots = {}
+_page_cache = open(opath.join(getPATH0, "web.htm")).read()
 
 def websocket_app(environ, start_response):
 
     for i in offline_bots:
         bot = offline_bots[i]
         if bot.offline == True:
-            if time.time() - bot.last_offline_keepalive_time > 8 * 3600:
+            if time.time() - bot.last_offline_keepalive_time > 8:# * 3600:
                 bot.offline = False
 
     request = Request(environ)
@@ -52,7 +70,7 @@ def websocket_app(environ, start_response):
         area = request.GET.get('area', None)
         offline = request.GET.get('offline', False)
         serv = request.GET.get('serv', 'cn')
-        servs = ['cn', 'cn2', 'cn3', 'jp', 'kr', 'tw']
+        servs = ['cn', 'cn2', 'cn3', 'jp', 'kr', 'tw', 'sg']
         if serv not in servs:
             ws.send("undefine server.\n")
             return
@@ -68,7 +86,8 @@ def websocket_app(environ, start_response):
         else:
             ws.send("offline enable.\n")
 
-        ws.send("http://ma.mengsky.net Nginx可能存在问题导致disconnect请更换 http://174.140.165.4:8000/\nwebbot created by fffonionbinuxmengskysama\n\n")
+        #ws.send("http://ma.mengsky.net Nginx可能存在问题导致disconnect请更换 http://174.140.165.4:8000/\n")
+        ws.send("webbot created by fffonionbinuxmengskysama\n\n")
 
         if login_id+password in offline_bots:
             ws.send("websocket client reconnected!\n")
@@ -120,7 +139,7 @@ def websocket_app(environ, start_response):
             #auto release del bot
     else:
         start_response("200 OK", [("Content-Type", "text/html")])
-        return open("web.htm").read().replace('[connected]', '%s' % WebSocketBot.connected).replace('[maxconnected]', '%s' % WebSocketBot.maxconnected)
+        return _page_cache.replace('[connected]', '%s' % WebSocketBot.connected).replace('[maxconnected]', '%s' % WebSocketBot.maxconnected)
 
 if __name__ == '__main__':
     gevent.monkey.patch_all()
