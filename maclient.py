@@ -125,7 +125,6 @@ class MAClient():
         self.ws = None
         self.shellbyweb = False
         self.offline = False
-        self.load_config()
         # 映射变量
         plugin.set_maclient_val(self.__dict__)
         # 添加引用
@@ -164,6 +163,7 @@ class MAClient():
     def load_config(self, loc_override = None):
         # configurations
         self.loc = loc_override or self._read_config('system', 'server')
+        print(self.loc)
         self.uid = self._read_config('account_%s' % self.loc, 'user_id')
         self.playerfile = '.%s-%s.playerdata' % (self.loc, self.uid) if self.uid not in '0' else '--PLACE-HOLDER--'
         self.username = self._read_config('account_%s' % self.loc, 'username')
@@ -2163,8 +2163,8 @@ class MAClient():
             self.logger.logfile.flush()
         except:
             pass
-        if code > 0:
-            raw_inputd('THAT\'S THE END')
+        # if code > 0:
+        #     raw_inputd('THAT\'S THE END')
         sys.exit(code)
 
 
