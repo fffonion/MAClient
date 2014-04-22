@@ -50,6 +50,7 @@ class WebSocketBot(MAClient):
     def __del__(self):
         self.__class__.connected -= 1
         print "conn-1=%d" % self.connected
+        self._exit(0)
 
 offline_bots = {}
 _page_cache = open(opath.join(getPATH0, "web.htm")).read()
@@ -131,11 +132,16 @@ def websocket_app(environ, start_response):
                     print 'main loop throw a ex.!\n'
                 break
 
-        if login_id+password in offline_bots:
+        WebSocketBot.connected -= 1
+        if WebSocketBot.connected < 0 and len(offline_bots)>0:
+            WebSocketBot.connected = len(offline_bots)
+        
+        if login_id + password in offline_bots:
             print "offline bot exit. login_id=%s" % login_id
             del offline_bots[login_id+password]
         else:
             print "exit. login_id=%s" % login_id
+            del bot
             #auto release del bot
     else:
         start_response("200 OK", [("Content-Type", "text/html")])
