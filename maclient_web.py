@@ -8,7 +8,7 @@ import gevent.monkey
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from webob import Request
-import os.path as opath
+import os, os.path as opath
 import sys
 from cross_platform import *
 from maclient import MAClient
@@ -141,7 +141,16 @@ def websocket_app(environ, start_response):
         start_response("200 OK", [("Content-Type", "text/html")])
         return _page_cache.replace('[connected]', '%s' % WebSocketBot.connected).replace('[maxconnected]', '%s' % WebSocketBot.maxconnected)
 
-if __name__ == '__main__':
-    gevent.monkey.patch_all()
-    server = gevent.pywsgi.WSGIServer(("", 8000), websocket_app, handler_class=WebSocketHandler)
-    server.serve_forever()
+#if __name__ == '__main__':
+gevent.monkey.patch_all()
+if BAE:
+    application = websocket_app
+else:
+    if OPENSHIFT:
+        ip = os.environ['OPENSHIFT_PYTHON_IP']
+        port = int(os.environ['OPENSHIFT_PYTHON_PORT'])
+    else:
+        ip = ""
+        port = 80
+    application = gevent.pywsgi.WSGIServer((ip, port), websocket_app, handler_class=WebSocketHandler)
+    application.serve_forever()

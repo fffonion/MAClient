@@ -9,10 +9,17 @@ import sys
 import locale
 PYTHON3 = sys.version.startswith('3')
 IRONPYTHON = sys.platform == 'cli'
-EXEBUNDLE = opath.split(sys.argv[0])[1].find('py') == -1
+EXEBUNDLE = hasattr(sys, 'argv') and opath.split(sys.argv[0])[1].find('py') == -1
 LOCALE = locale.getdefaultlocale()[0]
 CODEPAGE = locale.getdefaultlocale()[1]
 NICE_TERM = 'NICE_TERM' in os.environ
+try:
+    import bae
+    BAE = True
+except ImportError:
+    BAE = False
+OPENSHIFT = 'OPENSHIFT_PYTHON_IP' in os.environ
+
 convhans = lambda x:x
 try:
     import ZhConversion
