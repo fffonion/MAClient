@@ -33,6 +33,7 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+.idea
 
 #others
 _mine
@@ -40,7 +41,7 @@ _pending
 release
 android
 debug
-battle_detail
+battle_details
 *.exe
 *.playerdata
 .session
@@ -50,3 +51,4 @@ battle_detail
 test*.py
 desktop.ini
 verinfo.txt
+--PLACE-HOLDER-

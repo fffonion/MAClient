@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # coding:utf-8
 # maclient network utility
 # Contributor:
@@ -164,8 +164,8 @@ class Crypt():
 def htmlescape(htmlstr):
     def replc(match):
         # self._print match.group(0),match.group(1),match.group(2)
-        dict = {'amp':'&', 'nbsp':' ', 'quot':'"', 'lt':'<', 'gt':'>', 'copy':'©', 'reg':'®'}
-        # dict+={'∀':'forall','∂':'part','∃':'exist','∅':'empty','∇':'nabla','∈':'isin','∉':'notin','∋':'ni','∏':'prod','∑':'sum','−':'minus','∗':'lowast','√':'radic','∝':'prop','∞':'infin','∠':'ang','∧':'and','∨':'or','∩':'cap','∪':'cup','∫':'int','∴':'there4','∼':'sim','≅':'cong','≈':'asymp','≠':'ne','≡':'equiv','≤':'le','≥':'ge','⊂':'sub','⊃':'sup','⊄':'nsub','⊆':'sube','⊇':'supe','⊕':'oplus','⊗':'otimes','⊥':'perp','⋅':'sdot','Α':'Alpha','Β':'Beta','Γ':'Gamma','Δ':'Delta','Ε':'Epsilon','Ζ':'Zeta','Η':'Eta','Θ':'Theta','Ι':'Iota','Κ':'Kappa','Λ':'Lambda','Μ':'Mu','Ν':'Nu','Ξ':'Xi','Ο':'Omicron','Π':'Pi','Ρ':'Rho','Σ':'Sigma','Τ':'Tau','Υ':'Upsilon','Φ':'Phi','Χ':'Chi','Ψ':'Psi','Ω':'Omega','α':'alpha','β':'beta','γ':'gamma','δ':'delta','ε':'epsilon','ζ':'zeta','η':'eta','θ':'theta','ι':'iota','κ':'kappa','λ':'lambda','μ':'mu','ν':'nu','ξ':'xi','ο':'omicron','π':'pi','ρ':'rho','ς':'sigmaf','σ':'sigma','τ':'tau','υ':'upsilon','φ':'phi','χ':'chi','ψ':'psi','ω':'omega','ϑ':'thetasym','ϒ':'upsih','ϖ':'piv','Œ':'OElig','œ':'oelig','Š':'Scaron','š':'scaron','Ÿ':'Yuml','ƒ':'fnof','ˆ':'circ','˜':'tilde',' ':'ensp',' ':'emsp',' ':'thinsp','‌':'zwnj','‍':'zwj','‎':'lrm','‏':'rlm','–':'ndash','—':'mdash','‘':'lsquo','’':'rsquo','‚':'sbquo','“':'ldquo','”':'rdquo','„':'bdquo','†':'dagger','‡':'Dagger','•':'bull','…':'hellip','‰':'permil','′':'prime','″':'Prime','‹':'lsaquo','›':'rsaquo','‾':'oline','€':'euro','™':'trade','←':'larr','↑':'uarr','→':'rarr','↓':'darr','↔':'harr','↵':'crarr','⌈':'lceil','⌉':'rceil','⌊':'lfloor','⌋':'rfloor','◊':'loz','♠':'spades','♣':'clubs','♥':'hearts','♦':'diams'}
+        dict = {'amp':'&', 'nbsp':' ', 'quot':'"', 'lt':'<', 'gt':'>', 'copy':'漏', 'reg':'庐'}
+        # dict+={'鈭€':'forall','鈭:'part','鈭:'exist','鈭:'empty','鈭:'nabla','鈭:'isin','鈭:'notin','鈭:'ni','鈭:'prod','鈭:'sum','鈭:'minus','鈭:'lowast','鈭:'radic','鈭:'prop','鈭:'infin','鈭:'ang','鈭:'and','鈭:'or','鈭:'cap','鈭:'cup','鈭:'int','鈭:'there4','鈭:'sim','鈮:'cong','鈮:'asymp','鈮:'ne','鈮:'equiv','鈮:'le','鈮:'ge','鈯:'sub','鈯:'sup','鈯:'nsub','鈯:'sube','鈯:'supe','鈯:'oplus','鈯:'otimes','鈯:'perp','鈰:'sdot','螒':'Alpha','螔':'Beta','螕':'Gamma','螖':'Delta','螘':'Epsilon','螙':'Zeta','螚':'Eta','螛':'Theta','螜':'Iota','螝':'Kappa','螞':'Lambda','螠':'Mu','螡':'Nu','螢':'Xi','螣':'Omicron','螤':'Pi','巍':'Rho','危':'Sigma','韦':'Tau','违':'Upsilon','桅':'Phi','围':'Chi','唯':'Psi','惟':'Omega','伪':'alpha','尾':'beta','纬':'gamma','未':'delta','蔚':'epsilon','味':'zeta','畏':'eta','胃':'theta','喂':'iota','魏':'kappa','位':'lambda','渭':'mu','谓':'nu','尉':'xi','慰':'omicron','蟺':'pi','蟻':'rho','蟼':'sigmaf','蟽':'sigma','蟿':'tau','蠀':'upsilon','蠁':'phi','蠂':'chi','蠄':'psi','蠅':'omega','蠎':'thetasym','蠏':'upsih','蠔':'piv','艗':'OElig','艙':'oelig','艩':'Scaron','拧':'scaron','鸥':'Yuml','茠':'fnof','藛':'circ','藴':'tilde','鈥:'ensp','鈥:'emsp','鈥:'thinsp','鈥:'zwnj','鈥:'zwj','鈥:'lrm','鈥:'rlm','鈥:'ndash','鈥:'mdash','鈥:'lsquo','鈥:'rsquo','鈥:'sbquo','鈥:'ldquo','鈥:'rdquo','鈥:'bdquo','鈥:'dagger','鈥:'Dagger','鈥:'bull','鈥:'hellip','鈥:'permil','鈥:'prime','鈥:'Prime','鈥:'lsaquo','鈥:'rsaquo','鈥:'oline','鈧:'euro','鈩:'trade','鈫:'larr','鈫:'uarr','鈫:'rarr','鈫:'darr','鈫:'harr','鈫:'crarr','鈱:'lceil','鈱:'rceil','鈱:'lfloor','鈱:'rfloor','鈼:'loz','鈾:'spades','鈾:'clubs','鈾:'hearts','鈾:'diams'}
         if match.groups > 2:
             if match.group(1) == '#':
                 if match.group(2).startswith('x'):#xD, xA
@@ -176,7 +176,6 @@ def htmlescape(htmlstr):
                 return  dict.get(match.group(2), '?')
     htmlre = re.compile("&(#?)(\d{1,5}|\w{1,8}|[a-z]+);")
     return htmlre.sub(replc, htmlstr)
-
 class poster():
     def __init__(self, loc, logger, ua):
         self.cookie = ''
@@ -205,6 +204,7 @@ class poster():
         self.crypt.AES2ndKey = self.crypt.gen_cipher_with_uid(uid, loc)
 
     def load_svr(self, loc, ua=''):
+        self.ht = httplib2.Http(timeout = 15)
         self.servloc = loc
         self.shortloc = loc[:2]
         self.header = dict(headers_main)

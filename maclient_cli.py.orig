@@ -1,6 +1,5 @@
 ﻿#!/usr/bin/env python
 # coding:utf-8
-#qpy:console
 # maclient command line interface
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
@@ -10,7 +9,6 @@ import sys
 import zipimport
 sys.path.append('python27.zip')
 import time
-import socket
 # import httplib2
 import os
 import os.path as opath
@@ -19,6 +17,7 @@ import maclient
 import maclient_proxy
 import maclient_logging
 from cross_platform import *
+import getpass
 # look out for ironpython
 
 # def iter_printer(l, sep = '\n'):
@@ -32,8 +31,6 @@ from cross_platform import *
 def getTerminalSize():
     # http://stackoverflow.com/questions/566746/how-to-get-console-window-width-in-python
     if os.name == 'nt':
-        if NICE_TERM:
-            return 100,80
         env = os.environ
         dres = None
         try:
@@ -51,7 +48,7 @@ def getTerminalSize():
             sizey = bottom - top + 1
             return sizex, sizey
         else:
-            return 120, 80
+            return None
     else:
         try:
             x, y = os.popen('stty size', 'r').read().split()
@@ -70,38 +67,33 @@ class srv(threading.Thread):
         self.server.serve_forever()
 
 
-def read_proxy():
+def read_proxy(work = 0):
     serverport = 23300
     server_address = ("", serverport)
     hdl = maclient_proxy.Handler
     server = maclient_proxy.ThreadingHTTPServer(server_address, hdl)
     # Random Target Proxy Server
-    #if work == 0:
-    print(du8('请将设备的代理设置为 %s:%s 然后随便进行一次操作' % (socket.gethostbyname(socket.gethostname()),serverport)))
-    # elif work == 1:
-    #     print(du8('请将设备的代理设置为 本机ip:%s 然后设定一次卡组\n除了这种办法，你还可以直接在config.ini中输入所需卡片的卡片id，如小狼女: 124\n可以在db/card.tw.txt或db/card.tw.txt中查找' % (serverport)))
+    if work == 0:
+        print(du8('请将设备的代理设置为 本机ip:%s 然后随便进行一次操作' % (serverport)))
+    elif work == 1:
+        print(du8('请将设备的代理设置为 本机ip:%s 然后设定一次卡组\n除了这种办法，你还可以直接在config.ini中输入所需卡片的卡片id，如小狼女: 124\n可以在db/card.tw.txt或db/card.tw.txt中查找' % (serverport)))
     srver = srv(server)
     srver.setDaemon(True)
     srver.start()
     while True:
-        if os.path.exists('.session'):
+        if work == 0 and os.path.exists('.session'):
             sessionid = open('.session', 'r').read()
             print('found sessionid :%s' % sessionid)
             srver.join(1)
             os.remove('.session')
             return sessionid
-        # elif work == 1 and os.path.exists('.carddeck'):
-        #     carddeck = open('.carddeck', 'r').read()
-        #     print('found carddeck change')
-        #     srver.join(1)
-        #     os.remove('.carddeck')
-        #     return carddeck
+        elif work == 1 and os.path.exists('.carddeck'):
+            carddeck = open('.carddeck', 'r').read()
+            print('found carddeck change')
+            srver.join(1)
+            os.remove('.carddeck')
+            return carddeck
         time.sleep(1)
-
-def release_socket(socket_pool):
-    for s in socket_pool:
-        socket_pool[s].close()
-    socket_pool = {}
 
 if __name__ == '__main__':
     logging = maclient_logging.Logging('logging')
@@ -111,9 +103,10 @@ if __name__ == '__main__':
     # ht=httplib2.Http(timeout=30)
     print(du8('%s%sv%s%s' % ('=' * int((getTerminalSize()[0] - 5 - 18) / 2), '丧心病狂的MA客户端', maclient.__version__, '=' * int((getTerminalSize()[0] - 5 - 18) / 2))))
     if len(sys.argv) > 2:
-        maclient1 = maclient.MAClient(configfile = sys.argv[1], savesession = True)
+        maclient1 = maclient.maClient(configfile = sys.argv[1], savesession = True)
         # auth()
-        maclient1.login()
+        dec = maclient1.login()
+        maclient1.initplayer(dec)
         arg = ' '.join(sys.argv[2:])
         pos = arg.find('t:')
         if pos != -1:
@@ -122,24 +115,9 @@ if __name__ == '__main__':
             maclient1.tasker(cmd = arg)
     else:
         if len(sys.argv) == 2:
-            maclient1 = maclient.MAClient(configfile = sys.argv[1], savesession = True)
+            maclient1 = maclient.maClient(configfile = sys.argv[1], savesession = True)
         else:
-            try:
-                import androidhelper # android!
-                os.chdir(os.environ.get('ANDROID_ARGUMENT'))
-            except ImportError:
-                maclient1 = maclient.MAClient(savesession = True)
-            else:
-                if os.path.exists('config.ini'):
-                    maclient1 = maclient.MAClient(savesession = True)
-                else:
-                    droid = androidhelper.Android()
-                    line = droid.dialogGetInput("MAClient", "请输入配置文件名", "")
-                    if not line.result:
-                        sys.exit(0)
-                    else:
-                        maclient1 = maclient.MAClient(configfile = line.result, savesession = True)
-
+            maclient1 = maclient.maClient(savesession = True)
         # 进入游戏
         # maclient1._dopost('post_token',postdata=ma.encode_param('S=nosessionid&login_id=%s&password=%s&app=and&token=BubYIgiyDYTFUifydHIoIOGBiujgRzrEFUIbIKOHniHIoihoiHasbdhasbdUIUBujhbjhjBJKJBb'%(username,password)),usecookie=True,extraheader={'Cookie2': '$Version=1'})
         # 登陆
@@ -147,7 +125,6 @@ if __name__ == '__main__':
         # auth()
         mode = ['普通', '同时在线']
         mod = 0
-        history = []
         while True:
             print(du8('This is a kingdom\'s junction. Tell me your select.【Mode:%s Server:%s】\n\n1.进入游戏\t\tas.自动配卡\n2.切换模式->%s\te.刷秘境\n3.编辑卡组\t\tfyb.刷妖精\n4.编辑配置\t\tfcb.因子战\n5.更新数据库\t\tf.好友相关\n6.退出\t\t\th.命令列表%s' % (
                 mode[mod],
@@ -163,27 +140,12 @@ if __name__ == '__main__':
                 print(' \b')
             except KeyboardInterrupt:
                 maclient1._exit()
-            #history
-            if ch.startswith('!'):
-                if ch == '!!':
-                    ch = '!1'
-                if(int(ch[1:])>len(history)):
-                    maclient1.logger.warning('历史越界 idx:%s len:%d'%(ch[1:],len(history)))
-                    continue
-                else:
-                    ch = history[-int(ch[1:])]
-                    print(du8(ch))
-            else:
-                if not history or history[-1] != ch:
-                    history.append(ch)
-                    if len(history)>10:
-                        history = history[-10:]
             if ch == '1' or ch == '':
                 try:
-                    maclient1.login()
+                    dec = maclient1.login()
+                    maclient1.initplayer(dec)
                     maclient1.tasker()
                 except KeyboardInterrupt:
-                    release_socket(maclient1.poster.ht.connections)
                     continue
             elif ch == 'h':
                 print(du8('登陆 login/l,设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,'
@@ -226,14 +188,18 @@ if __name__ == '__main__':
                 #     maclient1.tasker()
             elif ch == '2':
                 if mod == 0:
-                    session = read_proxy()
+                    session = read_proxy(work = 0)
                     maclient1._write_config('account_%s' % maclient1._read_config('system', 'server'), 'session', session)
                     maclient1.load_cookie()
                     maclient1.login()
                 mod = (mod + 1) % 2
             elif ch == '3':
                 print(du8('此功能已转移至插件carddeck_edit'))
+<<<<<<< HEAD
+                print(du8('请到这里查看详细帮助https://github.com/fffonion/MAClient/wiki/carddeck_edit'))
+=======
                 print(du8('请到这里查看详细帮助http://t.cn/8kDOLwV'))
+>>>>>>> dev_fff
                 # import maclient_network
                 # cards = maclient_network.decode_param(read_proxy(work = 1))
                 # cdeck = cards.split('&')[0].split('=')[1].strip('%0A').rstrip(',empty')
@@ -281,25 +247,12 @@ if __name__ == '__main__':
                             print(du8('已保存~'))
                             maclient1.load_config()
             elif ch == '5':
-                maclient1.login()
-                print(du8('更新游戏数据(g/默认)还是倍卡数据(b)?'))
-                inp = raw_input('> ') or 'g'
+                logging.info(du8('将强制重新从服务器下载数据……'))
                 import maclient_update
-                if inp == 'g':
-                    logging.info(du8('将强制重新从服务器下载数据……'))
-                    crev, irev, brev, cbrev = maclient_update.update_master(maclient1.loc[:2], (True, True, True, True), maclient1.poster)
-                    logging.info('%s%s%s%s' % (
-                            '卡片数据更新为rev.%s' % crev if crev else '',
-                            '道具数据更新为rev.%s' % irev if irev else '',
-                            '强敌数据更新为rev.%s' % brev if brev else '',
-                            'Combo数据更新为rev.%s' % cbrev if brev else ''))
-                elif inp == 'b':
-                    logging.info(du8('将从多玩数据库下载倍卡信息……'))
-                    getnew = maclient_update.update_multi(maclient1.loc[:2])
-                    if not getnew:
-                        logging.warning('无法获得倍卡信息\n对于国服/台服以外的用户请使用am或add_multi命令添加倍卡')
-                    else:
-                        logging.info('获得%d条倍卡信息' % getnew)
+                crev, irev = maclient_update.update_master(maclient1.loc, (True, True), maclient1.poster)
+                logging.info(du8('%s%s' % (
+                    '卡片数据更新为rev.%s' % crev if crev else '',
+                    '道具数据更新为rev.%s' % irev if irev else '')))
                 # the following is deprecated
                 # getPATH0=lambda:opath.split(sys.argv[0])[1].find('py') != -1\
                 #  and sys.path[0].decode(sys.getfilesystemencoding()) \
@@ -335,14 +288,14 @@ if __name__ == '__main__':
                     maclient1.tasker(cmd = ch)
                 else:
                     if not maclient1.player_initiated:
-                        maclient1.login()
+                        dec = maclient1.login()
+                        maclient1.initplayer(dec)
                     try:
                         if ch.startswith('t:'):
                             maclient1.tasker(taskname = ch[2:])
                         else:
                             maclient1.tasker(cmd = ch)
                     except KeyboardInterrupt:
-                        release_socket(maclient1.poster.ht.connections)
                         continue
             else:
                 maclient.logging.error(du8('嗯-v-？'))
