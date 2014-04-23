@@ -121,10 +121,6 @@ class MAClient():
         # configuration
         self.cf.read(self.configfile)
         self.load_config(loc_override = servloc)
-        # websocket对象
-        self.ws = None
-        self.shellbyweb = False
-        self.offline = False
         # 映射变量
         plugin.set_maclient_val(self.__dict__)
         # 添加引用

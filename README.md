@@ -89,7 +89,7 @@ session不用管它
 
 ####taskname
 
-表示需要程序执行的任务名称（tasker中），|分割
+表示需要程序执行的任务名称（tasker中）
 
 ####tasker_times
 

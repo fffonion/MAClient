@@ -6,7 +6,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-	<script src="http://codeorigin.jquery.com/jquery-2.0.3.min.js"></script>
+	<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
     <meta name="description" content="MA Client">
     <meta name="author" content="binux">
   </head>
@@ -19,8 +19,6 @@
   离线模式保证在线时间:8小时 但不保证中途服务器或者程序爆掉什么的，重新登录后自动续期，饼干失效重试时间180秒
   <br>
   退出离线模式:刷新本页,不勾选offline登陆,关闭浏览器
-  <br>
-  可能进行维护时间为上海时间20点维护用户全清
   <br>
   server_cli = https://github.com/fffonion/MAClient
   <br>
@@ -41,9 +39,9 @@
           <option value="kr">kr</option>
           <option value="jp">jp</option>
 		  <option value="sg">sg</option>
-        yourself http proxy for sd:
         </select>
         <input type=checkbox name=offline /> 离线挂机
+        <input type=checkbox name=push /> 离线挂机
         <input id=submit type=submit value=login />
       </form>
     </section>
@@ -88,9 +86,9 @@
       ws.onmessage = function(event) {
         if (event.data != ''){log(event.data);}
       };
-      submit.disabled = true;
+      /*submit.disabled = true;
       login_form.id.disabled = true;
-      login_form.pwd.disabled = true;
+      login_form.pwd.disabled = true;*/
       return false;
     }
   </script>
