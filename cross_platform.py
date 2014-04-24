@@ -3,6 +3,7 @@
 # maclient compatibility tool
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
+from __future__ import print_function
 import os
 import os.path as opath
 import sys
@@ -16,11 +17,23 @@ NICE_TERM = 'NICE_TERM' in os.environ
 
 try:
     import bae.core
-    BAE = True
 except ImportError:
     BAE = False
+else:
+    BAE = True
+try:
+    import sae
+except ImportError:
+    SAE = False
+else:
+    SAE = True
 OPENSHIFT = 'OPENSHIFT_PYTHON_IP' in os.environ
 
+BOT = True
+if BOT or BAE or SAE or OPENSHIFT:
+    print = lambda x:x
+
+print = lambda x:x
 convhans = lambda x:x
 try:
     import ZhConversion
@@ -33,12 +46,12 @@ else:
     elif LOCALE == 'zh_HK':
         convhans = chans.toHK
 
-getPATH0 = (not EXEBUNDLE or IRONPYTHON) and \
+getPATH0 = SAE and '' or ((not EXEBUNDLE or IRONPYTHON) and \
      (PYTHON3 and \
         sys.path[0]  # python3
         or sys.path[0].decode(sys.getfilesystemencoding())
      ) \
-     or sys.path[1].decode(sys.getfilesystemencoding())  # pyinstaller build
+     or sys.path[1].decode(sys.getfilesystemencoding()))  # pyinstaller build
 
 du8 = (IRONPYTHON or PYTHON3) and \
     (lambda str:str) or \

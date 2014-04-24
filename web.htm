@@ -12,21 +12,44 @@
   </head>
 
   <body>
-  <h1>MA Bot(v0.33偽) 服务器当前负载:[connected]/[maxconnected]</h1>
+<img src="http://mengsky.net/ol.png"/>
+<h1>MA Bot(v0.4偽) 根本停不下来版 服务器当前负载:[connected]/[maxconnected]</h1>
+<br>
+MAClient backend version = [version_str]
+<br>
+有人反馈无法下线，测试没问题，看来可能是特例情况..有时间再考虑
+<br>
+<br>
+最后重启时间[startup_time]
+<br>
+修改  修改后台日志.重启服务器
+<br>
+修改  版本跟进到5a4ae5d1c8
+<br>
+修改  错误的离线时间(多X了个3600
+<br>
+修改  修正一个可能会导致频繁被挤下线的逻辑问题
+<br>
+修改  报错修正
+<br>
+修改  自动添怪(之前会重复添)，BC>95% or AP>90% or (AP>7 and 自己没怪)上楼，自动买卡(1，2，3星小于5级卡)，自动领卡
+<br>
+修改  自己的 (BC>70 or BC>95%) 别人的 (BC>90%) 大刀(自动选3卡) 否则添
+<br>
+修改  打怪优先级 自己的>别人的小于10分钟的>没打过的>别人的小于20分钟的
+<br>
+修改  被挤掉重进时间3分改为8分钟（防止下不来2333333）
+<br>
+<br>
+这个在线人数有点尿啊
+<br><br>
+  合并日服支持分支，能不能用我不知道的3
   <br>
-  MAClient.version = 1.7.0
-  <br>
-  离线模式保证在线时间:8小时 但不保证中途服务器或者程序爆掉什么的，重新登录后自动续期，饼干失效重试时间180秒
-  <br>
+  修正cn2区，cn3支持
   退出离线模式:刷新本页,不勾选offline登陆,关闭浏览器
-  <br>
-  可能进行维护时间为上海时间20点维护用户全清
-  <br>
-  server_cli = https://github.com/fffonion/MAClient
   <br>
   fairy_battle_sleep = 0,4,4|4,7,1|7,8,1|8,11,0.8|11,14,0.5|14,16,0.8|16,19,0.5|19,21,0.7|21,24,0.8
   <br>
-  自动添怪，AP>10无妖上楼，自动打怪BC>70，最小消耗，清怪自动上楼，AP>70自动上楼，自动买卡(1，2，3星小于5级卡)，自动领卡
   <br><br>
     <section id=login>
       <form id=login_form onsubmit="return login(this);">
@@ -34,17 +57,18 @@
         password: <input type=password name=pwd />
         server: <select name=serv>
           <option selected>server</option>
-          <option value="cn">cn1</option>
-          <option value="cn2">cn2</option>
-          <option value="cn3">cn3</option>
-          <option value="tw">tw</option>
-          <option value="kr">kr</option>
-          <option value="jp">jp</option>
-		  <option value="sg">sg</option>
+          <option value="cn">国服一区</option>
+          <option value="cn2">国服二区</option>
+          <option value="cn3">国服三区</option>
+          <option value="tw">台服</option>
+          <option value="kr">韩服</option>
+          <option value="jp">日服</option>
+		  <option value="sg">海服</option>
         yourself http proxy for sd:
         </select>
         <input type=checkbox name=offline /> 离线挂机
         <input id=submit type=submit value=login />
+	离线保持时间(小时): <input name="keep_time" value="12" />
       </form>
     </section>
 
@@ -76,14 +100,21 @@
       var login_id = form.id.value,
           password = form.pwd.value,
           serv = form.serv.value,
-          offline = form.offline.checked && "1" || "";
-      ws = new WebSocket("ws://"+location.host+"/bot?id="+login_id+"&password="+password+"&serv="+serv+"&offline="+offline);
+          offline = form.offline.checked && "1" || "",
+          keep_time = form.keep_time.value * 3600;
+      ws = new WebSocket("ws://"+location.host+"/bot?id="+login_id+"&password="+password+"&serv="+serv+"&offline="+offline+"&keep_time="+keep_time);
       ws.onopen = function() {
         log("connected.\n");
+        submit.disabled = true;
+        login_form.id.disabled = true;
+        login_form.pwd.disabled = true;
       };
       ws.onclose = function() {
         log("disconnected.\n");
         setTimeout(function() { login(form); }, 60*1000);
+        submit.disabled = false;
+        login_form.id.disabled = false;
+        login_form.pwd.disabled = false;
       };
       ws.onmessage = function(event) {
         if (event.data != ''){log(event.data);}
