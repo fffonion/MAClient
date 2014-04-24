@@ -27,7 +27,8 @@ class player(object):
         self.rev_need_update = False, False, False, False
         self.update_all(login_xml)
         object.__init__(self)
-        self.success = check_exclusion(self.name + loc)
+        self.filedesc = check_exclusion(self.name + loc)
+        self.success = self.filedesc != 0
 
     def reload_db(self):
         self.card.load_db(self.loc[:2])
@@ -232,6 +233,7 @@ def check_exclusion(inpstr):
     '''Return False if exclusion exists'''
     import tempfile
     import hashlib
+    filedesc= 0
     if PYTHON3:
         inpstr = inpstr.encode(encoding = 'utf-8')
     md5name = hashlib.md5(inpstr).hexdigest()[:6]
@@ -246,18 +248,18 @@ def check_exclusion(inpstr):
                 os.remove(opath.join(tdir, '.%s.maclient.filelock' % md5name))
             except WindowsError as e:
                 if e.winerror == 32:  # cannot access to file
-                    return False
+                    return 0
         else:
-            return True
+            return -1
     # re-aquire lock file
     try:
-        os.open(opath.join(tdir, '.%s.maclient.filelock' % md5name), os.O_CREAT | os.O_EXCL | os.O_RDWR)
+        filedesc = os.open(opath.join(tdir, '.%s.maclient.filelock' % md5name), os.O_CREAT | os.O_EXCL | os.O_RDWR)
     except OSError as e:
         if e.errno == 17:  # exist
-            os.open(opath.join(tdir, '.%s.maclient.filelock' % md5name), os.O_EXCL | os.O_RDWR)
+            filedesc = os.open(opath.join(tdir, '.%s.maclient.filelock' % md5name), os.O_EXCL | os.O_RDWR)
         else:
-            return False
-    return True
+            return 0
+    return filedesc
 
 if __name__ == '__main__':
     if len(sys.argv) > 2:
