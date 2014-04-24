@@ -116,12 +116,15 @@ namespace MAClientGUI
                 cbTask.SelectedIndex = 0;
             }
             cboDeckList.Items.Clear();
+            cboSetCard.Items.Clear();
+            cboSetCard.Items.Add("选择…");
             List<string> lst2 = cf.EnumIniKey("carddeck");
             foreach (string ts in lst2)
             {
                 cboDeckList.Items.Add(ts.Split('=')[0].Trim());
-
+                cboSetCard.Items.Add(ts.Split('=')[0].Trim());
             }
+            cboSetCard.SelectedIndex = 0;
             numTaskTimes.Value = cf.ReadInt("system", "tasker_times");
             numFactorTimes.Value = cf.ReadInt("system", "try_factor_times");
             numFactorSleep.Value = cf.ReadInt("system", "factor_sleep");
@@ -337,6 +340,7 @@ namespace MAClientGUI
         {
             lblUsername.Text = txtUsername.Text;
             txtUsername.Visible = false;
+            cf.Write("account_" + server, "user_id", "");
         }
 
         private void txtPswd_Leave(object sender, EventArgs e)
@@ -487,7 +491,8 @@ namespace MAClientGUI
         }
         private void btnTaskerSetCard_Click(object sender, EventArgs e)
         {
-            addTaskerThen("'sc " + txtSetCard.Text + "'");
+            if(cboSetCard.SelectedIndex!=0)
+                addTaskerThen("'sc " + cboSetCard.Text + "'");
         }
 
         private void button1_Click(object sender, EventArgs e)

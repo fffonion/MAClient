@@ -226,7 +226,6 @@ namespace MAClientGUI
             this.label26 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.txtSetCard = new System.Windows.Forms.TextBox();
             this.btnTaskerSetCard = new System.Windows.Forms.Button();
             this.label21 = new System.Windows.Forms.Label();
             this.grpTaskerIf = new System.Windows.Forms.GroupBox();
@@ -376,6 +375,7 @@ namespace MAClientGUI
             this.dockMenu_head = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.chkUseNiceTerm = new System.Windows.Forms.CheckBox();
+            this.cboSetCard = new System.Windows.Forms.ComboBox();
             this.grpSystem.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFairySleepFactor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
@@ -550,6 +550,10 @@ namespace MAClientGUI
             // 
             // grpSystem
             // 
+            this.grpSystem.Controls.Add(this.label13);
+            this.grpSystem.Controls.Add(this.label8);
+            this.grpSystem.Controls.Add(this.label5);
+            this.grpSystem.Controls.Add(this.label4);
             this.grpSystem.Controls.Add(this.label91);
             this.grpSystem.Controls.Add(this.txtReconnectGap);
             this.grpSystem.Controls.Add(this.cboReconnectGapIndicator);
@@ -559,7 +563,6 @@ namespace MAClientGUI
             this.grpSystem.Controls.Add(this.chkAutoUpdate);
             this.grpSystem.Controls.Add(this.label44);
             this.grpSystem.Controls.Add(this.numFairySleepFactor);
-            this.grpSystem.Controls.Add(this.label13);
             this.grpSystem.Controls.Add(this.label43);
             this.grpSystem.Controls.Add(this.label18);
             this.grpSystem.Controls.Add(this.numDelay);
@@ -569,12 +572,8 @@ namespace MAClientGUI
             this.grpSystem.Controls.Add(this.label17);
             this.grpSystem.Controls.Add(this.label15);
             this.grpSystem.Controls.Add(this.cboLogLevel);
-            this.grpSystem.Controls.Add(this.label16);
-            this.grpSystem.Controls.Add(this.label8);
             this.grpSystem.Controls.Add(this.label7);
             this.grpSystem.Controls.Add(this.label6);
-            this.grpSystem.Controls.Add(this.label5);
-            this.grpSystem.Controls.Add(this.label4);
             this.grpSystem.Controls.Add(this.label3);
             this.grpSystem.Controls.Add(this.label2);
             this.grpSystem.Controls.Add(this.label1);
@@ -584,6 +583,7 @@ namespace MAClientGUI
             this.grpSystem.Controls.Add(this.numFactorSleep);
             this.grpSystem.Controls.Add(this.numExploreSleep);
             this.grpSystem.Controls.Add(this.numFairyTimes);
+            this.grpSystem.Controls.Add(this.label16);
             this.grpSystem.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.grpSystem.Location = new System.Drawing.Point(28, 98);
             this.grpSystem.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -607,7 +607,7 @@ namespace MAClientGUI
             // txtReconnectGap
             // 
             this.txtReconnectGap.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.txtReconnectGap.Location = new System.Drawing.Point(612, 130);
+            this.txtReconnectGap.Location = new System.Drawing.Point(621, 130);
             this.txtReconnectGap.Name = "txtReconnectGap";
             this.txtReconnectGap.Size = new System.Drawing.Size(52, 27);
             this.txtReconnectGap.TabIndex = 1056;
@@ -622,7 +622,7 @@ namespace MAClientGUI
             "立即重连",
             "在指定分钟后重连",
             "在指定时刻重连"});
-            this.cboReconnectGapIndicator.Location = new System.Drawing.Point(452, 130);
+            this.cboReconnectGapIndicator.Location = new System.Drawing.Point(455, 130);
             this.cboReconnectGapIndicator.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cboReconnectGapIndicator.Name = "cboReconnectGapIndicator";
             this.cboReconnectGapIndicator.Size = new System.Drawing.Size(158, 28);
@@ -749,7 +749,7 @@ namespace MAClientGUI
             0,
             0,
             65536});
-            this.numDelay.Location = new System.Drawing.Point(134, 132);
+            this.numDelay.Location = new System.Drawing.Point(137, 132);
             this.numDelay.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numDelay.Maximum = new decimal(new int[] {
             99999,
@@ -777,7 +777,7 @@ namespace MAClientGUI
             // 
             this.chkAni.AutoSize = true;
             this.chkAni.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.chkAni.Location = new System.Drawing.Point(116, 169);
+            this.chkAni.Location = new System.Drawing.Point(119, 169);
             this.chkAni.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.chkAni.Name = "chkAni";
             this.chkAni.Size = new System.Drawing.Size(91, 24);
@@ -799,7 +799,7 @@ namespace MAClientGUI
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(692, 101);
+            this.label17.Location = new System.Drawing.Point(695, 101);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(16, 19);
             this.label17.TabIndex = 1040;
@@ -808,7 +808,7 @@ namespace MAClientGUI
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(542, 101);
+            this.label15.Location = new System.Drawing.Point(545, 101);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(16, 19);
             this.label15.TabIndex = 1038;
@@ -835,7 +835,7 @@ namespace MAClientGUI
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(194, 139);
+            this.label16.Location = new System.Drawing.Point(195, 139);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(16, 19);
             this.label16.TabIndex = 1039;
@@ -944,7 +944,7 @@ namespace MAClientGUI
             // numTaskTimes
             // 
             this.numTaskTimes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.numTaskTimes.Location = new System.Drawing.Point(311, 91);
+            this.numTaskTimes.Location = new System.Drawing.Point(314, 91);
             this.numTaskTimes.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numTaskTimes.Maximum = new decimal(new int[] {
             99999,
@@ -959,7 +959,7 @@ namespace MAClientGUI
             // numFactorTimes
             // 
             this.numFactorTimes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.numFactorTimes.Location = new System.Drawing.Point(311, 127);
+            this.numFactorTimes.Location = new System.Drawing.Point(314, 127);
             this.numFactorTimes.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numFactorTimes.Maximum = new decimal(new int[] {
             99999,
@@ -974,7 +974,7 @@ namespace MAClientGUI
             // numFactorSleep
             // 
             this.numFactorSleep.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.numFactorSleep.Location = new System.Drawing.Point(486, 93);
+            this.numFactorSleep.Location = new System.Drawing.Point(489, 93);
             this.numFactorSleep.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numFactorSleep.Maximum = new decimal(new int[] {
             99999,
@@ -989,7 +989,7 @@ namespace MAClientGUI
             // numExploreSleep
             // 
             this.numExploreSleep.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.numExploreSleep.Location = new System.Drawing.Point(635, 93);
+            this.numExploreSleep.Location = new System.Drawing.Point(638, 93);
             this.numExploreSleep.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numExploreSleep.Maximum = new decimal(new int[] {
             99999,
@@ -1004,7 +1004,7 @@ namespace MAClientGUI
             // numFairyTimes
             // 
             this.numFairyTimes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.numFairyTimes.Location = new System.Drawing.Point(311, 165);
+            this.numFairyTimes.Location = new System.Drawing.Point(314, 165);
             this.numFairyTimes.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numFairyTimes.Maximum = new decimal(new int[] {
             99999,
@@ -1429,9 +1429,9 @@ namespace MAClientGUI
             this.lblEncWarningQuestion.Cursor = System.Windows.Forms.Cursors.Help;
             this.lblEncWarningQuestion.Image = ((System.Drawing.Image)(resources.GetObject("lblEncWarningQuestion.Image")));
             this.lblEncWarningQuestion.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblEncWarningQuestion.Location = new System.Drawing.Point(709, 350);
+            this.lblEncWarningQuestion.Location = new System.Drawing.Point(662, 307);
             this.lblEncWarningQuestion.Name = "lblEncWarningQuestion";
-            this.lblEncWarningQuestion.Size = new System.Drawing.Size(36, 25);
+            this.lblEncWarningQuestion.Size = new System.Drawing.Size(19, 25);
             this.lblEncWarningQuestion.TabIndex = 1059;
             this.lblEncWarningQuestion.Visible = false;
             this.lblEncWarningQuestion.Click += new System.EventHandler(this.lblEncWarningQuestion_Click);
@@ -1535,10 +1535,10 @@ namespace MAClientGUI
             this.lblEncWarning.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.lblEncWarning.Location = new System.Drawing.Point(663, 311);
             this.lblEncWarning.Name = "lblEncWarning";
-            this.lblEncWarning.Size = new System.Drawing.Size(87, 64);
+            this.lblEncWarning.Size = new System.Drawing.Size(87, 76);
             this.lblEncWarning.TabIndex = 1058;
             this.lblEncWarning.TabStop = true;
-            this.lblEncWarning.Text = "当前配置编码不能用于手机！";
+            this.lblEncWarning.Text = "    当前配置编码不能用于手机！";
             this.lblEncWarning.Visible = false;
             this.lblEncWarning.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
             // 
@@ -1885,23 +1885,23 @@ namespace MAClientGUI
             // 
             // groupBox11
             // 
+            this.groupBox11.Controls.Add(this.cboLineCnt);
+            this.groupBox11.Controls.Add(this.cboBCLimit);
+            this.groupBox11.Controls.Add(this.cboAim);
             this.groupBox11.Controls.Add(this.txtCardIncl);
             this.groupBox11.Controls.Add(this.label55);
-            this.groupBox11.Controls.Add(this.cboLineCnt);
             this.groupBox11.Controls.Add(this.label57);
             this.groupBox11.Controls.Add(this.txtCardEval);
             this.groupBox11.Controls.Add(this.label58);
             this.groupBox11.Controls.Add(this.chkIsFast);
             this.groupBox11.Controls.Add(this.chkIsTest);
             this.groupBox11.Controls.Add(this.txtBCLimit);
-            this.groupBox11.Controls.Add(this.cboBCLimit);
             this.groupBox11.Controls.Add(this.label56);
-            this.groupBox11.Controls.Add(this.cboAim);
             this.groupBox11.Controls.Add(this.label54);
             this.groupBox11.Controls.Add(this.lblLineWarning);
             this.groupBox11.Enabled = false;
             this.groupBox11.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupBox11.Location = new System.Drawing.Point(343, 212);
+            this.groupBox11.Location = new System.Drawing.Point(344, 212);
             this.groupBox11.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.groupBox11.Name = "groupBox11";
             this.groupBox11.Padding = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -1940,7 +1940,7 @@ namespace MAClientGUI
             "1排",
             "2排",
             "3排"});
-            this.cboLineCnt.Location = new System.Drawing.Point(72, 81);
+            this.cboLineCnt.Location = new System.Drawing.Point(74, 81);
             this.cboLineCnt.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cboLineCnt.Name = "cboLineCnt";
             this.cboLineCnt.Size = new System.Drawing.Size(55, 28);
@@ -1983,10 +1983,10 @@ namespace MAClientGUI
             // 
             this.txtBCLimit.Enabled = false;
             this.txtBCLimit.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txtBCLimit.Location = new System.Drawing.Point(156, 45);
+            this.txtBCLimit.Location = new System.Drawing.Point(158, 45);
             this.txtBCLimit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtBCLimit.Name = "txtBCLimit";
-            this.txtBCLimit.Size = new System.Drawing.Size(32, 27);
+            this.txtBCLimit.Size = new System.Drawing.Size(30, 27);
             this.txtBCLimit.TabIndex = 1005;
             this.txtBCLimit.Text = "60";
             this.txtBCLimit.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
@@ -2000,7 +2000,7 @@ namespace MAClientGUI
             "当前BC",
             "最大BC",
             "指定BC"});
-            this.cboBCLimit.Location = new System.Drawing.Point(72, 44);
+            this.cboBCLimit.Location = new System.Drawing.Point(74, 44);
             this.cboBCLimit.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cboBCLimit.Name = "cboBCLimit";
             this.cboBCLimit.Size = new System.Drawing.Size(82, 28);
@@ -2026,7 +2026,7 @@ namespace MAClientGUI
             "最大输出卡组",
             "最大CP卡组",
             "击败当前妖精"});
-            this.cboAim.Location = new System.Drawing.Point(71, 115);
+            this.cboAim.Location = new System.Drawing.Point(73, 115);
             this.cboAim.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.cboAim.Name = "cboAim";
             this.cboAim.Size = new System.Drawing.Size(119, 28);
@@ -2045,19 +2045,20 @@ namespace MAClientGUI
             // 
             // lblLineWarning
             // 
+            this.lblLineWarning.AutoSize = true;
             this.lblLineWarning.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.lblLineWarning.ForeColor = System.Drawing.Color.Red;
-            this.lblLineWarning.Location = new System.Drawing.Point(129, 84);
+            this.lblLineWarning.Location = new System.Drawing.Point(131, 84);
             this.lblLineWarning.Name = "lblLineWarning";
-            this.lblLineWarning.Size = new System.Drawing.Size(66, 25);
+            this.lblLineWarning.Size = new System.Drawing.Size(65, 20);
             this.lblLineWarning.TabIndex = 1056;
             this.lblLineWarning.Text = "炒鸡慢！";
             this.lblLineWarning.Visible = false;
             // 
             // groupBox8
             // 
-            this.groupBox8.Controls.Add(this.linkLabel1);
             this.groupBox8.Controls.Add(this.label46);
+            this.groupBox8.Controls.Add(this.linkLabel1);
             this.groupBox8.Controls.Add(this.cboDeckList);
             this.groupBox8.Font = new System.Drawing.Font("微软雅黑", 16.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.groupBox8.Location = new System.Drawing.Point(547, 212);
@@ -2083,10 +2084,11 @@ namespace MAClientGUI
             // 
             // label46
             // 
+            this.label46.AutoSize = true;
             this.label46.Font = new System.Drawing.Font("微软雅黑", 7F);
-            this.label46.Location = new System.Drawing.Point(6, 80);
+            this.label46.Location = new System.Drawing.Point(6, 78);
             this.label46.Name = "label46";
-            this.label46.Size = new System.Drawing.Size(151, 34);
+            this.label46.Size = new System.Drawing.Size(147, 34);
             this.label46.TabIndex = 1;
             this.label46.Text = "可以在MAClient中\r\n使用rd或scc命令读取卡组";
             // 
@@ -2094,16 +2096,20 @@ namespace MAClientGUI
             // 
             this.cboDeckList.Font = new System.Drawing.Font("微软雅黑", 12F);
             this.cboDeckList.FormattingEnabled = true;
-            this.cboDeckList.Location = new System.Drawing.Point(8, 43);
+            this.cboDeckList.Location = new System.Drawing.Point(8, 39);
             this.cboDeckList.Name = "cboDeckList";
             this.cboDeckList.Size = new System.Drawing.Size(202, 35);
             this.cboDeckList.TabIndex = 0;
             // 
             // groupBox9
             // 
-            this.groupBox9.Controls.Add(this.label93);
             this.groupBox9.Controls.Add(this.textBox23);
             this.groupBox9.Controls.Add(this.textBox33);
+            this.groupBox9.Controls.Add(this.textBox24);
+            this.groupBox9.Controls.Add(this.textBox25);
+            this.groupBox9.Controls.Add(this.textBox26);
+            this.groupBox9.Controls.Add(this.textBox27);
+            this.groupBox9.Controls.Add(this.label93);
             this.groupBox9.Controls.Add(this.label94);
             this.groupBox9.Controls.Add(this.button76);
             this.groupBox9.Controls.Add(this.label88);
@@ -2129,10 +2135,6 @@ namespace MAClientGUI
             this.groupBox9.Controls.Add(this.button30);
             this.groupBox9.Controls.Add(this.button31);
             this.groupBox9.Controls.Add(this.button32);
-            this.groupBox9.Controls.Add(this.textBox24);
-            this.groupBox9.Controls.Add(this.textBox25);
-            this.groupBox9.Controls.Add(this.textBox26);
-            this.groupBox9.Controls.Add(this.textBox27);
             this.groupBox9.Controls.Add(this.label39);
             this.groupBox9.Controls.Add(this.label40);
             this.groupBox9.Controls.Add(this.button35);
@@ -2503,7 +2505,7 @@ namespace MAClientGUI
             this.button60.Location = new System.Drawing.Point(548, 330);
             this.button60.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button60.Name = "button60";
-            this.button60.Size = new System.Drawing.Size(119, 29);
+            this.button60.Size = new System.Drawing.Size(115, 29);
             this.button60.TabIndex = 25;
             this.button60.Text = "使用自动配卡";
             this.button60.UseVisualStyleBackColor = true;
@@ -2581,9 +2583,9 @@ namespace MAClientGUI
             "特殊卡组",
             "⊙不改变",
             "⊙不打怪"});
-            this.cboReservedName.Location = new System.Drawing.Point(671, 331);
+            this.cboReservedName.Location = new System.Drawing.Point(667, 331);
             this.cboReservedName.Name = "cboReservedName";
-            this.cboReservedName.Size = new System.Drawing.Size(92, 28);
+            this.cboReservedName.Size = new System.Drawing.Size(96, 28);
             this.cboReservedName.TabIndex = 27;
             this.cboReservedName.SelectedIndexChanged += new System.EventHandler(this.cboReservedName_SelectedIndexChanged);
             // 
@@ -2721,6 +2723,7 @@ namespace MAClientGUI
             // 
             // grpTaskerThen
             // 
+            this.grpTaskerThen.Controls.Add(this.cboSetCard);
             this.grpTaskerThen.Controls.Add(this.numericUpDown6);
             this.grpTaskerThen.Controls.Add(this.label48);
             this.grpTaskerThen.Controls.Add(this.button54);
@@ -2733,7 +2736,6 @@ namespace MAClientGUI
             this.grpTaskerThen.Controls.Add(this.label26);
             this.grpTaskerThen.Controls.Add(this.button2);
             this.grpTaskerThen.Controls.Add(this.button1);
-            this.grpTaskerThen.Controls.Add(this.txtSetCard);
             this.grpTaskerThen.Controls.Add(this.btnTaskerSetCard);
             this.grpTaskerThen.Controls.Add(this.label21);
             this.grpTaskerThen.Font = new System.Drawing.Font("微软雅黑", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
@@ -2882,23 +2884,14 @@ namespace MAClientGUI
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button1.Location = new System.Drawing.Point(271, 156);
+            this.button1.Location = new System.Drawing.Point(262, 156);
             this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(91, 34);
+            this.button1.Size = new System.Drawing.Size(100, 34);
             this.button1.TabIndex = 3;
             this.button1.Text = "探索秘境";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // txtSetCard
-            // 
-            this.txtSetCard.Font = new System.Drawing.Font("微软雅黑", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txtSetCard.Location = new System.Drawing.Point(108, 58);
-            this.txtSetCard.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtSetCard.Name = "txtSetCard";
-            this.txtSetCard.Size = new System.Drawing.Size(100, 30);
-            this.txtSetCard.TabIndex = 2;
             // 
             // btnTaskerSetCard
             // 
@@ -2906,9 +2899,9 @@ namespace MAClientGUI
             this.btnTaskerSetCard.Location = new System.Drawing.Point(12, 56);
             this.btnTaskerSetCard.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnTaskerSetCard.Name = "btnTaskerSetCard";
-            this.btnTaskerSetCard.Size = new System.Drawing.Size(91, 34);
+            this.btnTaskerSetCard.Size = new System.Drawing.Size(99, 34);
             this.btnTaskerSetCard.TabIndex = 1;
-            this.btnTaskerSetCard.Text = "设置卡组:";
+            this.btnTaskerSetCard.Text = "设置卡组";
             this.btnTaskerSetCard.UseVisualStyleBackColor = true;
             this.btnTaskerSetCard.Click += new System.EventHandler(this.btnTaskerSetCard_Click);
             // 
@@ -2922,6 +2915,10 @@ namespace MAClientGUI
             // 
             // grpTaskerIf
             // 
+            this.grpTaskerIf.Controls.Add(this.numericUpDown5);
+            this.grpTaskerIf.Controls.Add(this.numericUpDown4);
+            this.grpTaskerIf.Controls.Add(this.numericUpDown3);
+            this.grpTaskerIf.Controls.Add(this.numericUpDown2);
             this.grpTaskerIf.Controls.Add(this.button70);
             this.grpTaskerIf.Controls.Add(this.button71);
             this.grpTaskerIf.Controls.Add(this.button17);
@@ -2936,10 +2933,6 @@ namespace MAClientGUI
             this.grpTaskerIf.Controls.Add(this.label50);
             this.grpTaskerIf.Controls.Add(this.label49);
             this.grpTaskerIf.Controls.Add(this.label47);
-            this.grpTaskerIf.Controls.Add(this.numericUpDown5);
-            this.grpTaskerIf.Controls.Add(this.numericUpDown4);
-            this.grpTaskerIf.Controls.Add(this.numericUpDown3);
-            this.grpTaskerIf.Controls.Add(this.numericUpDown2);
             this.grpTaskerIf.Controls.Add(this.textBox3);
             this.grpTaskerIf.Controls.Add(this.textBox4);
             this.grpTaskerIf.Controls.Add(this.textBox2);
@@ -3084,7 +3077,7 @@ namespace MAClientGUI
             // 
             this.label50.AutoSize = true;
             this.label50.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label50.Location = new System.Drawing.Point(89, 268);
+            this.label50.Location = new System.Drawing.Point(92, 268);
             this.label50.Name = "label50";
             this.label50.Size = new System.Drawing.Size(17, 25);
             this.label50.TabIndex = 17;
@@ -3094,7 +3087,7 @@ namespace MAClientGUI
             // 
             this.label49.AutoSize = true;
             this.label49.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label49.Location = new System.Drawing.Point(88, 196);
+            this.label49.Location = new System.Drawing.Point(91, 196);
             this.label49.Name = "label49";
             this.label49.Size = new System.Drawing.Size(17, 25);
             this.label49.TabIndex = 16;
@@ -3121,7 +3114,7 @@ namespace MAClientGUI
             0,
             0});
             this.numericUpDown5.Name = "numericUpDown5";
-            this.numericUpDown5.Size = new System.Drawing.Size(41, 27);
+            this.numericUpDown5.Size = new System.Drawing.Size(45, 27);
             this.numericUpDown5.TabIndex = 13;
             // 
             // numericUpDown4
@@ -3140,7 +3133,7 @@ namespace MAClientGUI
             0,
             0});
             this.numericUpDown4.Name = "numericUpDown4";
-            this.numericUpDown4.Size = new System.Drawing.Size(41, 27);
+            this.numericUpDown4.Size = new System.Drawing.Size(45, 27);
             this.numericUpDown4.TabIndex = 12;
             // 
             // numericUpDown3
@@ -3155,7 +3148,7 @@ namespace MAClientGUI
             0,
             0});
             this.numericUpDown3.Name = "numericUpDown3";
-            this.numericUpDown3.Size = new System.Drawing.Size(41, 27);
+            this.numericUpDown3.Size = new System.Drawing.Size(45, 27);
             this.numericUpDown3.TabIndex = 11;
             this.numericUpDown3.Value = new decimal(new int[] {
             23,
@@ -3179,7 +3172,7 @@ namespace MAClientGUI
             0,
             0});
             this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(41, 27);
+            this.numericUpDown2.Size = new System.Drawing.Size(45, 27);
             this.numericUpDown2.TabIndex = 10;
             this.numericUpDown2.Value = new decimal(new int[] {
             59,
@@ -3326,13 +3319,14 @@ namespace MAClientGUI
             // 
             // chkSuperPrefFairy
             // 
+            this.chkSuperPrefFairy.AutoSize = true;
             this.chkSuperPrefFairy.Checked = true;
             this.chkSuperPrefFairy.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSuperPrefFairy.Location = new System.Drawing.Point(625, 327);
+            this.chkSuperPrefFairy.Location = new System.Drawing.Point(625, 317);
             this.chkSuperPrefFairy.Name = "chkSuperPrefFairy";
             this.chkSuperPrefFairy.Size = new System.Drawing.Size(121, 44);
             this.chkSuperPrefFairy.TabIndex = 27;
-            this.chkSuperPrefFairy.Text = "使用固定前缀 $ = fairy";
+            this.chkSuperPrefFairy.Text = "使用固定前缀\r\n $ = fairy";
             this.chkSuperPrefFairy.UseVisualStyleBackColor = true;
             // 
             // button21
@@ -3593,13 +3587,14 @@ namespace MAClientGUI
             // 
             // chkSuperPrefExplore
             // 
+            this.chkSuperPrefExplore.AutoSize = true;
             this.chkSuperPrefExplore.Checked = true;
             this.chkSuperPrefExplore.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSuperPrefExplore.Location = new System.Drawing.Point(598, 356);
+            this.chkSuperPrefExplore.Location = new System.Drawing.Point(595, 350);
             this.chkSuperPrefExplore.Name = "chkSuperPrefExplore";
-            this.chkSuperPrefExplore.Size = new System.Drawing.Size(121, 53);
+            this.chkSuperPrefExplore.Size = new System.Drawing.Size(121, 44);
             this.chkSuperPrefExplore.TabIndex = 27;
-            this.chkSuperPrefExplore.Text = "使用固定前缀$ = area";
+            this.chkSuperPrefExplore.Text = "使用固定前缀\r\n$ = area";
             this.chkSuperPrefExplore.UseVisualStyleBackColor = true;
             // 
             // button55
@@ -3642,7 +3637,7 @@ namespace MAClientGUI
             // 
             this.label90.AutoSize = true;
             this.label90.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.label90.Location = new System.Drawing.Point(196, 26);
+            this.label90.Location = new System.Drawing.Point(221, 25);
             this.label90.Name = "label90";
             this.label90.Size = new System.Drawing.Size(174, 20);
             this.label90.TabIndex = 29;
@@ -3817,13 +3812,14 @@ namespace MAClientGUI
             // 
             // chkSuperPrefFloor
             // 
+            this.chkSuperPrefFloor.AutoSize = true;
             this.chkSuperPrefFloor.Checked = true;
             this.chkSuperPrefFloor.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSuperPrefFloor.Location = new System.Drawing.Point(598, 356);
+            this.chkSuperPrefFloor.Location = new System.Drawing.Point(595, 350);
             this.chkSuperPrefFloor.Name = "chkSuperPrefFloor";
-            this.chkSuperPrefFloor.Size = new System.Drawing.Size(121, 48);
+            this.chkSuperPrefFloor.Size = new System.Drawing.Size(121, 44);
             this.chkSuperPrefFloor.TabIndex = 27;
-            this.chkSuperPrefFloor.Text = "使用固定前缀 $ = floor";
+            this.chkSuperPrefFloor.Text = "使用固定前缀\r\n $ = floor";
             this.chkSuperPrefFloor.UseVisualStyleBackColor = true;
             // 
             // button57
@@ -3927,7 +3923,7 @@ namespace MAClientGUI
             // 
             this.label89.AutoSize = true;
             this.label89.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.label89.Location = new System.Drawing.Point(194, 22);
+            this.label89.Location = new System.Drawing.Point(221, 25);
             this.label89.Name = "label89";
             this.label89.Size = new System.Drawing.Size(174, 20);
             this.label89.TabIndex = 28;
@@ -4705,6 +4701,16 @@ namespace MAClientGUI
             this.chkUseNiceTerm.Text = "使用终端模拟器";
             this.chkUseNiceTerm.UseVisualStyleBackColor = true;
             // 
+            // cboSetCard
+            // 
+            this.cboSetCard.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSetCard.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.cboSetCard.FormattingEnabled = true;
+            this.cboSetCard.Location = new System.Drawing.Point(114, 58);
+            this.cboSetCard.Name = "cboSetCard";
+            this.cboSetCard.Size = new System.Drawing.Size(105, 31);
+            this.cboSetCard.TabIndex = 22;
+            // 
             // frmConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -4892,7 +4898,6 @@ namespace MAClientGUI
         private System.Windows.Forms.Button btnTaskerBC;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox txtSetCard;
         private System.Windows.Forms.Button btnTaskerSetCard;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.TextBox textBox7;
@@ -5158,6 +5163,7 @@ namespace MAClientGUI
         private System.Windows.Forms.Label label97;
         private System.Windows.Forms.LinkLabel lblEncWarning;
         private System.Windows.Forms.Label lblEncWarningQuestion;
+        private System.Windows.Forms.ComboBox cboSetCard;
     }
 }
 
