@@ -6,8 +6,9 @@ import time
 # start meta
 __plugin_name__ = '显示超详细的战斗详情'
 __author = 'fffonion'
-__version__ = 0.1
+__version__ = 0.11
 __tip__ = '战斗详情加强版已启动'
+require_version = 1.70
 from cross_platform import *
 hooks = {'EXIT__fairy_battle':1}
 # extra cmd hook
@@ -91,6 +92,8 @@ class plugin(plugin_prototype):
                     satk.append(l.special_attack_damage)
                 if 'skill_id' in l:
                     # skillcnt+=1
+                    if not isinstance(me.card_list, list):
+                        me.card_list = [me.card_list]
                     mcard = [c for c in me.card_list if c.master_card_id == l.skill_card ][0]
                     skill_var = l.skill_type == '1' and l.attack_damage or l.skill_hp_player
                     skills.append('%d,%s,%s,%s,%s,%s,%s,%s,%s,%d,%d,%d,%d' % (
@@ -113,7 +116,7 @@ class plugin(plugin_prototype):
         fname = '[%s]%sLv%s_%s_%d%03d.txt' % (self.player.name, args[1].name, args[1].lv, args[1].serial_id, time.time(), ord(os.urandom(1)))
         cards = ' '.join(map(lambda x:'%s(%s)' % (self.carddb[int(len(x)>4 and self.player.card.sid(x).master_card_id or x)][0],
             str(len(x)>4 and self.player.card.sid(x).master_card_id or x)),
-            self.mac_instance._read_config('record', 'last_set_card').split(',')))
+            self.mac_instance._read_config('record', 'last_set_card').strip(',').split(',')))
         #    self.mac_instance._read_config('record', 'last_set_card').split(',')))
         if not opath.exists(opath.join(getPATH0, 'battle_details')):
             os.mkdir(opath.join(getPATH0, 'battle_details'))
