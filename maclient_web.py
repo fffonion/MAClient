@@ -17,6 +17,9 @@ from maclient import MAClient
 import maclient
 from datetime import datetime, timedelta, tzinfo
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 class zh_BJ(tzinfo):
     def utcoffset(self, dt):
         return timedelta(hours = 8)
@@ -27,8 +30,6 @@ startup_time = datetime.now(zh_BJ()).strftime('%m.%d %H:%M:%S')
 _index_cache = open("web.htm").read().replace('[startup_time]', startup_time)\
                 .replace('[version_str]', str(maclient.__version__))
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
 class HeheError(Exception):
     def __init__(self, msg):
         Exception.__init__(self, msg)
@@ -48,6 +49,7 @@ class WebSocketBot(MAClient):
         self.__class__.connected += 1
         self.logger.logfile = None
         self.logger.logpipe(self.logpipe)
+        self.request_exit = False
         #Bot.__init__(self)
 
     def logpipe(self, _str):
@@ -66,15 +68,22 @@ class WebSocketBot(MAClient):
         else:
             self.tasker('w')
 
+    #override
     def _exit(self, code):
         self.end()
 
+    #override
+    def _dopost(self, *args, **kwargs):
+        if self.request_exit:
+            raise HeheError('bye')
+        return MAClient._dopost(self, *args, **kwargs)
+
     def end(self):
+        # set on async exit
+        self.request_exit = True
         if self.player.filedesc > 0:
             os.close(self.player.filedesc)
-        self.__class__.connected -= 1
-        print "conn-1=%d" % self.connected
-        raise HeheError('hehe')#self._exit(0)
+        #self.__class__.connected -= 1
 
 offline_bots = {}
 
@@ -92,6 +101,7 @@ class cleanup(Thread):
                 if time.time() - bot.last_offline_keepalive_time > bot.keep_time:
                     try:
                         bot.end()
+                        print 'request shutdown offline bot %d' % bot.loginid
                     except:
                         pass
             gevent.sleep(60)
@@ -157,6 +167,7 @@ def websocket_app(environ, start_response):
 
         print "login id=%s" % login_id
 
+        offline_timeout_stop = False
         while True:
             try:
                 bot.run(login_id, password, cmd)
@@ -170,6 +181,7 @@ def websocket_app(environ, start_response):
                 break
             except HeheError:#hehe
                 print 'id = %s force exit.' % login_id
+                offline_timeout_stop = True
                 break
             except Exception, e:
                 print 'id = %s except offline=%s' % (login_id, offline)
@@ -183,16 +195,16 @@ def websocket_app(environ, start_response):
                 except Exception, e:
                     print 'main loop throw a ex.!\n'
                 break
-
+        WebSocketBot.connected -= 1
         if login_id+password in offline_bots:
-            bot = offline_bots.pop(login_id+password)
-            print "offline bot exit. login_id=%s" % login_id
+            offline_bots.pop(login_id+password)
+            print "[conn-1=%d]offline bot exit. login_id=%s" % (WebSocketBot.connected, login_id)
         else:
-            print "exit. login_id=%s" % login_id
-        try:
-            bot.end()
-        except HeheError:
-            pass
+            print "[conn-1=%d]exit. login_id=%s" % (WebSocketBot.connected, login_id)
+        # try:
+        #     bot.end()
+        # except HeheError:
+        #     pass
         #auto release del bot
     else:
         start_response("200 OK", [("Content-Type", "text/html")])
