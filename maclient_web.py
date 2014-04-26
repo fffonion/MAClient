@@ -10,7 +10,6 @@ from threading import Thread
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from webob import Request
-from cross_platform import *
 import sys
 
 from maclient import MAClient

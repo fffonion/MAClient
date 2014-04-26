@@ -8,7 +8,10 @@ import logging.handlers
 from cross_platform import *
 
 os.environ['TZ'] = 'Asia/Taiwan'
-time.tzset()
+try:
+    time.tzset()
+except:
+    pass
 
 class Logging(type(sys)):
     # paste from goagent
