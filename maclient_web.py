@@ -6,6 +6,7 @@ import gevent.monkey
 gevent.monkey.patch_all()
 import time
 import socket
+from hashlib import md5
 from threading import Thread
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
@@ -112,7 +113,7 @@ def websocket_app(environ, start_response):
         ws = environ["wsgi.websocket"]
         login_id = request.GET['id']
         password = request.GET['password']
-        area = request.GET.get('area', None)
+        #area = request.GET.get('area', None)
         offline = request.GET.get('offline', False)
         keep_time = int(request.GET.get('keep_time', 12 * 3600))
         cmd = request.GET.get('cmd', '')
@@ -121,6 +122,8 @@ def websocket_app(environ, start_response):
         if serv not in servs:
             ws.send("undefine server.\n")
             return
+            
+        _hash = md5(login_id + password + serv).digest()
 
         if WebSocketBot.maxconnected <= WebSocketBot.connected:
             ws.send("server overload.\n")
@@ -136,9 +139,9 @@ def websocket_app(environ, start_response):
         ws.send("webbot created by fffonionbinuxmengskysama\n\n")
 
         #reconnects
-        if login_id+password in offline_bots:
+        if _hash in offline_bots:
             ws.send("websocket client reconnected!\n")
-            bot = offline_bots[login_id+password]
+            bot = offline_bots[_hash]
             bot.offline = offline
             bot.ws = ws
             bot.keep_time = keep_time
@@ -148,7 +151,7 @@ def websocket_app(environ, start_response):
                 try:
                     ws.send('')
                     #cleanup()
-                except Exception, e:
+                except Exception as e:
                     print '[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline)
                     return
         #new
@@ -159,7 +162,7 @@ def websocket_app(environ, start_response):
             bot.keep_time = keep_time
             bot.last_offline_keepalive_time = time.time()
             bot.offline = True
-            offline_bots[login_id+password] = bot
+            offline_bots[_hash] = bot
 
         print "conn+%s=%d %s" % (environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR']),
                                  WebSocketBot.connected, environ.get('HTTP_USER_AGENT', '-'))
@@ -195,8 +198,8 @@ def websocket_app(environ, start_response):
                     print 'main loop throw a ex.!\n'
                 break
         WebSocketBot.connected -= 1
-        if login_id+password in offline_bots:
-            offline_bots.pop(login_id+password)
+        if _hash in offline_bots:
+            offline_bots.pop(_hash)
             print "[conn-1=%d]offline bot exit. login_id=%s" % (WebSocketBot.connected, login_id)
         else:
             print "[conn-1=%d]exit. login_id=%s" % (WebSocketBot.connected, login_id)
