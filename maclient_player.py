@@ -182,7 +182,10 @@ class card(object):
         for p in carddict:
             self.cards.append(p)
             for elem in p:  # store as int
-                self.cards[-1][elem] = int(getattr(p, elem))
+                try:
+                    self.cards[-1][elem] = int(getattr(p, elem))
+                except TypeError:
+                    pass
         self.count = len(self.cards)
         # print self.cid('124')
 
