@@ -1,0 +1,151 @@
+1,Rush Combo,3,Medium increase in Max HP,4()
+2,Rush Combo Rise,3,Big increase in Max HP,8()
+3,Rush Combo Crown,3,Very Big increase in Max HP,12()
+4,Princess Combo,3,Small increase in Max HP,6()
+5,Princess Combo Rise,3,Small increase in Max HP,9()
+6,Princess Combo Crown,3,Small increase in Max HP,12()
+7,Prince Combo,3,Small increase in Max HP,6()
+8,Prince Combo Rise,3,Small increase in Max HP,9()
+9,Prince Combo Crown,3,Small increase in Max HP,12()
+10,Assault Force,2,Small increase in ATK,4()
+11,Assault Force Rise,2,Small increase in ATK,6()
+12,Assault Force Crown,2,Small increase in ATK,8()
+13,Technical Force,2,Small increase in ATK,4()
+14,Technical Force Rise,2,Small increase in ATK,6()
+15,Technical Force Crown,2,Small increase in ATK,8()
+16,Magic Force,2,Small increase in ATK,4()
+17,Magic Force Rise,2,Small increase in ATK,6()
+18,Magic Force Crown,2,Small increase in ATK,8()
+19,Assault Combo,3,Small increase in Max HP,4()
+20,Assault Combo Rise,3,Small increase in Max HP,7()
+21,Assault Combo Crown,3,Medium increase in Max HP,10()
+22,Technical Combo,3,Small increase in Max HP,4()
+23,Technical Combo Rise,3,Small increase in Max HP,7()
+24,Technical Combo Crown,3,Medium increase in Max HP,10()
+25,Magic Combo,3,Small increase in Max HP,4()
+26,Magic Combo Rise,3,Small increase in Max HP,7()
+27,Magic Combo Crown,3,Medium increase in Max HP,10()
+28,Support Combo,3,Small increase in Max HP,6(8)
+29,Support Combo Rise,3,Small increase in Max HP,9(8)
+30,Support Combo Crown,3,Medium increase in Max HP,12(8)
+31,Knight Combo,3,Small increase in Max HP,6(12)
+32,Knight Combo Rise,3,Small increase in Max HP,9(12)
+33,Knight Combo Crown,3,Medium increase in Max HP,12(12)
+34,Legend Combo,3,Small increase in Max HP,6(14)
+35,Legend Combo Rise,3,Medium increase in Max HP,9(14)
+36,Legend Combo Crown,3,Medium increase in Max HP,12(14)
+37,Faerie Combo,3,Small increase in Max HP,6(3)
+38,Faerie Combo Rise,3,Medium increase in Max HP,9(3)
+39,Faerie Combo Crown,3,Big increase in Max HP,12(3)
+40,Wild Pair,2,Small increase in ATK,[41,65]
+41,Eternal Gear,2,Small increase in ATK,[2,4,8]
+42,Silent Voice,2,Small increase in ATK,[17,86]
+43,Heart&Angel,2,Small increase in ATK,[3,82]
+44,Hard Armor,3,Small increase in Max HP,[9,107]
+45,Sweeet Cat,2,Small increase in ATK,[37,70,110]
+46,Bright Curse,2,Small increase in ATK,[38,84]
+47,Concentration,4,Small increase in skill activation rate,[3,5,10,82]
+48,Storm Rain,2,Small increase in ATK,[44,49,53]
+49,Prize Chance,2,Small increase in ATK,[72,107]
+50,Saint Frame,2,Small increase in ATK,[2,13,38,46]
+53,Trust Me,3,Small increase in Max HP,[48,85]
+54,Speed Traveller,2,Small increase in ATK,[47,76,100,107]
+55,Straight Liner,2,Small increase in ATK,[5,15]
+56,Absolute Ruler,2,Small increase in ATK,[18,38,44]
+57,Magic Flow,4,Small increase in skill activation rate,[7,68]
+58,Armed Selection,2,Small increase in ATK,[72,80,89]
+59,Adjustment,2,Small increase in ATK,[44,52,53,66]
+60,Dream England,2,Small increase in ATK,[83,102]
+62,Overed Arondight,5,Small increase in ATK and max HP,[1,102,159]
+64,Rail Brave,2,Small increase in ATK,[12,19]
+65,Brand New One,2,Small increase in ATK,[29,102]
+66,Unknown Force,2,Small increase in ATK,[34,80]
+67,Royal Lord,4,Small increase in skill activation rate,[6,35]
+68,Outer World,2,Small increase in ATK,[42,50]
+69,Big Guardian,2,Small increase in ATK,[43,132]
+70,Tactics Assist,3,Small increase in Max HP,[5,51]
+71,Last Revenge,1,Small increase in Excalibur`s damage,[17,54,86]
+72,Millionaire,2,Medium increase in ATK,[39,71]
+73,Honest Sense,2,Small increase in ATK,[2,73]
+75,Take Over One,2,Small increase in ATK,[88,107]
+77,Invincible,3,Small increase in Max HP,[80,104]
+79,Battle and Field,5,Small increase in ATK and max HP,[105,125]
+80,Solid Fighter,2,Small increase in ATK,[126,128]
+81,Fine Player,2,Small increase in ATK,[17,86,127]
+82,Enigma Factor,2,Small increase in ATK,[38,84,129]
+84,Crazy White,2,Small increase in ATK,[5,131]
+86,Reverse Grappler,2,Small increase in ATK,[38,136]
+87,Faerie Bomb,2,Small increase in ATK,[108,137]
+88,Reality Disclosed,2,Small increase in ATK,[132,139]
+89,Generation Road,5,Small increase in ATK and max HP,[6,16,140]
+90,Arch Blast,2,Small increase in ATK,[80,142]
+91,Too Fair,2,Small increase in ATK,[50,143]
+92,Discontent Explosion,2,Small increase in ATK,[42,144]
+93,Destiny`s Link,2,Small increase in ATK,[16,145]
+94,Arrow Rain,2,Medium increase in ATK,[20,22,27,57]
+99,Conquest Creator,2,Small increase in ATK,[21,96]
+100,Triple Weapon,2,Small increase in ATK,[58,60,62]
+102,Money Game,2,Small increase in ATK,[64,90]
+104,Refinement Task,2,Small increase in ATK,[41,66]
+105,Million Sword,1,Medium increase in Excalibur`s damage,[11,45,81]
+106,Grand Shield,5,Small increase in ATK and max HP,[1,109]
+107,Reversible Color,5,Small increase in ATK and max HP,[3,10]
+108,Start Up,5,Small increase in ATK and max HP,[47,141,132,68]
+109,Faeries,1,Big increase in Excalibur`s damage,[111,117,120]
+110,Ultimate Frame,5,Very Big increase in ATK and max HP,[171,172,173,174]
+111,Partner Assault,3,Small increase in Max HP,[11,117]
+112,Partner Technical,3,Small increase in Max HP,[45,120]
+113,Partner Magic,3,Small increase in Max HP,[81,111]
+114,Servant,2,Small increase in ATK,[41,44]
+115,Servant,2,Small increase in ATK,[38,65]
+116,Element Link,2,Small increase in ATK,[2,32]
+117,Element Link,2,Small increase in ATK,[77,137]
+118,Element Link,2,Small increase in ATK,[1,70,72]
+119,Element Link,2,Small increase in ATK,[44,67,110]
+120,Element Link,2,Small increase in ATK,[71,105]
+121,Element Link,2,Small increase in ATK,[1,42]
+122,Element Link,2,Small increase in ATK,[138,144]
+123,Element Link,2,Small increase in ATK,[108,128]
+124,Top Trainer,2,Small increase in ATK,[11,66]
+125,Top Trainer,2,Small increase in ATK,[45,66]
+126,Top Trainer,2,Small increase in ATK,[66,81]
+127,Revenger,2,Small increase in ATK,[75,76]
+128,Revenger,2,Small increase in ATK,[3,18]
+129,Revenger,2,Small increase in ATK,[1,38,73]
+130,Jewelry Combo,3,Small increase in Max HP,4(22)
+131,Jewelry Combo Rise,3,Small increase in Max HP,7(22)
+132,Jewelry Combo Crown,3,Medium increase in Max HP,9(22)
+143,Drive Girl,3,Small increase in Max HP,[198,200]
+148,Lakeside Song,3,Small increase in Max HP,[181,208]
+149,Mystery Drink,3,Small increase in Max HP,[205,206]
+150,Makeup,3,Small increase in Max HP,[206,207]
+151,Closed Memory,5,Small increase in ATK and max HP,[215,220]
+152,Girlfriend,5,Small increase in ATK and max HP,[216,222]
+153,Battle Spinner,5,Small increase in ATK and max HP,[177,178]
+154,Wake Up or Sleep,5,Small increase in ATK and max HP,[176,177]
+157,Dimension Combo,2,Small increase in ATK,4(23)
+158,Dimension Combo Rise,2,Small increase in ATK,7(23)
+159,Dimension Combo Crown,2,Medium increase in ATK,9(23)
+211,Bloody String,3,Small increase in Max HP,[291,293,295]
+238,Starlight Combo,3,Small increase in Max HP,4(24)
+239,Starlight Combo Rise,3,Small increase in Max HP,7(24)
+240,Starlight Combo Crown,3,Small increase in Max HP,9(24)
+248,Gravure Combo,3,Small increase in Max HP,4(25)
+249,Gravure Combo Rise,3,Small increase in Max HP,7(25)
+250,Gravure Combo Crown,3,Small increase in Max HP,9(25)
+254,Magician Girl,3,Small increase in Max HP,[326,343]
+255,Golden Ball,3,Small increase in Max HP,[327,342]
+257,Rope Catch,3,Small increase in Max HP,[334,346]
+264,Get Rewarded,3,Medium increase in Max HP,[319,321,332]
+265,Two of Us,3,Small increase in Max HP,[321,322]
+268,New Castle,3,Small increase in Max HP,[328,109,329]
+269,Couple Ring,3,Small increase in Max HP,[330,329]
+270,High School Combo,3,Small increase in Max HP,4(26)
+271,High School Combo Rise,3,Small increase in Max HP,7(26)
+272,High School Combo Crown,3,Small increase in Max HP,9(26)
+286,Drumstick,3,Small increase in Max HP,[375,382]
+288,Halloween Combo,3,Small increase in Max HP,4(36)
+289,Halloween Combo Rise,3,Small increase in Max HP,7(36)
+290,Halloween Combo Crown,3,Small increase in Max HP,9(36)
+293,Audience,3,Small increase in Max HP,[182]
+295,Champion Dance,3,Small increase in Max HP,[219]

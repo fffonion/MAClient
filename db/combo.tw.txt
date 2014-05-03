@@ -1,0 +1,410 @@
+1,Rush COMBO,3,最大HP提升中,4()
+2,Rush COMBO・Rise,3,最大HP提升大,8()
+3,Rush COMBO・Crown,3,最大HP提升大,12()
+4,Princess COMBO,3,最大HP提升小,6()
+5,Princess COMBO・Rise,3,最大HP提升小,9()
+6,Princess COMBO・Crown,3,最大HP提升小,12()
+7,Prince COMBO,3,最大HP提升小,6()
+8,Prince COMBO・Rise,3,最大HP提升小,9()
+9,Prince COMBO・Crown,3,最大HP提升小,12()
+10,Assault Force,2,攻擊力提升小,4()
+11,Assault Force・Rise,2,攻擊力提升小,6()
+12,Assault Force・Crown,2,攻擊力提升小,8()
+13,Technical Force,2,攻擊力提升小,4()
+14,Technical Force・Rise,2,攻擊力提升小,6()
+15,Technical Force・Crown,2,攻擊力提升小,8()
+16,Magic Force,2,攻擊力提升小,4()
+17,Magic Force・Rise,2,攻擊力提升小,6()
+18,Magic Force・Crown,2,攻擊力提升小,8()
+19,Assault COMBO,3,最大HP提升小,4()
+20,Assault COMBO・Rise,3,最大HP提升小,7()
+21,Assault COMBO・Crown,3,最大HP提升中,10()
+22,Technical COMBO,3,最大HP提升小,4()
+23,Technical COMBO・Rise,3,最大HP提升小,7()
+24,Technical COMBO・Crown,3,最大HP提升中,10()
+25,Magic COMBO,3,最大HP提升小,4()
+26,Magic COMBO・Rise,3,最大HP提升小,7()
+27,Magic COMBO・Crown,3,最大HP提升中,10()
+28,Support COMBO,3,最大HP提升小,6(8)
+29,Support COMBO・Rise,3,最大HP提升小,9(8)
+30,Support COMBO・Crown,3,最大HP提升中,12(8)
+31,Knight COMBO,3,最大HP提升小,6(12)
+32,Knight COMBO・Rise,3,最大HP提升小,9(12)
+33,Knight COMBO・Crown,3,最大HP提升中,12(12)
+34,Legend COMBO,3,最大HP提升小,6(14)
+35,Legend COMBO・Rise,3,最大HP提升中,9(14)
+36,Legend COMBO・Crown,3,最大HP提升中,12(14)
+37,Fairy COMBO,3,最大HP提升小,6(3)
+38,Fairy COMBO・Rise,3,最大HP提升中,9(3)
+39,Fairy COMBO・Crown,3,最大HP提升大,12(3)
+40,Wild Pair,2,攻擊力提升小,[41,65]
+41,Eternal Gear,2,攻擊力提升小,[2,4,8]
+42,Silent Voice,2,攻擊力提升小,[17,86]
+43,heart＆angel,2,攻擊力提升小,[3,82]
+44,hard armour,2,攻擊力提升小,[9,107]
+45,sweet cute,2,攻擊力提升小,[37,70,110]
+46,bright course,2,攻擊力提升小,[38,84]
+47,concentration,4,技能發動率提升小,[3,5,10,82]
+48,storm rain,2,攻擊力提升小,[44,49,53]
+49,prize chance,2,攻擊力提升小,[72,107]
+50,saint frame,2,攻擊力提升小,[2,13,38,46]
+51,night end,2,攻擊力提升小,[76,78,79,87]
+53,trust me,3,最大HP提升小,[48,85]
+54,speed traveler,2,攻擊力提升小,[47,76,100,107]
+55,straight liner,2,攻擊力提升小,[5,15]
+56,absolute ruler,2,攻擊力提升小,[18,38,44]
+57,Magic Flow,4,技能發動率提升小,[7,68]
+58,armed selection,2,攻擊力提升小,[72,80,89]
+59,Adjustment,2,攻擊力提升小,[44,52,53,66]
+60,dream in land,2,攻擊力提升小,[83,102]
+61,broken heart,2,攻擊力提升小,[40,69]
+62,aubade Aroundight,5,攻擊力與最大HP提升小,[1,102,159]
+64,Rail Brave,2,攻擊力提升小,[12,19]
+65,bran new one,2,攻擊力提升小,[29,102]
+66,Unknown Force,2,攻擊力提升小,[34,80]
+67,royalroad,4,技能發動率提升小,[6,35]
+68,outer world,2,攻擊力提升小,[42,50]
+69,big guardian,2,攻擊力提升小,[43,132]
+70,tactics assist,3,最大HP提升小,[5,51]
+71,last revenge,1,王者之劍的傷害提升小,[17,54,86]
+72,millionaire,2,攻擊力提升中,[39,71]
+73,honest sense,2,攻擊力提升小,[2,73]
+74,perfect  defender,3,最大HP提升小,[75,87]
+75,takeover one,2,攻擊力提升小,[88,107]
+76,queens prestige,2,攻擊力提升小,[101,132]
+77,invincible,3,最大HP提升小,[80,104]
+78,misconduct revenger,2,攻擊力提升小,[1,106,138]
+79,battle  under  field,5,攻擊力與最大HP提升小,[105,125]
+80,solid fighter,2,攻擊力提升小,[126,128]
+81,fine player,2,攻擊力提升小,[17,86,127]
+82,Enigma factor,2,攻擊力提升小,[38,84,129]
+83,mistery of love,4,技能發動率提升小,[130,141]
+84,crazy white,2,攻擊力提升小,[5,131]
+86,reverse grappler,2,攻擊力提升小,[38,136]
+87,Fairy Bomb,2,攻擊力提升小,[108,137]
+88,reflects crow,2,攻擊力提升小,[132,139]
+89,generation lord,5,攻擊力與最大HP提升小,[6,16,140]
+90,ark blaster,2,攻擊力提升小,[80,142]
+91,two pair,2,攻擊力提升小,[50,143]
+92,discontent exploder,2,攻擊力提升小,[42,144]
+93,destiny link,2,攻擊力提升小,[16,145]
+94,arrow rain,2,攻擊力提升中,[20,22,27,57]
+95,broken customizer,2,攻擊力提升小,[26,56,97]
+96,Legend End,1,王者之劍的傷害提升中,[23,55,94]
+97,beautiful color,2,攻擊力提升小,[91,92,95]
+98,dirty girls,2,攻擊力提升小,[24,59,98]
+99,conquest creator,2,攻擊力提升小,[21,96]
+100,triple weapon,2,攻擊力提升小,[58,60,62]
+101,closet time,2,攻擊力提升小,[63,93,99]
+102,money game,2,攻擊力提升小,[64,90]
+103,outside legends,2,攻擊力提升小,[28,61]
+104,refinement task,2,攻擊力提升小,[41,66]
+105,million sword,1,王者之劍的傷害提升中,[11,45,81]
+106,grand shield,5,攻擊力與最大HP提升小,[1,109]
+107,reversible color,5,攻擊力與最大HP提升小,[3,10]
+108,start up,5,攻擊力與最大HP提升小,[47,141,132,68]
+109,Fairies,1,王者之劍的傷害提升大,[111,117,120]
+110,ultimate frame,5,攻擊力與最大HP提升大,[171,172,173,174]
+111,partner ・Assault,3,最大HP提升小,[11,117]
+112,partner ・Technical,3,最大HP提升小,[45,120]
+113,partner ・Magic,3,最大HP提升小,[81,111]
+114,servant,2,攻擊力提升小,[41,44]
+115,servant,2,攻擊力提升小,[38,65]
+116,element link,2,攻擊力提升小,[2,32]
+117,element link,2,攻擊力提升小,[77,137]
+118,element link,2,攻擊力提升小,[1,70,72]
+119,element link,2,攻擊力提升小,[44,67,110]
+120,element link,2,攻擊力提升小,[71,105]
+121,element link,2,攻擊力提升小,[1,42]
+122,element link,2,攻擊力提升小,[138,144]
+123,element link,2,攻擊力提升小,[108,128]
+124,top trainer,2,攻擊力提升小,[11,66]
+125,top trainer,2,攻擊力提升小,[45,66]
+126,top trainer,2,攻擊力提升小,[66,81]
+127,revenger,2,攻擊力提升小,[75,76]
+128,revenger,2,攻擊力提升小,[3,18]
+129,revenger,2,攻擊力提升小,[1,38,73]
+130,jewelry COMBO,3,最大HP提升小,4(22)
+131,jewelry COMBO・Rise,3,最大HP提升小,7(22)
+132,jewelry COMBO・Crown,3,最大HP提升中,9(22)
+133,ray of spirits,3,最大HP提升小,[184,186,204]
+134,love ＆ peace,3,最大HP提升小,[180,185]
+135,power mushroom,3,最大HP提升小,[187,191]
+136,longing rabbit,3,最大HP提升中,[188,190,198,209]
+137,soul trade,3,最大HP提升小,[175,185,189]
+138,Intense Gaze,3,最大HP提升小,[190,192,199]
+139,imperial gold,3,最大HP提升小,[180,190,192]
+140,intersectry search,3,最大HP提升小,[193,194]
+142,all broom,3,最大HP提升小,[179,197]
+143,driver girl,3,最大HP提升小,[198,200]
+144,Magic Flower,3,最大HP提升小,[179,191,201]
+145,shared sense,3,最大HP提升小,[200,202]
+146,latent energy,3,最大HP提升小,[201,203]
+148,lakeside song,3,最大HP提升小,[181,208]
+149,mystery drink,3,最大HP提升小,[205,206]
+150,make up,3,最大HP提升小,[206,207]
+153,battle spinner,5,攻擊力與最大HP提升小,[177,178]
+154,wake up on sleep,5,攻擊力與最大HP提升小,[176,177]
+155,秘奧義-劍神招來-,1,王者之劍的傷害提升小,[28,99,183]
+156,minozebuto camp,2,攻擊力提升小,[227,228]
+157,dimension COMBO,2,攻擊力提升小,4(23)
+158,dimension COMBO・Rise,2,攻擊力提升小,7(23)
+159,dimension COMBO・Crown,2,攻擊力提升中,9(23)
+178,twin butterflies,3,最大HP提升小,[225,272]
+179,glory dust,3,最大HP提升小,[255,257]
+180,noise of harp,3,最大HP提升小,[256,258,266]
+181,teachers desire,3,最大HP提升小,[257,228,281]
+186,stress sword,3,最大HP提升小,[262,272]
+188,empty lesson,3,最大HP提升小,[228,261]
+189,over react,3,最大HP提升小,[264,266,262]
+190,prey or curse,3,最大HP提升小,[265,261]
+191,sells talk,3,最大HP提升中,[267,265]
+195,easy  calling,3,最大HP提升大,[271,273,267,269]
+197,narcolepsy,3,最大HP提升小,[273,274,278]
+199,heading,3,最大HP提升小,[275,276]
+200,judge schedule,3,最大HP提升小,[276,275]
+203,madness Knight,3,最大HP提升小,[279,286,274]
+205,top secret,3,最大HP提升小,[281,266,258]
+209,hope of neet,3,最大HP提升中,[288,299,307]
+210,shy sister,3,最大HP提升小,[289,300,309]
+219,Sexy pose,3,最大HP提升小,[300,213]
+220,Deep sleep,3,最大HP提升小,[226,313,306]
+221,Mechanic Mania,3,最大HP提升小,[226,314]
+224,Family Search,3,最大HP提升小,[302,315]
+227,Little lady,3,最大HP提升小,[306,301]
+229,Skeleton armor,3,最大HP提升中,[308,311,312]
+232,Camouflage Skin,3,最大HP提升小,[313,312]
+234,flexible hair,3,最大HP提升小,[315,318]
+235,fall through,3,最大HP提升小,[227,308,311]
+237,Fairy mask,3,最大HP提升中,[310,227,312]
+238,Starlight COMBO,3,最大HP提升小,4(24)
+239,Starlight COMBO・Rise,3,最大HP提升小,7(24)
+240,Starlight COMBO・Crown,3,最大HP提升小,9(24)
+247,Pair Attack,2,攻擊力提升小,[386,387]
+248,Gravure COMBO,3,最大HP提升小,4(25)
+249,Gravure COMBO・Rise,3,最大HP提升小,7(25)
+250,Gravure COMBO・Crown,3,最大HP提升小,9(25)
+251,Pair Attack,3,最大HP提升小,[388,389]
+252,chaos rings,5,攻擊力與最大HP提升,[386,387,388,389]
+258,cost over,3,最大HP提升大,[320,339,340]
+259,Shapes of love,3,最大HP提升小,[320,347]
+260,cut down,3,最大HP提升小,[336]
+268,New castle,3,最大HP提升小,[328,109,329]
+269,coupling,3,最大HP提升小,[330,329]
+270,High School COMBO,3,最大HP提升小,4(26)
+271,High School COMBO・Rise,3,最大HP提升小,7(26)
+272,High School COMBO・Crown,3,最大HP提升小,9(26)
+273,factor friend,3,最大HP提升小,[352,353]
+282,over flowing,3,最大HP提升小,[362,379]
+288,Halloween COMBO,3,最大HP提升小,4(36)
+289,Halloween COMBO・Rise,3,最大HP提升小,7(36)
+290,Halloween COMBO・Crown,3,最大HP提升小,9(36)
+291,otome break,5,攻擊力與最大HP提升小,[566,567,568]
+292,gentleman,3,最大HP提升中,[406,221]
+293,audience,3,最大HP提升小,[182]
+295,champion dancer,3,最大HP提升小,[219]
+296,Force COMBO,3,最大HP提升小,4(81)
+297,Force COMBO・Rise,3,最大HP提升小,6(81)
+298,Force COMBO・Crown,3,最大HP提升中,8(81)
+299,CodeName: Troposphere,2,攻擊力提升大,[858,859,862,863]
+300,Wolf and sheep,2,攻擊力提升中,[856,857,124]
+301,Phantasic Ball,3,最大HP提升小,[852,853,865]
+302,Coordinated operations,4,技能發動率提升中,[866,867,868]
+303,Polluted Ocean,2,攻擊力提升中,[28,548,883]
+304,L.O.L.I.T.A?,5,攻擊力與最大HP提升中,[885,156,883]
+305,Tearless Mermaid,3,最大HP提升中,[883,886,879]
+306,No Off Days,2,攻擊力提升大,[405,868,885]
+307,Under the Britian Sun,2,攻擊力提升大,[299,307,288,893,311]
+308,Ark Trac,2,攻擊力提升小,[891,892]
+309,Universe No.1 Contest,2,攻擊力提升中,[894,442,569]
+310,Not under control,2,攻擊力提升中,[894,183,213]
+311,Sand Castle Treasure,3,最大HP提升中,[896,72,77]
+312,Summer Festival,2,攻擊力提升中,[897,907,906]
+313,H.E.R.O.S.,2,攻擊力提升小,[901,902,903]
+314,Pretty Show,2,攻擊力提升大,[898,900,506]
+315,Need Some Milk,3,最大HP提升中,[904,302,183]
+316,Spacequake Alert,2,攻擊力提升大,[912,913,915]
+317,Normal Life,3,最大HP提升大,[914,917,918]
+318,Kindergarten of Spirits,3,最大HP提升中,[921,923,924]
+319,Tiny Unit,2,攻擊力提升特大,[921,922,923,924,925]
+320,Twilight Struggle,2,攻擊力提升中,[913,920,917]
+321,The End of Summer,2,攻擊力提升中,[929,930,931]
+322,Princess Party,3,最大HP提升中,[446,447,469]
+323,The Dawn of Island,2,攻擊力提升中,[932,440,209]
+324,History Discover,2,攻擊力提升大,[365,209,447]
+325,Sword and Magic,2,攻擊力提升小,[941,942]
+326,Teachers Break,3,最大HP提升中,[938,939,940]
+327,Campus X,2,攻擊力提升中,[947,948,946]
+328,Spirits Wiz,2,攻擊力提升大,[947]
+329,No More Kill,2,攻擊力提升中,[961,962,945]
+330,Harem!,3,最大HP提升大,[329,964,963,965]
+331,Pobby & Boko,4,技能發動率提升小,[223,966]
+332,Railgun Forever,3,最大HP提升中,[960,952]
+333,Outsiders,2,攻擊力提升中,[645,607,603]
+334,Summer Time,3,最大HP提升小,[955,956]
+335,ITEM,4,技能發動率提升小,[958,959]
+336,Now Wars,2,攻擊力提升大,[643,958,959,956]
+337,Fever Night,2,攻擊力提升中,[354,373,363]
+338,Not Cosplaying,2,攻擊力提升大,[555,558,317,348]
+339,Dog and Rabbit,3,最大HP提升小,[562,563]
+340,Wolf and Mr.X,2,攻擊力提升中,[354,562,353]
+341,100 method,3,最大HP提升中,[354,317,348]
+342,Pammered and Spoiled,2,攻擊力提升大,[374,343,977]
+343,M.A.,3,最大HP提升中,[374,354]
+344,Railgun and Index,2,攻擊力提升中,[621,640,623]
+345,Unlucky,3,最大HP提升小,[627,605]
+346,3 people,2,攻擊力提升中,[639,621]
+347,Fight Together,3,最大HP提升中,[626,619,609]
+348,All Together,3,最大HP提升中,[642,622,602]
+349,EVERYTOWN,2,攻擊力提升小,[979,980]
+350,Have A Problem,2,攻擊力提升中,[969,970,971]
+351,Spring Time,3,最大HP提升大,[973,1000,975]
+352,All Spirits,2,攻擊力提升中,[1005,991,992]
+353,Maple and Moon,3,最大HP提升小,[993,999]
+354,Welcome To Spring House,2,攻擊力提升大,[1000,975,997,998]
+355,Erina and Shafin,2,攻擊力提升小,[996,974]
+356,RELAX COMBO,3,最大HP提升小,4(84)
+357,RELAX COMBO・Rise,3,最大HP提升小,6(84)
+358,RELAX COMBO・Crown,3,最大HP提升中,8(84)
+359,Teacher COMBO,3,最大HP提升小,4(7)
+360,Teacher COMBO・Rise,3,最大HP提升小,7(7)
+361,Teacher COMBO・Crown,3,最大HP提升小,9(7)
+362,Autumn Sisters,2,攻擊力提升大,[1005,1014,1015,991,992]
+363,Festival Night,2,攻擊力提升大,[1008,1009,1011,1010]
+364,CHEER COMBO,3,最大HP提升小,4(85)
+365,CHEER COMBO・Rise,3,最大HP提升小,6(85)
+366,CHEER COMBO・Crown,3,最大HP提升中,8(85)
+367,Cheer Party,2,攻擊力提升小,[1021,1018]
+368,Cheer Leading,3,最大HP提升中,[1022,1023,1024]
+369,Cheer Time,2,攻擊力提升中,[1017,1019,1020]
+370,Cheer Festival,2,攻擊力提升大,[1030,1025,1026,1027]
+371,Cannot H,3,最大HP提升大,[1038,1043,1041]
+372,Cheer Twins,2,攻擊力提升小,[1023,1029]
+373,Cannot H 2,2,攻擊力提升中,[1037,1039,1040]
+374,Princess Dream,3,最大HP提升大,[504,301,1057]
+375,Princess Tea Time,2,攻擊力提升中,[468,448,1056]
+376,Freedom,3,最大HP提升中,[1055,1054,473]
+377,Prince and Princess,3,最大HP提升中,[456,467,710]
+378,Word and World,2,攻擊力提升小,[1060,1061]
+379,Twins of Wings,2,攻擊力提升中,[1062,1063,1064,1065]
+380,Others,3,最大HP提升中,[1066,1067,1068]
+381,The Power of Word,3,最大HP提升中,[1070,1071,1072]
+382,School Days,3,最大HP提升大,[1070,1072,1075,1073]
+383,The World of Control,2,攻擊力提升中,[1073,1074,1075]
+384,Xmas Eve,3,最大HP提升中,[1079,1080,1081]
+385,Present Gift,2,攻擊力提升中,[1078,1082,1077]
+386,Battle Ship Girls,3,最大HP提升大,[1048,1047,1050]
+387,Empire Strike,2,攻擊力提升大,[1045,1046,1049]
+388,Back Hide,3,最大HP提升中,[652,477,751]
+389,Life in the Boat,2,攻擊力提升中,[495,1053,1051]
+390,Magic Trip,2,攻擊力提升特大,[441,637,711,750,749]
+391,Bride and Pride,3,最大HP提升大,[340,755,749]
+392,Dargon of the Cloud,2,攻擊力提升中,[570,571,572]
+393,XMAS COMBO,3,最大HP提升小,4(88)
+394,XMAS COMBO・Rise,3,最大HP提升小,6(88)
+395,XMAS COMBO・Crown,3,最大HP提升中,8(88)
+396,Dream World,2,攻擊力提升大,[653,654,662,663]
+397,Knight and Princess,3,最大HP提升中,[406,755]
+398,Oda Faction,3,最大HP提升大,[1095,1101,1106]
+399,Special Religions,2,攻擊力提升中,[1109,1115,1121]
+400,Sengo Loli,2,攻擊力提升中,[1114,1116,1118]
+401,Trainersisters,3,最大HP提升小,[1123,1124]
+402,Cats and Dogs,2,攻擊力提升小,[395,1109]
+403,It Eill Be End,3,最大HP提升小,[1117,1120,1125]
+404,Frontier,2,攻擊力提升中,[1113,1102,1111]
+405,Oda Attack,5,攻擊力與最大HP提升大,[1112,1105,1101,1099,1100]
+406,Oda Nubuna,2,攻擊力提升大,[1095,1107,1097]
+407,Good Pair?,3,最大HP提升小,[1108,1114]
+408,Great Unity,2,攻擊力提升大,[1108,1104,1105]
+409,Secret Mission,1,王者之劍的傷害提升中,[1110,1103,1100]
+410,Opinions,3,最大HP提升中,[1098,1108,1110]
+411,Happy New Year,3,最大HP提升大,[1145,1128,1131]
+412,Tea Time Dessert,2,攻擊力提升中,[1139,1141,1136]
+413,Lunch,5,攻擊力與最大HP提升中,[1135,1140,1134,1133]
+414,Happy Spring,3,最大HP提升中,[1132,1129,1130]
+415,White Bride,3,最大HP提升大,[761,754,756]
+416,Happiness Time,2,攻擊力提升大,[1148,762,753]
+417,Not Alone,2,攻擊力提升中,[757,758,759]
+418,BRIDE COMBO,3,最大HP提升小,4(90)
+419,BRIDE COMBO・Rise,3,最大HP提升小,6(90)
+420,BRIDE COMBO・Crown,3,最大HP提升中,8(90)
+421,Important Time,3,最大HP提升大,[1144,1149,1147]
+422,Spring Brust,2,攻擊力提升中,[760,1146,1143]
+423,SISTER COMBO,3,最大HP提升小,4(94)
+424,SISTER COMBO・Rise,3,最大HP提升小,6(94)
+425,SISTER COMBO・Crown,3,最大HP提升中,8(94)
+426,Green Route,3,最大HP提升大,[668,670,671]
+427,Dream of Sora,2,攻擊力提升特大,[776,668,578]
+428,Love of Bros,2,攻擊力提升大,[1154,1153,576]
+429,Time and Space,2,攻擊力提升大,[384,545,813,783]
+430,Magic Sisters,2,攻擊力提升大,[669,815,677]
+431,Happy Sisters Time,3,最大HP提升大,[849,672,676]
+432,Mulan,2,攻擊力提升小,[1173,1007]
+433,Formosa Mo Niang,4,技能發動率提升中,[1174,1170]
+434,Pretty Princess,3,最大HP提升中,[564,502]
+435,Sick Girls?,2,攻擊力提升中,[501,481]
+436,Date of Chocolate,4,技能發動率提升中,[482,483,492]
+437,Slient and Quiet,3,最大HP提升大,[491,490,481]
+438,Sword of Girls,2,攻擊力提升中,[480,481]
+439,Money Everywhere,5,攻擊力與最大HP提升中,[500,502]
+440,Magical Girls,2,攻擊力提升大,[500,1174,758]
+441,Mysterous Animals?,3,最大HP提升中,[544,598,481]
+442,What Is That,5,攻擊力與最大HP提升大,[784,1171,1157]
+443,Girls Teacher,2,攻擊力提升大,[1157,1168,1169]
+444,Fabulous House,3,最大HP提升中,[1161,1167,1158]
+445,New Year Arthur,1,王者之劍的傷害提升特大,[1179,1180,1181]
+446,Girls in Festival,3,最大HP提升特大,[1182,1187,1185,1186]
+447,Moonlights,2,攻擊力提升特大,[1182,1183,1184]
+448,Power Of GODs,5,攻擊力與最大HP提升大,[1204,1205,1206]
+449,Men Of GODs,2,攻擊力提升中,[1207,1217]
+450,Lost Race,3,最大HP提升大,[1208,1209,1210,1211]
+451,Big Tree,2,攻擊力提升大,[1213,1214,1215]
+452,Olympus Power,3,最大HP提升特大,[1216,1214,1204]
+453,Phenomena life,2,攻擊力提升大,[1218,1205,1206]
+454,Heaven COMBO,3,最大HP提升小,4(82)
+455,Heaven COMBO・Rise,3,最大HP提升小,6(82)
+456,Heaven COMBO・Crown,3,最大HP提升中,8(82)
+457,Meet up Musha,3,最大HP提升大,[1189,1190,1192]
+458,The end of the war,2,攻擊力提升中,[1199,1201]
+459,Incorrect meeting,2,攻擊力提升大,[1191,1069]
+460,Meet up Musha,3,最大HP提升中,[1225,1229]
+461,Meet up Musha,3,最大HP提升大,[1222,1220,1230]
+462,Incorrect meeting,2,攻擊力提升小,[1232,1221]
+463,Food COMBO,3,最大HP提升小,4(92)
+464,Food COMBO・Rise,3,最大HP提升小,6(92)
+465,Food COMBO・Crown,3,最大HP提升中,8(92)
+466,Service COMBO,3,最大HP提升小,4(96)
+467,Service COMBO・Rise,3,最大HP提升小,6(96)
+468,Service COMBO・Crown,3,最大HP提升中,8(96)
+469,Spring COMBO,3,最大HP提升小,4(97)
+470,Spring COMBO・Rise,3,最大HP提升小,6(97)
+471,Spring COMBO・Crown,3,最大HP提升中,8(97)
+472,Enterment COMBO,3,最大HP提升小,4(98)
+473,Enterment COMBO・Rise,3,最大HP提升小,6(98)
+474,Enterment COMBO・Crown,3,最大HP提升中,8(98)
+475,Sword COMBO,3,最大HP提升小,4(99)
+476,Sword COMBO・Rise,3,最大HP提升小,6(99)
+477,Sword COMBO・Crown,3,最大HP提升中,8(99)
+478,HEART COMBO,3,最大HP提升小,4(33)
+479,HEART COMBO・Rise,3,最大HP提升小,6(33)
+480,HEART COMBO・Crown,3,最大HP提升中,8(33)
+481,QUEEN COMBO,3,最大HP提升小,4(32)
+482,QUEEN COMBO・Rise,3,最大HP提升小,6(32)
+483,QUEEN COMBO・Crown,3,最大HP提升中,8(32)
+484,ANGEL COMBO,3,最大HP提升小,4(28)
+485,ANGEL COMBO・Rise,3,最大HP提升小,6(28)
+486,ANGEL COMBO・Crown,3,最大HP提升中,8(28)
+487,Beast COMBO,3,最大HP提升小,4(35)
+488,Beast COMBO・Rise,3,最大HP提升小,6(35)
+489,Beast COMBO・Crown,3,最大HP提升中,8(35)
+490,Thank COMBO,3,最大HP提升小,4(40)
+491,Thank COMBO・Rise,3,最大HP提升小,6(40)
+492,Thank COMBO・Crown,3,最大HP提升中,8(40)
+493,The quarrel of god slayers.,3,最大HP提升大,[1259,1245,1262]
+494,The sword of magic.,2,攻擊力提升中,[1242,1244,1240]
+495,The exist of crack.,5,攻擊力與最大HP提升小,[1237,1238]
+496,It can't be eat.,3,最大HP提升中,[1236,1263,1260]
+497,Sword of Sword,3,最大HP提升大,[1241,1236,1264,1265]
+498,Sports Contest,5,攻擊力與最大HP提升大,[1227,1224,1255]
+499,Happy Entertainment,3,最大HP提升大,[1250,1254,1249]
+500,Festival Fever,3,最大HP提升特大,[1271,1248,1273]

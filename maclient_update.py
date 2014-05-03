@@ -23,7 +23,7 @@ def get_revision(loc):
         raise KeyError('No server revision data found for "%s"' % loc)
     return rev[1:]
 
-def save_revision(loc, cardrev = None, itemrev = None, bossrev = None):
+def save_revision(loc, cardrev = None, itemrev = None, bossrev = None, cborev = None):
     rev_str = open(opath.join(getPATH0, 'db/revision.txt')).read()
     local_revs = rev_str.split('\n')
     rev = None
@@ -34,27 +34,30 @@ def save_revision(loc, cardrev = None, itemrev = None, bossrev = None):
             break
     if not rev:
         raise KeyError('No server revision data found for "%s"' % loc)
+    if len(rev) < 5:#legacy db support
+        rev += ['0']
     if cardrev:
         rev[1] = str(cardrev)
     if itemrev:
         rev[2] = str(itemrev)
-    if len(rev) < 4:#legacy db support
-        rev += ['0']
     if bossrev:
         rev[3] = str(bossrev)
+    if cborev:
+        rev[4] = str(cborev)
     rev_str = rev_str.replace(r, ','.join(rev))
     open(opath.join(getPATH0, 'db/revision.txt'), 'w').write(rev_str)
 
 def check_revision(loc, rev_tuple):
-    rev = get_revision(loc) + [0]#legacy db support
+    rev = get_revision(loc) + [0, 0]#legacy db support
     if rev:
-        return rev_tuple[0] > float(rev[0]), rev_tuple[1] > float(rev[1]), rev_tuple[2] > float(rev[2])
+        return rev_tuple[0] > float(rev[0]), rev_tuple[1] > float(rev[1]), rev_tuple[2] > float(rev[2]), rev_tuple[3] > float(rev[3])
     else:
-        return False, False, False
+        return False, False, False, False
 
 def update_master(loc, need_update, poster):
     replace_AND = re.compile('&(?!#)')#no CDATA, sad
-    new_rev = [None, None, None]
+    #card, item, boss, combo
+    new_rev = [None, None, None, None]
     for s in poster.ht.connections:#cleanup socket pool
         poster.ht.connections[s].close()
     poster.ht.connections = {}
@@ -113,6 +116,24 @@ def update_master(loc, need_update, poster):
             open(opath.join(getPATH0, 'db/boss.%s.txt' % loc), 'w').write('\n'.join(strs))
         new_rev[2] = resp.header.revision.boss_rev
         save_revision(loc, bossrev = new_rev[2])
+    if need_update[3]:
+        a, b = poster.post('masterdata/combo/update', postdata = postdata)
+        resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response
+        cbo = resp.body.master_data.master_combo_data.combo
+        strs = ['%s,%s,%s,%s,%s' % (
+                c.id,
+                c.name,
+                c.effect_id,
+                c.effect,
+                'req_cards' in c and ('[%s]' % c.req_cards) or (
+                'req_num_card' in c and ('%s(%s)' % (c.req_num_card, ('req_form_type' in c and c.req_form_type or ''))) or '')
+            ) for c in cbo] + ['']
+        if PYTHON3:
+            open(opath.join(getPATH0, 'db/combo.%s.txt' % loc), 'w', encoding = 'utf-8').write('\n'.join(strs))
+        else:
+            open(opath.join(getPATH0, 'db/combo.%s.txt' % loc), 'w').write('\n'.join(strs))
+        new_rev[3] = resp.header.revision.combo_rev
+        save_revision(loc, cborev = new_rev[3])
     for s in poster.ht.connections:#cleanup socket pool
         poster.ht.connections[s].close()
     poster.ht.connections = {}
