@@ -228,7 +228,7 @@ class boss(object):
             else:
                 lastname = c[1]
         lastname = None
-        self.name_wake = du8(self.name_wake.lstrip('|'))
+        self.name_wake = raw_du8(self.name_wake.lstrip('|'))
 
 
 def check_exclusion(inpstr):

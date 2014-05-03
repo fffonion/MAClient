@@ -244,7 +244,11 @@ class MAClient():
             try:
                 dec = XML2Dict().fromstring(_dec).response
             except:
-                dec = XML2Dict().fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
+                try:
+                    dec = XML2Dict().fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
+                except:
+                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请联系作者\nhttp://yooooo.us/2013/maclient')
+                    self._exit(0)
             try:
                 err = dec.header.error
             except:
