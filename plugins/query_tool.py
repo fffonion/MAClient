@@ -7,7 +7,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = 'query infomation of player'
 __author = 'fffonion'
-__version__ = 0.36
+__version__ = 0.37
 hooks = {}
 extra_cmd = {'q_item':'query_item', 'qi':'query_item', 'q_holo':'query_holo', 'qh':'query_holo', 'qgc':'query_guild_contribution','q_rank':'query_rank','qr':'query_rank'}
 # end meta
@@ -25,9 +25,9 @@ def query_item(plugin_vals):
             if j > 0:  # has
                 # calc utf-8 length
                 l1 = len(n)  # ascii length
-                n = du8(n)
+                n = raw_du8(n)
                 l2 = len(n)  # char count
-                print(du8('%s%s%s' % (n, ' ' * int(15 - l2 - (l1 - l2) / 2), j)))
+                print(safestr('%s%s%s' % (n, ' ' * int(15 - l2 - (l1 - l2) / 2), j)))
     return do
 
 # query holo cards
@@ -143,7 +143,10 @@ def query_rank(plugin_vals):
                     return
                 _url = _lib.query_base % _rev
                 x = opener.open(urllib2.Request(_url, headers = _header)).read()
-            show_it(x)
+            try:
+                show_it(x)
+            except IndexError:
+                logger.warning('匹配失败，请重新登录；如果问题仍然存在，请更新插件')
         else:#cn
             from xml2dict import XML2Dict
             po = plugin_vals['poster']
