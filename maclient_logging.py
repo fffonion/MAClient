@@ -24,7 +24,7 @@ class Logging(type(sys)):
     NOTSET = 0
     def __init__(self, *args, **kwargs):
         self.level = self.__class__.INFO
-        self.__write = __write = sys.stdout.write
+        self.__write = __write = lambda x:sys.stdout.write(safestr(x))
         self.isatty = getattr(sys.stdout, 'isatty', lambda: False)()
         self.__set_error_color = lambda: None
         self.__set_warning_color = lambda: None
@@ -66,10 +66,10 @@ class Logging(type(sys)):
     def log(self, level, fmt, *args, **kwargs):
         # fmt=du8(fmt)
         try:
-            self.__write(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args)))
+            self.__write(raw_du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args)))
         except TypeError:
             fmt = fmt.replace('%','%%')
-            self.__write(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args)))
+            self.__write(raw_du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args)))
         #sys.stdout.flush()
         return '[%s] %s\n' % (time.strftime('%b %d %X', time.localtime()), fmt % args)
 
