@@ -66,7 +66,7 @@
 3011,Morgause,218960
 3012,Gawain,196420
 3013,Arthur: Techno Smith,229540
-3014,Lacelot,207460
+3014,Lancelot,207460
 3015,Arthur: Blade Protector,229540
 3016,Second - Launfal,207460
 3017,Peg Powler,229540
@@ -78,8 +78,8 @@
 3023,Arthur: Sorcery King,245640
 3024,Maleagant Soldier,234600
 3025,Arthur: Blade Protector,245640
-3026,Lacelot,267260
-3027,Lacelot,267260
+3026,Lancelot,267260
+3027,Lancelot,267260
 3028,Arthur: Blade Protector,351072
 3029,Arthur: Techno Smith,267260
 3030,Mordred Soldier,286120
@@ -94,6 +94,9 @@
 3039,Class 1 Dragon,312340
 3040,Mordred Soldier,310040
 3041,Class 1 Dragon,312340
+3042,Mordred,320160
+3043,Mordred,326600
+3044,Mordred,333040
 3045,Mordred Final Form 1,188784
 3046,Mordred Final Form 1,188784
 3047,Mordred最終形態2,188784
@@ -127,3 +130,7 @@
 60010,Arousal Kelpie,15585
 60011,Silky,8537
 60012,Arousal Silky,15585
+60013,Dryad,8537
+60014,Arousal Dryad,17002
+60015,Elena,8537
+60016,Arousal Elena,17002

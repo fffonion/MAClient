@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.2-build20140503'
+__version__ = '1.2-build20140504'
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = max_card_count_sg = 250
 max_fp_cn = max_fp_kr = max_fp_sg = 50000
@@ -35,7 +35,7 @@ key_rsa_pool = [
 app_ver_cn = 102
 app_ver_tw = 200
 app_ver_kr = 108
-app_ver_jp = 304
+app_ver_jp = 310
 app_ver_sg = 100
 # wake
 name_wake_rare = '魅．'
