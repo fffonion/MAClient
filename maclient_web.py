@@ -56,7 +56,7 @@ class cleanup(Thread):
                 if time.time() - bot.last_offline_keepalive_time > bot.keep_time:
                     try:
                         bot.end()
-                        print 'request shutdown offline bot %d' % bot.loginid
+                        print('request shutdown offline bot %d' % bot.loginid)
                     except:
                         pass
             gevent.sleep(60)
@@ -109,7 +109,7 @@ def websocket_app(environ, start_response):
                     ws.send('')
                     #cleanup()
                 except Exception as e:
-                    print '[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline)
+                    print('[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline))
                     return
         #new
         reload(maclient_web_bot)
@@ -123,10 +123,10 @@ def websocket_app(environ, start_response):
             bot.offline = True
             offline_bots[_hash] = bot
 
-        print "conn+%s=%d %s" % (environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR']),
-                                 connected, environ.get('HTTP_USER_AGENT', '-'))
+        print("conn+%s=%d %s" % (environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR']),
+                                 connected, environ.get('HTTP_USER_AGENT', '-')))
 
-        print "login id=%s" % login_id
+        print("login id=%s" % login_id)
 
         offline_timeout_stop = False
         while True:
@@ -136,16 +136,16 @@ def websocket_app(environ, start_response):
                 #import traceback; traceback.print_exc()
                 if bot.offline:
                     bot.ws = None
-                    print '[%s]id = %s keep offline work\n' % (e, login_id)
+                    print('[%s]id = %s keep offline work\n' % (e, login_id))
                     continue
-                print '[%s]id = %s exit bot\n' % (e, login_id)
+                print('[%s]id = %s exit bot\n' % (e, login_id))
                 break
             except HeheError:#hehe
-                print 'id = %s force exit.' % login_id
+                print('id = %s force exit.' % login_id)
                 offline_timeout_stop = True
                 break
             except Exception, e:
-                print 'id = %s except offline=%s' % (login_id, offline)
+                print('id = %s except offline=%s' % (login_id, offline))
                 import traceback; traceback.print_exc(limit = 2)
                 if not bot.offline:
                     break
@@ -154,14 +154,14 @@ def websocket_app(environ, start_response):
                 except WebSocketError:
                     pass
                 except Exception, e:
-                    print 'main loop throw a ex.!\n'
+                    print('main loop throw a ex.!\n')
                 break
         connected -= 1
         if _hash in offline_bots:
             offline_bots.pop(_hash)
-            print "[conn-1=%d]offline bot exit. login_id=%s" % (connected, login_id)
+            print("[conn-1=%d]offline bot exit. login_id=%s" % (connected, login_id))
         else:
-            print "[conn-1=%d]exit. login_id=%s" % (connected, login_id)
+            print("[conn-1=%d]exit. login_id=%s" % (connected, login_id))
         # try:
         #     bot.end()
         # except HeheError:

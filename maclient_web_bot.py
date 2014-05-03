@@ -14,7 +14,7 @@ class HeheError(Exception):
 class WebSocketBot(MAClient):
 
     def __init__(self, ws, serv, die_callback, born_callback):
-        MAClient.__init__(self, configfile = 'config_web.ini', servloc = serv)
+        super(self.__class__, self).__init__(configfile = 'config_web.ini', servloc = serv)
         self.ws = ws
         self.shellbyweb = True
         self.offline = False
@@ -53,7 +53,7 @@ class WebSocketBot(MAClient):
     def _dopost(self, *args, **kwargs):
         if self.request_exit:
             raise HeheError('bye')
-        return MAClient._dopost(self, *args, **kwargs)
+        return super(self.__class__, self)._dopost(*args, **kwargs)
 
     def end(self):
         # set on async exit
