@@ -51,9 +51,9 @@ eval_task = []
 #duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 
 if PYTHON3:
-    setT = lambda strt : os.system(du8('TITLE %s' % strt))
+    setT = lambda strt : os.system(raw_du8('TITLE %s' % strt))
 elif NICE_TERM:
-    setT = lambda strt : print(du8('[SET-TITLE]%s'%strt))
+    setT = lambda strt : print(raw_du8('[SET-TITLE]%s'%strt))
 else:
     #if not PYTHON3:
     #    strt = strt.decode('utf-8').encode('cp936', 'ignore')
@@ -62,7 +62,7 @@ else:
         def setT(strt):
             System.Console.Title = strt
     else:
-        setT = lambda strt : os.system(du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+        setT = lambda strt : os.system(raw_du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 
 class set_title(threading.Thread):
     def __init__(self, macInstance):
@@ -244,7 +244,11 @@ class MAClient():
             try:
                 dec = XML2Dict().fromstring(_dec).response
             except:
-                dec = XML2Dict().fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
+                try:
+                    dec = XML2Dict().fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
+                except:
+                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请联系作者\nhttp://yooooo.us/2013/maclient')
+                    self._exit(0)
             try:
                 err = dec.header.error
             except:
@@ -708,7 +712,7 @@ class MAClient():
                         ))
                 else:
                     self.logger.error(res[0])
-                    return False, 0
+                    return False, -1
                 if test_mode:
                     return False, 0
         else:
@@ -1438,6 +1442,8 @@ class MAClient():
             self.logger.debug('fairy_battle:abort battle sequence.')
             return False
         _has_set, _last_bc = self.set_card(cardd, cur_fairy = fairy)
+        if _last_bc == -1:#自动配卡出错
+            _has_set, _last_bc = self.set_card('min')
         if _has_set:
             fairy = fairy_floor()  # 设完卡组返回时
             if not fairy:

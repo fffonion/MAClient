@@ -57,7 +57,7 @@ class plugins():
         for p in self.plugins:
             if self.show_tip and not self.has_shown_tips:
                 try:
-                    print('%s:%s' % (p, du8(self.plugins[p].__tip__)))
+                    print('%s:%s' % (p, raw_du8(self.plugins[p].__tip__)))
                 except AttributeError:
                     pass
             req_ver = self._get_module_meta(p, 'require_version', nowarning = True)

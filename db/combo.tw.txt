@@ -405,3 +405,6 @@
 495,The exist of crack.,5,攻擊力與最大HP提升小,[1237,1238]
 496,It can't be eat.,3,最大HP提升中,[1236,1263,1260]
 497,Sword of Sword,3,最大HP提升大,[1241,1236,1264,1265]
+498,Sports Contest,5,攻擊力與最大HP提升大,[1227,1224,1255]
+499,Happy Entertainment,3,最大HP提升大,[1250,1254,1249]
+500,Festival Fever,3,最大HP提升特大,[1271,1248,1273]
