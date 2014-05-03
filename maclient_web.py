@@ -12,10 +12,10 @@ from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from webob import Request
 import sys
-
-from maclient import MAClient
-import maclient
 from datetime import datetime, timedelta, tzinfo
+
+import maclient_web_bot
+from maclient_web_bot import WebSocketBot, mac_version, HeheError
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -28,64 +28,19 @@ class zh_BJ(tzinfo):
 
 startup_time = datetime.now(zh_BJ()).strftime('%m.%d %H:%M:%S')
 _index_cache = open("web.htm").read().replace('[startup_time]', startup_time)\
-                .replace('[version_str]', str(maclient.__version__))
+                .replace('[version_str]', str(mac_version))
 
-class HeheError(Exception):
-    def __init__(self, msg):
-        Exception.__init__(self, msg)
-
-class WebSocketBot(MAClient):
-    connected = 0
-    maxconnected = 333
-
-    def __init__(self, ws, serv):
-        MAClient.__init__(self, configfile = 'config_web.ini', servloc = serv)
-        self.ws = ws
-        self.shellbyweb = True
-        self.offline = False
-        self.last_offline_keepalive_time = time.time()
-        self.keep_time = 12 * 3600
-        self.loginid = 0
-        self.__class__.connected += 1
-        self.logger.logfile = None
-        self.logger.logpipe(self.logpipe)
-        self.request_exit = False
-        #Bot.__init__(self)
-
-    def logpipe(self, _str):
-        if self.shellbyweb:
-            if self.ws != None or self.offline == False:
-            #mac.ws == None mac.offline == False should throw a ex
-                self.ws.send(_str)
-            else:
-                pass#sys.stdout.write(_str)
-
-    def run(self, username, password, cmd = ''):
-        self.login(username, password)
-        #self.initplayer(dec)
-        if cmd != '':
-            self.tasker('w', cmd)
-        else:
-            self.tasker('w')
-
-    #override
-    def _exit(self, code):
-        self.end()
-
-    #override
-    def _dopost(self, *args, **kwargs):
-        if self.request_exit:
-            raise HeheError('bye')
-        return MAClient._dopost(self, *args, **kwargs)
-
-    def end(self):
-        # set on async exit
-        self.request_exit = True
-        if self.player.filedesc > 0:
-            os.close(self.player.filedesc)
-        #self.__class__.connected -= 1
 
 offline_bots = {}
+maxconnected, connected = 333, 0
+
+def die_callback():
+    global connected
+    connected-=1
+
+def born_callback():
+    global connected
+    connected+=1
 
 class cleanup(Thread):
     def __init__(self):
@@ -108,6 +63,8 @@ class cleanup(Thread):
 
 def websocket_app(environ, start_response):
     #cleanup()
+    global connected
+    global maxconnected
     request = Request(environ)
     if request.path == '/bot' and 'wsgi.websocket' in environ:
         ws = environ["wsgi.websocket"]
@@ -125,7 +82,7 @@ def websocket_app(environ, start_response):
             
         _hash = md5(login_id + password + serv).digest()
 
-        if WebSocketBot.maxconnected <= WebSocketBot.connected:
+        if maxconnected <= connected:
             ws.send("server overload.\n")
             return
 
@@ -155,7 +112,9 @@ def websocket_app(environ, start_response):
                     print '[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline)
                     return
         #new
-        bot = WebSocketBot(ws, serv)
+        reload(maclient_web_bot)
+        from maclient_web_bot import WebSocketBot
+        bot = WebSocketBot(ws, serv, die_callback, born_callback)
         bot.loginid = login_id
 
         if offline:
@@ -165,7 +124,7 @@ def websocket_app(environ, start_response):
             offline_bots[_hash] = bot
 
         print "conn+%s=%d %s" % (environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR']),
-                                 WebSocketBot.connected, environ.get('HTTP_USER_AGENT', '-'))
+                                 connected, environ.get('HTTP_USER_AGENT', '-'))
 
         print "login id=%s" % login_id
 
@@ -197,12 +156,12 @@ def websocket_app(environ, start_response):
                 except Exception, e:
                     print 'main loop throw a ex.!\n'
                 break
-        WebSocketBot.connected -= 1
+        connected -= 1
         if _hash in offline_bots:
             offline_bots.pop(_hash)
-            print "[conn-1=%d]offline bot exit. login_id=%s" % (WebSocketBot.connected, login_id)
+            print "[conn-1=%d]offline bot exit. login_id=%s" % (connected, login_id)
         else:
-            print "[conn-1=%d]exit. login_id=%s" % (WebSocketBot.connected, login_id)
+            print "[conn-1=%d]exit. login_id=%s" % (connected, login_id)
         # try:
         #     bot.end()
         # except HeheError:
@@ -210,8 +169,8 @@ def websocket_app(environ, start_response):
         #auto release del bot
     else:
         start_response("200 OK", [("Content-Type", "text/html")])
-        ol = WebSocketBot.connected# + 169
-        return _index_cache.replace('[connected]', '%d/%d' % (ol, len(offline_bots))).replace('[maxconnected]', '%s' % WebSocketBot.maxconnected)
+        ol = connected# + 169
+        return _index_cache.replace('[connected]', '%d/%d' % (ol, len(offline_bots))).replace('[maxconnected]', '%s' % maxconnected)
 
 if __name__ == '__main__':
     cleanup().start()
