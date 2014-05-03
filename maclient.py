@@ -725,7 +725,7 @@ class MAClient(object):
                 return False, int(self._read_config('record', 'last_set_bc') or '0')
             if cardid == '':
                 self.logger.warning('set_card:不存在的卡组名？')
-                return False, 0
+                return False, -1
             cardid = cardid.split(',')
             param = []
             last_set_bc = 0
@@ -1441,7 +1441,7 @@ class MAClient(object):
             self.logger.debug('fairy_battle:abort battle sequence.')
             return False
         _has_set, _last_bc = self.set_card(cardd, cur_fairy = fairy)
-        if _last_bc == -1:#自动配卡出错
+        if _last_bc == -1:#自动配卡出错或卡组不存在
             _has_set, _last_bc = self.set_card('min')
         if _has_set:
             fairy = fairy_floor()  # 设完卡组返回时
@@ -1718,7 +1718,7 @@ class MAClient(object):
                 # else:
                 #    if 'name' in users:#只有一个
                 #        users=[users]
-                strf = du8('已有好友个数：%d\n' % len(users))
+                strf = '已有好友个数：%d\n' % len(users)
                 i = 1
                 deluser = None
                 maxlogintime = 0
@@ -1737,7 +1737,7 @@ class MAClient(object):
                         deluser = user
                         maxlogintime = user.logintime
                     i += 1
-                print(du8(strf).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+                print(du8(strf))
                 confirm = False
                 if deluser != None:
                     if not autodel:
@@ -1780,7 +1780,7 @@ class MAClient(object):
                         i, user.name, user.town_level, user.last_login, user.friends, user.friend_max, user.cost
                     )
                     i += 1
-                print(du8('%s%s' % ('申请列表:\n', strf)).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+                print(du8('%s%s' % ('申请列表:\n', strf)))
                 adduser = raw_inputd('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser != ['']:
                     for u in adduser:
@@ -1822,7 +1822,7 @@ class MAClient(object):
                         i, user.name, user.town_level, user.last_login, user.friends, user.friend_max, user.cost
                     )
                     i += 1
-                print(du8('%s%s' % ('搜索结果:\n', strf)).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+                print(du8('%s%s' % ('搜索结果:\n', strf)))
                 usel = raw_inputd('选择要添加的好友序号, 空格分割多个，回车返回> ')
                 uids = []
                 for u in usel.split(' '):

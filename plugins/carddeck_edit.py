@@ -9,7 +9,7 @@ from xml2dict import XML2Dict
 # start meta
 __plugin_name__ = 'scratch carddeck from REAL client'
 __author = 'fffonion'
-__version__ = 0.41
+__version__ = 0.42
 hooks = {}
 extra_cmd = {'scratch_carddeck':'scratch_carddeck', 'scc':'scratch_carddeck','check_debug':'check_debug','cd':'check_debug',
 'read_decks':'read_decks','rd':'read_decks'}
@@ -71,7 +71,7 @@ def read_decks(plugin_vals):
                 print(du8('\n'.join(['|'.join(map(
                         lambda x:'   %-12s' % pcard.db[pcard.sid(x).master_card_id][0],
                         C[i:min(i + 3, len(CL))]
-                     )) for i in range(0, len(CL), 3)])).encode(CODEPAGE or 'utf-8', 'replace'))
+                     )) for i in range(0, len(CL), 3)])))
             except ValueError:
                 continue
             decks = list_option('carddeck')

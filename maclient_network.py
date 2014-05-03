@@ -236,7 +236,7 @@ class poster():
             except KeyError:
                 pass
             except IndexError:
-                self.logger.error(du8('错误的密钥？'))
+                self.logger.error('错误的密钥？')
                 raw_input()
                 os._exit(1)
                 
@@ -317,7 +317,7 @@ class poster():
                 resp['content-length'] = str(len(content))
             # 状态码判断
             if int(resp['status']) > 400:
-                self.logger.error('post:%s %s' % (uri, ','.join([ (i in resp and (i + ':' + resp[i]) or '')for i in ['status', 'content-length', 'set-cookie']]) + du8('\n请到信号良好的地方重试【←←')))
+                self.logger.error('post:%s %s' % (uri, ','.join([ (i in resp and (i + ':' + resp[i]) or '')for i in ['status', 'content-length', 'set-cookie']]) + '\n请到信号良好的地方重试【←←'))
                 resp.update({'error':True, 'errno':resp['status'], 'errmsg':'Client or server error.'})
                 return resp, content
             else:
