@@ -26,7 +26,7 @@ class Logging(type(sys)):
     NOTSET = 0
     def __init__(self, *args, **kwargs):
         self.level = self.__class__.INFO
-        self.__write = __write = lambda x:raw_convstr(sys.stdout.write(x))
+        self.__write = __write = lambda x:sys.stdout.write(safestr(x))
         self.isatty = getattr(sys.stdout, 'isatty', lambda: False)()
         self.__set_error_color = lambda: None
         self.__set_warning_color = lambda: None
