@@ -112,6 +112,16 @@ def websocket_app(environ, start_response):
                     print('[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline))
                     return
         #new
+        import maclient_player
+        import maclient_network
+        import maclient_logging
+        import maclient_smart
+        import maclient_plugin
+        reload(maclient_player)
+        reload(maclient_network)
+        reload(maclient_logging)
+        reload(maclient_smart)
+        reload(maclient_plugin)
         reload(maclient_web_bot)
         from maclient_web_bot import WebSocketBot
         bot = WebSocketBot(ws, serv, die_callback, born_callback)
