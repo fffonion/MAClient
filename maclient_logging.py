@@ -13,7 +13,7 @@ try:
 except:
     pass
 
-class Logging(type(sys)):
+class Logging(object):
     # paste from goagent
     CRITICAL = 5
     FATAL = CRITICAL

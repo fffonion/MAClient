@@ -22,7 +22,7 @@ sys.path.append(opath.join(getPATH0, 'plugins'))
 PREF_ENTER = 'ENTER_'
 PREF_EXIT = 'EXIT_'
 EXTRAS_STACK_SIZE = 10
-class plugins():
+class plugins(object):
     def __init__(self, logger, mac_ver, show_tip = True):
         self.logger = logger
         # 是否显示插件tip
