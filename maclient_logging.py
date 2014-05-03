@@ -7,9 +7,9 @@ import logging
 import logging.handlers
 from cross_platform import *
 
-convstr = (sys.platform.startswith('cli') or PYTHON3 or NICE_TERM)and \
-        (lambda str: str) or \
-        (lambda str: str.decode('utf-8').encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+# convstr = (sys.platform.startswith('cli') or PYTHON3 or NICE_TERM)and \
+#         (lambda str: str) or \
+#         (lambda str: str.decode('utf-8').encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 
 class Logging(type(sys)):
     # paste from goagent
@@ -66,10 +66,10 @@ class Logging(type(sys)):
     def log(self, level, fmt, *args, **kwargs):
         # fmt=du8(fmt)
         try:
-            self.__write(convstr(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args))))
+            self.__write(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args)))
         except TypeError:
             fmt = fmt.replace('%','%%')
-            self.__write(convstr(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args))))
+            self.__write(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args)))
         #sys.stdout.flush()
         return '[%s] %s\n' % (time.strftime('%b %d %X', time.localtime()), fmt % args)
 
