@@ -20,7 +20,6 @@ import threading
 from cross_platform import *
 if PYTHON3:
     import configparser as ConfigParser
-    xrange = range
 else:
     import ConfigParser
 import maclient_player
@@ -99,7 +98,7 @@ class conn_ani(threading.Thread):
             cnt = (cnt + 1) % 4
             time.sleep(0.15)
 
-class MAClient():
+class MAClient(object):
     global plugin
     plugin = maclient_plugin.plugins(maclient_logging.Logging('plugin_logging'), __version__)
     def __init__(self, configfile = '', savesession = False):

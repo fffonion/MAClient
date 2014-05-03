@@ -11,7 +11,7 @@ from cross_platform import *
 #         (lambda str: str) or \
 #         (lambda str: str.decode('utf-8').encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 
-class Logging(type(sys)):
+class Logging(object):
     # paste from goagent
     CRITICAL = 5
     FATAL = CRITICAL

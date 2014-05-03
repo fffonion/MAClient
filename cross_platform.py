@@ -24,6 +24,11 @@ else:
         convhans = chans.toTW
     elif LOCALE == 'zh_HK':
         convhans = chans.toHK
+if PYTHON3:
+    import imp
+    reload = imp.reload
+    xrange = range
+
 
 getPATH0 = (not EXEBUNDLE or IRONPYTHON) and \
      (PYTHON3 and \
