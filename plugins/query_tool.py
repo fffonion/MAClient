@@ -7,7 +7,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = 'query infomation of player'
 __author = 'fffonion'
-__version__ = 0.37
+__version__ = 0.38
 hooks = {}
 extra_cmd = {'q_item':'query_item', 'qi':'query_item', 'q_holo':'query_holo', 'qh':'query_holo', 'qgc':'query_guild_contribution','q_rank':'query_rank','qr':'query_rank'}
 # end meta
@@ -17,7 +17,7 @@ def query_item(plugin_vals):
     def do(*args):
         logger = plugin_vals['logger']
         if 'player' not in plugin_vals or not plugin_vals['player'].item.db:
-            logger.error(du8('玩家信息未初始化，请随便执行一个操作再试'))
+            logger.error('玩家信息未初始化，请随便执行一个操作再试')
             return
         print(du8('%-17s%s' % ('物品', '个数')))
         print('-' * 30)
@@ -35,7 +35,7 @@ def query_holo(plugin_vals):
     def do(*args):
         logger = plugin_vals['logger']
         if 'player' not in plugin_vals or not plugin_vals['player'].item.db:
-            logger.error(du8('玩家信息未初始化，请随便执行一个操作再试'))
+            logger.error('玩家信息未初始化，请随便执行一个操作再试')
             return
         print(du8('%s' % ('当前拥有以下闪卡')))
         print('-' * 30)

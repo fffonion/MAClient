@@ -1311,8 +1311,8 @@ class MAClient(object):
             elif fairy.fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
             fairy['time_limit'] = int(fairy.fairy.time_limit)
-            fairy['wake'] = re.search(self.player.boss.name_wake, du8(fairy.fairy.name)) != None
-            fairy['wake_rare'] = re.search(maclient_smart.name_wake_rare, du8(fairy.fairy.name)) != None
+            fairy['wake'] = re.search(self.player.boss.name_wake, raw_du8(fairy.fairy.name)) != None
+            fairy['wake_rare'] = re.search(maclient_smart.name_wake_rare, raw_du8(fairy.fairy.name)) != None
             ftime = (self._read_config('fairy', fairy.fairy.serial_id) + ',,').split(',')
             fairy.fairy['not_battled'] = ftime[0] == ''
             # self.logger.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
@@ -1401,7 +1401,7 @@ class MAClient(object):
         if 'not_battled' not in fairy:
             ftime = (self._read_config('fairy', fairy.serial_id) + ',,').split(',')
             fairy['not_battled'] = ftime[0] == ''
-        fairy['wake_rare'] = re.match(maclient_smart.name_wake_rare, du8(fairy.name)) != None
+        fairy['wake_rare'] = re.match(maclient_smart.name_wake_rare, raw_du8(fairy.name)) != None
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
         disc_name = ''
         disc_id = fairy.discoverer_id
@@ -1911,7 +1911,7 @@ class MAClient(object):
         if rw_type[-1] == '<':
             no_get = True
             rw_type = rw_type[:-1]
-        rw_type = du8(rw_type)
+        rw_type = raw_du8(rw_type)
         real_desc_match = not rw_type.isdigit() or not rw_type
         for r in rwds:
             if (real_desc_match and \
@@ -1977,7 +1977,7 @@ class MAClient(object):
             trycnt = '999'
         sel_lake = sel_lake.split(',')
         battle_win = 1
-        if self.loc == 'jp':
+        if self.loc in ['jp', 'sg']:
             self._dopost('battle/area', xmlresp = False)
             resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
         else:

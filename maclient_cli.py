@@ -158,7 +158,7 @@ if __name__ == '__main__':
             if PYTHON3:
                 ch = input()
             else:
-                ch = sys.stdin.readline().rstrip('\n').decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
+                ch = sys.stdin.readline().rstrip('\n').decode(locale.getdefaultlocale()[1] or 'utf-8')#.encode('utf-8')
             try:
                 print(' \b')
             except KeyboardInterrupt:
@@ -269,14 +269,14 @@ if __name__ == '__main__':
                         try:
                             p1, p2 = inp.split(' ')
                         except:
-                            logging.error(du8('输入有误www'))
+                            logging.error('输入有误www')
                         else:
                             if p1 in maclient1._list_option('system'):
                                 maclient1._write_config('system', p1, p2)
                             elif p1 in maclient1._list_option('tactic'):
                                 maclient1._write_config('tactic', p1, p2)
                             else:
-                                logging.error(du8('配置项不存在www'))
+                                logging.error('配置项不存在www')
                                 continue
                             print(du8('已保存~'))
                             maclient1.load_config()
