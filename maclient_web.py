@@ -12,7 +12,9 @@ from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from webob import Request
 import sys
+import os
 from datetime import datetime, timedelta, tzinfo
+from recaptcha.client import captcha
 
 import maclient_web_bot
 from maclient_web_bot import WebSocketBot, mac_version, HeheError
@@ -86,6 +88,9 @@ def websocket_app(environ, start_response):
             ws.send("server overload.\n")
             return
 
+        reload(maclient_web_bot)
+        from maclient_web_bot import WebSocketBot, mac_web_version
+
         #if offline and login_id not in config.allow_offline:
         #offline = False
         if not offline:
@@ -93,8 +98,7 @@ def websocket_app(environ, start_response):
         else:
             ws.send("离线模式已经启用,系统会代挂N小时.\n")
 
-        ws.send("webbot created by fffonionbinuxmengskysama\n\n")
-
+        ws.send("webbot created by fffonionbinuxmengskysama [version %.5f]\n\n" % mac_web_version)
         #reconnects
         if _hash in offline_bots:
             ws.send("websocket client reconnected!\n")
@@ -122,9 +126,8 @@ def websocket_app(environ, start_response):
         reload(maclient_logging)
         reload(maclient_smart)
         reload(maclient_plugin)
-        reload(maclient_web_bot)
-        from maclient_web_bot import WebSocketBot
-        bot = WebSocketBot(ws, serv, die_callback, born_callback)
+        
+        bot = WebSocketBot(ws, serv, md5(login_id + password + serv).hexdigest(), die_callback, born_callback)
         bot.loginid = login_id
 
         if offline:
@@ -177,12 +180,31 @@ def websocket_app(environ, start_response):
         # except HeheError:
         #     pass
         #auto release del bot
+    elif request.path == '/upload_cfg':
+        #request.POST['file'].file.read()
+        start_response("200 OK", [("Content-Type", "text/html")])
+        try:
+            if not captcha.submit(request.POST['recaptcha_challenge'], request.POST['recaptcha_response'], '6Lfq-PISAAAAACT8g1dBSFoo0Lkr4XV3c__ydwIm', environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR'])).is_valid:
+                return '-1'#验证码填错
+            assert('_hash' in request.POST)
+        except (KeyError, AssertionError):
+            return '-2'#少参数
+        inp = request.POST['file'].file
+        cfg = inp.read(16384)
+        if inp.read(1):
+            return '-3'#太大
+        print("[upload_cfg] hash=%s" % request.POST['_hash'])
+        with open(os.path.join('configs', request.POST['_hash']), 'w') as f:
+            f.write(cfg)
+        return '1'
     else:
         start_response("200 OK", [("Content-Type", "text/html")])
         ol = connected# + 169
         return _index_cache.replace('[connected]', '%d/%d' % (ol, len(offline_bots))).replace('[maxconnected]', '%s' % maxconnected)
 
 if __name__ == '__main__':
+    if not os.path.exists('configs'):
+        os.mkdir('configs')
     cleanup().start()
     server = gevent.pywsgi.WSGIServer(("", 8000), websocket_app, handler_class=WebSocketHandler)
     server.serve_forever()

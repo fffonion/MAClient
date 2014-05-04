@@ -7,20 +7,19 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 	<script src="http://libs.baidu.com/jquery/2.0.3/jquery.min.js"></script>
+  <script src="http://imgcache.qq.com/bossweb/unikf/js/md5.js"></script>
     <meta name="description" content="MA Client">
     <meta name="author" content="binux">
   </head>
 
   <body>
 <img src="http://mengsky.net/ol.png"/>
-<h1>MA Bot(v0.5偽) 根本停不下来版 服务器当前负载:[connected]/[maxconnected]</h1>
+<h1>MA Bot(v0.6偽) 根本认不出来版 服务器当前负载:[connected]/[maxconnected]</h1>
 MAClient backend version = [version_str]
+
 <br>
-有人反馈无法下线，测试没问题，看来可能是特例情况..有时间再考虑
-<br>
-<br>
-<form id=history onsubmit="return toggle_hist();">最后重启时间[startup_time] <button>更新历史↓</button></form>
-<div id=hehe style="display:none"><br>
+最后重启时间[startup_time] <button onclick="toggle_hist()">更新历史↓</button><button style="font-weight:bold;color:#DF5823" onclick="showreCaptcha()">上传配置</button>
+<br><div id=hehe style="display:none">
 后台逻辑支持热替换
 <br>
 修改  修改后台日志.重启服务器
@@ -41,22 +40,18 @@ MAClient backend version = [version_str]
 <br>
 修改  被挤掉重进时间3分改为8分钟（防止下不来2333333）
 <br></div>
-<br>
-这个在线人数有点尿啊<br>
 <div id=hehe style="display:none"><br>
   合并日服支持分支，能不能用我不知道的3
   <br>
   修正cn2区，cn3支持</div>
   退出离线模式:刷新本页,不勾选offline登陆,关闭浏览器
   <br>
-  fairy_battle_sleep = 0,4,4|4,7,1|7,8,1|8,11,0.8|11,14,0.5|14,16,0.8|16,19,0.5|19,21,0.7|21,24,0.8
-  <br>
-  <br><br>
+
     <section id=login>
       <form id=login_form onsubmit="return login(this);">
-        login_id: <input name=id />
-        password: <input type=password name=pwd />
-        server: <select name=serv>
+        login_id: <input id=login_id name=id />
+        password: <input id=login_pwd type=password name=pwd />
+        server: <select id=serv name=serv>
           <option selected>server</option>
           <option value="cn">国服一区</option>
           <option value="cn2">国服二区</option>
@@ -72,6 +67,14 @@ MAClient backend version = [version_str]
 	离线保持时间(小时): <input name="keep_time" value="12" />
       </form>
     </section>
+    
+	  <nobr><form id=upload_form onsubmit="return false;" style="display:none" enctype="multipart/form-data">
+  	  <div class="recaptcha" id="recaptcha">别急，这里会有验证码</div>↑看不懂的那个乱输就可以了ww
+      选择配置文件:<input type="file" name="file" />
+      <button onclick="submit_cfg()">上传</button>请先用GUI工具转换为UTF-8编码
+    </form></nobr>
+    
+    
 
 <textarea id='log' name='log' readonly='readonly' style='border:1px solid #CCC;margin:0px;padding:0px;width:100%;height:500px;max-width:1300px;margin:auto'></textarea>
 
@@ -82,6 +85,7 @@ MAClient backend version = [version_str]
 		$("#hehe").each(function(){this.style.display = (this.style.display=='block')?'none':'block';});
 		return false;
 	};
+
     function log( text ) {
         $log = $('#log');
         //Add text to log
@@ -99,6 +103,7 @@ MAClient backend version = [version_str]
 
 
     function login(form) {
+	
       if (window.ws) {
         ws.close();
       }
@@ -130,5 +135,85 @@ MAClient backend version = [version_str]
       return false;
     }
   </script>
+  <script>//upload_cfg
+  function validate_file(f){
+      if(file==null) return false;
+      name = file.name;
+      size = file.size;
+      type = file.type;
+      if(file.size>16384){
+        log('太大了塞不进去，最大16kb\n');
+        return false;
+      }
+      return true;
+  }
+  $(document).ready(function () {
+    $(':file').change(function(){
+      var file = this.files[0];
+      if(!validate_file(file)) $('#upload_form')[0].reset();
+  });
+  });
+  function submit_cfg() {
+    var f = $(':file')[0].files[0];
+    if(f==null){
+      log('没有选择文件\n');return false;
+    }
+    var form = new FormData();
+    var serv = $('#serv')[0].value;
+    var login_id = $('#login_id')[0].value;
+    var login_pwd = $('#login_pwd')[0].value;
+    var captcha_resp = $('#recaptcha_response_field')[0].value;
+    if(login_id=='' || login_pwd =='' ||serv == 'server' || captcha_resp==''){
+      log('请填写用户名，密码，服务器，验证码\n');return false;
+    }
+    var _hash = hex_md5(login_id + login_pwd + serv);
+    form.append("_hash", _hash);
+    form.append("recaptcha_challenge", $('#recaptcha_challenge_field')[0].value);
+    form.append("recaptcha_response", captcha_resp);
+    form.append("file", f);
+    var xhr = new XMLHttpRequest();
+    xhr.open("post", '/upload_cfg', true);
+    xhr.onload = function () {
+        console.log(xhr.responseText);
+        switch(xhr.responseText){
+          case '-1':log("验证码填错\n");break;
+          case '-2':log("少填参数\n");break;
+          case '-3':log("文件太大了(最大16kb\n");break;
+          default:log("配置上传完成\n");
+        }
+    };
+    xhr.send(form);
+    return false;
+  }
+  </script>
+  <script>//http://www.luokr.com/p/4
+  function showreCaptcha() {
+  $('#upload_form')[0].style.display='block';
+	var r = document.createElement('script'); r.type = 'text/javascript'; r.async = true;
+	r.src = "http://www.google.com/recaptcha/api/js/recaptcha_ajax.js";
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(r, s);
+
+	var w = 0;
+	var a = function(){
+		console.log('Waiting for Google Recaptcha: ' + w + 'ms');
+		if (window.Recaptcha)
+		{
+			Recaptcha.create('6Lfq-PISAAAAAOv4FMjuqMtx8tZbvrMr-VMjQ2GO', 'recaptcha', {
+				theme: "white",
+				callback: function(){
+					$('iframe:hidden').hide();Recaptcha.focus_response_field();
+					$('#recaptcha_response_field')[0].placeholder='输入两个单词／人◕‿‿◕人＼';
+				}
+			});
+		}
+		else if (w >= 1500)
+		{
+		}
+		else
+		{
+			setTimeout(a, w += 500);
+		}
+	};a();
+	}</script>
 </html>
 <!-- vim: set et sw=2 ts=2 sts=2 ff=unix fenc=utf8: -->
