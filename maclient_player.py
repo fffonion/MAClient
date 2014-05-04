@@ -168,7 +168,7 @@ class card(object):
             f = open(_f)
         for c in f.readlines():
             if c.startswith(loc):
-                c = c[3:].rstrip('\n')
+                c = c[3:].rstrip('\n').rstrip('\r')
                 break
             c = ''
         #变量名是不是很给力！

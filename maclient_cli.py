@@ -269,14 +269,14 @@ if __name__ == '__main__':
                         try:
                             p1, p2 = inp.split(' ')
                         except:
-                            logging.error(du8('输入有误www'))
+                            logging.error('输入有误www')
                         else:
                             if p1 in maclient1._list_option('system'):
                                 maclient1._write_config('system', p1, p2)
                             elif p1 in maclient1._list_option('tactic'):
                                 maclient1._write_config('tactic', p1, p2)
                             else:
-                                logging.error(du8('配置项不存在www'))
+                                logging.error('配置项不存在www')
                                 continue
                             print(du8('已保存~'))
                             maclient1.load_config()
