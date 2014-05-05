@@ -30,8 +30,7 @@ class zh_BJ(tzinfo):
         return timedelta(0)
 
 startup_time = datetime.now(zh_BJ()).strftime('%m.%d %H:%M:%S')
-_index_cache = open("web.htm").read().replace('[startup_time]', startup_time)\
-                .replace('[version_str]', str(mac_version))
+_index_cache = None
 
 
 offline_bots = {}
@@ -64,6 +63,31 @@ class cleanup(Thread):
                         pass
             gevent.sleep(60)
 
+last_reload_html, last_reload_py = 0, time.time()
+def request_reload_html():
+    global last_reload_html
+    if time.time() - last_reload_html > 600:#every 6 min
+        global _index_cache
+        _index_cache = open("web.htm").read().replace('[startup_time]', startup_time)\
+            .replace('[version_str]', str(mac_version))
+        last_reload_time = time.time()
+
+def request_reload_py():
+    global last_reload_py
+    if time.time() - last_reload_py > 60:#every 1 min
+        reload(maclient_web_bot)
+        import maclient_player
+        import maclient_network
+        import maclient_logging
+        import maclient_smart
+        import maclient_plugin
+        reload(maclient_player)
+        reload(maclient_network)
+        reload(maclient_logging)
+        reload(maclient_smart)
+        reload(maclient_plugin)
+        last_reload_py = time.time()
+
 def websocket_app(environ, start_response):
     #cleanup()
     global connected
@@ -89,7 +113,7 @@ def websocket_app(environ, start_response):
             ws.send("server overload.\n")
             return
 
-        reload(maclient_web_bot)
+        request_reload_py()
         from maclient_web_bot import WebSocketBot, mac_web_version
 
         #if offline and login_id not in config.allow_offline:
@@ -117,17 +141,6 @@ def websocket_app(environ, start_response):
                     print('[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline))
                     return
         #new
-        import maclient_player
-        import maclient_network
-        import maclient_logging
-        import maclient_smart
-        import maclient_plugin
-        reload(maclient_player)
-        reload(maclient_network)
-        reload(maclient_logging)
-        reload(maclient_smart)
-        reload(maclient_plugin)
-        
         bot = WebSocketBot(ws, serv, md5(login_id + password + serv).hexdigest(), die_callback, born_callback)
         bot.loginid = login_id
 
@@ -202,6 +215,7 @@ def websocket_app(environ, start_response):
     else:
         start_response("200 OK", [("Content-Type", "text/html")])
         ol = connected# + 169
+        request_reload_html()
         return _index_cache.replace('[connected]', '%d/%d' % (ol, len(offline_bots))).replace('[maxconnected]', '%s' % maxconnected)
 
 if __name__ == '__main__':

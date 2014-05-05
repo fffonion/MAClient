@@ -13,18 +13,23 @@
   </head>
 
   <body>
-<img src="http://mengsky.net/ol.png"/>
 <h1>MA Bot(v0.6偽) 根本认不出来版 服务器当前负载:[connected]/[maxconnected]</h1>
-MAClient backend version = [version_str]
-
+<span style="float:left;margin-right:20px"><img src="http://www.mengsky.net/ol.png"/></span>
+<span style="margin:0 auto; overflow:auto; _display:inline-block;">MAClient backend version = [version_str]<button id=btn_upload_cfg style="font-weight:bold;color:#DF5823" onclick="showreCaptcha()">上传配置</button><br>
+最后重启时间[startup_time]
 <br>
-最后重启时间[startup_time] <button onclick="toggle_hist()">更新历史↓</button><button style="font-weight:bold;color:#DF5823" onclick="showreCaptcha()">上传配置</button>
-<br><div id=hehe style="display:none">
+<b>退出离线模式</b>：刷新本页,不勾选offline登陆,关闭浏览器
+<br>
+<b>更新历史</b><button onclick="toggle_hist()">更多历史↓</button>
+<br>
 堵了两个漏洞
 <br>
 后台逻辑支持热替换
 <br>
+修改  版本跟进到58d91b06ed
+<br>
 修改  修改后台日志.重启服务器
+<div id=hehe style="display:none">
 <br>
 修改  版本跟进到5a4ae5d1c8
 <br>
@@ -46,9 +51,8 @@ MAClient backend version = [version_str]
   合并日服支持分支，能不能用我不知道的3
   <br>
   修正cn2区，cn3支持</div>
-  退出离线模式:刷新本页,不勾选offline登陆,关闭浏览器
-  <br>
 
+    </span>
     <section id=login>
       <form id=login_form onsubmit="return login(this);">
         login_id: <input id=login_id name=id />
@@ -67,7 +71,7 @@ MAClient backend version = [version_str]
         <input type=checkbox name=offline /> 离线挂机
         <input id=submit type=submit value=login />
 	离线保持时间(小时): <input name="keep_time" value="12" />
-      </form>
+</form>
     </section>
     
 	  <nobr><form id=upload_form onsubmit="return false;" style="display:none" enctype="multipart/form-data">
@@ -75,7 +79,7 @@ MAClient backend version = [version_str]
       <input type="file" name="file" />
       <button onclick="submit_cfg()">上传</button>请先用GUI工具转换为<b>UTF-8编码</b>，配置文件中请<b>不要</b>保存账号密码
     </form></nobr>
-    
+
     
 
 <textarea id='log' name='log' readonly='readonly' style='border:1px solid #CCC;margin:0px;padding:0px;width:100%;height:500px;max-width:1300px;margin:auto'></textarea>
@@ -138,11 +142,12 @@ MAClient backend version = [version_str]
     }
   </script>
   <script>//upload_cfg
-  function validate_file(f){
+  function validate_file(file){
       if(file==null) return false;
       name = file.name;
       size = file.size;
       type = file.type;
+      console.log(file);
       if(file.size>16384){
         log('太大了塞不进去，最大16kb\n');
         return false;
@@ -176,12 +181,11 @@ MAClient backend version = [version_str]
     var xhr = new XMLHttpRequest();
     xhr.open("post", '/upload_cfg', true);
     xhr.onload = function () {
-        console.log(xhr.responseText);
         switch(xhr.responseText){
           case '-1':log("验证码填错\n");break;
           case '-2':log("少填参数\n");break;
           case '-3':log("文件太大了(最大16kb\n");break;
-          default:log("配置上传完成\n");
+          default:log("配置上传完成\n");$('#upload_form')[0].style.display='none';
         }
     };
     xhr.send(form);
@@ -207,6 +211,7 @@ MAClient backend version = [version_str]
 					$('#recaptcha_response_field')[0].placeholder='输入两个单词／人◕‿‿◕人＼';
 				}
 			});
+      $('#btn_upload_cfg')[0].style.display='none';
 		}
 		else if (w >= 1500)
 		{
