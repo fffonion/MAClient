@@ -13,6 +13,7 @@ from geventwebsocket.handler import WebSocketHandler
 from webob import Request
 import sys
 import os
+import re
 from datetime import datetime, timedelta, tzinfo
 from recaptcha.client import captcha
 
@@ -187,8 +188,9 @@ def websocket_app(environ, start_response):
             if not captcha.submit(request.POST['recaptcha_challenge'], request.POST['recaptcha_response'], '6Lfq-PISAAAAACT8g1dBSFoo0Lkr4XV3c__ydwIm', environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR'])).is_valid:
                 return '-1'#验证码填错
             assert('_hash' in request.POST)
-        except (KeyError, AssertionError):
-            return '-2'#少参数
+            assert(len(request.POST['_hash']) == 32 and len(re.findall('[abcdef\d]+', request.POST['_hash'])[0]) == 32)
+        except (KeyError, AssertionError, IndexError):
+            return '-2'#少参数或不合法
         inp = request.POST['file'].file
         cfg = inp.read(16384)
         if inp.read(1):

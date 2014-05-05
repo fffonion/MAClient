@@ -13,7 +13,7 @@ reload(maclient)#in case module has changed
 from maclient import MAClient
 
 mac_version = maclient.__version__
-mac_web_version = 20140504.23333
+mac_web_version = 20140505.16384
 
 class HeheError(Exception):
     def __init__(self, msg):
