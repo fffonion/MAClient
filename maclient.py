@@ -341,7 +341,8 @@ class MAClient(object):
                         self._exit(1)
         if setcookie and 'set-cookie' in resp:
             self.cookie = resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
-            self._write_config('account_%s' % self.loc, 'session', self.cookie)
+            if self.cfg_save_session:
+                self._write_config('account_%s' % self.loc, 'session', self.cookie)
 
         return resp, dec
 
