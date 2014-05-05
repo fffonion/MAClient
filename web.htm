@@ -21,32 +21,8 @@
 <b>退出离线模式</b>：刷新本页,不勾选offline登陆,关闭浏览器
 <br>
 <b>更新历史</b><button onclick="toggle_hist()">更多历史↓</button>
-<br>
-堵了两个漏洞
-<br>
-后台逻辑支持热替换
-<br>
-修改  版本跟进到58d91b06ed
-<br>
-修改  修改后台日志.重启服务器
-<div id=hehe style="display:none">
-<br>
-修改  版本跟进到5a4ae5d1c8
-<br>
-修改  错误的离线时间(多X了个3600
-<br>
-修改  修正一个可能会导致频繁被挤下线的逻辑问题
-<br>
-修改  报错修正
-<br>
-修改  自动添怪(之前会重复添)，BC>95% or AP>90% or (AP>7 and 自己没怪)上楼，自动买卡(1，2，3星小于5级卡)，自动领卡
-<br>
-修改  自己的 (BC>70 or BC>95%) 别人的 (BC>90%) 大刀(自动选3卡) 否则添
-<br>
-修改  打怪优先级 自己的>别人的小于10分钟的>没打过的>别人的小于20分钟的
-<br>
-修改  被挤掉重进时间3分改为8分钟（防止下不来2333333）
-<br></div>
+<div id=hehe>
+</div>
 <div id=hehe style="display:none"><br>
   合并日服支持分支，能不能用我不知道的3
   <br>
@@ -87,11 +63,18 @@
   </body>
 
   <script>
+  var hist=["堵了两个漏洞","后台逻辑支持热替换","修改  版本跟进到58d91b06ed","修改  修改后台日志.重启服务器","修改  版本跟进到5a4ae5d1c8" ,"修改  错误的离线时间(多X了个3600" ,"修改  修正一个可能会导致频繁被挤下线的逻辑问题" ,"修改  报错修正" ,"修改  自动添怪(之前会重复添)，BC>95% or AP>90% or (AP>7 and 自己没怪)上楼，自动买卡(1，2，3星小于5级卡)，自动领卡" ,"修改  自己的 (BC>70 or BC>95%) 别人的 (BC>90%) 大刀(自动选3卡) 否则添" ,"修改  打怪优先级 自己的>别人的小于10分钟的>没打过的>别人的小于20分钟的" ,"修改  被挤掉重进时间3分改为8分钟（防止下不来2333333）"];
 	function toggle_hist(){
-		$("#hehe").each(function(){this.style.display = (this.style.display=='block')?'none':'block';});
+    if(hist[hist.length-1] == 0){//toggle to full
+      hist.pop();
+  		$("#hehe").each(function(){this.innerHTML=hist.join('<br>')});
+    }else{
+      $("#hehe").each(function(){this.innerHTML=hist.slice(0,4).join('<br>')});
+      hist.push(0);
+    }
 		return false;
 	};
-
+toggle_hist();
     function log( text ) {
         $log = $('#log');
         //Add text to log

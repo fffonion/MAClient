@@ -115,6 +115,12 @@ unallowed_builtins = [
 #    'xrange', 'zip'
 ]
 
+allowed_names = [
+    'datetime', 'time', 'math', 'self', 'fairy', 'area', 'floor', 'card',
+    'GUILD_RACE_TYPE', 'area_race_type',
+    'cid', 'cost', 'friends', 'deck_rank', 'rank' ,'lv' ,'star',
+    'True', 'False'
+]
 # for ast_name in unallowed_ast_nodes:
 #     assert(is_valid_ast_node(ast_name))
 # for name in unallowed_builtins:
@@ -126,6 +132,8 @@ def is_unallowed_ast_node(kind):
 def is_unallowed_builtin(name):
     return name in unallowed_builtins
 
+def is_unallowed_name(name):
+    return name not in allowed_names
 #----------------------------------------------------------------------
 # Restricted attributes.
 #----------------------------------------------------------------------
@@ -166,6 +174,10 @@ class SafeEvalBuiltinError(SafeEvalError):
     "Expression/statement in tried to access a restricted builtin."
     pass
 class SafeEvalAttrError(SafeEvalError):
+    "Expression/statement in tried to access a restricted attribute."
+    pass
+
+class SafeEvalNSError(SafeEvalError):
     "Expression/statement in tried to access a restricted attribute."
     pass
 
@@ -225,6 +237,9 @@ class SafeEvalVisitor(object):
         if is_unallowed_builtin(name):
             self.errors.append(SafeEvalBuiltinError( \
                 "access to builtin '%s' is denied" % name, lineno))
+        elif is_unallowed_name(name):
+            self.errors.append(SafeEvalNSError( \
+                "access to name '%s' is denied" % name, lineno))
         elif is_unallowed_attr(name):
             self.errors.append(SafeEvalAttrError( \
                 "access to attribute '%s' is denied" % name, lineno))
@@ -427,7 +442,8 @@ class TestSafeEval(unittest.TestCase):
         self.assertEqual(self.value, 1)
 
 if __name__ == "__main__":
-    unittest.main()
+    #unittest.main()
+    check_safe_eval('os.system("233")')
 
 #----------------------------------------------------------------------
 # The End.

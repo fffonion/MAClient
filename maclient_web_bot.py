@@ -6,16 +6,18 @@ import gevent.monkey
 gevent.monkey.patch_all()
 import time
 import os
-import ast
+import sys
+import traceback
 from threading import Thread
 
 import maclient
 reload(maclient)#in case module has changed
 from maclient import MAClient
 import safeeval
+reload(safeeval)
 
 mac_version = maclient.__version__
-mac_web_version = 20140505.32768
+mac_web_version = 20140505.49152
 
 class HeheError(Exception):
     def __init__(self, msg):
@@ -41,7 +43,6 @@ class WebSocketBot(MAClient):
             print('[new_user] hash=%s' % _hash)
             with open('config_web.ini') as inp, open(cfg_file, 'w') as out:
                 out.write(inp.read())
-        super(self.__class__, self).__init__(configfile = cfg_file, servloc = serv, savesession = False)
         good = ws_keepalive(ws)
         good.start()
         self.ws = ws
@@ -52,10 +53,11 @@ class WebSocketBot(MAClient):
         self.loginid = 0
         self.die = die_callback
         self.born = born_callback
+        self.request_exit = False
+        super(self.__class__, self).__init__(configfile = cfg_file, servloc = serv, savesession = False)
         self.born()
         self.logger.logfile = None
         self.logger.logpipe(self.logpipe)
-        self.request_exit = False
 
     def logpipe(self, _str):
         if self.shellbyweb:
@@ -69,9 +71,9 @@ class WebSocketBot(MAClient):
         self.login(username, password)
         #self.initplayer(dec)
         if cmd != '':
-            self.tasker('w', cmd)
+            self.tasker(cmd = cmd)
         else:
-            self.tasker('w')
+            self.tasker()
 
     #override
     def _exit(self, code):
@@ -87,7 +89,15 @@ class WebSocketBot(MAClient):
     def _eval_gen(self, *args, **kwargs):
         evalstr = super(self.__class__, self)._eval_gen(*args, **kwargs)
         for s in evalstr.split('|'):
-            safeeval.check_safe_eval(s)
+            try:
+                safeeval.check_safe_eval(s)
+            except SyntaxError:
+                safeeval.check_safe_eval(evalstr)#for | in task
+                break
+            except Exception as e:
+                print
+                self.logpipe("在配置文件中包含不合法的表达式 %s:\n%s: %s\n如果你认为这是误报，请联系我们\n" % (s, e.__class__.__name__, e))
+                raise e
         return evalstr
 
     def end(self):
