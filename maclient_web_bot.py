@@ -6,14 +6,16 @@ import gevent.monkey
 gevent.monkey.patch_all()
 import time
 import os
+import ast
 from threading import Thread
 
 import maclient
 reload(maclient)#in case module has changed
 from maclient import MAClient
+import safeeval
 
 mac_version = maclient.__version__
-mac_web_version = 20140505.16384
+mac_web_version = 20140505.32768
 
 class HeheError(Exception):
     def __init__(self, msg):
@@ -33,14 +35,13 @@ class ws_keepalive(Thread):
             gevent.sleep(25)
 
 class WebSocketBot(MAClient):
-
     def __init__(self, ws, serv, _hash, die_callback, born_callback):
         cfg_file = os.path.join('configs', _hash)
         if not os.path.exists(cfg_file):
             print('[new_user] hash=%s' % _hash)
             with open('config_web.ini') as inp, open(cfg_file, 'w') as out:
                 out.write(inp.read())
-        super(self.__class__, self).__init__(configfile = cfg_file, servloc = serv)
+        super(self.__class__, self).__init__(configfile = cfg_file, servloc = serv, savesession = False)
         good = ws_keepalive(ws)
         good.start()
         self.ws = ws
@@ -55,7 +56,6 @@ class WebSocketBot(MAClient):
         self.logger.logfile = None
         self.logger.logpipe(self.logpipe)
         self.request_exit = False
-        #Bot.__init__(self)
 
     def logpipe(self, _str):
         if self.shellbyweb:
@@ -82,6 +82,13 @@ class WebSocketBot(MAClient):
         if self.request_exit:
             raise HeheError('bye')
         return super(self.__class__, self)._dopost(*args, **kwargs)
+
+    #override
+    def _eval_gen(self, *args, **kwargs):
+        evalstr = super(self.__class__, self)._eval_gen(*args, **kwargs)
+        for s in evalstr.split('|'):
+            safeeval.check_safe_eval(s)
+        return evalstr
 
     def end(self):
         # set on async exit

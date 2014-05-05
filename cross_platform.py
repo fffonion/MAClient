@@ -31,9 +31,8 @@ OPENSHIFT = 'OPENSHIFT_PYTHON_IP' in os.environ
 
 BOT = True
 if BOT or BAE or SAE or OPENSHIFT:
-    print = lambda x:x
+    print = lambda x, *args, **kwargs : None
 
-print = lambda x:x
 convhans = lambda x:x
 try:
     import ZhConversion
