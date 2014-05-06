@@ -273,7 +273,7 @@ namespace MAClientGUI
         private void frmConfig_Load(object sender, EventArgs e)
         {
             //setToolTipText();
-            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.69+)");
+            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.70+)");
             tabControl1.Enabled = false;
             DirectoryInfo folder = new DirectoryInfo(System.Environment.CurrentDirectory);
             foreach (FileInfo file in folder.GetFiles("*.ini"))
@@ -2070,6 +2070,11 @@ namespace MAClientGUI
         {
             string dst = cboCfgFile.Text;
             byte[] b = File.ReadAllBytes(dst);
+            if (b[0] == 0xef && b[1] == 0xbb && b[2] == 0xbf)
+            {
+                MessageBox.Show("BOM!");
+                b = b.Skip(3).ToArray();
+            }
             File.WriteAllText(dst, GetEncType(b).GetString(b), Encoding.Default);
             lblCfgEnc.Text = Encoding.Default.EncodingName;
             MessageBox.Show("搞定", "呵呵", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -2081,6 +2086,7 @@ namespace MAClientGUI
         {
             string dst = cboCfgFile.Text;
             byte[] b = File.ReadAllBytes(dst);
+
             StreamWriter sw = null;
             try
             {
