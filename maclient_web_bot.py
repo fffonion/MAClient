@@ -17,7 +17,7 @@ import safeeval
 reload(safeeval)
 
 mac_version = maclient.__version__
-mac_web_version = 20140505.49152
+mac_web_version = 20140506.16384
 
 class HeheError(Exception):
     def __init__(self, msg):
@@ -54,7 +54,11 @@ class WebSocketBot(MAClient):
         self.die = die_callback
         self.born = born_callback
         self.request_exit = False
-        super(self.__class__, self).__init__(configfile = cfg_file, servloc = serv, savesession = False)
+        try:
+            super(self.__class__, self).__init__(configfile = cfg_file, servloc = serv, savesession = False)
+        except Exception as e:
+            self.logpipe("".join(traceback.format_exception(*sys.exc_info())))
+            raise e
         self.born()
         self.logger.logfile = None
         self.logger.logpipe(self.logpipe)

@@ -15,18 +15,14 @@
   <body>
 <h1>MA Bot(v0.6偽) 根本认不出来版 服务器当前负载:[connected]/[maxconnected]</h1>
 <span style="float:left;margin-right:20px"><img src="http://www.mengsky.net/ol.png"/></span>
-<span style="margin:0 auto; overflow:auto; _display:inline-block;">MAClient backend version = [version_str]<button id=btn_upload_cfg style="font-weight:bold;color:#DF5823" onclick="showreCaptcha()">上传配置</button><br>
+<span style="margin:0 auto; overflow:auto; _display:inline-block;">MAClient backend version = [version_str]<button id=btn_upload_cfg style="font-weight:bold;color:#DF5823" onclick="showreCaptcha()">上传配置</button><a href="http://pan.baidu.com/s/19qI4m#dir/path=%2FApp%2FMAClient" target="_blank">配置工具点我</a><br>
 最后重启时间[startup_time]
 <br>
 <b>退出离线模式</b>：刷新本页,不勾选offline登陆,关闭浏览器
 <br>
 <b>更新历史</b><button onclick="toggle_hist()">更多历史↓</button>
-<div id=hehe>
-</div>
-<div id=hehe style="display:none"><br>
-  合并日服支持分支，能不能用我不知道的3
-  <br>
-  修正cn2区，cn3支持</div>
+
+<div id=hehe></div>
 
     </span>
     <section id=login>
@@ -53,7 +49,7 @@
 	  <nobr><form id=upload_form onsubmit="return false;" style="display:none" enctype="multipart/form-data">
   	  <div class="recaptcha" id="recaptcha">别急，这里会有验证码</div>↑看不懂的那个乱输就可以了ww&nbsp;&nbsp;
       <input type="file" name="file" />
-      <button onclick="submit_cfg()">上传</button>请先用GUI工具转换为<b>UTF-8编码</b>，配置文件中请<b>不要</b>保存账号密码
+      <button onclick="submit_cfg()">上传</button>请先用<a href="http://pan.baidu.com/s/19qI4m#dir/path=%2FApp%2FMAClient" target="_blank">MAClientGUI</a>工具转换为<b>UTF-8编码</b>，配置文件中请<b>不要</b>保存账号密码
     </form></nobr>
 
     
@@ -69,7 +65,7 @@
       hist.pop();
   		$("#hehe").each(function(){this.innerHTML=hist.join('<br>')});
     }else{
-      $("#hehe").each(function(){this.innerHTML=hist.slice(0,4).join('<br>')});
+      $("#hehe").each(function(){this.innerHTML=hist.slice(0,4).join('<br>')+'<br><br>'});
       hist.push(0);
     }
 		return false;
