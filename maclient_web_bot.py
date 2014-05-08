@@ -17,7 +17,7 @@ import safeeval
 reload(safeeval)
 
 mac_version = maclient.__version__
-mac_web_version = 20140506.16384
+mac_web_version = 20140508.16384
 
 class HeheError(Exception):
     def __init__(self, msg):
@@ -57,7 +57,9 @@ class WebSocketBot(MAClient):
         try:
             super(self.__class__, self).__init__(configfile = cfg_file, servloc = serv, savesession = False)
         except Exception as e:
-            self.logpipe("".join(traceback.format_exception(*sys.exc_info())))
+            # err = traceback.format_exception(*sys.exc_info())
+            # self.logpipe(err[-1])
+            # self.logpipe("".join(err))
             raise e
         self.born()
         self.logger.logfile = None
@@ -94,10 +96,13 @@ class WebSocketBot(MAClient):
         evalstr = super(self.__class__, self)._eval_gen(*args, **kwargs)
         for s in evalstr.split('|'):
             try:
-                safeeval.check_safe_eval(s)
+                try:
+                    safeeval.check_safe_eval(s)
+                except SyntaxError:
+                    safeeval.check_safe_eval(evalstr)#for | in task
+                    break
             except SyntaxError:
-                safeeval.check_safe_eval(evalstr)#for | in task
-                break
+                pass
             except Exception as e:
                 print
                 self.logpipe("在配置文件中包含不合法的表达式 %s:\n%s: %s\n如果你认为这是误报，请联系我们\n" % (s, e.__class__.__name__, e))
