@@ -32,6 +32,9 @@ class zh_BJ(tzinfo):
 startup_time = datetime.now(zh_BJ()).strftime('%m.%d %H:%M:%S')
 _index_cache = None
 
+def _print(str):
+    open('mac_web.log', 'a', False).write(datetime.now(zh_BJ()).strftime('[%m.%d %H:%M]') + str + '\n')
+    print(datetime.now(zh_BJ()).strftime('[%m.%d %H:%M]') + str)
 
 offline_bots = {}
 maxconnected, connected = 333, 0
@@ -49,19 +52,19 @@ class cleanup(Thread):
         Thread.__init__(self, name = 'cleanup-thread')
 
     def run(self):
+        _print('cleanup started')
         while True:
             for i in offline_bots:
                 bot = offline_bots[i]
-                if not bot.offline:
-                    continue
+                #if not bot.offline:
+                #    continue
                 #if bot.offline == True:
                 if time.time() - bot.last_offline_keepalive_time > bot.keep_time:
-                    try:
-                        bot.end()
-                        print('request shutdown offline bot %d' % bot.loginid)
-                    except:
-                        pass
+                    _print('request shutdown offline bot %s' % bot.loginid)
+                    bot.end()
             gevent.sleep(60)
+            _print('cleanup-thread keep alive')
+
 
 last_reload_html, last_reload_py = 0, time.time()
 def request_reload_html():
@@ -88,8 +91,15 @@ def request_reload_py():
         reload(maclient_plugin)
         last_reload_py = time.time()
 
+clthread = cleanup()
+clthread.start()
+
 def websocket_app(environ, start_response):
     #cleanup()
+    global clthread
+    if(not clthread.isAlive()):
+        clthread = cleanup()
+        clthread.start() 
     global connected
     global maxconnected
     request = Request(environ)
@@ -126,8 +136,11 @@ def websocket_app(environ, start_response):
         ws.send("webbot created by fffonionbinuxmengskysama [version %.5f]\n\n" % mac_web_version)
         #reconnects
         if _hash in offline_bots:
-            ws.send("websocket client reconnected!\n")
             bot = offline_bots[_hash]
+            if bot.request_exit:
+                ws.send("当前实例正在退出，请稍后重新登录")
+                return
+            ws.send("websocket client reconnected!\n")
             bot.offline = offline
             bot.ws = ws
             bot.keep_time = keep_time
@@ -138,7 +151,7 @@ def websocket_app(environ, start_response):
                     ws.send('')
                     #cleanup()
                 except Exception as e:
-                    print('[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline))
+                    _print('[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline))
                     return
         #new
         bot = WebSocketBot(ws, serv, md5(login_id + password + serv).hexdigest(), die_callback, born_callback)
@@ -150,10 +163,10 @@ def websocket_app(environ, start_response):
             bot.offline = True
             offline_bots[_hash] = bot
 
-        print("conn+%s=%d %s" % (environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR']),
+        _print("conn+%s=%d %s" % (environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR']),
                                  connected, environ.get('HTTP_USER_AGENT', '-')))
 
-        print("login id=%s" % login_id)
+        _print("login id=%s %s" % (login_id, ('offline=%d' % keep_time) if offline else ''))
 
         offline_timeout_stop = False
         while True:
@@ -163,16 +176,16 @@ def websocket_app(environ, start_response):
                 #import traceback; traceback.print_exc()
                 if bot.offline:
                     bot.ws = None
-                    print('[%s]id = %s keep offline work\n' % (e, login_id))
+                    _print('[%s]id = %s keep offline work\n' % (e, login_id))
                     continue
-                print('[%s]id = %s exit bot\n' % (e, login_id))
+                _print('[%s]id = %s exit bot\n' % (e, login_id))
                 break
             except HeheError:#hehe
-                print('id = %s force exit.' % login_id)
+                _print('id = %s force exit.' % login_id)
                 offline_timeout_stop = True
                 break
             except Exception, e:
-                print('id = %s except offline=%s' % (login_id, offline))
+                _print('id = %s except offline=%s' % (login_id, offline))
                 import traceback; traceback.print_exc(limit = 2)
                 if not bot.offline:
                     break
@@ -181,14 +194,18 @@ def websocket_app(environ, start_response):
                 except WebSocketError:
                     pass
                 except Exception, e:
-                    print('main loop throw a ex.!\n')
+                    _print('main loop throw a ex.!\n')
                 break
+        try:
+            bot.end()#release filelock
+        except:
+            pass
         connected -= 1
         if _hash in offline_bots:
             offline_bots.pop(_hash)
-            print("[conn-1=%d]offline bot exit. login_id=%s" % (connected, login_id))
+            _print("[conn-1=%d]offline bot exit. login_id=%s" % (connected, login_id))
         else:
-            print("[conn-1=%d]exit. login_id=%s" % (connected, login_id))
+            _print("[conn-1=%d]exit. login_id=%s" % (connected, login_id))
         # try:
         #     bot.end()
         # except HeheError:
@@ -208,7 +225,7 @@ def websocket_app(environ, start_response):
         cfg = inp.read(16384)
         if inp.read(1):
             return '-3'#太大
-        print("[upload_cfg] hash=%s" % request.POST['_hash'])
+        _print("[upload_cfg] hash=%s" % request.POST['_hash'])
         with open(os.path.join('configs', request.POST['_hash']), 'w') as f:
             f.write(cfg)
         return '1'
@@ -221,6 +238,5 @@ def websocket_app(environ, start_response):
 if __name__ == '__main__':
     if not os.path.exists('configs'):
         os.mkdir('configs')
-    cleanup().start()
     server = gevent.pywsgi.WSGIServer(("", 8000), websocket_app, handler_class=WebSocketHandler)
     server.serve_forever()
