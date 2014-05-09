@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.2-build20140504'
+__version__ = '1.3-build20140509'
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = max_card_count_sg = 250
 max_fp_cn = max_fp_kr = max_fp_sg = 50000
@@ -15,10 +15,10 @@ half_bc_offset_cn = half_ap_offset_cn = 110
 half_bc_offset_tw = half_ap_offset_tw = 5002
 half_ap_offset_jp = 100
 half_bc_offset_jp = 109
-half_ap_offset_kr = half_bc_offset_kr = half_ap_offset_sg = half_bc_offset_sg = 0
+half_ap_offset_kr = half_bc_offset_kr = half_ap_offset_sg = half_bc_offset_sg = half_ap_offset_my = half_ap_offset_my = 0
 #key_tw = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'rBwj1MIAivVN222b'}
 key_cn = key_tw = key_kr = key_sg = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'011218525486l6u1'}
-key_jp = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'uH9JF2cHf6OppaC1'}
+key_jp = key_my = {'res': 'A1dPUcrvur2CRQyl', 'helper':'A1dPUcrvur2CRQyl', 'crypt':'uH9JF2cHf6OppaC1'}
 key_rsa_pool = [
 "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANV2ohKiVs/2cOiGN7TICmQ/NbkuellbTtcKbuDbIlBMocH+Eu0n2nBYZQ2xQbAv+E9na8K2FyMyVY4+RIYEJ+0CAwEAAQ==",
 "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAOLtTe70uQZ2BAneeTyNezMH/yn/uDu6qabQ3XHhmqqW8C4ZLxG7uW6bNmUdZQSUk8dO2+7ZTbN5lQw/u70Av2ECAwEAAQ==",
@@ -37,6 +37,7 @@ app_ver_tw = 200
 app_ver_kr = 108
 app_ver_jp = 310
 app_ver_sg = 100
+app_ver_my = 101
 # wake
 name_wake_rare = '魅．'
 # snda gplus, not working
