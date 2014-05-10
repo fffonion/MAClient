@@ -58,6 +58,7 @@ def reg_gen(plugin_vals):
             GET_header = po.header
             GET_header.update({'Cookie':po.cookie})
             # httplib2.Http().request(maclient_network.serv[loc]+'tutorial/next?step=100&resume_flg=1',headers=GET_header)
+            # my server add scenario_id=0
             time.sleep(2.328374)
             po.post('tutorial/save_character', postdata = 'country=%s&name=%s' % (random.choice('123'), uname))
             time.sleep(2.123123)
