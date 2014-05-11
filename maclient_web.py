@@ -18,7 +18,7 @@ from datetime import datetime, timedelta, tzinfo
 from recaptcha.client import captcha
 
 import maclient_web_bot
-from maclient_web_bot import WebSocketBot, mac_version, HeheError
+from maclient_web_bot import WebSocketBot, mac_version, HeheError, maxconnected
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -37,7 +37,8 @@ def _print(str):
     print(datetime.now(zh_BJ()).strftime('[%m.%d %H:%M]') + str)
 
 offline_bots = {}
-maxconnected, connected = 333, 0
+#maxconnected move to maclient_web_bot
+connected = 0
 
 def die_callback():
     global connected
@@ -79,6 +80,7 @@ def request_reload_py():
     global last_reload_py
     if time.time() - last_reload_py > 60:#every 1 min
         reload(maclient_web_bot)
+        from maclient_web_bot import WebSocketBot, mac_version, HeheError, maxconnected
         import maclient_player
         import maclient_network
         import maclient_logging

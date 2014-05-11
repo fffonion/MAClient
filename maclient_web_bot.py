@@ -18,6 +18,7 @@ reload(safeeval)
 
 mac_version = maclient.__version__
 mac_web_version = 20140508.16384
+maxconnected = 300
 
 class HeheError(Exception):
     def __init__(self, msg):
