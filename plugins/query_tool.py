@@ -7,7 +7,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = 'query infomation of player'
 __author = 'fffonion'
-__version__ = 0.38
+__version__ = 0.39
 hooks = {}
 extra_cmd = {'q_item':'query_item', 'qi':'query_item', 'q_holo':'query_holo', 'qh':'query_holo', 'qgc':'query_guild_contribution','q_rank':'query_rank','qr':'query_rank'}
 # end meta
@@ -163,7 +163,8 @@ def query_rank(plugin_vals):
                 try:
                     _user = ct.user_list.user
                 except KeyError:
-                    logging.warning('暂未列入排行榜，请继续努力ww')
+                    logger.warning('暂未列入排行榜，请继续努力ww')
+                    return
                 if not to_top:
                     me = [_i for _i in _user if _i.id == plugin_vals['player'].id][0]
                 logger.info(rank_name + 
