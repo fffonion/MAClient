@@ -203,7 +203,7 @@ def websocket_app(environ, start_response):
         except:
             pass
         connected -= 1
-        if _hash in offline_bots and bot.offline:#防止一个离线一个不离线同时存在的那段时间里，不离线的误把离线的引用带走了
+        if _hash in offline_bots and offline:#防止一个离线一个不离线同时存在的那段时间里，不离线的误把离线的引用带走了；不能用bot.offline因为这个属性可能会被改变，要用offline
             offline_bots.pop(_hash)
             _print("[conn-1=%d]offline bot exit. login_id=%s" % (connected, login_id))
         else:
