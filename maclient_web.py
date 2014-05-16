@@ -1,264 +1,245 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
+# if 'threading' in sys.modules:
+import gevent
+import gevent.monkey
+gevent.monkey.patch_all()
 import time
 import socket
-import gevent
-import traceback
-import gevent.monkey
+from hashlib import md5
+from threading import Thread
 from geventwebsocket import WebSocketError
 from geventwebsocket.handler import WebSocketHandler
 from webob import Request
-from hashlib import md5
-from binascii import hexlify
-import os, os.path as opath
 import sys
-import json
-from threading import Thread
-from cross_platform import *
-from maclient import MAClient
-import maclient
-class OutputModel:
-    def __init__(self, *args, **kwargs):
-        raise NotImplementedError()
+import os
+import re
+from datetime import datetime, timedelta, tzinfo
+from recaptcha.client import captcha
 
-    def send(self, payload):
-        raise NotImplementedError()
+import maclient_web_bot
+from maclient_web_bot import WebSocketBot, mac_version, HeheError, maxconnected
 
-    def close(self):
-        raise NotImplementedError()
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
-class WebSocket(OutputModel):
-    def __init__(self, environ):
-        self.conn = environ["wsgi.websocket"]
+class zh_BJ(tzinfo):
+    def utcoffset(self, dt):
+        return timedelta(hours = 8)
+    def dst(self, dt):
+        return timedelta(0)
 
-    def send(self, payload):
-        self.conn.send(payload)
+startup_time = datetime.now(zh_BJ()).strftime('%m.%d %H:%M:%S')
+_index_cache = None
 
-    def close(self):
-        self.conn.close()
+def _print(str):
+    open('mac_web.log', 'a', False).write(datetime.now(zh_BJ()).strftime('[%m.%d %H:%M]') + str + '\n')
+    print(datetime.now(zh_BJ()).strftime('[%m.%d %H:%M]') + str)
 
-class SaeChannel(OutputModel):
-    def __init__(self, name, duration = 60):
-        from sae import channel
-        self.name = name
-        self.client_url = channel.create_channel(name, duration)
-        self.send = lambda x:x#lambda d:channel.send_message(name, d)
+offline_bots = {}
+#maxconnected move to maclient_web_bot
+connected = 0
 
-    def close(self):
-        pass
+def die_callback():
+    global connected
+    connected-=1
 
-class LongPolling(OutputModel):
-    pass
+def born_callback():
+    global connected
+    connected+=1
 
-class JsonMsgModel:
-    ERR_SERVER_LOC_UNDEFINED = 10001
-    ERR_SERVER_OVERLOAD = 10002
-    ERR_RUNTIME_ERROR = 10000
-    ERR_NO_SUCH_USER = 10003
-
-    @classmethod
-    def error(s, code, msg):
-        return json.dumps({'code':code, 'errmsg':msg, 'data':None})
-
-    @classmethod
-    def message(s, msg):
-        return json.dumps({'code':0, 'errmsg':None, 'data':msg})
-
-class Bot(MAClient):
-    connected = 0
-    maxconnected = 233
-
-    def __init__(self, out, serv, uid, pwd):
-        self.cfgfile = opath.join(getPATH0, 'config_web.ini')
-        MAClient.__init__(self, configfile = self.cfgfile, servloc = serv)
-        self.out = out
-        self.uid, self.pwd = uid, pwd
-        self.shellbyweb = True
-        self.offline = False
-        self.running = True
-        #redirect
-        self.logger.logfile = None
-        self.logger.logpipe(self.logpipe)
-        self.last_offline_keepalive_time = time.time()
-        self.__class__.connected += 1
-        #Bot.__init__(self)
-
-    def logpipe(self, _str):
-        if self.shellbyweb:
-            if self.out != None or self.offline == False:
-            #mac.ws == None mac.offline == False should throw a ex
-                self.out.send(_str)
-            else:
-                sys.stdout.write(_str)
+class cleanup(Thread):
+    def __init__(self):
+        Thread.__init__(self, name = 'cleanup-thread')
 
     def run(self):
-        dec = self.login(self.uid, self.pwd)
-        self.initplayer(dec)
-        self.tasker('w')
-
-    def end(self):
-        self.__class__.connected -= 1
-        print "conn-1=%d" % self.connected
-        if self.__class__.connected < len(offline_botruns):
-            self.__class__.connected = len(offline_botruns)
-        self.running = False
-        self._exit(0)
-
-class __Bot():
-    connected = 0
-    maxconnected = 233
-    def __init__(self, out, serv):
-        pass
-
-    def run(self, username, password):
+        _print('cleanup started')
         while True:
-            gevent.sleep(30)
-        print username,'exit' 
-
-    def __del__(self):
-        self.__class__.connected -= 1
-        print "conn-1=%d" % self.connected
-        if self.__class__.connected < len(offline_botruns):
-            self.__class__.connected = len(offline_botruns)
-
-class BotRunner(Thread):
-    def __init__(self, bot):
-        self.bot = bot
-        Thread.__init__(self)
-
-    def run(self):
-        while self.bot and self.bot.running:
-            try:
-                self.bot.run()
-            except (socket.error, WebSocketError), e:
-                if self.bot.offline:
-                    self.bot.out = None
-                    print 'lost websocket client keep offline work'
-                    continue
-                print 'lost websocket client'
-                break
-            except Exception, e:
-                import traceback
-                traceback.print_exc()
-                try:
-                    self.bot.out.send("".join(traceback.format_exception(*sys.exc_info())))
-                except WebSocketError:
-                    pass
-                except Exception, e:
-                    print 'main loop throws a ex.!'
-                break
-        self.bot.end()
-
-offline_botruns = {}
-_page_cache = open(opath.join(getPATH0, "web.htm")).read()
+            for i in offline_bots:
+                bot = offline_bots[i]
+                #if not bot.offline:
+                #    continue
+                #if bot.offline == True:
+                if time.time() - bot.last_offline_keepalive_time > bot.keep_time:
+                    _print('request shutdown offline bot %s' % bot.loginid)
+                    bot.end()
+            gevent.sleep(60)
+            _print('cleanup-thread keep alive')
 
 
-def application(environ, start_response):
-    jsonret = lambda data:(start_response("200 OK", [("Content-Type", "application/json")]), data)[1]
+last_reload_html, last_reload_py = 0, time.time()
+def request_reload_html():
+    global last_reload_html
+    if time.time() - last_reload_html > 600:#every 6 min
+        global _index_cache
+        _index_cache = open("web.htm").read().replace('[startup_time]', startup_time)\
+            .replace('[version_str]', str(mac_version))
+        last_reload_time = time.time()
 
-    for i in offline_botruns:
-        if not hasattr(offline_botruns[i], 'bot'):#pending stop
-            continue
-        bot = offline_botruns[i].bot
-        if bot.offline == True:
-            if time.time() - bot.last_offline_keepalive_time > 8:# * 3600:
-                bot.offline = False
+def request_reload_py():
+    global last_reload_py
+    if time.time() - last_reload_py > 60:#every 1 min
+        reload(maclient_web_bot)
+        from maclient_web_bot import WebSocketBot, mac_version, HeheError, maxconnected
+        import maclient_player
+        import maclient_network
+        import maclient_logging
+        import maclient_smart
+        import maclient_plugin
+        reload(maclient_player)
+        reload(maclient_network)
+        reload(maclient_logging)
+        reload(maclient_smart)
+        reload(maclient_plugin)
+        last_reload_py = time.time()
+
+clthread = cleanup()
+clthread.start()
+
+def websocket_app(environ, start_response):
+    #cleanup()
+    global clthread
+    if(not clthread.isAlive()):
+        clthread = cleanup()
+        clthread.start() 
+    global connected
+    global maxconnected
     request = Request(environ)
-    if request.path == '/bot':
-        WEBSOCKET = 'wsgi.websocket' in environ
+    if request.path == '/bot' and 'wsgi.websocket' in environ:
+        ws = environ["wsgi.websocket"]
         login_id = request.GET['id']
         password = request.GET['password']
-        _key = md5(login_id + password).hexdigest()
-        _key_int = hexlify(_key)
-        area = request.GET.get('area', None)
+        #area = request.GET.get('area', None)
         offline = request.GET.get('offline', False)
-        logout = request.GET.get('logout', False)
+        keep_time = int(request.GET.get('keep_time', 12 * 3600))
+        cmd = request.GET.get('cmd', '')
         serv = request.GET.get('serv', 'cn')
         servs = ['cn', 'cn2', 'cn3', 'jp', 'kr', 'tw', 'sg']
-        if WEBSOCKET:
-            out = environ["wsgi.websocket"]
-        elif SAE:
-            out = SaeChannel(_key)
-
         if serv not in servs:
-            return jsonret(JsonMsgModel.error(JsonMsgModel.ERR_SERVER_LOC_UNDEFINED, "undefine server."))
+            ws.send("undefine server.\n")
+            return
+            
+        _hash = md5(login_id + password + serv).digest()
 
-        if Bot.maxconnected <= Bot.connected:
-            return jsonret(JsonMsgModel.error(JsonMsgModel.ERR_SERVER_OVERLOAD, "server overload."))
-        if logout:
-            if _key_int in offline_botruns:
-                print "wait for exit"
-                offline_botruns[_key_int].bot.end()
-                offline_botruns[_key_int].join()
-                del offline_botruns[_key_int]
-                print "offline bot exit. login_id=%s" % login_id
-                return jsonret(JsonMsgModel.message('logout succeed.'))
-            else:
-                return jsonret(JsonMsgModel.error(JsonMsgModel.ERR_NO_SUCH_USER, "no such user."))
+        if maxconnected <= connected:
+            ws.send("server overload.\n")
+            return
+
+        request_reload_py()
+        from maclient_web_bot import WebSocketBot, mac_web_version
+
         #if offline and login_id not in config.allow_offline:
         #offline = False
         if not offline:
-            out.send("offline disable.\n")
+            ws.send("离线模式已经禁用,系统会在你关闭浏览器后停止挂机\n")
         else:
-            out.send("offline enable.\n")
+            ws.send("离线模式已经启用,系统会代挂N小时.\n")
 
-        #out.send("http://ma.mengsky.net Nginx可能存在问题导致disconnect请更换 http://174.140.165.4:8000/\n")
-        out.send("webbot created by fffonionbinuxmengskysama\n\n")
-        b=time.time()
-        if _key_int in offline_botruns:
-            out.send("client reconnected!\n")
-            bot = offline_botruns[_key_int].bot
-            bot.out = out
+        ws.send("webbot created by fffonionbinuxmengskysama [version %.5f]\n\n" % mac_web_version)
+        #reconnects
+        if _hash in offline_bots:
+            bot = offline_bots[_hash]
+            if bot.request_exit:
+                ws.send("当前实例正在退出，请稍后重新登录")
+                return
+            ws.send("websocket client reconnected!\n")
             bot.offline = offline
+            bot.ws = ws
+            bot.keep_time = keep_time
             bot.last_offline_keepalive_time = time.time()
-            if WEBSOCKET:
-                while True:
-                    gevent.sleep(60)
-                    try:
-                        out.send('')
-                    except Exception, e:
-                        print 'lost connection, client keep offline work\n'
-                        return
-            elif SAE:
-                return jsonret(JsonMsgModel.message({'channel_url':out.client_url, 'reconnected':1}))
-        #是新用户
-        #
-        bot = Bot(out, serv, login_id, password)
-        #bot.run()
-        botrun = BotRunner(bot)
-        botrun.start()
+            while True:
+                gevent.sleep(60)
+                try:
+                    ws.send('')
+                    #cleanup()
+                except Exception as e:
+                    _print('[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline))
+                    return
+        #new
+        bot = WebSocketBot(ws, serv, md5(login_id + password + serv).hexdigest(), die_callback, born_callback)
+        bot.loginid = login_id
+
         if offline:
+            bot.keep_time = keep_time
+            bot.last_offline_keepalive_time = time.time()
             bot.offline = True
-            offline_botruns[_key_int] = botrun
-        print "conn+%s=%d %s" % (environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR']),
-                     Bot.connected, environ.get('HTTP_USER_AGENT', '-'))
-        if WEBSOCKET:
-            botrun.join()#如果现在退出ws会被关闭
-        if SAE:
-            return jsonret(JsonMsgModel.message({'channel_url':out.client_url, 'new':1}))
+            offline_bots[_hash] = bot
+
+        _print("conn+%s=%d %s" % (environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR']),
+                                 connected, environ.get('HTTP_USER_AGENT', '-')))
+
+        _print("login id=%s %s" % (login_id, ('offline=%d' % keep_time) if offline else ''))
+
+        offline_timeout_stop = False
+        while True:
+            try:
+                bot.run(login_id, password, cmd)
+            except (socket.error, WebSocketError), e:
+                #import traceback; traceback.print_exc()
+                if bot.offline:
+                    bot.ws = None
+                    _print('[%s]id = %s keep offline work\n' % (e, login_id))
+                    continue
+                _print('[%s]id = %s exit bot\n' % (e, login_id))
+                break
+            except HeheError:#hehe
+                _print('id = %s force exit.' % login_id)
+                offline_timeout_stop = True
+                break
+            except Exception, e:
+                _print('id = %s except offline=%s' % (login_id, offline))
+                import traceback; traceback.print_exc(limit = 2)
+                if not bot.offline:
+                    break
+                try:
+                    bot.ws.send("".join(traceback.format_exception(*sys.exc_info())))
+                except WebSocketError:
+                    pass
+                except Exception, e:
+                    _print('main loop throw a ex.!\n')
+                break
+        try:
+            bot.end()#release filelock
+        except:
+            pass
+        connected -= 1
+        if _hash in offline_bots and offline:#防止一个离线一个不离线同时存在的那段时间里，不离线的误把离线的引用带走了；不能用bot.offline因为这个属性可能会被改变，要用offline
+            offline_bots.pop(_hash)
+            _print("[conn-1=%d]offline bot exit. login_id=%s" % (connected, login_id))
+        else:
+            _print("[conn-1=%d]exit. login_id=%s" % (connected, login_id))
+        # try:
+        #     bot.end()
+        # except HeheError:
+        #     pass
         #auto release del bot
-    elif request.path == '/ajax':
-        cmd = request.GET['cmd']
-        if cmd == 'load':
-            return jsonret(JsonMsgModel.message({'connected':Bot.connected, 'maxconnected':Bot.maxconnected}))
-        elif cmd == 'users':
-            return jsonret(JsonMsgModel.message(offline_botruns.keys()))
-        elif cmd == 'dump':
-            a=dict(globals())
-            a.update(locals())
-            return jsonret(JsonMsgModel.message(a[request.GET['name']]))
+    elif request.path == '/upload_cfg':
+        #request.POST['file'].file.read()
+        start_response("200 OK", [("Content-Type", "text/html")])
+        try:
+            if not captcha.submit(request.POST['recaptcha_challenge'], request.POST['recaptcha_response'], '6Lfq-PISAAAAACT8g1dBSFoo0Lkr4XV3c__ydwIm', environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR'])).is_valid:
+                return '-1'#验证码填错
+            assert('_hash' in request.POST)
+            assert(len(request.POST['_hash']) == 32 and len(re.findall('[abcdef\d]+', request.POST['_hash'])[0]) == 32)
+        except (KeyError, AssertionError, IndexError):
+            return '-2'#少参数或不合法
+        inp = request.POST['file'].file
+        cfg = inp.read(16384)
+        if inp.read(1):
+            return '-3'#太大
+        _print("[upload_cfg] hash=%s" % request.POST['_hash'])
+        with open(os.path.join('configs', request.POST['_hash']), 'w') as f:
+            f.write(cfg)
+        return '1'
     else:
         start_response("200 OK", [("Content-Type", "text/html")])
-        return _page_cache.replace('[connected]', '%s' % Bot.connected).replace('[maxconnected]', '%s' % Bot.maxconnected)
+        ol = connected# + 169
+        request_reload_html()
+        return _index_cache.replace('[connected]', '%d/%d' % (ol, len(offline_bots))).replace('[maxconnected]', '%s' % maxconnected)
 
-gevent.monkey.patch_all()
-
-if not (BAE or SAE):
-    if OPENSHIFT:
-        ip = os.environ['OPENSHIFT_PYTHON_IP']
-        port = int(os.environ['OPENSHIFT_PYTHON_PORT'])
-    else:
-        ip = ""
-        port = 8080
-    server = gevent.pywsgi.WSGIServer((ip, port), application, handler_class=WebSocketHandler)
+if __name__ == '__main__':
+    if not os.path.exists('configs'):
+        os.mkdir('configs')
+    application = websocket_app
+    server = gevent.pywsgi.WSGIServer(("", 10007), websocket_app, handler_class=WebSocketHandler)
     server.serve_forever()

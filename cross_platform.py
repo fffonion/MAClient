@@ -3,6 +3,7 @@
 # maclient compatibility tool
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
+from __future__ import print_function
 import os
 import os.path as opath
 import sys
@@ -28,6 +29,10 @@ else:
     SAE = True
 OPENSHIFT = 'OPENSHIFT_PYTHON_IP' in os.environ
 
+BOT = True
+if BOT or BAE or SAE or OPENSHIFT:
+    print = lambda x, *args, **kwargs : None
+
 convhans = lambda x:x
 try:
     import ZhConversion
@@ -39,6 +44,11 @@ else:
         convhans = chans.toTW
     elif LOCALE == 'zh_HK':
         convhans = chans.toHK
+if PYTHON3:
+    import imp
+    reload = imp.reload
+    xrange = range
+
 
 getPATH0 = SAE and '' or ((not EXEBUNDLE or IRONPYTHON) and \
      (PYTHON3 and \
@@ -47,14 +57,20 @@ getPATH0 = SAE and '' or ((not EXEBUNDLE or IRONPYTHON) and \
      ) \
      or sys.path[1].decode(sys.getfilesystemencoding()))  # pyinstaller build
 
-du8 = (IRONPYTHON or PYTHON3) and \
+raw_du8 = (IRONPYTHON or PYTHON3) and \
     (lambda str:str) or \
     (lambda str:convhans(str).decode('utf-8'))
+
+safestr = (sys.platform.startswith('cli') or PYTHON3 or NICE_TERM)and \
+        (lambda str: str) or \
+        (lambda str: str.decode('utf-8').encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+
+du8 = lambda x: safestr(raw_du8(x))
 
 raw_inputd = PYTHON3 and \
         (lambda s:input(s)) \
     or \
-        (lambda s:raw_input(du8(s).encode(CODEPAGE or 'utf-8')).decode(CODEPAGE or 'utf-8').encode('utf-8'))
+        (lambda s:raw_input(raw_du8(s).encode(CODEPAGE or 'utf-8')).decode(CODEPAGE or 'utf-8').encode('utf-8'))
         
 # from goagent.appcfg
 def _win_getpass(prompt='Password:', stream=None):

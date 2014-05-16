@@ -53,7 +53,7 @@ auto_set/as
 	auto_set line:2 bc:max notest #选出两排不限BC的最大攻击卡组，并保存
 	auto_set aim:defeat line:1 bc:cur fairy:30,263215 notest #选出一排能打死Lv30剩余hp263215的普妖的卡组，并保存
 	auto_set aim:max_dmg line:1 bc:cur incl:124 #选出当前BC下一排最大攻击输出卡组，包括小狼女，不保存
-    
+
 ###因子战
 
 factor_battle/fcb
@@ -62,14 +62,13 @@ factor_battle/fcb
     factor_battle lake:7 #选择湖7
     factor_battle lake:7 50 #选择湖7 且在BC<50时退出
 
-    
 ###秘境探索
 
 explore/e
 
     explore #根据condition自动选择秘境
     explore area.name=='學校教室'
-    
+
 筛选条件语法与condition中的auto_explore相同
 
 
@@ -118,7 +117,7 @@ gacha/g
     gacha 1 #绊转蛋
     gacha 2 #转蛋券转蛋
     gacha 4 #11连转蛋
-    
+
 ###分配点数
 
 point/p

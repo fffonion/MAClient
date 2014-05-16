@@ -25,20 +25,20 @@ import os, os.path as opath
 import gzip
 import socket
 import urllib
+import maclient_network
 
 # start meta
 __plugin_name__ = 'web broswer helper'
 __author = 'fffonion'
-__version__ = 0.44
+__version__ = 0.45
 hooks = {}
 extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy'}
 # end meta
-weburl = {'cn':'http://game1-cbt.ma.sdo.com:10001/connect/web/?%s',
-        'cn2':'http://game2-cbt.ma.sdo.com:10001/connect/web/?%s',
-        'cn3':'http://game3-cbt.ma.sdo.com:10001/connect/web/?%s',
-        'tw':'http://game.ma.mobimon.com.tw:10001/connect/web/?%s',
-        'jp':'http://web.million-arthurs.com/connect/web/?%s',
-        'kr':'http://ma.actoz.com:10001/connect/web/?%s'}
+# generate weburl
+weburl = dict(maclient_network.serv)
+for k in weburl:
+    weburl[k] = weburl[k].replace('app/', 'web/?%s')
+
 servers = ['static.sdg-china.com' ,'ma.webpatch.sdg-china.com', 'game.ma.mobimon.com.tw', 'web.million-arthurs.com', 'ma.actoz.com']
 # other stuffs
 headers = {'Pragma': 'no-cache',
@@ -75,7 +75,7 @@ def start_webproxy(plugin_vals):
             os.mkdir(TEMP_PATH)
         headers['cookie'] = plugin_vals['cookie']
         headers['User-Agent'] = plugin_vals['poster'].header['User-Agent']
-        headers['X-Requested-With'] += plugin_vals['loc']
+        headers['X-Requested-With'] += plugin_vals['loc'][:2]
         homeurl = weburl[plugin_vals['loc']] % (plugin_vals['cookie'].rstrip(';'))
         enable_proxy()
         #if not winreg or True:

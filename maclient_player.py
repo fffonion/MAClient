@@ -27,7 +27,8 @@ class player(object):
         self.rev_need_update = False, False, False, False
         self.update_all(login_xml)
         object.__init__(self)
-        self.success = check_exclusion(self.name + loc)
+        self.filedesc = check_exclusion(self.name + loc)
+        self.success = self.filedesc != 0
 
     def reload_db(self):
         self.card.load_db(self.loc[:2])
@@ -168,7 +169,7 @@ class card(object):
             f = open(_f)
         for c in f.readlines():
             if c.startswith(loc):
-                c = c[3:].rstrip('\n')
+                c = c[3:].rstrip('\n').rstrip('\r')
                 break
             c = ''
         #变量名是不是很给力！
@@ -182,7 +183,10 @@ class card(object):
         for p in carddict:
             self.cards.append(p)
             for elem in p:  # store as int
-                self.cards[-1][elem] = int(getattr(p, elem))
+                try:
+                    self.cards[-1][elem] = int(getattr(p, elem))
+                except TypeError:
+                    pass
         self.count = len(self.cards)
         # print self.cid('124')
 
@@ -225,13 +229,14 @@ class boss(object):
             else:
                 lastname = c[1]
         lastname = None
-        self.name_wake = du8(self.name_wake.lstrip('|'))
+        self.name_wake = raw_du8(self.name_wake.lstrip('|'))
 
 
 def check_exclusion(inpstr):
     '''Return False if exclusion exists'''
     import tempfile
     import hashlib
+    filedesc= 0
     if PYTHON3:
         inpstr = inpstr.encode(encoding = 'utf-8')
     md5name = hashlib.md5(inpstr).hexdigest()[:6]
@@ -246,18 +251,18 @@ def check_exclusion(inpstr):
                 os.remove(opath.join(tdir, '.%s.maclient.filelock' % md5name))
             except WindowsError as e:
                 if e.winerror == 32:  # cannot access to file
-                    return False
+                    return 0
         else:
-            return True
+            return -1
     # re-aquire lock file
     try:
-        os.open(opath.join(tdir, '.%s.maclient.filelock' % md5name), os.O_CREAT | os.O_EXCL | os.O_RDWR)
+        filedesc = os.open(opath.join(tdir, '.%s.maclient.filelock' % md5name), os.O_CREAT | os.O_EXCL | os.O_RDWR)
     except OSError as e:
         if e.errno == 17:  # exist
-            os.open(opath.join(tdir, '.%s.maclient.filelock' % md5name), os.O_EXCL | os.O_RDWR)
+            filedesc = os.open(opath.join(tdir, '.%s.maclient.filelock' % md5name), os.O_EXCL | os.O_RDWR)
         else:
-            return False
-    return True
+            return 0
+    return filedesc
 
 if __name__ == '__main__':
     if len(sys.argv) > 2:

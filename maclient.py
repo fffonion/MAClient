@@ -20,7 +20,6 @@ import threading
 from cross_platform import *
 if PYTHON3:
     import configparser as ConfigParser
-    xrange = range
 else:
     import ConfigParser
 import maclient_player
@@ -51,9 +50,9 @@ eval_task = []
 #duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 
 if PYTHON3:
-    setT = lambda strt : os.system(du8('TITLE %s' % strt))
+    setT = lambda strt : os.system(raw_du8('TITLE %s' % strt))
 elif NICE_TERM:
-    setT = lambda strt : print(du8('[SET-TITLE]%s'%strt))
+    setT = lambda strt : print(raw_du8('[SET-TITLE]%s'%strt))
 else:
     #if not PYTHON3:
     #    strt = strt.decode('utf-8').encode('cp936', 'ignore')
@@ -62,7 +61,7 @@ else:
         def setT(strt):
             System.Console.Title = strt
     else:
-        setT = lambda strt : os.system(du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+        setT = lambda strt : os.system(raw_du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
 
 class set_title(threading.Thread):
     def __init__(self, macInstance):
@@ -99,7 +98,7 @@ class conn_ani(threading.Thread):
             cnt = (cnt + 1) % 4
             time.sleep(0.15)
 
-class MAClient():
+class MAClient(object):
     global plugin
     plugin = maclient_plugin.plugins(maclient_logging.Logging('plugin_logging'), __version__)
     def __init__(self, configfile = '', savesession = False, servloc = None):
@@ -244,7 +243,11 @@ class MAClient():
             try:
                 dec = XML2Dict().fromstring(_dec).response
             except:
-                dec = XML2Dict().fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
+                try:
+                    dec = XML2Dict().fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
+                except:
+                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请联系作者\nhttp://yooooo.us/2013/maclient')
+                    self._exit(0)
             try:
                 err = dec.header.error
             except:
@@ -338,7 +341,8 @@ class MAClient():
                         self._exit(1)
         if setcookie and 'set-cookie' in resp:
             self.cookie = resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
-            self._write_config('account_%s' % self.loc, 'session', self.cookie)
+            if self.cfg_save_session:
+                self._write_config('account_%s' % self.loc, 'session', self.cookie)
 
         return resp, dec
 
@@ -453,7 +457,7 @@ class MAClient():
                     self.select_card_sell(' '.join(task[1:]))
                 elif task[0] == 'set_server' or task[0] == 'ss':
                     self._write_config('system', 'server', task[1])
-                    if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp','sg']:
+                    if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp','sg','my']:
                         self.logger.error('服务器"%s"无效'%(task[1]))
                     else:
                         self.loc = task[1]
@@ -521,9 +525,13 @@ class MAClient():
                     pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
                     # if self.loc == 'kr':
                     #      pdata='S=nosessionid&%s' % pdata
-                    if self.loc != 'jp':
+                    if self.loc not in ['jp', 'my']:
                         self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
-                resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
+                if self.loc == 'my':
+                    login_uri = 'actozlogin'
+                else:
+                    login_uri = 'login'
+                resp, ct = self._dopost(login_uri, postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
                 if resp['error']:
                     self.logger.info('登录失败么么哒w')
                     self._exit(1)
@@ -708,7 +716,7 @@ class MAClient():
                         ))
                 else:
                     self.logger.error(res[0])
-                    return False, 0
+                    return False, -1
                 if test_mode:
                     return False, 0
         else:
@@ -722,7 +730,7 @@ class MAClient():
                 return False, int(self._read_config('record', 'last_set_bc') or '0')
             if cardid == '':
                 self.logger.warning('set_card:不存在的卡组名？')
-                return False, 0
+                return False, -1
             cardid = cardid.split(',')
             param = []
             last_set_bc = 0
@@ -1308,8 +1316,8 @@ class MAClient():
             elif fairy.fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
             fairy['time_limit'] = int(fairy.fairy.time_limit)
-            fairy['wake'] = re.search(self.player.boss.name_wake, du8(fairy.fairy.name)) != None
-            fairy['wake_rare'] = re.search(maclient_smart.name_wake_rare, du8(fairy.fairy.name)) != None
+            fairy['wake'] = re.search(self.player.boss.name_wake, raw_du8(fairy.fairy.name)) != None
+            fairy['wake_rare'] = re.search(maclient_smart.name_wake_rare, raw_du8(fairy.fairy.name)) != None
             ftime = (self._read_config('fairy', fairy.fairy.serial_id) + ',,').split(',')
             fairy.fairy['not_battled'] = ftime[0] == ''
             # self.logger.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
@@ -1398,7 +1406,7 @@ class MAClient():
         if 'not_battled' not in fairy:
             ftime = (self._read_config('fairy', fairy.serial_id) + ',,').split(',')
             fairy['not_battled'] = ftime[0] == ''
-        fairy['wake_rare'] = re.match(maclient_smart.name_wake_rare, du8(fairy.name)) != None
+        fairy['wake_rare'] = re.match(maclient_smart.name_wake_rare, raw_du8(fairy.name)) != None
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
         disc_name = ''
         disc_id = fairy.discoverer_id
@@ -1438,6 +1446,8 @@ class MAClient():
             self.logger.debug('fairy_battle:abort battle sequence.')
             return False
         _has_set, _last_bc = self.set_card(cardd, cur_fairy = fairy)
+        if _last_bc == -1:#自动配卡出错或卡组不存在
+            _has_set, _last_bc = self.set_card('min')
         if _has_set:
             fairy = fairy_floor()  # 设完卡组返回时
             if not fairy:
@@ -1713,7 +1723,7 @@ class MAClient():
                 # else:
                 #    if 'name' in users:#只有一个
                 #        users=[users]
-                strf = du8('已有好友个数：%d\n' % len(users))
+                strf = '已有好友个数：%d\n' % len(users)
                 i = 1
                 deluser = None
                 maxlogintime = 0
@@ -1732,7 +1742,7 @@ class MAClient():
                         deluser = user
                         maxlogintime = user.logintime
                     i += 1
-                print(du8(strf).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+                print(du8(strf))
                 confirm = False
                 if deluser != None:
                     if not autodel:
@@ -1775,7 +1785,7 @@ class MAClient():
                         i, user.name, user.town_level, user.last_login, user.friends, user.friend_max, user.cost
                     )
                     i += 1
-                print(du8('%s%s' % ('申请列表:\n', strf)).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+                print(du8('%s%s' % ('申请列表:\n', strf)))
                 adduser = raw_inputd('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser != ['']:
                     for u in adduser:
@@ -1817,7 +1827,7 @@ class MAClient():
                         i, user.name, user.town_level, user.last_login, user.friends, user.friend_max, user.cost
                     )
                     i += 1
-                print(du8('%s%s' % ('搜索结果:\n', strf)).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+                print(du8('%s%s' % ('搜索结果:\n', strf)))
                 usel = raw_inputd('选择要添加的好友序号, 空格分割多个，回车返回> ')
                 uids = []
                 for u in usel.split(' '):
@@ -1906,7 +1916,7 @@ class MAClient():
         if rw_type[-1] == '<':
             no_get = True
             rw_type = rw_type[:-1]
-        rw_type = du8(rw_type)
+        rw_type = raw_du8(rw_type)
         real_desc_match = not rw_type.isdigit() or not rw_type
         for r in rwds:
             if (real_desc_match and \
@@ -1972,7 +1982,7 @@ class MAClient():
             trycnt = '999'
         sel_lake = sel_lake.split(',')
         battle_win = 1
-        if self.loc == 'jp':
+        if self.loc in ['jp', 'sg']:
             self._dopost('battle/area', xmlresp = False)
             resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
         else:
@@ -2125,7 +2135,7 @@ class MAClient():
     #         if method==None:
     #             sleeped=False
     #             while True:
-    #                 #print(self.remote.status,self.remote.STARTED)
+    #                 ##print(self.remote.status,self.remote.STARTED)
     #                 if self.remote.status==self.remote.STARTED:
     #                     if self.remote.tasker!='':
     #                         self.tasker(cmd=self.remote.get_task())

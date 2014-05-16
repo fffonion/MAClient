@@ -158,7 +158,7 @@ if __name__ == '__main__':
             if PYTHON3:
                 ch = input()
             else:
-                ch = sys.stdin.readline().rstrip('\n').decode(locale.getdefaultlocale()[1] or 'utf-8').encode('utf-8')
+                ch = sys.stdin.readline().rstrip('\n').decode(locale.getdefaultlocale()[1] or 'utf-8')#.encode('utf-8')
             try:
                 print(' \b')
             except KeyboardInterrupt:
@@ -269,14 +269,14 @@ if __name__ == '__main__':
                         try:
                             p1, p2 = inp.split(' ')
                         except:
-                            logging.error(du8('输入有误www'))
+                            logging.error('输入有误www')
                         else:
                             if p1 in maclient1._list_option('system'):
                                 maclient1._write_config('system', p1, p2)
                             elif p1 in maclient1._list_option('tactic'):
                                 maclient1._write_config('tactic', p1, p2)
                             else:
-                                logging.error(du8('配置项不存在www'))
+                                logging.error('配置项不存在www')
                                 continue
                             print(du8('已保存~'))
                             maclient1.load_config()
@@ -286,7 +286,7 @@ if __name__ == '__main__':
                 inp = raw_input('> ') or 'g'
                 import maclient_update
                 if inp == 'g':
-                    logging.info(du8('将强制重新从服务器下载数据……'))
+                    logging.info('将强制重新从服务器下载数据……')
                     crev, irev, brev, cbrev = maclient_update.update_master(maclient1.loc[:2], (True, True, True, True), maclient1.poster)
                     logging.info('%s%s%s%s' % (
                             '卡片数据更新为rev.%s' % crev if crev else '',
@@ -294,7 +294,7 @@ if __name__ == '__main__':
                             '强敌数据更新为rev.%s' % brev if brev else '',
                             'Combo数据更新为rev.%s' % cbrev if brev else ''))
                 elif inp == 'b':
-                    logging.info(du8('将从多玩数据库下载倍卡信息……'))
+                    logging.info('将从多玩数据库下载倍卡信息……')
                     getnew = maclient_update.update_multi(maclient1.loc[:2])
                     if not getnew:
                         logging.warning('无法获得倍卡信息\n对于国服/台服以外的用户请使用am或add_multi命令添加倍卡')
