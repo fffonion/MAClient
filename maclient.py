@@ -304,7 +304,7 @@ class MAClient(object):
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else '',
                             '强敌数据更新为rev.%s' % brev if brev else '',
-                            'Combo数据更新为rev.%s' % cbrev if brev else ''))
+                            'Combo数据更新为rev.%s' % cbrev if cbrev else ''))
                         self.player.reload_db()
                         self.player.rev_need_update = False, False, False, False
                     else:
