@@ -13,7 +13,7 @@
   </head>
 
   <body>
-<h1>MA Bot(v0.6a偽) 根本认不出来版 服务器当前负载:[connected]/[maxconnected]</h1>
+<h1>MA Bot(v0.6b偽) 根本认不出来版 服务器当前负载:[connected]/[maxconnected]</h1>
 <span style="float:left;margin-right:20px"><img src="http://www.mengsky.net/ol.png"/></span>
 <span style="margin:0 auto; overflow:auto; _display:inline-block;">MAClient backend version = [version_str]<button id=btn_upload_cfg style="font-weight:bold;color:#DF5823" onclick="showreCaptcha()">上传配置</button><a href="http://pan.baidu.com/s/19qI4m#dir/path=%2FApp%2FMAClient" target="_blank">配置工具点我</a><br>
 最后重启时间[startup_time]
@@ -47,9 +47,9 @@
     </section>
     
 	  <nobr><form id=upload_form onsubmit="return false;" style="display:none" enctype="multipart/form-data">
-  	  <div class="recaptcha" id="recaptcha">别急，这里会有验证码</div>↑看不懂的那个乱输就可以了ww&nbsp;&nbsp;
+  	  <div class="recaptcha" id="recaptcha">别急，这里会有验证码</div>
       <input type="file" name="file" />
-      <button onclick="submit_cfg()">上传</button>请先用<a href="http://pan.baidu.com/s/19qI4m#dir/path=%2FApp%2FMAClient" target="_blank">MAClientGUI</a>工具转换为<b>UTF-8编码</b>，配置文件中请<b>不要</b>保存账号密码
+      <button onclick="submit_cfg()">上传</button>请先用<a href="http://pan.baidu.com/s/19qI4m#dir/path=%2FApp%2FMAClient" target="_blank">MAClientGUI</a>工具转换为<b>UTF-8编码</b>，配置文件中请<b>不要</b>保存账号密码；服务器重启之后配置不会被删除；多次上传会覆盖之前的配置
     </form></nobr>
 
     

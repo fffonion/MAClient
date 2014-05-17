@@ -48,6 +48,10 @@ def born_callback():
     global connected
     connected+=1
 
+def pinfo():
+    p = [x for x in os.popen("ps aux|grep " + str(os.getpid())).read().split(' ') if x]
+    return 'CPU:%s%% MEM:%s%% %dM/%dM MACs:%d/%d' % (p[2], p[3], int(p[4])/1024, int(p[5])/1024, connected, len(offline_bots))
+
 class cleanup(Thread):
     def __init__(self):
         Thread.__init__(self, name = 'cleanup-thread')
@@ -63,8 +67,8 @@ class cleanup(Thread):
                 if time.time() - bot.last_offline_keepalive_time > bot.keep_time:
                     _print('request shutdown offline bot %s' % bot.loginid)
                     bot.end()
-            gevent.sleep(60)
-            _print('cleanup-thread keep alive')
+            gevent.sleep(180)
+            _print('cleanup-thread keep alive. %s' % pinfo())
 
 
 last_reload_html, last_reload_py = 0, time.time()
@@ -158,6 +162,8 @@ def websocket_app(environ, start_response):
         #new
         bot = WebSocketBot(ws, serv, md5(login_id + password + serv).hexdigest(), die_callback, born_callback)
         bot.loginid = login_id
+
+        _print('New instance started. %s' % pinfo())
 
         if offline:
             bot.keep_time = keep_time

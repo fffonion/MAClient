@@ -71,6 +71,8 @@ class WebSocketBot(MAClient):
         self.logger.logfile = None
         self.logger.logpipe(self.logpipe)
 
+
+
     def logpipe(self, _str):
         if self.shellbyweb:
             if self.ws != None or self.offline == False:
