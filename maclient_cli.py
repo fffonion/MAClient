@@ -292,7 +292,7 @@ if __name__ == '__main__':
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else '',
                             '强敌数据更新为rev.%s' % brev if brev else '',
-                            'Combo数据更新为rev.%s' % cbrev if brev else ''))
+                            'Combo数据更新为rev.%s' % cbrev if cbrev else ''))
                 elif inp == 'b':
                     logging.info('将从多玩数据库下载倍卡信息……')
                     getnew = maclient_update.update_multi(maclient1.loc[:2])

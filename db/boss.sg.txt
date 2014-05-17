@@ -109,8 +109,14 @@
 3054,Puca,381984
 3055,Shellycoat,384744
 3056,Morgan,407376
+3057,Morgan Le Fay,9999999
+3058,Morgan Le Fay,412896
 3059,Morgan,407376
+3060,Morgan Le Fay,9999999
+3061,Morgan Le Fay,412896
 3062,Morgan,407376
+3063,Morgan Le Fay,9999999
+3064,Morgan Le Fay,412896
 3065,Mordred Final Form 1,188784
 3066,Rience Soldier,386400
 3067,Rience Soldier,392840
@@ -134,3 +140,7 @@
 60014,Arousal Dryad,17002
 60015,Elena,8537
 60016,Arousal Elena,17002
+60017,Patjwi,8537
+60018,Arousal Patjwi,17002
+60019,Kongjwi,8537
+60020,Arousal Kongjwi,17002

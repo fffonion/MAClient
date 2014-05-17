@@ -304,7 +304,7 @@ class MAClient(object):
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else '',
                             '强敌数据更新为rev.%s' % brev if brev else '',
-                            'Combo数据更新为rev.%s' % cbrev if brev else ''))
+                            'Combo数据更新为rev.%s' % cbrev if cbrev else ''))
                         self.player.reload_db()
                         self.player.rev_need_update = False, False, False, False
                     else:
@@ -1548,7 +1548,7 @@ class MAClient(object):
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
                 # 如果是公会妖精则设为死了
-                elif fairy.race_type in GUILD_RACE_TYPE:
+                elif self.loc != 'jp' and fairy.race_type in GUILD_RACE_TYPE:
                     self.player.fairy['guild_alive'] = False
             else:  # 输了
                 hpleft = int(ct.body.explore.ex_fairy.fairy.hp) if self.loc == 'jp' else int(ct.body.explore.fairy.hp)
