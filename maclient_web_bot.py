@@ -13,12 +13,17 @@ from threading import Thread
 import maclient
 reload(maclient)#in case module has changed
 from maclient import MAClient
-import safeeval
+from web_libs import safeeval
 reload(safeeval)
+
+from web_libs import remote_debugger
+reload(remote_debugger)
 
 mac_version = maclient.__version__
 mac_web_version = 20140508.16384
 maxconnected = 300
+
+remote_debugger.listen()
 
 class HeheError(Exception):
     def __init__(self, msg):
