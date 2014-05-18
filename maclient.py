@@ -1367,9 +1367,10 @@ class MAClient(object):
         FAIRY_FLOOR_URI = 'private_fairy/private_fairy_top' if self.loc == 'jp' else 'exploration/fairy_floor'
         FAIRY_FLOOR_PARAM = '%sserial_id=%s&user_id=%s' if self.loc == 'jp' else 'check=1&%sserial_id=%s&user_id=%s'
         FAIRY_BATTLE_URI = 'private_fairy/private_fairy_battle' if self.loc == 'jp' else 'exploration/fairybattle'
-        FAIRY_BATTLE_PARAM = 'no=0&%sserial_id=%s&user_id=%s' if self.loc == 'jp' else '%sserial_id=%s&user_id=%s'
         #jp no -> carddeck number
-        while time.time() - self.lastfairytime < 18 and fairy.race_type != GUILD_RACE_TYPE:
+        FAIRY_BATTLE_PARAM = 'no=0&%sserial_id=%s&user_id=%s' if self.loc == 'jp' else '%sserial_id=%s&user_id=%s'
+        
+        while time.time() - self.lastfairytime < 18 and 'race_type' in fairy and fairy.race_type != GUILD_RACE_TYPE:
             self.logger.sleep('等待战斗冷却')
             time.sleep(5)
         def fairy_floor(f = fairy):
@@ -1396,7 +1397,7 @@ class MAClient(object):
             self.logger.warning('妖精已被消灭')
             if fairy.serial_id == self.player.fairy['id']:
                 self.player.fairy.update({'id':0, 'alive':False})
-            elif fairy.race_type in GUILD_RACE_TYPE:
+            elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = False
             return False
         fairy['lv'] = int(fairy.lv)
@@ -1410,12 +1411,11 @@ class MAClient(object):
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
         disc_name = ''
         disc_id = fairy.discoverer_id
-        if self.loc == 'jp':
-            fairy['attacker_history'] = []
-            fairy['race_type'] = 0#日服没有工会
+        # if self.loc == 'jp':
+        #     fairy['race_type'] =  0#日服没有工会
         if disc_id == self.player.id:
             disc_name = self.player.name
-        if 'attacker' not in fairy.attacker_history:  # 没人打过的
+        if self.loc == 'jp' or 'attacker' not in fairy.attacker_history:  # 没人打过的
             f_attackers = []
         else:
             f_attackers = self.tolist(fairy.attacker_history.attacker)
@@ -1434,7 +1434,7 @@ class MAClient(object):
         self.logger.info('妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s%s%s' % (
             fairy.name, fairy.lv, fairy.hp, disc_name,
             len(f_attackers), hms(fairy.time_limit),
-            fairy.race_type in GUILD_RACE_TYPE and ' 公会' or '',
+            ('race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE) and ' 公会' or '',
             fairy.wake and ' WAKE!' or ''))
         if carddeck:
             cardd = carddeck
@@ -1502,7 +1502,7 @@ class MAClient(object):
                 self.logger.warning('没有发现奖励，妖精已经挂了？')
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
-                elif fairy.race_type in GUILD_RACE_TYPE:
+                elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
                     self.player.fairy['guild_alive'] = False
                 return False
             # 通知远程
@@ -1548,7 +1548,7 @@ class MAClient(object):
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
                 # 如果是公会妖精则设为死了
-                elif self.loc != 'jp' and fairy.race_type in GUILD_RACE_TYPE:
+                elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
                     self.player.fairy['guild_alive'] = False
             else:  # 输了
                 hpleft = int(ct.body.explore.ex_fairy.fairy.hp) if self.loc == 'jp' else int(ct.body.explore.fairy.hp)
@@ -1647,7 +1647,7 @@ class MAClient(object):
             self.logger.info('妖精真正的力量觉醒！'.center(39))
             self.logger.warning('WARNING WARNING WARNING WARNING WARNING')
             time.sleep(3)
-            if rare_fairy.race_type in GUILD_RACE_TYPE:
+            if 'race_type' in rare_fairy and rare_fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
             else:
                 self.player.fairy.update({'alive':True, 'id':rare_fairy.serial_id})
@@ -1658,7 +1658,7 @@ class MAClient(object):
             if not need_tail:
                 fairy_floor()
              # 如果是醒妖且不是公会妖则问好
-            if bt_type == WAKE_BATTLE and not fairy.race_type in GUILD_RACE_TYPE and self.cfg_auto_greet :
+            if bt_type == WAKE_BATTLE and 'race_type' in fairy and fairy.race_type not in GUILD_RACE_TYPE and self.cfg_auto_greet :
                 self.like()
 
     @plugin.func_hook
