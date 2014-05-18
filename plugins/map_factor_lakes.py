@@ -4,7 +4,7 @@ from _prototype import plugin_prototype
 # start meta
 __plugin_name__ = '显示湖id与因子卡片'
 __author = 'fffonion'
-__version__ = 0.2
+__version__ = 0.21
 __help__ = 'mf显示所有湖及对应卡片，mf 湖id (如mf 10)显示碎片数量'
 from cross_platform import *
 from xml2dict import XML2Dict
@@ -32,9 +32,9 @@ def map_factor(plugin_vals):
                     continue
                 n = l.title.encode('utf-8')
                 l1 = len(n)  # ascii length
-                n = du8(n)
+                n = raw_du8(n)
                 l2 = len(n)  # char count
-                print(du8('%-2s%s %s%s%-4s%s' %(
+                print(safestr('%-2s%s %s%s%-4s%s' %(
                     l.lake_id,
                     '/活动' if l.event_id != '0' else '     ',
                     n, ' ' * int(13 - l2 - (l1 - l2) / 2),

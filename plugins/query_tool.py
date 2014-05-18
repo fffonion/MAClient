@@ -7,7 +7,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = 'query infomation of player'
 __author = 'fffonion'
-__version__ = 0.36
+__version__ = 0.39
 hooks = {}
 extra_cmd = {'q_item':'query_item', 'qi':'query_item', 'q_holo':'query_holo', 'qh':'query_holo', 'qgc':'query_guild_contribution','q_rank':'query_rank','qr':'query_rank'}
 # end meta
@@ -17,7 +17,7 @@ def query_item(plugin_vals):
     def do(*args):
         logger = plugin_vals['logger']
         if 'player' not in plugin_vals or not plugin_vals['player'].item.db:
-            logger.error(du8('玩家信息未初始化，请随便执行一个操作再试'))
+            logger.error('玩家信息未初始化，请随便执行一个操作再试')
             return
         print(du8('%-17s%s' % ('物品', '个数')))
         print('-' * 30)
@@ -25,9 +25,9 @@ def query_item(plugin_vals):
             if j > 0:  # has
                 # calc utf-8 length
                 l1 = len(n)  # ascii length
-                n = du8(n)
+                n = raw_du8(n)
                 l2 = len(n)  # char count
-                print(du8('%s%s%s' % (n, ' ' * int(15 - l2 - (l1 - l2) / 2), j)))
+                print(safestr('%s%s%s' % (n, ' ' * int(15 - l2 - (l1 - l2) / 2), j)))
     return do
 
 # query holo cards
@@ -35,7 +35,7 @@ def query_holo(plugin_vals):
     def do(*args):
         logger = plugin_vals['logger']
         if 'player' not in plugin_vals or not plugin_vals['player'].item.db:
-            logger.error(du8('玩家信息未初始化，请随便执行一个操作再试'))
+            logger.error('玩家信息未初始化，请随便执行一个操作再试')
             return
         print(du8('%s' % ('当前拥有以下闪卡')))
         print('-' * 30)
@@ -143,7 +143,10 @@ def query_rank(plugin_vals):
                     return
                 _url = _lib.query_base % _rev
                 x = opener.open(urllib2.Request(_url, headers = _header)).read()
-            show_it(x)
+            try:
+                show_it(x)
+            except IndexError:
+                logger.warning('匹配失败，请重新登录；如果问题仍然存在，请更新插件')
         else:#cn
             from xml2dict import XML2Dict
             po = plugin_vals['poster']
@@ -160,7 +163,8 @@ def query_rank(plugin_vals):
                 try:
                     _user = ct.user_list.user
                 except KeyError:
-                    logging.warning('暂未列入排行榜，请继续努力ww')
+                    logger.warning('暂未列入排行榜，请继续努力ww')
+                    return
                 if not to_top:
                     me = [_i for _i in _user if _i.id == plugin_vals['player'].id][0]
                 logger.info(rank_name + 

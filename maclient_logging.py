@@ -1,17 +1,20 @@
 # coding:utf-8
 import os
 import sys
-import time
+from datetime import datetime, tzinfo, timedelta
 import locale
 import logging
 import logging.handlers
 from cross_platform import *
 
-# convstr = (sys.platform.startswith('cli') or PYTHON3 or NICE_TERM)and \
-#         (lambda str: str) or \
-#         (lambda str: str.decode('utf-8').encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+class zh_BJ(tzinfo):
+    def utcoffset(self, dt):
+        return timedelta(hours = 8)
+    def dst(self, dt):
+        return timedelta(0)
 
-class Logging(type(sys)):
+
+class Logging(object):
     # paste from goagent
     CRITICAL = 5
     FATAL = CRITICAL
@@ -24,7 +27,7 @@ class Logging(type(sys)):
     NOTSET = 0
     def __init__(self, *args, **kwargs):
         self.level = self.__class__.INFO
-        self.__write = __write = sys.stdout.write
+        self.__write = __write = lambda x:sys.stdout.write(safestr(x))
         self.isatty = getattr(sys.stdout, 'isatty', lambda: False)()
         self.__set_error_color = lambda: None
         self.__set_warning_color = lambda: None
@@ -54,6 +57,9 @@ class Logging(type(sys)):
     def setlogfile(self, f):
         self.logfile = open(f, 'a')
 
+    def logpipe(self, to):
+        self.__write = to
+
     @classmethod
     def getLogger(cls, *args, **kwargs):
         return cls(*args, **kwargs)
@@ -66,12 +72,12 @@ class Logging(type(sys)):
     def log(self, level, fmt, *args, **kwargs):
         # fmt=du8(fmt)
         try:
-            self.__write(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args)))
-        except TypeError:
+            self.__write(raw_du8('%-5s - [%s] %s\n' % (level, datetime.now(zh_BJ()).strftime('%X'), fmt % args)))
+        except (ValueError, TypeError):
             fmt = fmt.replace('%','%%')
-            self.__write(du8('%-5s - [%s] %s\n' % (level, time.strftime('%X', time.localtime()), fmt % args)))
+            self.__write(raw_du8('%-5s - [%s] %s\n' % (level, datetime.now(zh_BJ()).strftime('%X'), fmt % args)))
         #sys.stdout.flush()
-        return '[%s] %s\n' % (time.strftime('%b %d %X', time.localtime()), fmt % args)
+        return '[%s] %s\n' % (datetime.now(zh_BJ()).strftime('%b %d %X'), fmt % args)
 
     def dummy(self, *args, **kwargs):
         pass

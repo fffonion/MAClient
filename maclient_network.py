@@ -32,7 +32,8 @@ serv = {'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/',
     'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/','tw_data':'http://download.ma.mobimon.com.tw/',
     'jp':'http://web.million-arthurs.com/connect/app/', 'jp_data':'',
     'kr':'http://ma.actoz.com:10001/connect/app/', 'kr_data':'',
-    'sg':'http://playma.cherrycredits.com:10001/connect/app/', 'sg_data':''}
+    'sg':'http://playma.cherrycredits.com:10001/connect/app/', 'sg_data':'',
+    'my':'http://14.63.233.145:8080/connect/app/','my_data':'http://inaspace.download.mobile.actoz.com/live/contents_tw/'}
 serv['cn1'] = serv['cn']
 serv['cn_data'] = serv['cn2_data'] = serv['cn3_data'] = 'http://MA.webpatch.sdg-china.com/'
 
@@ -48,7 +49,7 @@ class Crypt():
     def __init__(self,loc):
         self.init_cipher(loc=loc)
         self.random_cipher_plain=''
-        if not loc == 'jp':
+        if loc not in ['jp', 'my']:
             self.gen_rsa_pubkey()
             # if loc in ['kr', 'sg']:
             #     import string
@@ -82,7 +83,7 @@ class Crypt():
 
     def init_cipher(self,loc = 'cn', uid = None):
         _key = getattr(maclient_smart, 'key_%s' % loc[:2])
-        if loc == 'jp':
+        if loc in ['jp', 'my']:
             #if not uid:
             #    uid = '0'
             _key['crypt'] = '%s%s' % (_key['crypt'], '0' * 16)
@@ -216,14 +217,14 @@ class poster():
                 self.header['User-Agent'] = ua
         else:
             self.header['User-Agent'] = self.header['User-Agent'] % getattr(maclient_smart, 'app_ver_%s' % self.shortloc)
-        if self.shortloc in ['cn','kr','sg']:
+        if self.shortloc in ['cn','tw','kr','sg']:
             self.ht.add_credentials("iW7B5MWJ", "8KdtjVfX")
-        elif self.servloc == 'jp':
+        elif self.shortloc in ['jp', 'my']:
             self.ht.add_credentials("eWa25vrE", "2DbcAh3G")
-            if (not self.header['User-Agent'].endswith('GooglePlay')):
+            if self.shortloc == 'jp' and (not self.header['User-Agent'].endswith('GooglePlay')):
                 self.header['User-Agent'] += 'GooglePlay'
-            self.v = '.'.join(list(str(maclient_smart.app_ver_jp)))#like 304 -> 3.0.4
-        self.has_2ndkey = loc =='jp'
+                self.v = '.'.join(list(str(maclient_smart.app_ver_jp)))#like 304 -> 3.0.4
+        self.has_2ndkey = self.shortloc in ['jp', 'my']
         self.crypt=Crypt(self.shortloc)
 
     def update_server(self, check_inspection_str):
@@ -236,7 +237,7 @@ class poster():
             except KeyError:
                 pass
             except IndexError:
-                self.logger.error(du8('错误的密钥？'))
+                self.logger.error('错误的密钥？')
                 raw_input()
                 os._exit(1)
                 
@@ -250,7 +251,7 @@ class poster():
             if usecookie and not self.has_2ndkey:
                 header.update({'Cookie':self.cookie})
             if not noencrypt :
-                if not self.shortloc == 'jp':#pass key to server
+                if  self.shortloc not in ['jp', 'my']:#pass key to server
                     #add sign to param
                     self.crypt.gen_random_cipher()
                     sign='K=%s'%self.crypt.urlunescape(
@@ -265,7 +266,7 @@ class poster():
                         postdata='&'.join([sign,postdata])
                     else:
                         postdata=sign
-                else:#for jp
+                elif self.shortloc == 'jp':#for jp
                     #S=cookie&cyt=1&v=encrypted(x.x.x)&encoded_param
                     if postdata:
                         postdata += '&'
@@ -282,7 +283,7 @@ class poster():
             while trytime < ttimes:
                 try:
                     resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, \
-                        (not noencrypt and not self.has_2ndkey) and '?cyt=1' or ''), \
+                        (not noencrypt and not self.shortloc == 'jp') and '?cyt=1' or ''), \
                         method = 'POST', headers = header, body = postdata, **extra_kwargs)
                     assert(len(content) > 0 or (savetraffic and self.issavetraffic) or resp['status'] == '302')
                 except socket.error as e:
@@ -317,7 +318,7 @@ class poster():
                 resp['content-length'] = str(len(content))
             # 状态码判断
             if int(resp['status']) > 400:
-                self.logger.error('post:%s %s' % (uri, ','.join([ (i in resp and (i + ':' + resp[i]) or '')for i in ['status', 'content-length', 'set-cookie']]) + du8('\n请到信号良好的地方重试【←←')))
+                self.logger.error('post:%s %s' % (uri, ','.join([ (i in resp and (i + ':' + resp[i]) or '')for i in ['status', 'content-length', 'set-cookie']]) + '\n请到信号良好的地方重试【←←'))
                 resp.update({'error':True, 'errno':resp['status'], 'errmsg':'Client or server error.'})
                 return resp, content
             else:

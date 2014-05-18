@@ -20,7 +20,6 @@ import threading
 from cross_platform import *
 if PYTHON3:
     import configparser as ConfigParser
-    xrange = range
 else:
     import ConfigParser
 import maclient_player
@@ -99,7 +98,7 @@ class conn_ani(threading.Thread):
             cnt = (cnt + 1) % 4
             time.sleep(0.15)
 
-class MAClient():
+class MAClient(object):
     global plugin
     plugin = maclient_plugin.plugins(maclient_logging.Logging('plugin_logging'), __version__)
     def __init__(self, configfile = '', savesession = False):
@@ -305,7 +304,7 @@ class MAClient():
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else '',
                             '强敌数据更新为rev.%s' % brev if brev else '',
-                            'Combo数据更新为rev.%s' % cbrev if brev else ''))
+                            'Combo数据更新为rev.%s' % cbrev if cbrev else ''))
                         self.player.reload_db()
                         self.player.rev_need_update = False, False, False, False
                     else:
@@ -342,7 +341,8 @@ class MAClient():
                         self._exit(1)
         if setcookie and 'set-cookie' in resp:
             self.cookie = resp['set-cookie'].split(',')[-1].rstrip('path=/').strip()
-            self._write_config('account_%s' % self.loc, 'session', self.cookie)
+            if self.cfg_save_session:
+                self._write_config('account_%s' % self.loc, 'session', self.cookie)
 
         return resp, dec
 
@@ -457,7 +457,7 @@ class MAClient():
                     self.select_card_sell(' '.join(task[1:]))
                 elif task[0] == 'set_server' or task[0] == 'ss':
                     self._write_config('system', 'server', task[1])
-                    if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp','sg']:
+                    if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp','sg','my']:
                         self.logger.error('服务器"%s"无效'%(task[1]))
                     else:
                         self.loc = task[1]
@@ -525,9 +525,13 @@ class MAClient():
                     pdata='login_id=%s&password=%s&app=and&token=%s' % (self.username, self.password, token)
                     # if self.loc == 'kr':
                     #      pdata='S=nosessionid&%s' % pdata
-                    if self.loc != 'jp':
+                    if self.loc not in ['jp', 'my']:
                         self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
-                resp, ct = self._dopost('login', postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
+                if self.loc == 'my':
+                    login_uri = 'actozlogin'
+                else:
+                    login_uri = 'login'
+                resp, ct = self._dopost(login_uri, postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
                 if resp['error']:
                     self.logger.info('登录失败么么哒w')
                     self._exit(1)
@@ -726,7 +730,7 @@ class MAClient():
                 return False, int(self._read_config('record', 'last_set_bc') or '0')
             if cardid == '':
                 self.logger.warning('set_card:不存在的卡组名？')
-                return False, 0
+                return False, -1
             cardid = cardid.split(',')
             param = []
             last_set_bc = 0
@@ -1312,8 +1316,8 @@ class MAClient():
             elif fairy.fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
             fairy['time_limit'] = int(fairy.fairy.time_limit)
-            fairy['wake'] = re.search(self.player.boss.name_wake, du8(fairy.fairy.name)) != None
-            fairy['wake_rare'] = re.search(maclient_smart.name_wake_rare, du8(fairy.fairy.name)) != None
+            fairy['wake'] = re.search(self.player.boss.name_wake, raw_du8(fairy.fairy.name)) != None
+            fairy['wake_rare'] = re.search(maclient_smart.name_wake_rare, raw_du8(fairy.fairy.name)) != None
             ftime = (self._read_config('fairy', fairy.fairy.serial_id) + ',,').split(',')
             fairy.fairy['not_battled'] = ftime[0] == ''
             # self.logger.debug('b%s e%s p%s'%(not fairy['not_battled'],eval(evalstr),fairy.put_down))
@@ -1363,9 +1367,10 @@ class MAClient():
         FAIRY_FLOOR_URI = 'private_fairy/private_fairy_top' if self.loc == 'jp' else 'exploration/fairy_floor'
         FAIRY_FLOOR_PARAM = '%sserial_id=%s&user_id=%s' if self.loc == 'jp' else 'check=1&%sserial_id=%s&user_id=%s'
         FAIRY_BATTLE_URI = 'private_fairy/private_fairy_battle' if self.loc == 'jp' else 'exploration/fairybattle'
-        FAIRY_BATTLE_PARAM = 'no=0&%sserial_id=%s&user_id=%s' if self.loc == 'jp' else '%sserial_id=%s&user_id=%s'
         #jp no -> carddeck number
-        while time.time() - self.lastfairytime < 18 and fairy.race_type != GUILD_RACE_TYPE:
+        FAIRY_BATTLE_PARAM = 'no=0&%sserial_id=%s&user_id=%s' if self.loc == 'jp' else '%sserial_id=%s&user_id=%s'
+        
+        while time.time() - self.lastfairytime < 18 and 'race_type' in fairy and fairy.race_type != GUILD_RACE_TYPE:
             self.logger.sleep('等待战斗冷却')
             time.sleep(5)
         def fairy_floor(f = fairy):
@@ -1392,7 +1397,7 @@ class MAClient():
             self.logger.warning('妖精已被消灭')
             if fairy.serial_id == self.player.fairy['id']:
                 self.player.fairy.update({'id':0, 'alive':False})
-            elif fairy.race_type in GUILD_RACE_TYPE:
+            elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = False
             return False
         fairy['lv'] = int(fairy.lv)
@@ -1402,16 +1407,15 @@ class MAClient():
         if 'not_battled' not in fairy:
             ftime = (self._read_config('fairy', fairy.serial_id) + ',,').split(',')
             fairy['not_battled'] = ftime[0] == ''
-        fairy['wake_rare'] = re.match(maclient_smart.name_wake_rare, du8(fairy.name)) != None
+        fairy['wake_rare'] = re.match(maclient_smart.name_wake_rare, raw_du8(fairy.name)) != None
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
         disc_name = ''
         disc_id = fairy.discoverer_id
-        if self.loc == 'jp':
-            fairy['attacker_history'] = []
-            fairy['race_type'] = 0#日服没有工会
+        # if self.loc == 'jp':
+        #     fairy['race_type'] =  0#日服没有工会
         if disc_id == self.player.id:
             disc_name = self.player.name
-        if 'attacker' not in fairy.attacker_history:  # 没人打过的
+        if self.loc == 'jp' or 'attacker' not in fairy.attacker_history:  # 没人打过的
             f_attackers = []
         else:
             f_attackers = self.tolist(fairy.attacker_history.attacker)
@@ -1430,7 +1434,7 @@ class MAClient():
         self.logger.info('妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s%s%s' % (
             fairy.name, fairy.lv, fairy.hp, disc_name,
             len(f_attackers), hms(fairy.time_limit),
-            fairy.race_type in GUILD_RACE_TYPE and ' 公会' or '',
+            ('race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE) and ' 公会' or '',
             fairy.wake and ' WAKE!' or ''))
         if carddeck:
             cardd = carddeck
@@ -1442,7 +1446,7 @@ class MAClient():
             self.logger.debug('fairy_battle:abort battle sequence.')
             return False
         _has_set, _last_bc = self.set_card(cardd, cur_fairy = fairy)
-        if _last_bc == -1:#自动配卡出错
+        if _last_bc == -1:#自动配卡出错或卡组不存在
             _has_set, _last_bc = self.set_card('min')
         if _has_set:
             fairy = fairy_floor()  # 设完卡组返回时
@@ -1498,7 +1502,7 @@ class MAClient():
                 self.logger.warning('没有发现奖励，妖精已经挂了？')
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
-                elif fairy.race_type in GUILD_RACE_TYPE:
+                elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
                     self.player.fairy['guild_alive'] = False
                 return False
             # 通知远程
@@ -1544,7 +1548,7 @@ class MAClient():
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
                 # 如果是公会妖精则设为死了
-                elif fairy.race_type in GUILD_RACE_TYPE:
+                elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
                     self.player.fairy['guild_alive'] = False
             else:  # 输了
                 hpleft = int(ct.body.explore.ex_fairy.fairy.hp) if self.loc == 'jp' else int(ct.body.explore.fairy.hp)
@@ -1643,7 +1647,7 @@ class MAClient():
             self.logger.info('妖精真正的力量觉醒！'.center(39))
             self.logger.warning('WARNING WARNING WARNING WARNING WARNING')
             time.sleep(3)
-            if rare_fairy.race_type in GUILD_RACE_TYPE:
+            if 'race_type' in rare_fairy and rare_fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
             else:
                 self.player.fairy.update({'alive':True, 'id':rare_fairy.serial_id})
@@ -1654,7 +1658,7 @@ class MAClient():
             if not need_tail:
                 fairy_floor()
              # 如果是醒妖且不是公会妖则问好
-            if bt_type == WAKE_BATTLE and not fairy.race_type in GUILD_RACE_TYPE and self.cfg_auto_greet :
+            if bt_type == WAKE_BATTLE and 'race_type' in fairy and fairy.race_type not in GUILD_RACE_TYPE and self.cfg_auto_greet :
                 self.like()
 
     @plugin.func_hook
@@ -1719,7 +1723,7 @@ class MAClient():
                 # else:
                 #    if 'name' in users:#只有一个
                 #        users=[users]
-                strf = du8('已有好友个数：%d\n' % len(users))
+                strf = '已有好友个数：%d\n' % len(users)
                 i = 1
                 deluser = None
                 maxlogintime = 0
@@ -1738,7 +1742,7 @@ class MAClient():
                         deluser = user
                         maxlogintime = user.logintime
                     i += 1
-                print(du8(strf).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+                print(du8(strf))
                 confirm = False
                 if deluser != None:
                     if not autodel:
@@ -1781,7 +1785,7 @@ class MAClient():
                         i, user.name, user.town_level, user.last_login, user.friends, user.friend_max, user.cost
                     )
                     i += 1
-                print(du8('%s%s' % ('申请列表:\n', strf)).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+                print(du8('%s%s' % ('申请列表:\n', strf)))
                 adduser = raw_inputd('选择要添加的好友序号，空格分割，序号前加减号表示拒绝> ').split(' ')
                 if adduser != ['']:
                     for u in adduser:
@@ -1823,7 +1827,7 @@ class MAClient():
                         i, user.name, user.town_level, user.last_login, user.friends, user.friend_max, user.cost
                     )
                     i += 1
-                print(du8('%s%s' % ('搜索结果:\n', strf)).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+                print(du8('%s%s' % ('搜索结果:\n', strf)))
                 usel = raw_inputd('选择要添加的好友序号, 空格分割多个，回车返回> ')
                 uids = []
                 for u in usel.split(' '):
@@ -1912,7 +1916,7 @@ class MAClient():
         if rw_type[-1] == '<':
             no_get = True
             rw_type = rw_type[:-1]
-        rw_type = du8(rw_type)
+        rw_type = raw_du8(rw_type)
         real_desc_match = not rw_type.isdigit() or not rw_type
         for r in rwds:
             if (real_desc_match and \
@@ -1978,7 +1982,7 @@ class MAClient():
             trycnt = '999'
         sel_lake = sel_lake.split(',')
         battle_win = 1
-        if self.loc == 'jp':
+        if self.loc in ['jp', 'sg']:
             self._dopost('battle/area', xmlresp = False)
             resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
         else:

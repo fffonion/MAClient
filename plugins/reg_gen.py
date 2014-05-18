@@ -17,7 +17,7 @@ if PYTHON3:
 from xml2dict import XML2Dict
 __plugin_name__ = 'invitation tool'
 __author = 'fffonion'
-__version__ = 0.3
+__version__ = 0.31
 hooks = {}
 extra_cmd = {"reg":"reg_gen"}
 def reg_gen(plugin_vals):
@@ -26,7 +26,7 @@ def reg_gen(plugin_vals):
         po = plugin_vals['poster']
         logger = plugin_vals['logger']
         if 'player' not in plugin_vals:
-            logger.error(du8('玩家信息还没有初始化'))
+            logger.error('玩家信息还没有初始化')
             return
         invid = hex(int(plugin_vals['player'].id))[2:]
         cnt = 0
@@ -58,6 +58,7 @@ def reg_gen(plugin_vals):
             GET_header = po.header
             GET_header.update({'Cookie':po.cookie})
             # httplib2.Http().request(maclient_network.serv[loc]+'tutorial/next?step=100&resume_flg=1',headers=GET_header)
+            # my server add scenario_id=0
             time.sleep(2.328374)
             po.post('tutorial/save_character', postdata = 'country=%s&name=%s' % (random.choice('123'), uname))
             time.sleep(2.123123)
