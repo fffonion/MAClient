@@ -23,6 +23,10 @@ from maclient_web_bot import WebSocketBot, mac_version, HeheError, maxconnected
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+import gc
+gc.enable()
+#gc.set_debug(gc.DEBUG_UNCOLLECTABLE | gc.DEBUG_INSTANCES | gc.DEBUG_OBJECTS | gc.DEBUG_SAVEALL)
+
 class zh_BJ(tzinfo):
     def utcoffset(self, dt):
         return timedelta(hours = 8)
@@ -49,8 +53,12 @@ def born_callback():
     connected+=1
 
 def pinfo():
-    p = [x for x in os.popen("ps aux|grep " + str(os.getpid())).read().split(' ') if x]
-    return 'CPU:%s%% MEM:%s%% %dM/%dM MACs:%d/%d' % (p[2], p[3], int(p[4])/1024, int(p[5])/1024, connected, len(offline_bots))
+    if sys.platform == 'win32':
+        p = [x for x in os.popen("tasklist /v /fi \"PID eq %d\"" % os.getpid()).read().split(' ') if x]
+        return 'CPU:%s MEM:%s%s MACs:%d/%d' % (p[-3], p[-7], p[-6], connected, len(offline_bots))
+    else:
+        p = [x for x in os.popen("ps aux|grep %d" % os.getpid()).read().split(' ') if x]
+        return 'CPU:%s%% MEM:%s%% %dM/%dM MACs:%d/%d' % (p[2], p[3], int(p[4])/1024, int(p[5])/1024, connected, len(offline_bots))
 
 class cleanup(Thread):
     def __init__(self):
@@ -102,13 +110,14 @@ clthread.start()
 
 def websocket_app(environ, start_response):
     #cleanup()
-    global clthread
-    if(not clthread.isAlive()):
-        clthread = cleanup()
-        clthread.start() 
+    #global clthread
+    # if(not clthread.isAlive()):
+    #     clthread = cleanup()
+    #     clthread.start() 
     global connected
     global maxconnected
     request = Request(environ)
+
     if request.path == '/bot' and 'wsgi.websocket' in environ:
         ws = environ["wsgi.websocket"]
         login_id = request.GET['id']
@@ -208,12 +217,17 @@ def websocket_app(environ, start_response):
             bot.end()#release filelock
         except:
             pass
+        bot.cleanup()
+        del bot
+
+        _print("Force collect: %d" % gc.collect())
         connected -= 1
         if _hash in offline_bots and offline:#防止一个离线一个不离线同时存在的那段时间里，不离线的误把离线的引用带走了；不能用bot.offline因为这个属性可能会被改变，要用offline
             offline_bots.pop(_hash)
             _print("[conn-1=%d]offline bot exit. login_id=%s" % (connected, login_id))
         else:
             _print("[conn-1=%d]exit. login_id=%s" % (connected, login_id))
+
         # try:
         #     bot.end()
         # except HeheError:

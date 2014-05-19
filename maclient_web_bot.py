@@ -23,7 +23,8 @@ mac_version = maclient.__version__
 mac_web_version = 20140508.16384
 maxconnected = 300
 
-remote_debugger.listen()
+if sys.platform != 'win32':
+    remote_debugger.listen()
 
 class HeheError(Exception):
     def __init__(self, msg):
@@ -123,3 +124,7 @@ class WebSocketBot(MAClient):
         if hasattr(self, 'player') and self.player.filedesc > 0:
             os.close(self.player.filedesc)
         #self.__class__.connected -= 1
+
+    def cleanup(self):
+        for i in self.__dict__:
+            del i
