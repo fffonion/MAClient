@@ -125,7 +125,7 @@ class MAClient(object):
         # 添加引用
         self.plugin = plugin
         self.cfg_save_session = savesession
-        self.settitle = os.name == 'nt'
+        self.settitle = False
         self.posttime = 0
         # self.set_remote(None)
         ua = self._read_config('system', 'user-agent')

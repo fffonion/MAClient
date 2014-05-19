@@ -25,7 +25,7 @@ sys.setdefaultencoding('utf-8')
 
 import gc
 gc.enable()
-#gc.set_debug(gc.DEBUG_UNCOLLECTABLE | gc.DEBUG_INSTANCES | gc.DEBUG_OBJECTS | gc.DEBUG_SAVEALL)
+gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
 
 class zh_BJ(tzinfo):
     def utcoffset(self, dt):
@@ -75,7 +75,7 @@ class cleanup(Thread):
                 if time.time() - bot.last_offline_keepalive_time > bot.keep_time:
                     _print('request shutdown offline bot %s' % bot.loginid)
                     bot.end()
-            gevent.sleep(180)
+            gevent.sleep(30)
             _print('cleanup-thread keep alive. %s' % pinfo())
 
 
@@ -125,6 +125,7 @@ def websocket_app(environ, start_response):
         #area = request.GET.get('area', None)
         offline = request.GET.get('offline', False)
         keep_time = int(request.GET.get('keep_time', 12 * 3600))
+        #keep_time = 5
         cmd = request.GET.get('cmd', '')
         serv = request.GET.get('serv', 'cn')
         servs = ['cn', 'cn2', 'cn3', 'jp', 'kr', 'tw', 'sg']

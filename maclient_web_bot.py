@@ -20,10 +20,10 @@ from web_libs import remote_debugger
 reload(remote_debugger)
 
 mac_version = maclient.__version__
-mac_web_version = 20140508.16384
+mac_web_version = 20140519.16384
 maxconnected = 300
 
-if sys.platform != 'win32':
+if os.name != 'nt':
     remote_debugger.listen()
 
 class HeheError(Exception):
@@ -126,5 +126,12 @@ class WebSocketBot(MAClient):
         #self.__class__.connected -= 1
 
     def cleanup(self):
-        for i in self.__dict__:
-            del i
+        def __unrefer_all(instance):
+            for n in instance.__dict__:
+                setattr(instance, n, None)
+        for c in self.__dict__:
+            c = self.__dict__[c]
+            if c.__class__.__name__ in ['player', 'card', 'item', 'boss', 'Logging']:#plugins is global
+                __unrefer_all(c)
+        __unrefer_all(self)
+                
