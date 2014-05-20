@@ -128,6 +128,9 @@ class item(object):
             self.db[int(c[0])] = [c[1], 0]
 
     def update(self, itemdict):
+        if not isinstance(itemdict, list):
+            self.db[int(itemdict.item_id)][1] = int(itemdict.num)
+            return
         for it in itemdict:
             try:
                 self.db[int(it.item_id)][1] = int(it.num)

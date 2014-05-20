@@ -236,7 +236,10 @@ class plugins(object):
                 args, kwargs = ret
                 ret = func(*args, **kwargs)
                 kwargs['pop_extras'] = self.pop_extra
-                self._do_hook('%s%s' % (PREF_EXIT, func.__name__), *args, **kwargs)
+                kwargs['_return'] = ret
+                _pret = self._do_hook('%s%s' % (PREF_EXIT, func.__name__), *args, **kwargs)
+                # if _pret:
+                #    ret = _pret
                 if not self.extras[-1] and len(self.extras) > 1:#已经取完了，且不是底
                     self.extras.pop()
                 return ret

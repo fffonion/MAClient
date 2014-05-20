@@ -3,8 +3,8 @@ from _prototype import plugin_prototype
 # start meta
 __plugin_name__ = '台服优先嗑限时红绿茶'
 __author = 'fffonion'
-__version__ = 0.16
-hooks = {'ENTER__use_item':1}
+__version__ = 0.17
+hooks = {'ENTER__use_item':1, 'EXIT_red_tea':1, 'EXIT_green_tea':1}
 extra_cmd = {}
 require_version = 1.68
 # end meta
@@ -16,7 +16,7 @@ class plugin(plugin_prototype):
     def __init__(self):
         self.half_offset = maclient_smart.half_bc_offset_tw
         self.already_inhook = False
-        pass
+        self.last_drink_cnt = 0
 
     def guess_id(self, item):
         global MINOR_RED
@@ -51,9 +51,15 @@ class plugin(plugin_prototype):
         elif int(itemid) == self.half_offset + 1:
             iid= MINOR_GREEN
             cnt = min(50/PERCENT, minor_ap_cnt)
+        #adjust count
+        if iid == MINOR_RED:
+            cnt = min(int((100 - 100 * mac.player.bc['current'] / mac.player.bc['max']) / PERCENT), cnt)
+        else:
+            cnt = min(int((100 - 100 * mac.player.ap['current'] / mac.player.ap['max']) / PERCENT), cnt)
         if cnt == 0:
             self.already_inhook = False
             return
+        self.last_drink_cnt = cnt
         mac.logger.info('将使用%d瓶"%s"' % (cnt, mac.player.item.get_name(iid)))
         args = (mac, iid)
         for i in range(cnt - 1):
@@ -67,3 +73,20 @@ class plugin(plugin_prototype):
         args = (mac, iid)
         self.already_inhook = False
         return args, kwargs
+
+    # 修正已喝数量
+    def EXIT_red_tea(self, *args, **kwargs):
+        if self.last_drink_cnt > 0:
+            old = float(args[0]._read_config('tactic', 'auto_red_tea') or '0')
+            res = old + 1 - self.last_drink_cnt * PERCENT / 100.0
+            args[0]._write_config('tactic', 'auto_red_tea', str(0 if res < 0 else res))
+            self.last_drink_cnt = 0
+
+    def EXIT_green_tea(self, *args, **kwargs):
+        if self.last_drink_cnt > 0:
+            old = float(args[0]._read_config('tactic', 'auto_green_tea') or '0')
+            res = old + 1 - self.last_drink_cnt * PERCENT / 100.0
+            args[0]._write_config('tactic', 'auto_green_tea', str(0 if res < 0 else res))
+            self.last_drink_cnt = 0
+
+

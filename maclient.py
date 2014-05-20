@@ -792,9 +792,9 @@ class MAClient(object):
 
     @plugin.func_hook
     def red_tea(self, silent = False, tea = FULL_TEA):
-        auto = int(self._read_config('tactic', 'auto_red_tea') or '0')
-        if auto > 0:
-            self._write_config('tactic', 'auto_red_tea', str(auto - 1))
+        auto = float(self._read_config('tactic', 'auto_red_tea') or '0')
+        if auto >= 1 or (auto >= 0.5 and tea == HALF_TEA):
+            self._write_config('tactic', 'auto_red_tea', str(auto - (1 if tea == FULL_TEA else 0.5)))
             res = self._use_item(
                    str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2])) + 2)
                 )
@@ -809,15 +809,15 @@ class MAClient(object):
                             )
                 else:
                     res = False
-        if res:
-            self.player.bc['current'] = self.player.bc['max']
+        #if res:
+        #    self.player.bc['current'] = self.player.bc['max'] * res
         return res
 
     @plugin.func_hook
     def green_tea(self, silent = False, tea = FULL_TEA):
-        auto = int(self._read_config('tactic', 'auto_green_tea') or '0')
-        if auto > 0:
-            self._write_config('tactic', 'auto_green_tea', str(auto - 1))
+        auto = float(self._read_config('tactic', 'auto_green_tea') or '0')
+        if auto >= 1 or (auto >= 0.5 and tea == HALF_TEA):
+            self._write_config('tactic', 'auto_green_tea', str(auto - (1 if tea == FULL_TEA else 0.5)))
             res = self._use_item(
                        str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_ap_offset_%s' % self.loc[:2])) + 1)
                     )
@@ -832,8 +832,8 @@ class MAClient(object):
                         )
                 else:
                     res = False
-        if res:
-            self.player.ap['current'] = self.player.ap['max']
+        #if res:
+        #    self.player.ap['current'] = self.player.ap['max'] * res
         return res
 
     @plugin.func_hook
