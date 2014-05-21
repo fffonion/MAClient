@@ -3,7 +3,7 @@ import re
 import time
 import glob
 dirpath = 'D:\Dev\Python\Workspace\MAClient'
-blacklist = ['maclient_cli.py', 'maclient_network.py' ,'bgm.py']
+blacklist = ['maclient_cli.py', 'maclient_network.py' ,'bgm.py', 'gacha_stat.py']
 xml = '<?xml version="1.0" encoding="UTF-8"?><maclient><time>%d</time>' % int(time.time())
 p = '<plugin><name>%s</name><version>%s</version><dir>%s</dir></plugin>'
 s = '<script><name>%s</name><version>%s</version><dir>%s</dir></script>'
