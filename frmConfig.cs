@@ -145,8 +145,8 @@ namespace MAClientGUI
                 cboReconnectGapIndicator.SelectedIndex = 0;
             else
                 cboReconnectGapIndicator.SelectedIndex = 1;
-            numAutoRT.Value = cf.ReadInt("tactic", "auto_red_tea");
-            numAutoGT.Value = cf.ReadInt("tactic", "auto_green_tea");
+            numAutoRT.Value = (decimal)cf.ReadFloat("tactic", "auto_red_tea");
+            numAutoGT.Value = (decimal)cf.ReadFloat("tactic", "auto_green_tea");
             cboAutoRTLv.SelectedIndex = cf.ReadInt("tactic", "auto_red_tea_level");
             numDelay.Value = (decimal)cf.ReadFloat("system", "delay");
             numInstantFight.Value = cf.ReadInt("tactic", "fairy_final_kill_hp");
@@ -996,7 +996,7 @@ namespace MAClientGUI
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("https://github.com/fffonion/MAClient/wiki/%E5%85%B3%E4%BA%8E%E6%8F%92%E4%BB%B6-carddeck_edit");
+            System.Diagnostics.Process.Start("https://github.com/fffonion/MAClient/wiki/%E5%85%B3%E4%BA%8E%E5%8D%A1%E7%BB%84%E5%92%8C%E9%85%8D%E5%8D%A1");
         }
         /// <summary>
         /// 清除
@@ -2116,6 +2116,18 @@ namespace MAClientGUI
         private void lblEncWarningQuestion_Click(object sender, EventArgs e)
         {
             tabControl1.SelectedIndex = 9;
+        }
+
+        private void numAutoRT_ValueChanged(object sender, EventArgs e)
+        {
+            var value = numAutoRT.Value.ToString().Split('.');
+            numAutoRT.DecimalPlaces = value.Length == 2 ? value[1].Length : 0;
+        }
+
+        private void numAutoGT_ValueChanged(object sender, EventArgs e)
+        {
+            var value = numAutoGT.Value.ToString().Split('.');
+            numAutoGT.DecimalPlaces = value.Length == 2 ? value[1].Length : 0;
         }
 
 
