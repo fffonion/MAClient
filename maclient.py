@@ -152,7 +152,8 @@ class MAClient(object):
         self.logger.debug('system:初始化完成(服务器:%s)' % self.loc)
         self.lastposttime = 0
         self.lastfairytime = 0
-        self.errortimes = 0
+        self.lastflushcfgtime = 0
+        #self.errortimes = 0
         self.player_initiated = False
 
     def load_config(self):
@@ -355,25 +356,32 @@ class MAClient(object):
                 val = val.decode(CODEPAGE)  # .encode('utf-8')
         else:
             val = ''
-        if val == '':return ''
-        else:return val
+        if val == '':
+            return ''
+        else:
+            return val
 
     def _write_config(self, sec, key, val):
         if not self.cf.has_section(sec):
             self.cf.add_section(sec)
         self.cf.set(sec, key, val)
-        f = open(self.configfile, "w")
-        self.cf.write(f)
-        f.flush()
+        self._request_flush_config()
 
     def _list_option(self, sec):
         return self.cf.options(sec)
 
     def _del_option(self, sec, key):
-        f = self.configfile
-        self.cf.read(f)
-        self.cf.remove_option(sec, key)
-        self.cf.write(open(f, "w"))
+        ret = self.cf.remove_option(sec, key)
+        self._request_flush_config()
+        return ret
+
+    def _request_flush_config(self, force = False):
+        if self.lastflushcfgtime - time.time() > 300 or force:#5分钟写一次
+            f = open(self.configfile, "w")
+            self.cf.write(f)
+            f.flush()
+            f.close()
+            self.lastflushcfgtime = time.time()
 
     def _eval_gen(self, streval, repllst = [], super_prefix = None):
         repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('FAIRY_ALIVE', 'self.player.fairy["alive"]'), ('GUILD_ALIVE', "self.player.fairy['guild_alive']"), ('BC%', '1.0*self.player.bc["current"]/self.player.bc["max"]'), ('AP%', '1.0*self.player.ap["current"]/self.player.ap["max"]'), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('GOLD', 'self.player.gold'), ('FP', 'self.friendship_point')]
@@ -1058,6 +1066,8 @@ class MAClient(object):
                         self.logger.error('不给喝，不走了o(￣ヘ￣o＃) ')
                         return None, EXPLORE_NO_AP
                     else:
+                        if self._check_floor_eval([floor], 0)[0]:  # 若已不符合条件
+                            return None, EXPLORE_NO_AP
                         continue
                 if info.lvup == '1':
                     self.logger.info('升级了：↑%s' % self.player.lv)
@@ -1932,7 +1942,7 @@ class MAClient(object):
             self.logger.info('没有符合筛选的奖励(%d)' % (len(rwds)))
         else:
             if no_detail:
-                self.logger.info('将领取%d件奖励' % (len(strl.split(' , ')) - 1) )
+                self.logger.info('将领取%d件奖励，剩余%d件未领取' % (len(strl.split(' , ')) - 1, len(rwds)) )
             else:
                 self.logger.info(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' '))
             if no_get:
@@ -2166,6 +2176,7 @@ class MAClient(object):
         #     self.stitle.join(0.1)
         try:
             self.logger.logfile.flush()
+            self._request_flush_config(force = True)
         except:
             pass
         if code > 0:
