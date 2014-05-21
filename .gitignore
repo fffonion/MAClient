@@ -50,3 +50,4 @@ battle_detail
 test*.py
 desktop.ini
 verinfo.txt
+plugins/gacha_stat.py
