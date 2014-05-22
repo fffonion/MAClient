@@ -3,10 +3,10 @@ from _prototype import plugin_prototype
 # start meta
 __plugin_name__ = '台服优先嗑限时红绿茶'
 __author = 'fffonion'
-__version__ = 0.17
+__version__ = 0.18
 hooks = {'ENTER__use_item':1, 'EXIT_red_tea':1, 'EXIT_green_tea':1}
 extra_cmd = {}
-require_version = 1.68
+require_version = 1.70
 # end meta
 import time
 import maclient_smart
@@ -30,15 +30,21 @@ class plugin(plugin_prototype):
 
     def ENTER__use_item(self, *args, **kwargs):
         mac = args[0]
+        itemid = args[1]
         if mac.loc != 'tw' or self.already_inhook:
+            return
+        if mac.cfg_auto_choose_red_tea and (\
+                int(itemid) == 2 and (100 * mac.player.bc['current'] / mac.player.bc['max']) <  1.35 * PERCENT \
+                or \
+                int(itemid) == 1 and (100 * mac.player.ap['current'] / mac.player.ap['max']) <  1.35 * PERCENT \
+            ):#如果勾选 自动选择红绿茶, 且剩余低于1倍小茶回复量，则嗑全回复
             return
         if not MINOR_RED or not MINOR_GREEN:
             self.guess_id(mac.player.item)
         self.already_inhook = True
-        itemid = args[1]
         minor_bc_cnt = 0 if not MINOR_RED else mac.player.item.get_count(MINOR_RED)
         minor_ap_cnt = 0 if not MINOR_GREEN else mac.player.item.get_count(MINOR_GREEN)
-        #10瓶秘药顶50%, 20瓶顶100%
+        
         if int(itemid) == 2:
             iid= MINOR_RED
             cnt = min(100/PERCENT, minor_bc_cnt)
@@ -56,12 +62,13 @@ class plugin(plugin_prototype):
             cnt = min(int((100 - 100 * mac.player.bc['current'] / mac.player.bc['max']) / PERCENT), cnt)
         else:
             cnt = min(int((100 - 100 * mac.player.ap['current'] / mac.player.ap['max']) / PERCENT), cnt)
+
         if cnt == 0:
             self.already_inhook = False
-            return
+            args = (mac, 0)#不喝任何茶
+            return args, kwargs
         self.last_drink_cnt = cnt
         mac.logger.info('将使用%d瓶"%s"' % (cnt, mac.player.item.get_name(iid)))
-        args = (mac, iid)
         for i in range(cnt - 1):
             try:
                 mac._use_item(iid)

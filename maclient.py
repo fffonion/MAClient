@@ -786,6 +786,9 @@ class MAClient(object):
 
     @plugin.func_hook
     def _use_item(self, itemid):
+        if itemid == 0:
+            self.logger.debug('pseudo item id.')
+            return
         if self.player.item.get_count(int(itemid)) == 0 :
             self.logger.error('道具 %s 数量不足' % self.player.item.get_name(int(itemid)))
             return False
