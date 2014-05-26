@@ -44,9 +44,11 @@ class plugins(object):
         self.extras = [{}]
         # 用于鉴别extras所属
         self.extras_last_token = ''
+        # hook注册
+        self.hook_reg = {}
 
     def scan_hooks(self):
-        self.hook_reg = {}
+        self.hook_reg.clear()
         ALL_ACTIONS = ['tasker', 'auto_check', 'check_strict_bc', 'set_card', 'red_tea', 'green_tea',
                     'explore', '_explore_floor', 'gacha', 'select_card_sell', 'fairy_battle_loop', 'fairy_select', '_fairy_battle',
                     'like', 'friends', 'reward_box', 'point_setting', 'factor_battle', 'invoke_autoset', '_exit', '_use_item']

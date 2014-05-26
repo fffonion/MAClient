@@ -159,8 +159,7 @@ def _reduce_list(lst, sort_lambda):
     # 只留下一个
     return [max(lst, key = sort_lambda)]
 
-reslist = []
-fnd_count = 0
+
 # card_deck generator
 DEFEAT, MAX_DMG, MAX_CP = 0, 1, 2
 def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxline = 2, seleval = 'True', fairy_info = None, delta = 1, fast_mode = False):
@@ -175,8 +174,10 @@ def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxli
     range 允许误差（预测伤害相对于妖精血量）
     maxline 最大排数
     '''
-    global reslist
-    global fnd_count
+    reslist = []
+    fnd_count = 0
+    #global reslist
+    #global fnd_count
     # print(aim,bclimit,includes,maxline,seleval,fairy_info,delta)
     _multi = player_cards.multi
     # 只需要hp,atk,lv,cost,master_card_id,serial_id,object_dict->list节省20%时间

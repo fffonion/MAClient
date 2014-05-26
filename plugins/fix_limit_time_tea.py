@@ -3,7 +3,7 @@ from _prototype import plugin_prototype
 # start meta
 __plugin_name__ = '台服优先嗑限时红绿茶'
 __author = 'fffonion'
-__version__ = 0.18
+__version__ = 0.19
 hooks = {'ENTER__use_item':1, 'EXIT_red_tea':1, 'EXIT_green_tea':1}
 extra_cmd = {}
 require_version = 1.70
@@ -62,11 +62,10 @@ class plugin(plugin_prototype):
             cnt = min(int((100 - 100 * mac.player.bc['current'] / mac.player.bc['max']) / PERCENT), cnt)
         else:
             cnt = min(int((100 - 100 * mac.player.ap['current'] / mac.player.ap['max']) / PERCENT), cnt)
-
         if cnt == 0:
             self.already_inhook = False
-            args = (mac, 0)#不喝任何茶
-            return args, kwargs
+            #args = (mac, 0)#不喝任何茶
+            return
         self.last_drink_cnt = cnt
         mac.logger.info('将使用%d瓶"%s"' % (cnt, mac.player.item.get_name(iid)))
         for i in range(cnt - 1):
