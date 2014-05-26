@@ -290,10 +290,13 @@ class poster():
                     if e.errno == None:
                         err = 'Timed out'
                     else:
-                        err = e.errno
-                    self.logger.warning('post:%s got socket error:%s, retrying in %d times' % (uri, err, ttimes - trytime))
+                        if wsa_errors and e.errno in wsa_errors:
+                            err = '[%d]%s' % (e.errno, wsa_errors[e.errno])
+                        else:
+                            err = e.errno
+                    self.logger.warning('post:%s socket error:%s, retrying in %d times' % (uri, err, ttimes - trytime))
                 except AssertionError:
-                    self.logger.warning('post:%s got empty response , retrying in %d times' % (uri, ttimes - trytime))
+                    self.logger.warning('post:%s empty response , retrying in %d times' % (uri, ttimes - trytime))
                 except httplib.BadStatusLine:
                     self.logger.warning('post:%s malformed response, retrying in %d times' % (uri, ttimes - trytime))
                 except httplib.ResponseNotReady:

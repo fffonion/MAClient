@@ -152,7 +152,8 @@ class MAClient(object):
         self.logger.debug('system:初始化完成(服务器:%s)' % self.loc)
         self.lastposttime = 0
         self.lastfairytime = 0
-        self.errortimes = 0
+        self.lastflushcfgtime = 0
+        #self.errortimes = 0
         self.player_initiated = False
 
     def load_config(self, loc_override = None):
@@ -355,25 +356,32 @@ class MAClient(object):
                 val = val.decode(CODEPAGE)  # .encode('utf-8')
         else:
             val = ''
-        if val == '':return ''
-        else:return val
+        if val == '':
+            return ''
+        else:
+            return val
 
     def _write_config(self, sec, key, val):
         if not self.cf.has_section(sec):
             self.cf.add_section(sec)
         self.cf.set(sec, key, val)
-        f = open(self.configfile, "w")
-        self.cf.write(f)
-        f.flush()
+        self._request_flush_config()
 
     def _list_option(self, sec):
         return self.cf.options(sec)
 
     def _del_option(self, sec, key):
-        f = self.configfile
-        self.cf.read(f)
-        self.cf.remove_option(sec, key)
-        self.cf.write(open(f, "w"))
+        ret = self.cf.remove_option(sec, key)
+        self._request_flush_config()
+        return ret
+
+    def _request_flush_config(self, force = False):
+        if self.lastflushcfgtime - time.time() > 300 or force:#5分钟写一次
+            f = open(self.configfile, "w")
+            self.cf.write(f)
+            f.flush()
+            f.close()
+            self.lastflushcfgtime = time.time()
 
     def _eval_gen(self, streval, repllst = [], super_prefix = None):
         repllst2 = [('HH', "datetime.datetime.now().hour"), ('MM', "datetime.datetime.now().minute"), ('FAIRY_ALIVE', 'self.player.fairy["alive"]'), ('GUILD_ALIVE', "self.player.fairy['guild_alive']"), ('BC%', '1.0*self.player.bc["current"]/self.player.bc["max"]'), ('AP%', '1.0*self.player.ap["current"]/self.player.ap["max"]'), ('BC', 'self.player.bc["current"]'), ('AP', 'self.player.ap["current"]'), ('SUPER', 'self.player.ex_gauge'), ('GOLD', 'self.player.gold'), ('FP', 'self.friendship_point')]
@@ -778,6 +786,9 @@ class MAClient(object):
 
     @plugin.func_hook
     def _use_item(self, itemid):
+        if itemid == 0:
+            self.logger.debug('pseudo item id.')
+            return
         if self.player.item.get_count(int(itemid)) == 0 :
             self.logger.error('道具 %s 数量不足' % self.player.item.get_name(int(itemid)))
             return False
@@ -792,9 +803,9 @@ class MAClient(object):
 
     @plugin.func_hook
     def red_tea(self, silent = False, tea = FULL_TEA):
-        auto = int(self._read_config('tactic', 'auto_red_tea') or '0')
-        if auto > 0:
-            self._write_config('tactic', 'auto_red_tea', str(auto - 1))
+        auto = float(self._read_config('tactic', 'auto_red_tea') or '0')
+        if auto >= 1 or (auto >= 0.5 and tea == HALF_TEA):
+            self._write_config('tactic', 'auto_red_tea', str(auto - (1 if tea == FULL_TEA else 0.5)))
             res = self._use_item(
                    str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2])) + 2)
                 )
@@ -809,15 +820,15 @@ class MAClient(object):
                             )
                 else:
                     res = False
-        if res:
-            self.player.bc['current'] = self.player.bc['max']
+        #if res:
+        #    self.player.bc['current'] = self.player.bc['max'] * res
         return res
 
     @plugin.func_hook
     def green_tea(self, silent = False, tea = FULL_TEA):
-        auto = int(self._read_config('tactic', 'auto_green_tea') or '0')
-        if auto > 0:
-            self._write_config('tactic', 'auto_green_tea', str(auto - 1))
+        auto = float(self._read_config('tactic', 'auto_green_tea') or '0')
+        if auto >= 1 or (auto >= 0.5 and tea == HALF_TEA):
+            self._write_config('tactic', 'auto_green_tea', str(auto - (1 if tea == FULL_TEA else 0.5)))
             res = self._use_item(
                        str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_ap_offset_%s' % self.loc[:2])) + 1)
                     )
@@ -832,8 +843,8 @@ class MAClient(object):
                         )
                 else:
                     res = False
-        if res:
-            self.player.ap['current'] = self.player.ap['max']
+        #if res:
+        #    self.player.ap['current'] = self.player.ap['max'] * res
         return res
 
     @plugin.func_hook
@@ -1058,6 +1069,8 @@ class MAClient(object):
                         self.logger.error('不给喝，不走了o(￣ヘ￣o＃) ')
                         return None, EXPLORE_NO_AP
                     else:
+                        if self._check_floor_eval([floor], 0)[0]:  # 若已不符合条件
+                            return None, EXPLORE_NO_AP
                         continue
                 if info.lvup == '1':
                     self.logger.info('升级了：↑%s' % self.player.lv)
@@ -1367,9 +1380,10 @@ class MAClient(object):
         FAIRY_FLOOR_URI = 'private_fairy/private_fairy_top' if self.loc == 'jp' else 'exploration/fairy_floor'
         FAIRY_FLOOR_PARAM = '%sserial_id=%s&user_id=%s' if self.loc == 'jp' else 'check=1&%sserial_id=%s&user_id=%s'
         FAIRY_BATTLE_URI = 'private_fairy/private_fairy_battle' if self.loc == 'jp' else 'exploration/fairybattle'
-        FAIRY_BATTLE_PARAM = 'no=0&%sserial_id=%s&user_id=%s' if self.loc == 'jp' else '%sserial_id=%s&user_id=%s'
         #jp no -> carddeck number
-        while time.time() - self.lastfairytime < 18 and fairy.race_type != GUILD_RACE_TYPE:
+        FAIRY_BATTLE_PARAM = 'no=0&%sserial_id=%s&user_id=%s' if self.loc == 'jp' else '%sserial_id=%s&user_id=%s'
+        
+        while time.time() - self.lastfairytime < 18 and 'race_type' in fairy and fairy.race_type != GUILD_RACE_TYPE:
             self.logger.sleep('等待战斗冷却')
             time.sleep(5)
         def fairy_floor(f = fairy):
@@ -1396,7 +1410,7 @@ class MAClient(object):
             self.logger.warning('妖精已被消灭')
             if fairy.serial_id == self.player.fairy['id']:
                 self.player.fairy.update({'id':0, 'alive':False})
-            elif fairy.race_type in GUILD_RACE_TYPE:
+            elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = False
             return False
         fairy['lv'] = int(fairy.lv)
@@ -1410,12 +1424,11 @@ class MAClient(object):
         fairy['wake'] = fairy.rare_flg == '1' or fairy['wake_rare']
         disc_name = ''
         disc_id = fairy.discoverer_id
-        if self.loc == 'jp':
-            fairy['attacker_history'] = []
-            fairy['race_type'] = 0#日服没有工会
+        # if self.loc == 'jp':
+        #     fairy['race_type'] =  0#日服没有工会
         if disc_id == self.player.id:
             disc_name = self.player.name
-        if 'attacker' not in fairy.attacker_history:  # 没人打过的
+        if self.loc == 'jp' or 'attacker' not in fairy.attacker_history:  # 没人打过的
             f_attackers = []
         else:
             f_attackers = self.tolist(fairy.attacker_history.attacker)
@@ -1434,7 +1447,7 @@ class MAClient(object):
         self.logger.info('妖精:%sLv%d hp:%d 发现者:%s 小伙伴:%d 剩余%s%s%s' % (
             fairy.name, fairy.lv, fairy.hp, disc_name,
             len(f_attackers), hms(fairy.time_limit),
-            fairy.race_type in GUILD_RACE_TYPE and ' 公会' or '',
+            ('race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE) and ' 公会' or '',
             fairy.wake and ' WAKE!' or ''))
         if carddeck:
             cardd = carddeck
@@ -1502,7 +1515,7 @@ class MAClient(object):
                 self.logger.warning('没有发现奖励，妖精已经挂了？')
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
-                elif fairy.race_type in GUILD_RACE_TYPE:
+                elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
                     self.player.fairy['guild_alive'] = False
                 return False
             # 通知远程
@@ -1548,7 +1561,7 @@ class MAClient(object):
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
                 # 如果是公会妖精则设为死了
-                elif self.loc != 'jp' and fairy.race_type in GUILD_RACE_TYPE:
+                elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
                     self.player.fairy['guild_alive'] = False
             else:  # 输了
                 hpleft = int(ct.body.explore.ex_fairy.fairy.hp) if self.loc == 'jp' else int(ct.body.explore.fairy.hp)
@@ -1647,7 +1660,7 @@ class MAClient(object):
             self.logger.info('妖精真正的力量觉醒！'.center(39))
             self.logger.warning('WARNING WARNING WARNING WARNING WARNING')
             time.sleep(3)
-            if rare_fairy.race_type in GUILD_RACE_TYPE:
+            if 'race_type' in rare_fairy and rare_fairy.race_type in GUILD_RACE_TYPE:
                 self.player.fairy['guild_alive'] = True
             else:
                 self.player.fairy.update({'alive':True, 'id':rare_fairy.serial_id})
@@ -1658,7 +1671,7 @@ class MAClient(object):
             if not need_tail:
                 fairy_floor()
              # 如果是醒妖且不是公会妖则问好
-            if bt_type == WAKE_BATTLE and not fairy.race_type in GUILD_RACE_TYPE and self.cfg_auto_greet :
+            if bt_type == WAKE_BATTLE and 'race_type' in fairy and fairy.race_type not in GUILD_RACE_TYPE and self.cfg_auto_greet :
                 self.like()
 
     @plugin.func_hook
@@ -1932,7 +1945,7 @@ class MAClient(object):
             self.logger.info('没有符合筛选的奖励(%d)' % (len(rwds)))
         else:
             if no_detail:
-                self.logger.info('将领取%d件奖励' % (len(strl.split(' , ')) - 1) )
+                self.logger.info('将领取%d件奖励，剩余%d件未领取' % (len(strl.split(' , ')) - 1, len(rwds)) )
             else:
                 self.logger.info(maclient_network.htmlescape(strl.rstrip(' , ').replace('--', '&')).replace('\n',' '))
             if no_get:
@@ -2166,6 +2179,7 @@ class MAClient(object):
         #     self.stitle.join(0.1)
         try:
             self.logger.logfile.flush()
+            self._request_flush_config(force = True)
         except:
             pass
         # if code > 0:
