@@ -1314,9 +1314,12 @@ class MAClient(object):
         evalstr = (cond != '' and self._eval_gen(cond, eval_fairy_select, 'fairy') or self.evalstr_fairy)
         #self.logger.debug('fairy_select:eval:%s' % (evalstr))
         fairies = []
+        token = os.urandom(8)
+        if self.loc == 'jp':
+            self.plugin.set_extras(token, 'fairy_event', [f for f in fairy_event if f.put_down == '5'])
         for fairy in fairy_event:
             # 挂了
-            if fairy.put_down not in '01':
+            if fairy.put_down not in '014':
                 continue
             fairy.fairy.lv = int(fairy.fairy.lv)
             # (sid相同，或未记录的)且不是公会妖
@@ -1395,6 +1398,8 @@ class MAClient(object):
                 return None
             else:
                 if self.loc == 'jp':
+                    if 'recover_by_like' in ct.body.private_fairy_top:
+                        logger.info('收到点赞回复BC%s点' % ct.body.private_fairy_top.recover_by_like.recover_point)
                     return ct.body.private_fairy_top.private_fairy.fairy
                 else:
                     return ct.body.fairy_floor.explore.fairy
@@ -1428,7 +1433,9 @@ class MAClient(object):
         #     fairy['race_type'] =  0#日服没有工会
         if disc_id == self.player.id:
             disc_name = self.player.name
-        if self.loc == 'jp' or 'attacker' not in fairy.attacker_history:  # 没人打过的
+        if self.loc == 'jp':
+            f_attackers = []#手动获得历史了？
+        elif 'attacker' not in fairy.attacker_history:  # 没人打过的
             f_attackers = []
         else:
             f_attackers = self.tolist(fairy.attacker_history.attacker)
@@ -1512,7 +1519,7 @@ class MAClient(object):
             try:
                 res = ct.body.battle_result
             except KeyError:
-                self.logger.warning('没有发现奖励，妖精已经挂了？')
+                self.logger.warning('没有发现战斗结果，妖精已经挂了？')
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
                 elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
@@ -1544,6 +1551,7 @@ class MAClient(object):
                         nid.append(b.id)
                         if b.type == '2':
                             # 收集品 情况1：要通过点击“立即领取”领取的，在sleep之后领取
+                            # 没有考虑日服，res.private_fairy_reward_list.reward_item_list[item_id, item_count]
                             # self.logger.debug('fairy_battle:type:%s item_id %s count %s'%(b.type,b.item_id,b.item_num))
                             if int(b.item_id) <= 3:
                                 self.logger.info('获得物品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
@@ -1580,8 +1588,11 @@ class MAClient(object):
             if not res.before_level == res.after_level:
                 self.logger.info('升级了：↑%s' % res.after_level)
             # 收集品 情况2：自动往上加的
-            if 'special_item' in res:
-                it = res.special_item
+            if 'special_item' in res or (self.loc == 'jp' and 'special_item' in res.private_fairy_reward_list):
+                if self.loc == 'jp':
+                    it = res.private_fairy_reward_list.special_item
+                else:
+                    it = res.special_item
                 self.logger.info('收集品[%s]:+%d(%s)' % (\
                     self.player.item.get_name(int(it.item_id)), int(it.after_count) - int(it.before_count), it.after_count))
             # 战斗详情分析
