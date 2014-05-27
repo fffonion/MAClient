@@ -168,6 +168,7 @@ class plugins(object):
         # mods=[]
         modstr = ''
         last_mod = ''
+        sys.path.insert(0, opath.join(getPATH0, 'plugins'))
         for m in mods:
             if ('.pyc' in m or '.pyo' in m) and m[:-1] in mods:#strip .pyc if .py exists
                 continue
@@ -189,7 +190,7 @@ class plugins(object):
                         # no plugin() class
                         self.plugins_instance[m] = None
             last_mod = m
-
+        sys.path.pop(0)
     # def _line_tracer(self):
     #     # originally from http://stackoverflow.com/questions/19227636/decorator-to-log-function-execution-line-by-line
     #     # it works almostly the same as module 'memory_profiler'

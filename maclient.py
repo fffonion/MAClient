@@ -976,6 +976,8 @@ class MAClient(object):
                         fairy_info.lv, fairy_info.hp = int(fairy_info.lv), int(fairy_info.hp)
                         self.logger.info('碰到只妖精:%s lv%d hp%d' % (fairy_info.name, fairy_info.lv, fairy_info.hp))
                         self.logger.debug('sid' + fairy_info.serial_id + ' mid' + fairy_info.master_boss_id + ' uid' + fairy_info.discoverer_id)
+                        if 'race_type' not in fairy_info:
+                            fairy_info['race_type'] = '0'
                         if fairy_info.race_type in GUILD_RACE_TYPE:
                             self.player.fairy['guild_alive'] = True
                         else:
@@ -988,8 +990,6 @@ class MAClient(object):
                         time.sleep(3)
                         self._fairy_battle(fairy_info, bt_type = EXPLORE_BATTLE)
                         time.sleep(5.5)
-                        if self.loc == 'jp':
-                            fairy_info['race_type'] = '0'
                         if self._check_floor_eval([floor], fairy_info.race_type)[0]:  # 若已不符合条件
                             return None, EXPLORE_OK
                         # 回到探索界面
