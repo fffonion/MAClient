@@ -135,10 +135,6 @@ def websocket_app(environ, start_response):
             
         _hash = md5(login_id + password + serv).digest()
 
-        if maxconnected <= connected:
-            ws.send("server overload.\n")
-            return
-
         request_reload_py()
         from maclient_web_bot import WebSocketBot, mac_web_version
 
@@ -169,6 +165,11 @@ def websocket_app(environ, start_response):
                 except Exception as e:
                     _print('[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline))
                     return
+
+        if maxconnected <= connected:
+            ws.send("server overload.\n")
+            return
+            
         #new
         bot = WebSocketBot(ws, serv, md5(login_id + password + serv).hexdigest(), die_callback, born_callback)
         bot.loginid = login_id
