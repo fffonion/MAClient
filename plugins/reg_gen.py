@@ -33,7 +33,8 @@ def reg_gen(plugin_vals):
         print(du8('Invitation ID is %s' % invid))
         while True:
             po.post('check_inspection')
-            po.post('notification/post_devicetoken', postdata = 'S=nosessionid&login_id=&password=&app=and&token=')
+            if loc not in ['jp', 'my']:
+                po.post('notification/post_devicetoken', postdata = 'S=nosessionid&login_id=&password=&app=and&token=')
             # s=raw_input('session: ').lstrip('S=').strip()
             # print po.cookie
             while True:
@@ -51,8 +52,8 @@ def reg_gen(plugin_vals):
                     p = 'invitation_id=%s&login_id=%s&param=&password=%s&param=%s' % (invid, uname, pwd, '35' + (''.join([str(random.randint(0, 9)) for i in range(10)])))
                 # print maclient_network.encode_param(p)
                 r, d = po.post('regist', postdata = p)
-                if(XML2Dict().fromstring(d).response.header.error.code != '0'):
-                    print(XML2Dict().fromstring(d).response.header.error.message)
+                if(XML2Dict.fromstring(d).response.header.error.code != '0'):
+                    print(XML2Dict.fromstring(d).response.header.error.message)
                     continue
                 break
             GET_header = po.header

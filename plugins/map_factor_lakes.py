@@ -17,7 +17,7 @@ def map_factor(plugin_vals):
         po = plugin_vals['poster']
         carddb = plugin_vals['carddb']
         r, d = po.post('battle/area')
-        resp = XML2Dict().fromstring(d).response
+        resp = XML2Dict.fromstring(d).response
         if(resp.header.error.code != '0'):
             print(du8(resp.header.error.message))
             return

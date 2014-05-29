@@ -14,6 +14,8 @@ except:
 
 import re
 
+__version__ = 1.1
+
 """
 object_dict
 
@@ -58,10 +60,7 @@ class object_dict(dict):
 
 
 class XML2Dict(object):
-
-    def __init__(self):
-        pass
-
+    @classmethod
     def _parse_node(self, node):
         node_tree = object_dict()
         # Save attrs and text, hope there will not be a child with same name
@@ -84,7 +83,7 @@ class XML2Dict(object):
 
         return  node_tree
 
-
+    @classmethod
     def _namespace_split(self, tag, value):
         """
            Split the tag  '{http://cs.sfsu.edu/csc867/myscheduler}patients'
@@ -97,11 +96,13 @@ class XML2Dict(object):
             value.namespace, tag = result.groups()
         return (tag, value)
 
+    @classmethod
     def parse(self, file):
         """parse a xml file to a dict"""
         f = open(file, 'r')
         return self.fromstring(f.read())
 
+    @classmethod
     def fromstring(self, s):
         """parse a string"""
         t = ET.fromstring(s)

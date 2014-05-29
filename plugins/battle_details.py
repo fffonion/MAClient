@@ -150,7 +150,7 @@ class plugin(plugin_prototype):
 #         f['lv'] = '100'
 #         f['serial_id'] = '23333'
 #         kwargs = {'_extras':{}, 'loc':a['loc'], 'carddb':a['carddb'], 'player':a['player']}
-#         ct = XML2Dict().fromstring(open(r'z:/exploration#fairybattle2.xml').read()).response
+#         ct = XML2Dict.fromstring(open(r'z:/exploration#fairybattle2.xml').read()).response
 #         blist = ct.body.battle_battle.battle_action_list
 #         kwargs['_extras']['battle_result'] = blist
 #         kwargs['_extras']['battle_player'] = ct.body.battle_battle.battle_player_list

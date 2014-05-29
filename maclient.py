@@ -242,13 +242,15 @@ class MAClient(object):
             dec = _dec
         else:
             try:
-                dec = XML2Dict().fromstring(_dec).response
+                dec = XML2Dict.fromstring(_dec).response
             except:
                 try:
-                    dec = XML2Dict().fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
+                    dec = XML2Dict.fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
                 except:
-                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请联系作者\nhttp://yooooo.us/2013/maclient')
-                    self._exit(0)
+                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\nhttp://yooooo.us/2013/maclient')
+                    with open('debug_%s.xml' % urikey.replace('/', '#').replace('?', '~'),'w') as f:
+                        f.write('_dec')
+                    self._exit(3)
             try:
                 err = dec.header.error
             except:
@@ -286,7 +288,8 @@ class MAClient(object):
                     elif err.code == '1020':
                         self.logger.sleep('因为服务器维护，休息约30分钟')
                         time.sleep(random.randint(28, 32) * 60)
-                        self.player.rev_update_checked = False  # 置为未检查
+                        if hasattr(self, 'player'):
+                            self.player.rev_update_checked = False  # 置为未检查
                         return resp, dec
             if not self.player_initiated :
                 open(self.playerfile, 'w').write(_dec)
@@ -514,7 +517,7 @@ class MAClient(object):
                 and (time.time() - os.path.getmtime(self.playerfile) < 43200) and uname == '':
                 self.logger.info('加载了保存的账户XD')
                 dec = open(self.playerfile, 'r').read()  # .encode('utf-8')
-                ct = xmldict = XML2Dict().fromstring(dec).response
+                ct = xmldict = XML2Dict.fromstring(dec).response
             else:
                 self.username = uname or self.username
                 self.password = pwd or self.password
@@ -1927,7 +1930,7 @@ class MAClient(object):
         resp, ct = self._dopost('menu/rewardbox', xmlresp = False)  # 只能额外处理
         # if resp['error']:
         #    return False
-        rwds = self.tolist(XML2Dict().fromstring(re.sub('&(?!#)', '--', ct)).response.body.rewardbox_list.rewardbox)  # .replace('&','--')
+        rwds = self.tolist(XML2Dict.fromstring(re.sub('&(?!#)', '--', ct)).response.body.rewardbox_list.rewardbox)  # .replace('&','--')
         # if 'id' in rwds:#只有一个
         #    rwds=[rwds]
         strl = ''

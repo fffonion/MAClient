@@ -156,7 +156,7 @@ def query_rank(plugin_vals):
             while True:
                 resp, ct = po.post('ranking/ranking', postdata='move=%d&ranktype_id=%d&top=%d' % (
                                 1 if sel_rankid == 0 else 0, sel_rankid, 1 if to_top else 0))
-                ct = XML2Dict().fromstring(ct).response.body.ranking
+                ct = XML2Dict.fromstring(ct).response.body.ranking
                 ranktype_id = int(ct.ranktype_id)
                 allranks = ct.ranktype_list.ranktype
                 rank_name = allranks[ranktype_id - 1].title

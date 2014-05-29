@@ -132,7 +132,7 @@ def _check_update(silent = False):
     if not body:
         print('Error fetching meta')
         return
-    meta = XML2Dict().fromstring(body).maclient
+    meta = XML2Dict.fromstring(body).maclient
     xml = '<?xml version="1.0" encoding="UTF-8"?><maclient><time>%d</time>' % int(time.time())
     s_update = '<update_item><name>%s</name><version>%s</version><dir>%s</dir></update_item>'
     s_new = '<new_item><name>%s</name><version>%s</version><dir>%s</dir></new_item>'
@@ -194,7 +194,7 @@ def _do_update(silent = False):
         os.remove(opath.join(_get_temp(), '.MAClient.update'))
         _check_update(silent)
         return _do_update(silent)
-    _top = XML2Dict().fromstring(_m).maclient
+    _top = XML2Dict.fromstring(_m).maclient
     _done = False
     update_item = 'update_item' in _top and _top.update_item or None
     new_item = 'new_item' in _top and _top.new_item or None
