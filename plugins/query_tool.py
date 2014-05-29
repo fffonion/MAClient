@@ -136,7 +136,7 @@ def query_rank(plugin_vals):
             else:
                 _rev = _lib.query_rev[_guild_mode + _coll_mode]
                 if not _rev:
-                    logger.error('版本不存在,，请升级_query_rank_lib为新版本\n或指定排名区域查询')
+                    logger.error('版本不存在，可能是当前活动没有该排名\n请尝试升级_query_rank_lib，或指定排名区域查询')
                     return
                 if _lib.now >= _lib.query_lifetime:
                     logger.error('查询库已过期，请升级_query_rank_lib为新版本\n或指定排名区域查询')
