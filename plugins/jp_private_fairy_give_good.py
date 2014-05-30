@@ -15,8 +15,9 @@ class plugin(plugin_prototype):
     def EXIT_fairy_select(self, *args, **kwargs):
         #点赞用 参考自MAWalker
         mac = args[0]
+        if mac.loc != 'jp':
+            return
         fairies = kwargs['pop_extras']('fairy_event')
-        print fairies
         if not fairies or len(fairies) == 0:
             return
         mac.logger.info('找到%d个可赞的妹纸啦...' % len(fairies))
