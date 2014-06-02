@@ -238,22 +238,24 @@ def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxli
             _cards = _cards[:min(3 * maxline + 6, len(_cards))]
         for deckcnt in deckcnts:
             def __doit(deck):
-                #global reslist
-                #global fnd_count
                 mids = map(lambda d: d[MID], deck)
                 _cost = sum(map(lambda e:player_cards.db[e][2], mids))
                 if bclimit >= _cost:
                     _atk, _hp, _rnd = _carddeck_info(deck)
                     sids = map(lambda d: d[SID], deck)
-                    reslist.append([_atk, _hp, _cost, sids, mids])
-                if len(reslist) > 100000:
-                    fnd_count += len(reslist) - 1
-                    reslist = _reduce_list(reslist, return_lambda)
+                    return [_atk, _hp, _cost, sids, mids]
+
             if fast_mode or True:
                 for deck in _iter_gen(deckcnt):
-                    __doit(deck)
+                    r = __doit(deck)
+                    if r:
+                        reslist.append(r)
+                        fnd_count += 1
+                    if len(reslist) > 100000:
+                        fnd_count += len(reslist) - 1
+                        reslist = _reduce_list(reslist, return_lambda)
             else:
-                pass
+                pass#pending
             if reslist:
                 break
     # for r in reslist:
