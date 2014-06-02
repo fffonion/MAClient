@@ -6,8 +6,13 @@
 import time
 import math
 import itertools
-from multiprocessing import Pool
-__version__ = '1.3-build20140517'
+__version__ = '1.3-build20140519'
+
+try:
+    from multiprocessing import Pool
+    __version__ += '-MutliProcess'
+except:
+    Pool = None
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = max_card_count_sg = 250
 max_fp_cn = max_fp_kr = max_fp_sg = 50000
@@ -153,8 +158,7 @@ def _reduce_list(lst, sort_lambda):
     # 只留下一个
     return [max(lst, key = sort_lambda)]
 
-reslist = []
-fnd_count = 0
+
 # card_deck generator
 DEFEAT, MAX_DMG, MAX_CP = 0, 1, 2
 def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxline = 2, seleval = 'True', fairy_info = None, delta = 1, fast_mode = False):
@@ -169,8 +173,10 @@ def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxli
     range 允许误差（预测伤害相对于妖精血量）
     maxline 最大排数
     '''
-    global reslist
-    global fnd_count
+    reslist = []
+    fnd_count = 0
+    #global reslist
+    #global fnd_count
     # print(aim,bclimit,includes,maxline,seleval,fairy_info,delta)
     _multi = player_cards.multi
     # 只需要hp,atk,lv,cost,master_card_id,serial_id,object_dict->list节省20%时间
@@ -231,22 +237,24 @@ def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxli
             _cards = _cards[:min(3 * maxline + 6, len(_cards))]
         for deckcnt in deckcnts:
             def __doit(deck):
-                global reslist
-                global fnd_count
                 mids = map(lambda d: d[MID], deck)
                 _cost = sum(map(lambda e:player_cards.db[e][2], mids))
                 if bclimit >= _cost:
                     _atk, _hp, _rnd = _carddeck_info(deck)
                     sids = map(lambda d: d[SID], deck)
-                    reslist.append([_atk, _hp, _cost, sids, mids])
-                if len(reslist) > 100000:
-                    fnd_count += len(reslist) - 1
-                    reslist = _reduce_list(reslist, return_lambda)
+                    return [_atk, _hp, _cost, sids, mids]
+
             if fast_mode or True:
                 for deck in _iter_gen(deckcnt):
-                    __doit(deck)
+                    r = __doit(deck)
+                    if r:
+                        reslist.append(r)
+                        fnd_count += 1
+                    if len(reslist) > 100000:
+                        fnd_count += len(reslist) - 1
+                        reslist = _reduce_list(reslist, return_lambda)
             else:
-                pass
+                pass#pending
             if reslist:
                 break
     # for r in reslist:

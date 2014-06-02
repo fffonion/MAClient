@@ -110,6 +110,8 @@ if __name__ == '__main__':
         sys.setdefaultencoding('utf-8')
     # ht=httplib2.Http(timeout=30)
     print(du8('%s%sv%s%s' % ('=' * int((getTerminalSize()[0] - 5 - 18) / 2), '丧心病狂的MA客户端', maclient.__version__, '=' * int((getTerminalSize()[0] - 5 - 18) / 2))))
+    if ANDROID:
+        os.chdir(os.environ.get('ANDROID_ARGUMENT'))
     if len(sys.argv) > 2:
         maclient1 = maclient.MAClient(configfile = sys.argv[1], savesession = True)
         # auth()
@@ -126,7 +128,6 @@ if __name__ == '__main__':
         else:
             try:
                 import androidhelper # android!
-                os.chdir(os.environ.get('ANDROID_ARGUMENT'))
             except ImportError:
                 maclient1 = maclient.MAClient(savesession = True)
             else:
@@ -232,8 +233,8 @@ if __name__ == '__main__':
                     maclient1.login()
                 mod = (mod + 1) % 2
             elif ch == '3':
-                print(du8('此功能已转移至插件carddeck_edit'))
-                print(du8('请到这里查看详细帮助http://t.cn/8kDOLwV'))
+                print(du8('此功能已转移至插件carddeck_edit，你还可以导入MAW卡组配置'))
+                print(du8('请到这里查看详细帮助http://t.cn/RvAKyOI'))
                 # import maclient_network
                 # cards = maclient_network.decode_param(read_proxy(work = 1))
                 # cdeck = cards.split('&')[0].split('=')[1].strip('%0A').rstrip(',empty')

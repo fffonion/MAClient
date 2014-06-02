@@ -136,7 +136,7 @@ def query_rank(plugin_vals):
             else:
                 _rev = _lib.query_rev[_guild_mode + _coll_mode]
                 if not _rev:
-                    logger.error('版本不存在,，请升级_query_rank_lib为新版本\n或指定排名区域查询')
+                    logger.error('版本不存在，可能是当前活动没有该排名\n请尝试升级_query_rank_lib，或指定排名区域查询')
                     return
                 if _lib.now >= _lib.query_lifetime:
                     logger.error('查询库已过期，请升级_query_rank_lib为新版本\n或指定排名区域查询')
@@ -156,7 +156,7 @@ def query_rank(plugin_vals):
             while True:
                 resp, ct = po.post('ranking/ranking', postdata='move=%d&ranktype_id=%d&top=%d' % (
                                 1 if sel_rankid == 0 else 0, sel_rankid, 1 if to_top else 0))
-                ct = XML2Dict().fromstring(ct).response.body.ranking
+                ct = XML2Dict.fromstring(ct).response.body.ranking
                 ranktype_id = int(ct.ranktype_id)
                 allranks = ct.ranktype_list.ranktype
                 rank_name = allranks[ranktype_id - 1].title

@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.24
+__version__ = 0.25
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update', 'us':'update_self'}
 #是否下载dev版
@@ -66,7 +66,7 @@ def update_self(plugin_vals):
             GET_DEV_UPDATE = False
             print(du8('当前分支:master'))
         for s in ["maclient.py", "maclient_network.py", "maclient_smart.py", "maclient_player.py", 
-                "maclient_proxy.py", "maclient_update.py", "maclient_logging.py", "maclient_plugin.py", "cross_platform.py"]:
+                "maclient_proxy.py", "maclient_update.py", "maclient_logging.py", "maclient_plugin.py", "cross_platform.py", "xml2dict.py"]:
             py = _http_get((GET_DEV_UPDATE and 'dev/' or 'master/') + s)
             open(opath.join(getPATH0, s), 'w').write(py.replace('\r\n', '\n'))
             print(du8('√ 已获取 %s' % s))
@@ -132,7 +132,7 @@ def _check_update(silent = False):
     if not body:
         print('Error fetching meta')
         return
-    meta = XML2Dict().fromstring(body).maclient
+    meta = XML2Dict.fromstring(body).maclient
     xml = '<?xml version="1.0" encoding="UTF-8"?><maclient><time>%d</time>' % int(time.time())
     s_update = '<update_item><name>%s</name><version>%s</version><dir>%s</dir></update_item>'
     s_new = '<new_item><name>%s</name><version>%s</version><dir>%s</dir></new_item>'
@@ -194,7 +194,7 @@ def _do_update(silent = False):
         os.remove(opath.join(_get_temp(), '.MAClient.update'))
         _check_update(silent)
         return _do_update(silent)
-    _top = XML2Dict().fromstring(_m).maclient
+    _top = XML2Dict.fromstring(_m).maclient
     _done = False
     update_item = 'update_item' in _top and _top.update_item or None
     new_item = 'new_item' in _top and _top.new_item or None

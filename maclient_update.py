@@ -70,16 +70,16 @@ def update_master(loc, need_update, poster):
         a, b = poster.post('masterdata/card/update', postdata = postdata)
         resp = XML2Dict().fromstring(replace_AND.sub('&amp;', b)).response  # 不替换会解析出错摔
         cards = resp.body.master_data.master_card_data.card
-        strs = ['%s,%s,%s,%s,%s,%s,%s,%s' % (
+        strs = [('%s,%s,%s,%s,%s,%s,%s,%s' % (
                 c.master_card_id,
                 c.name,
                 c.rarity,
                 c.cost,
-                str(c.char_description).strip('\n').strip(' ').replace('\n', '\\n'),
+                str(c.char_description).strip('\n').strip(' '),
                 c.skill_kana,
                 c.skill_name,
-                str(c.skill_description).replace('\n', '\\n')
-              ) for c in cards] + ['']
+                str(c.skill_description)
+              )).replace('\n', '\\n') for c in cards] + ['']
         if PYTHON3:
             f = open(opath.join(getPATH0, 'db/card.%s.txt' % loc), 'w', encoding = 'utf-8').write('\n'.join(strs))
         else:
