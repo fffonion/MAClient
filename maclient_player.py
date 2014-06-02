@@ -160,7 +160,10 @@ class card(object):
             f = open(opath.join(getPATH0, 'db/card.%s.txt' % loc))
         for c in f.readlines():
             c = _split(c)
-            self.db[int(c[0])] = [c[1], int(c[2]), int(c[3])]
+            try:
+                self.db[int(c[0])] = [c[1], int(c[2]), int(c[3])]
+            except ValueError:
+                pass
 
     def load_multi(self, loc):
         _f = opath.join(getPATH0, 'db/card.multi.txt')

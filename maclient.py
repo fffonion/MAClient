@@ -242,13 +242,15 @@ class MAClient(object):
             dec = _dec
         else:
             try:
-                dec = XML2Dict().fromstring(_dec).response
+                dec = XML2Dict.fromstring(_dec).response
             except:
                 try:
-                    dec = XML2Dict().fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
+                    dec = XML2Dict.fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
                 except:
-                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请联系作者\nhttp://yooooo.us/2013/maclient')
-                    self._exit(0)
+                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\nhttp://yooooo.us/2013/maclient')
+                    with open('debug_%s.xml' % urikey.replace('/', '#').replace('?', '~'),'w') as f:
+                        f.write('_dec')
+                    self._exit(3)
             try:
                 err = dec.header.error
             except:
@@ -286,7 +288,8 @@ class MAClient(object):
                     elif err.code == '1020':
                         self.logger.sleep('因为服务器维护，休息约30分钟')
                         time.sleep(random.randint(28, 32) * 60)
-                        self.player.rev_update_checked = False  # 置为未检查
+                        if hasattr(self, 'player'):
+                            self.player.rev_update_checked = False  # 置为未检查
                         return resp, dec
             if not self.player_initiated :
                 open(self.playerfile, 'w').write(_dec)
@@ -514,7 +517,7 @@ class MAClient(object):
                 and (time.time() - os.path.getmtime(self.playerfile) < 43200) and uname == '':
                 self.logger.info('加载了保存的账户XD')
                 dec = open(self.playerfile, 'r').read()  # .encode('utf-8')
-                ct = xmldict = XML2Dict().fromstring(dec).response
+                ct = xmldict = XML2Dict.fromstring(dec).response
             else:
                 self.username = uname or self.username
                 self.password = pwd or self.password
@@ -976,6 +979,8 @@ class MAClient(object):
                         fairy_info.lv, fairy_info.hp = int(fairy_info.lv), int(fairy_info.hp)
                         self.logger.info('碰到只妖精:%s lv%d hp%d' % (fairy_info.name, fairy_info.lv, fairy_info.hp))
                         self.logger.debug('sid' + fairy_info.serial_id + ' mid' + fairy_info.master_boss_id + ' uid' + fairy_info.discoverer_id)
+                        if 'race_type' not in fairy_info:
+                            fairy_info['race_type'] = '0'
                         if fairy_info.race_type in GUILD_RACE_TYPE:
                             self.player.fairy['guild_alive'] = True
                         else:
@@ -988,8 +993,6 @@ class MAClient(object):
                         time.sleep(3)
                         self._fairy_battle(fairy_info, bt_type = EXPLORE_BATTLE)
                         time.sleep(5.5)
-                        if self.loc == 'jp':
-                            fairy_info['race_type'] = '0'
                         if self._check_floor_eval([floor], fairy_info.race_type)[0]:  # 若已不符合条件
                             return None, EXPLORE_OK
                         # 回到探索界面
@@ -1314,9 +1317,12 @@ class MAClient(object):
         evalstr = (cond != '' and self._eval_gen(cond, eval_fairy_select, 'fairy') or self.evalstr_fairy)
         #self.logger.debug('fairy_select:eval:%s' % (evalstr))
         fairies = []
+        token = os.urandom(8)
+        if self.loc == 'jp':
+            self.plugin.set_extras(token, 'fairy_event', [f for f in fairy_event if f.put_down == '5'])
         for fairy in fairy_event:
             # 挂了
-            if fairy.put_down not in '01':
+            if fairy.put_down not in '014':
                 continue
             fairy.fairy.lv = int(fairy.fairy.lv)
             # (sid相同，或未记录的)且不是公会妖
@@ -1395,6 +1401,8 @@ class MAClient(object):
                 return None
             else:
                 if self.loc == 'jp':
+                    if 'recover_by_like' in ct.body.private_fairy_top:
+                        self.logger.info('收到点赞回复BC%s点' % ct.body.private_fairy_top.recover_by_like.recover_point)
                     return ct.body.private_fairy_top.private_fairy.fairy
                 else:
                     return ct.body.fairy_floor.explore.fairy
@@ -1428,7 +1436,9 @@ class MAClient(object):
         #     fairy['race_type'] =  0#日服没有工会
         if disc_id == self.player.id:
             disc_name = self.player.name
-        if self.loc == 'jp' or 'attacker' not in fairy.attacker_history:  # 没人打过的
+        if self.loc == 'jp':
+            f_attackers = []#手动获得历史了？
+        elif 'attacker' not in fairy.attacker_history:  # 没人打过的
             f_attackers = []
         else:
             f_attackers = self.tolist(fairy.attacker_history.attacker)
@@ -1512,7 +1522,7 @@ class MAClient(object):
             try:
                 res = ct.body.battle_result
             except KeyError:
-                self.logger.warning('没有发现奖励，妖精已经挂了？')
+                self.logger.warning('没有发现战斗结果，妖精已经挂了？')
                 if fairy.serial_id == self.player.fairy['id']:
                     self.player.fairy.update({'id':0, 'alive':False})
                 elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
@@ -1544,6 +1554,7 @@ class MAClient(object):
                         nid.append(b.id)
                         if b.type == '2':
                             # 收集品 情况1：要通过点击“立即领取”领取的，在sleep之后领取
+                            # 没有考虑日服，res.private_fairy_reward_list.reward_item_list[item_id, item_count]
                             # self.logger.debug('fairy_battle:type:%s item_id %s count %s'%(b.type,b.item_id,b.item_num))
                             if int(b.item_id) <= 3:
                                 self.logger.info('获得物品[%s] x%s' % (self.player.item.get_name(int(b.item_id)), b.item_num))
@@ -1580,8 +1591,11 @@ class MAClient(object):
             if not res.before_level == res.after_level:
                 self.logger.info('升级了：↑%s' % res.after_level)
             # 收集品 情况2：自动往上加的
-            if 'special_item' in res:
-                it = res.special_item
+            if 'special_item' in res or (self.loc == 'jp' and 'special_item' in res.private_fairy_reward_list):
+                if self.loc == 'jp':
+                    it = res.private_fairy_reward_list.special_item
+                else:
+                    it = res.special_item
                 self.logger.info('收集品[%s]:+%d(%s)' % (\
                     self.player.item.get_name(int(it.item_id)), int(it.after_count) - int(it.before_count), it.after_count))
             # 战斗详情分析
@@ -1916,7 +1930,7 @@ class MAClient(object):
         resp, ct = self._dopost('menu/rewardbox', xmlresp = False)  # 只能额外处理
         # if resp['error']:
         #    return False
-        rwds = self.tolist(XML2Dict().fromstring(re.sub('&(?!#)', '--', ct)).response.body.rewardbox_list.rewardbox)  # .replace('&','--')
+        rwds = self.tolist(XML2Dict.fromstring(re.sub('&(?!#)', '--', ct)).response.body.rewardbox_list.rewardbox)  # .replace('&','--')
         # if 'id' in rwds:#只有一个
         #    rwds=[rwds]
         strl = ''

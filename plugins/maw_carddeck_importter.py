@@ -41,7 +41,7 @@ def maw_importter(plugin_vals):
             logger.error('输入的路径"%s"不存在配置文件www' % cfg_file)
             cfg_file = None
         try:
-            _t = XML2Dict().fromstring(open(cfg_file).read()).config.card
+            _t = XML2Dict.fromstring(open(cfg_file).read()).config.card
             decks = _t.battle_fairy
         except:
             logger.error('所选"%s"可能不是maw配置文件，或者格式扭曲了TAT' % cfg_file)

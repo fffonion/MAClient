@@ -31,9 +31,9 @@ def iter_printer(l, sep = '\n'):
 def read_decks(plugin_vals):
     def do(*args):
         if plugin_vals['loc'] == 'jp':
-            get=lambda x, y:XML2Dict().fromstring(x).response.body.roundtable_edit.deck[y - 1].deck_cards
+            get=lambda x, y:XML2Dict.fromstring(x).response.body.roundtable_edit.deck[y - 1].deck_cards
         else:
-            get=lambda x, y:XML2Dict().fromstring(x).response.body.roundtable_edit.deck_cards
+            get=lambda x, y:XML2Dict.fromstring(x).response.body.roundtable_edit.deck_cards
         poster=plugin_vals['poster']
         pcard=plugin_vals['player'].card
         cf=plugin_vals['cf']
