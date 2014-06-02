@@ -1402,7 +1402,7 @@ class MAClient(object):
             else:
                 if self.loc == 'jp':
                     if 'recover_by_like' in ct.body.private_fairy_top:
-                        logger.info('收到点赞回复BC%s点' % ct.body.private_fairy_top.recover_by_like.recover_point)
+                        self.logger.info('收到点赞回复BC%s点' % ct.body.private_fairy_top.recover_by_like.recover_point)
                     return ct.body.private_fairy_top.private_fairy.fairy
                 else:
                     return ct.body.fairy_floor.explore.fairy
