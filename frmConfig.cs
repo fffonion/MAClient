@@ -841,14 +841,14 @@ namespace MAClientGUI
 
         private void button34_Click(object sender, EventArgs e)
         {
-            addCarddeckCond("FAIRY_ALIVE");
+            addCarddeckCond("not FAIRY_ALIVE");
             button34.Enabled = false;
             button33.Enabled = false;
         }
 
         private void button33_Click(object sender, EventArgs e)
         {
-            addCarddeckCond("not FAIRY_ALIVE");
+            addCarddeckCond("FAIRY_ALIVE");
             button33.Enabled = false;
             button34.Enabled = false;
         }
@@ -1723,10 +1723,17 @@ namespace MAClientGUI
 
         private void button65_Click(object sender, EventArgs e)
         {
-            FolderBrowserDialog fdlDialog = new FolderBrowserDialog();
-            if (fdlDialog.ShowDialog() == DialogResult.OK)
+            string placeholder = "就决定是这里了";
+            SaveFileDialog sf = new SaveFileDialog();
+            sf.Title = "选择插件目录";
+            sf.FileName = placeholder;
+            sf.RestoreDirectory = true;
+            sf.OverwritePrompt = false;
+            sf.CreatePrompt = false;
+            sf.Filter = "文件夹|*.";
+            if (sf.ShowDialog() == DialogResult.OK)
             {
-                loadPluginList(fdlDialog.SelectedPath);
+                loadPluginList(Path.GetDirectoryName(sf.FileName));
             }
         }
 

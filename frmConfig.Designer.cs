@@ -1062,12 +1062,12 @@ namespace MAClientGUI
             this.numInstantFight.Location = new System.Drawing.Point(341, 34);
             this.numInstantFight.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numInstantFight.Maximum = new decimal(new int[] {
-            999999,
-            0,
+            -727379969,
+            232,
             0,
             0});
             this.numInstantFight.Name = "numInstantFight";
-            this.numInstantFight.Size = new System.Drawing.Size(69, 27);
+            this.numInstantFight.Size = new System.Drawing.Size(100, 27);
             this.numInstantFight.TabIndex = 1044;
             this.numInstantFight.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.numInstantFight.Value = new decimal(new int[] {
@@ -2274,7 +2274,7 @@ namespace MAClientGUI
             this.button73.TabIndex = 28;
             this.button73.Text = "跪了";
             this.button73.UseVisualStyleBackColor = true;
-            this.button73.Click += new System.EventHandler(this.button72_Click);
+            this.button73.Click += new System.EventHandler(this.button73_Click);
             // 
             // button33
             // 
