@@ -57,8 +57,6 @@ getPATH0 = SAE and '' or ((not EXEBUNDLE or IRONPYTHON) and \
      ) \
      or sys.path[1].decode(sys.getfilesystemencoding()))  # pyinstaller build
 
-if ANDROID:
-    sys.path.insert(0, opath.join(getPATH0, 'modules.zip'))
     
 raw_du8 = (IRONPYTHON or PYTHON3) and \
     (lambda str:str) or \
