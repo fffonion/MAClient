@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.25
+__version__ = 0.26
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update', 'us':'update_self'}
 #是否下载dev版
@@ -65,7 +65,7 @@ def update_self(plugin_vals):
         if GET_DEV_UPDATE and raw_inputd('是否继续?输入n可切换为master分支y/n') == 'n':
             GET_DEV_UPDATE = False
             print(du8('当前分支:master'))
-        for s in ["maclient.py", "maclient_network.py", "maclient_smart.py", "maclient_player.py", 
+        for s in ["maclient.py", "maclient_cli.py", "maclient_network.py", "maclient_smart.py", "maclient_player.py", 
                 "maclient_proxy.py", "maclient_update.py", "maclient_logging.py", "maclient_plugin.py", "cross_platform.py", "xml2dict.py"]:
             py = _http_get((GET_DEV_UPDATE and 'dev/' or 'master/') + s)
             open(opath.join(getPATH0, s), 'w').write(py.replace('\r\n', '\n'))

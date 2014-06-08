@@ -44,7 +44,7 @@ class plugin(plugin_prototype):
         fairies = kwargs['pop_extras']('fairy_event')
         if not fairies or len(fairies) == 0:
             return
-        if mac.cf._read_config('plugin', 'jp_private_fairy_good_disabled') == '1':
+        if mac._read_config('plugin', 'jp_private_fairy_good_disabled') == '1':
             mac.logger.warning('点赞已被禁用啦...')
             return
         mac.logger.info('找到%d个可赞的妹纸啦...' % len(fairies))

@@ -249,7 +249,7 @@ class MAClient(object):
                 except:
                     self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\nhttp://yooooo.us/2013/maclient')
                     with open('debug_%s.xml' % urikey.replace('/', '#').replace('?', '~'),'w') as f:
-                        f.write('_dec')
+                        f.write(_dec)
                     self._exit(3)
             try:
                 err = dec.header.error
