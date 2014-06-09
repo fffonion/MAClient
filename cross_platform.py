@@ -68,10 +68,7 @@ safestr = (sys.platform.startswith('cli') or PYTHON3 or NICE_TERM)and \
 
 du8 = lambda x: safestr(raw_du8(x))
 
-raw_inputd = PYTHON3 and \
-        (lambda s:input(s)) \
-    or \
-        (lambda s:raw_input(raw_du8(s).encode(CODEPAGE or 'utf-8')).decode(CODEPAGE or 'utf-8').encode('utf-8'))
+raw_inputd = lambda s:None
         
 # from goagent.appcfg
 def _win_getpass(prompt='Password:', stream=None):
