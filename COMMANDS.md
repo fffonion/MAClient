@@ -61,6 +61,7 @@ factor_battle/fcb
     factor_battle #自动选择碎片
     factor_battle lake:7 #选择湖7
     factor_battle lake:7 50 #选择湖7 且在BC<50时退出
+    #可使用mf命令查询湖id与卡片的对应表（需启用map_factor_lakes插件）
 
 ###秘境探索
 
