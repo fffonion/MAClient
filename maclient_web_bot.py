@@ -20,7 +20,7 @@ from web_libs import remote_debugger
 reload(remote_debugger)
 
 mac_version = maclient.__version__
-mac_web_version = 20140519.16384
+mac_web_version = 20140613.16384
 maxconnected = 300
 
 if os.name != 'nt':

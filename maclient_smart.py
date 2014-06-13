@@ -7,13 +7,12 @@ import time
 import math
 import itertools
 __version__ = '1.3-build20140519'
+
 try:
     from multiprocessing import Pool
-except:
-    MULTI_PROCESS = False
-else:
-    MULTI_PROCESS = True
     __version__ += '-MutliProcess'
+except:
+    Pool = None
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = max_card_count_sg = 250
 max_fp_cn = max_fp_kr = max_fp_sg = 50000

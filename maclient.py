@@ -28,7 +28,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.70
+__version__ = 1.71
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
@@ -249,7 +249,7 @@ class MAClient(object):
                 except:
                     self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\nhttp://yooooo.us/2013/maclient')
                     with open('debug_%s.xml' % urikey.replace('/', '#').replace('?', '~'),'w') as f:
-                        f.write('_dec')
+                        f.write(_dec)
                     self._exit(3)
             try:
                 err = dec.header.error
@@ -1467,6 +1467,16 @@ class MAClient(object):
             self.logger.debug('fairy_battle:carddeck result:%s' % (cardd))
         if cardd == 'abort':
             self.logger.debug('fairy_battle:abort battle sequence.')
+            return False
+        elif cardd == 'letitgo':
+            self.logger.sleep('坐等%d分钟后妖精逃跑' % (int(fairy.time_limit) / 60))
+            time.sleep(int(fairy.time_limit))
+            # 如果是自己的妖精则设为死了
+            if fairy.serial_id == self.player.fairy['id']:
+                self.player.fairy.update({'id':0, 'alive':False})
+            # 如果是公会妖精则设为死了
+            elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
+                self.player.fairy['guild_alive'] = False
             return False
         _has_set, _last_bc = self.set_card(cardd, cur_fairy = fairy)
         if _last_bc == -1:#自动配卡出错或卡组不存在

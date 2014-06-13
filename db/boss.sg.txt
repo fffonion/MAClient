@@ -144,3 +144,19 @@
 60018,Arousal Patjwi,17002
 60019,Kongjwi,8537
 60020,Arousal Kongjwi,17002
+60021,Culmin,10000
+60022,Arousal Culmin,20000
+60023,Tylwyth Teg,10000
+60024,Arousal Tylwyth Teg,20000
+60025,Arousal Andromeda,500000
+60026,Arousal Andromeda,500000
+60027,Arousal Andromeda,500000
+60028,Arousal Andromeda,20000
+60029,Arousal Andromeda,20000
+60030,Arousal Andromeda,20000
+60031,Andromeda,5000
+60032,Arousal Andromeda,30000
+60033,Andromeda,5000
+60034,Arousal Andromeda,30000
+60035,Andromeda,5000
+60036,Arousal Andromeda,30000
