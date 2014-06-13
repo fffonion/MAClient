@@ -30,7 +30,7 @@ set_card/sc
     set_card card_deck_key
     set_card auto_set(CONDITION)
 
-保留的名称 no_change 不更改卡组，abort 直接跳出不战斗
+保留的名称 no_change 不更改卡组，abort 直接跳出不战斗，letitgo 等妖精逃跑
 
 card_deck_key为card_deck中已定义的项；当卡组名为auto_set时，此命令等效于auto_set CONDITION notest
 

@@ -1468,6 +1468,16 @@ class MAClient(object):
         if cardd == 'abort':
             self.logger.debug('fairy_battle:abort battle sequence.')
             return False
+        elif cardd == 'letitgo':
+            self.logger.sleep('坐等%d分钟后妖精逃跑' % (int(fairy.time_limit) / 60))
+            time.sleep(int(fairy.time_limit))
+            # 如果是自己的妖精则设为死了
+            if fairy.serial_id == self.player.fairy['id']:
+                self.player.fairy.update({'id':0, 'alive':False})
+            # 如果是公会妖精则设为死了
+            elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
+                self.player.fairy['guild_alive'] = False
+            return False
         _has_set, _last_bc = self.set_card(cardd, cur_fairy = fairy)
         if _last_bc == -1:#自动配卡出错或卡组不存在
             _has_set, _last_bc = self.set_card('min')
