@@ -119,7 +119,7 @@ allowed_names = [
     'datetime', 'time', 'math', 'self', 'fairy', 'area', 'floor', 'card',
     'GUILD_RACE_TYPE', 'area_race_type',
     'cid', 'cost', 'friends', 'deck_rank', 'rank' ,'lv' ,'star',
-    'True', 'False'
+    'True', 'False', 'float'
 ]
 # for ast_name in unallowed_ast_nodes:
 #     assert(is_valid_ast_node(ast_name))

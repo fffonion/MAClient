@@ -15,13 +15,18 @@ import sys
 import os
 import re
 from datetime import datetime, timedelta, tzinfo
-#from recaptcha.client import captcha
+
+from web_libs.recaptcha_client import captcha
 
 import maclient_web_bot
 from maclient_web_bot import WebSocketBot, mac_version, HeheError, maxconnected
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
+import gc
+gc.enable()
+gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
 
 class zh_BJ(tzinfo):
     def utcoffset(self, dt):
@@ -48,6 +53,14 @@ def born_callback():
     global connected
     connected+=1
 
+def pinfo():
+    if sys.platform == 'win32':
+        p = [x for x in os.popen("tasklist /v /fi \"PID eq %d\"" % os.getpid()).read().split(' ') if x]
+        return 'CPU:%s MEM:%s%s MACs:%d/%d' % (p[-3], p[-7], p[-6], connected, len(offline_bots))
+    else:
+        p = [x for x in os.popen("ps aux|grep %d" % os.getpid()).read().split(' ') if x]
+        return 'CPU:%s%% MEM:%s%% %dM/%dM MACs:%d/%d' % (p[2], p[3], int(p[4])/1024, int(p[5])/1024, connected, len(offline_bots))
+
 class cleanup(Thread):
     def __init__(self):
         Thread.__init__(self, name = 'cleanup-thread')
@@ -63,8 +76,8 @@ class cleanup(Thread):
                 if time.time() - bot.last_offline_keepalive_time > bot.keep_time:
                     _print('request shutdown offline bot %s' % bot.loginid)
                     bot.end()
-            gevent.sleep(60)
-            _print('cleanup-thread keep alive')
+            gevent.sleep(30)
+            _print('cleanup-thread keep alive. %s' % pinfo())
 
 
 last_reload_html, last_reload_py = 0, time.time()
@@ -98,13 +111,14 @@ clthread = cleanup()
 
 def websocket_app(environ, start_response):
     #cleanup()
-    global clthread
-    if(not clthread.isAlive()):
-        clthread = cleanup()
-        clthread.start() 
+    #global clthread
+    # if(not clthread.isAlive()):
+    #     clthread = cleanup()
+    #     clthread.start() 
     global connected
     global maxconnected
     request = Request(environ)
+
     if request.path == '/bot' and 'wsgi.websocket' in environ:
         ws = environ["wsgi.websocket"]
         login_id = request.GET['id']
@@ -112,6 +126,7 @@ def websocket_app(environ, start_response):
         #area = request.GET.get('area', None)
         offline = request.GET.get('offline', False)
         keep_time = int(request.GET.get('keep_time', 12 * 3600))
+        #keep_time = 5
         cmd = request.GET.get('cmd', '')
         serv = request.GET.get('serv', 'cn')
         servs = ['cn', 'cn2', 'cn3', 'jp', 'kr', 'tw', 'sg']
@@ -120,10 +135,6 @@ def websocket_app(environ, start_response):
             return
             
         _hash = md5(login_id + password + serv).digest()
-
-        if maxconnected <= connected:
-            ws.send("server overload.\n")
-            return
 
         request_reload_py()
         from maclient_web_bot import WebSocketBot, mac_web_version
@@ -155,9 +166,16 @@ def websocket_app(environ, start_response):
                 except Exception as e:
                     _print('[%s]login_id=%s client keep offline = %swork\n' % (e, login_id, offline))
                     return
+
+        if maxconnected <= connected:
+            ws.send("server overload.\n")
+            return
+            
         #new
         bot = WebSocketBot(ws, serv, md5(login_id + password + serv).hexdigest(), die_callback, born_callback)
         bot.loginid = login_id
+
+        _print('New instance started. %s' % pinfo())
 
         if offline:
             bot.keep_time = keep_time
@@ -202,12 +220,17 @@ def websocket_app(environ, start_response):
             bot.end()#release filelock
         except:
             pass
+        bot.cleanup()
+        del bot
+
+        _print("Force collect: %d" % gc.collect())
         connected -= 1
         if _hash in offline_bots and offline:#防止一个离线一个不离线同时存在的那段时间里，不离线的误把离线的引用带走了；不能用bot.offline因为这个属性可能会被改变，要用offline
             offline_bots.pop(_hash)
             _print("[conn-1=%d]offline bot exit. login_id=%s" % (connected, login_id))
         else:
             _print("[conn-1=%d]exit. login_id=%s" % (connected, login_id))
+
         # try:
         #     bot.end()
         # except HeheError:
@@ -237,7 +260,7 @@ def websocket_app(environ, start_response):
         request_reload_html()
         return _index_cache.replace('[connected]', '%d/%d' % (ol, len(offline_bots))).replace('[maxconnected]', '%s' % maxconnected)
 
-if __name__ == '__main__' or BAE:
+if __name__ == '__main__':
     if not os.path.exists('configs'):
         os.mkdir('configs')
     server = gevent.pywsgi.WSGIServer(("", 10007), websocket_app, handler_class=WebSocketHandler)

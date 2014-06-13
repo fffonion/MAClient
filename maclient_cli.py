@@ -15,6 +15,7 @@ import socket
 import os
 import os.path as opath
 import threading
+import traceback
 import maclient
 import maclient_proxy
 import maclient_logging
@@ -59,9 +60,6 @@ def getTerminalSize():
             x, y = 120, 80
         return int(y), int(x)
 
-def deck_editor(maclient1):
-    return
-
 class srv(threading.Thread):
     def __init__(self, server):
         self.server = server
@@ -103,13 +101,52 @@ def release_socket(socket_pool):
         socket_pool[s].close()
     socket_pool = {}
 
-if __name__ == '__main__':
-    logging = maclient_logging.Logging('logging')
+def bug_reporter(traceback, comment = None, poster = None):
+    import urllib
+    import httplib2
+    cfg = ''
+    if maclient1:
+        for k in maclient1.__dict__:
+            if k.startswith('cfg_'):
+                cfg += '%s = %s\n' % (k[4:], maclient1.__dict__[k])
+        for k in ['fairy_select', 'explore_area', 'explore_floor', 'select_card_to_sell', 'fairy_select_carddeck', 'factor']:
+            cfg += '\n%s = %s' % (k, maclient1._read_config('condition',k))
+    cmt = urllib.quote(('MAClient %s Debug Report\n\n\n'
+                        '############## Comment #############\n'
+                        '%s\n\n'
+                        '########## Traceback Info ##########\n'
+                        '%s\n\n'
+                        '########## Configurations ##########\n'
+                        '%s' % (
+            maclient.__version__,
+            comment,
+            traceback,
+            cfg
+        )).encode('utf8'))
+    poster = urllib.quote(poster if poster else 'MAClient User')
+    try:
+        h = httplib2.Http()
+        h.follow_redirects = False
+        r, c = h.request('http://pastebin.mozilla.org',
+            method = 'POST',
+            body = 'parent_pid=&format=Python&code2=%s&poster=%s&paste=Send&expiry=m' % (cmt, poster),
+            headers = {'Content-Type': 'application/x-www-form-urlencoded',
+                      'User-Agent':'MAClient%s' % maclient.__version__})
+        return r['location'][28:]#return numbers
+    except:
+        return None
+
+logging = maclient_logging.Logging('logging')
+maclient1 = None
+def main():
+    global maclient1
     if not PYTHON3:
         reload(sys)
         sys.setdefaultencoding('utf-8')
     # ht=httplib2.Http(timeout=30)
     print(du8('%s%sv%s%s' % ('=' * int((getTerminalSize()[0] - 5 - 18) / 2), '丧心病狂的MA客户端', maclient.__version__, '=' * int((getTerminalSize()[0] - 5 - 18) / 2))))
+    if ANDROID:
+        os.chdir(os.environ.get('ANDROID_ARGUMENT'))
     if len(sys.argv) > 2:
         maclient1 = maclient.MAClient(configfile = sys.argv[1], savesession = True)
         # auth()
@@ -126,7 +163,6 @@ if __name__ == '__main__':
         else:
             try:
                 import androidhelper # android!
-                os.chdir(os.environ.get('ANDROID_ARGUMENT'))
             except ImportError:
                 maclient1 = maclient.MAClient(savesession = True)
             else:
@@ -232,8 +268,8 @@ if __name__ == '__main__':
                     maclient1.login()
                 mod = (mod + 1) % 2
             elif ch == '3':
-                print(du8('此功能已转移至插件carddeck_edit'))
-                print(du8('请到这里查看详细帮助http://t.cn/8kDOLwV'))
+                print(du8('此功能已转移至插件carddeck_edit，你还可以导入MAW卡组配置'))
+                print(du8('请到这里查看详细帮助http://t.cn/RvAKyOI'))
                 # import maclient_network
                 # cards = maclient_network.decode_param(read_proxy(work = 1))
                 # cdeck = cards.split('&')[0].split('=')[1].strip('%0A').rstrip(',empty')
@@ -292,7 +328,7 @@ if __name__ == '__main__':
                             '卡片数据更新为rev.%s' % crev if crev else '',
                             '道具数据更新为rev.%s' % irev if irev else '',
                             '强敌数据更新为rev.%s' % brev if brev else '',
-                            'Combo数据更新为rev.%s' % cbrev if brev else ''))
+                            'Combo数据更新为rev.%s' % cbrev if cbrev else ''))
                 elif inp == 'b':
                     logging.info('将从多玩数据库下载倍卡信息……')
                     getnew = maclient_update.update_multi(maclient1.loc[:2])
@@ -347,3 +383,23 @@ if __name__ == '__main__':
             else:
                 maclient.logging.error(du8('嗯-v-？'))
             print(' %s %s' % ('-' * (getTerminalSize()[0] - 2), '\n'))
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        pass
+    except Exception:
+        traceback_info = "".join(traceback.format_exception(*sys.exc_info()))
+        logging.warning('出错了妈蛋:\n%s' % traceback_info)
+        if raw_inputd('***是否提交错误信息以供除错？***\n隐私策略 http://t.cn/RvI6hXS\ny/n > ').lower() == 'y':
+            postername = raw_inputd('输入你的昵称(可不填):')
+            comment = raw_inputd('输入你的问题描述(可不填):')
+            num = None
+            while True:
+                num = bug_reporter(traceback_info, comment = comment, poster = postername)
+                if num or raw_inputd('上传出错，是否重试？ y/n >').lower() == 'n':
+                    break
+            if num:
+                logging.info('\n你的错误信息编号为%s，请提供给开发者处理' % num)
+        raw_inputd('***按回车键退出***')

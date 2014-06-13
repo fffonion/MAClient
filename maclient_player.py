@@ -129,6 +129,9 @@ class item(object):
             self.db[int(c[0])] = [c[1], 0]
 
     def update(self, itemdict):
+        if not isinstance(itemdict, list):
+            self.db[int(itemdict.item_id)][1] = int(itemdict.num)
+            return
         for it in itemdict:
             try:
                 self.db[int(it.item_id)][1] = int(it.num)
@@ -157,7 +160,10 @@ class card(object):
             f = open(opath.join(getPATH0, 'db/card.%s.txt' % loc))
         for c in f.readlines():
             c = _split(c)
-            self.db[int(c[0])] = [c[1], int(c[2]), int(c[3])]
+            try:
+                self.db[int(c[0])] = [c[1], int(c[2]), int(c[3])]
+            except ValueError:
+                pass
 
     def load_multi(self, loc):
         _f = opath.join(getPATH0, 'db/card.multi.txt')

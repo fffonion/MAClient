@@ -17,7 +17,7 @@ if PYTHON3:
 from xml2dict import XML2Dict
 __plugin_name__ = 'invitation tool'
 __author = 'fffonion'
-__version__ = 0.31
+__version__ = 0.33
 hooks = {}
 extra_cmd = {"reg":"reg_gen"}
 def reg_gen(plugin_vals):
@@ -30,10 +30,13 @@ def reg_gen(plugin_vals):
             return
         invid = hex(int(plugin_vals['player'].id))[2:]
         cnt = 0
-        print(du8('Invitation ID is %s' % invid))
+        logger.warning('如果连续注册遇到code 500\n请明天再试\n或者使用VPN或代理连接(MAClient会在启动时自动读取IE代理)')
+        print(du8('招待码 = %s' % invid))
         while True:
+            po.cookie = ''
             po.post('check_inspection')
-            po.post('notification/post_devicetoken', postdata = 'S=nosessionid&login_id=&password=&app=and&token=')
+            if loc not in ['jp', 'my']:
+                po.post('notification/post_devicetoken', postdata = 'S=nosessionid&login_id=&password=&app=and&token=')
             # s=raw_input('session: ').lstrip('S=').strip()
             # print po.cookie
             while True:
@@ -48,11 +51,11 @@ def reg_gen(plugin_vals):
                         '35' + (''.join([str(random.randint(0, 9)) for i in range(10)]))
                         )
                 else:
-                    p = 'invitation_id=%s&login_id=%s&param=&password=%s&param=%s' % (invid, uname, pwd, '35' + (''.join([str(random.randint(0, 9)) for i in range(10)])))
+                    p = 'invitation_id=%s&login_id=%s&password=%s&param=%s' % (invid, uname, pwd, '35' + (''.join([str(random.randint(0, 9)) for i in range(10)])))
                 # print maclient_network.encode_param(p)
                 r, d = po.post('regist', postdata = p)
-                if(XML2Dict().fromstring(d).response.header.error.code != '0'):
-                    print(XML2Dict().fromstring(d).response.header.error.message)
+                if(XML2Dict.fromstring(d).response.header.error.code != '0'):
+                    print(XML2Dict.fromstring(d).response.header.error.message)
                     continue
                 break
             GET_header = po.header
@@ -77,8 +80,9 @@ def reg_gen(plugin_vals):
                 print('Error occured.')
             time.sleep(2.232131)
             if raw_input('exit?(y/n)') == 'y':
-                print("Please relogin(rl) to refresh your playerdata!")
+                print(du8("请重新登录 relogin(rl) 来刷新玩家信息!"))
                 break
+
     return do
     # po.post('tutorial/next?step=100&resume_flg=1')
     # clipboard.SetClipboardText(maclient_network.encode_param(p))

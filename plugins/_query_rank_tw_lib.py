@@ -4,7 +4,7 @@
 #      fffonion        <fffonion@gmail.com>
 from datetime import datetime
 import re
-__version__ = 20140501
+__version__ = 20140612
 query_base = 'http://game.ma.mobimon.com.tw:10001/connect/web/revisions_detail?id=%d'
 query_goto = ['http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_fairy?to=%s',
 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist?to=%s',
@@ -13,14 +13,14 @@ query_goto = ['http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_fairy
 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_country?to=%s&country=%d']
 query_country = 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_country?country=%d'
 # self.fairy, self.collect, guild.fairy, guild.collect
-query_rev = [376, 375, None, None]
+query_rev = [410, None, None, None]
 #('闇黑帝國',106), ('海洋聯盟',107), ('巨人國度',108)
 query_country_id = []
 # 有效期
-query_lifetime = datetime(2014, 5, 15, 10, 0, 0, 0)
+query_lifetime = datetime(2014, 6, 26, 10, 0, 0, 0)
 now = datetime.now()
 #妖精计数
-fairy_count = 3
+fairy_count = 10
 query_title = lambda x: ' '.join(re.findall('class="blanklist comment_news head00">([^<]+)<', x)[0].split())#strip spaces
 query_regex = [
 [
@@ -29,8 +29,8 @@ query_regex = [
 ('更新時間' , lambda x : re.findall('\d{4}-\d{2}-\d{2} \d{2}:\d{2}', x)[0]),
 ('妖精等級加權總和' , lambda x : re.findall('lititle2.*?/span><br[\s/>]*\s+(.*?)\s+<br', x, re.DOTALL)[2]),
 ('=' , lambda x : ' + '.join(['*'.join(re.findall('>(.*)<',i)[1:3]) for i in re.findall('tr>(.*?)</tr', x, re.DOTALL)[1:1+fairy_count]])),
-('可见区域排名Up:' , lambda x : ' / '.join(re.findall('td>[\s<p>]*(.*?)[\s</p>]*</td',re.findall('tr>(.*?)</tr', x, re.DOTALL)[7]))),
-('               ' , lambda x : ' / '.join(re.findall('td>[\s<p>]*(.*?)[\s</p>]*</td',re.findall('tr>(.*?)</tr', x, re.DOTALL)[8]))),
+('可见区域排名Up:' , lambda x : ' / '.join(re.findall('td>[\s<p>]*(.*?)[\s</p>]*</td',re.findall('tr>(.*?)</tr', x, re.DOTALL)[fairy_count+2]))),
+('               ' , lambda x : ' / '.join(re.findall('td>[\s<p>]*(.*?)[\s</p>]*</td',re.findall('tr>(.*?)</tr', x, re.DOTALL)[fairy_count+3]))),
 ('               ', lambda x : '......'),
 ('               ' , lambda x : ' / '.join(re.findall('td>[\s<p>]*(.*?)[\s</p>]*</td',re.findall('tr>(.*?)</tr', x, re.DOTALL)[-2]))),
 ('          Down:' , lambda x : ' / '.join(re.findall('td>[\s<p>]*(.*?)[\s</p>]*</td',re.findall('tr>(.*?)</tr', x, re.DOTALL)[-1])))
@@ -47,11 +47,11 @@ query_regex = [
 [],#3
 []#4
 ]
-#coll = ('收集品數量' , lambda x : re.findall('\d+',re.findall('lititle2.*?/span><br[\s/>]*\s+(.*?)\s+<br', x, re.DOTALL)[2])[0])
-coll = ('目前排名' , lambda x : re.findall('\d+',re.findall('lititle2.*?/span><br[\s/>]*\s+(.*?)\s+<br', x, re.DOTALL)[2])[0])#temp
-#query_regex[1] = query_regex[0][:3] + [coll] + query_regex[0][5:]
-query_regex[1] = query_regex[0][:3] + [coll] + query_regex[0][5:]#temp
-query_regex[1].pop(1)#temp
+coll = ('收集品數量' , lambda x : re.findall('\d+',re.findall('lititle2.*?/span><br[\s/>]*\s+(.*?)\s+<br', x, re.DOTALL)[2])[0])
+#coll = ('目前排名' , lambda x : re.findall('\d+',re.findall('lititle2.*?/span><br[\s/>]*\s+(.*?)\s+<br', x, re.DOTALL)[2])[0])#temp
+query_regex[1] = query_regex[0][:3] + [coll] + query_regex[0][5:]
+#query_regex[1] = query_regex[0][:3] + [coll] + query_regex[0][5:]#temp
+#query_regex[1].pop(1)#temp
 for p in query_regex[0][5:]:
     query_regex[2].append(p)
 #fairy

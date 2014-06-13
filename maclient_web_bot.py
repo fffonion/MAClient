@@ -13,12 +13,18 @@ from threading import Thread
 import maclient
 reload(maclient)#in case module has changed
 from maclient import MAClient
-import safeeval
+from web_libs import safeeval
 reload(safeeval)
 
+from web_libs import remote_debugger
+reload(remote_debugger)
+
 mac_version = maclient.__version__
-mac_web_version = 20140508.16384
+mac_web_version = 20140613.16384
 maxconnected = 300
+
+if os.name != 'nt':
+    remote_debugger.listen()
 
 class HeheError(Exception):
     def __init__(self, msg):
@@ -65,6 +71,8 @@ class WebSocketBot(MAClient):
         self.born()
         self.logger.logfile = None
         self.logger.logpipe(self.logpipe)
+
+
 
     def logpipe(self, _str):
         if self.shellbyweb:
@@ -116,3 +124,14 @@ class WebSocketBot(MAClient):
         if hasattr(self, 'player') and self.player.filedesc > 0:
             os.close(self.player.filedesc)
         #self.__class__.connected -= 1
+
+    def cleanup(self):
+        def __unrefer_all(instance):
+            for n in instance.__dict__:
+                setattr(instance, n, None)
+        for c in self.__dict__:
+            c = self.__dict__[c]
+            if c.__class__.__name__ in ['player', 'card', 'item', 'boss', 'Logging']:#plugins is global
+                __unrefer_all(c)
+        __unrefer_all(self)
+                

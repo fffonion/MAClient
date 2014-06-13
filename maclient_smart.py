@@ -6,7 +6,13 @@
 import time
 import math
 import itertools
-__version__ = '1.3-build20140509'
+__version__ = '1.3-build20140519'
+
+try:
+    from multiprocessing import Pool
+    __version__ += '-MutliProcess'
+except:
+    Pool = None
 # server specified configutaions
 max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = max_card_count_sg = 250
 max_fp_cn = max_fp_kr = max_fp_sg = 50000
@@ -148,6 +154,11 @@ def _carddeck_info(cards):
         _atk[i] = sum(map(lambda d:d[ATK], cards[i * 3:min(i * 3 + 3, len(cards))]))
     return _atk, _hp, _rnd
 
+def _reduce_list(lst, sort_lambda):
+    # 只留下一个
+    return [max(lst, key = sort_lambda)]
+
+
 # card_deck generator
 DEFEAT, MAX_DMG, MAX_CP = 0, 1, 2
 def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxline = 2, seleval = 'True', fairy_info = None, delta = 1, fast_mode = False):
@@ -162,6 +173,10 @@ def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxli
     range 允许误差（预测伤害相对于妖精血量）
     maxline 最大排数
     '''
+    reslist = []
+    fnd_count = 0
+    #global reslist
+    #global fnd_count
     # print(aim,bclimit,includes,maxline,seleval,fairy_info,delta)
     _multi = player_cards.multi
     # 只需要hp,atk,lv,cost,master_card_id,serial_id,object_dict->list节省20%时间
@@ -177,11 +192,12 @@ def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxli
     _sumup = lambda a, b:a + b
     atkpw = lambda d:d[HP] + d[ATK]
     cp = lambda d:1.0 * (d[HP] + d[ATK]) / player_cards.db[d[MID]][2]
-    reslist = []
     if aim == DEFEAT:
         if not fairy_info:
             return ['没有输入妖精信息']
         dcalc = _defeat(fairy_info, delta, show = False)
+        # COST最小，其次看CP
+        return_lambda = lambda x:(-x[3], x[0])
         for deckcnt in [1, 2] + [i * 3 for i in range(1, maxline + 1)]:
             last_failed = 0
             for deck in _iter_gen(deckcnt):
@@ -201,11 +217,12 @@ def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxli
                 else:
                     if last_failed < (sum(_atk) * _hp):
                         last_failed = (sum(_atk) * _hp)
+                if len(reslist) > 100000:
+                    fnd_count += len(reslist) - 1
+                    reslist = _reduce_list(reslist, return_lambda)
             # 若当前数量的卡组能满足要求，则不找更多的卡了
             if reslist:
                 break
-        # COST最小，其次看CP
-        return_lambda = lambda x:(-x[3], x[0])
     elif aim == MAX_DMG or aim == MAX_CP:
         if aim == MAX_DMG:
             deckcnts = [i * 3 for i in range(maxline, 0, -1)] + [1, 2]
@@ -219,13 +236,25 @@ def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxli
         if fast_mode:
             _cards = _cards[:min(3 * maxline + 6, len(_cards))]
         for deckcnt in deckcnts:
-            for deck in _iter_gen(deckcnt):
+            def __doit(deck):
                 mids = map(lambda d: d[MID], deck)
                 _cost = sum(map(lambda e:player_cards.db[e][2], mids))
                 if bclimit >= _cost:
                     _atk, _hp, _rnd = _carddeck_info(deck)
                     sids = map(lambda d: d[SID], deck)
-                    reslist.append([_atk, _hp, _cost, sids, mids])
+                    return [_atk, _hp, _cost, sids, mids]
+
+            if fast_mode or True:
+                for deck in _iter_gen(deckcnt):
+                    r = __doit(deck)
+                    if r:
+                        reslist.append(r)
+                        fnd_count += 1
+                    if len(reslist) > 100000:
+                        fnd_count += len(reslist) - 1
+                        reslist = _reduce_list(reslist, return_lambda)
+            else:
+                pass#pending
             if reslist:
                 break
     # for r in reslist:
@@ -233,8 +262,10 @@ def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxli
     # 返回cost,sid，mid
     # 错误时返回[errmsg]
     if reslist:
-        print ('Found %d suitable carddeck(s).' % len(reslist))
+        print ('Found %d suitable carddeck(s).' % (fnd_count + len(reslist)))
         r = max(reslist, key = return_lambda)
+        fnd_count = 0
+        reslist = []
         return r[-5:]
     else:
         return ['未能选出符合条件的卡组']
