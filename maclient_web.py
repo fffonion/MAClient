@@ -15,7 +15,7 @@ import sys
 import os
 import re
 from datetime import datetime, timedelta, tzinfo
-from recaptcha.client import captcha
+#from recaptcha.client import captcha
 
 import maclient_web_bot
 from maclient_web_bot import WebSocketBot, mac_version, HeheError, maxconnected
@@ -94,7 +94,7 @@ def request_reload_py():
         last_reload_py = time.time()
 
 clthread = cleanup()
-clthread.start()
+#clthread.start()
 
 def websocket_app(environ, start_response):
     #cleanup()
@@ -237,9 +237,8 @@ def websocket_app(environ, start_response):
         request_reload_html()
         return _index_cache.replace('[connected]', '%d/%d' % (ol, len(offline_bots))).replace('[maxconnected]', '%s' % maxconnected)
 
-if __name__ == '__main__':
-    if not os.path.exists('configs'):
-        os.mkdir('configs')
-    application = websocket_app
-    server = gevent.pywsgi.WSGIServer(("", 10007), websocket_app, handler_class=WebSocketHandler)
-    server.serve_forever()
+application = websocket_app
+if not os.path.exists('configs'):
+	os.mkdir('configs')
+server = gevent.pywsgi.WSGIServer(("", 10007), websocket_app, handler_class=WebSocketHandler)
+server.serve_forever()
