@@ -273,7 +273,7 @@ namespace MAClientGUI
         private void frmConfig_Load(object sender, EventArgs e)
         {
             //setToolTipText();
-            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.70+)");
+            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.71+)");
             tabControl1.Enabled = false;
             DirectoryInfo folder = new DirectoryInfo(System.Environment.CurrentDirectory);
             foreach (FileInfo file in folder.GetFiles("*.ini"))
@@ -923,7 +923,9 @@ namespace MAClientGUI
                     textBox20.Focus();
                     return;
                 }
-                if (cboDeckList.Items.IndexOf(cboDeckList.Text) == -1 && !cboDeckList.Text.StartsWith("auto_set") &&
+                if (cboDeckList.Items.IndexOf(cboDeckList.Text) == -1 && 
+                    !cboDeckList.Text.StartsWith("auto_set") &&
+                    cboReservedName.SelectedIndex == 0 &&
                 (MessageBox.Show("卡组名不存在，是否继续添加？\n你也可以稍后添加卡组" + cboDeckList.Text, "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.No))
                     return;
                 if (txtCondCarddeck.Text == "")
@@ -1967,9 +1969,10 @@ namespace MAClientGUI
 
         private void cboReservedName_SelectedIndexChanged(object sender, EventArgs e)
         {
+            string[] _reserved_name = {"no_change", "abort", "letitgo"};
             if (cboReservedName.SelectedIndex != 0)
             {
-                cboDeckList.Text = cboReservedName.SelectedIndex == 1 ? "no_change" : "abort";
+                cboDeckList.Text = _reserved_name[cboReservedName.SelectedIndex - 1];
             }
 
         }

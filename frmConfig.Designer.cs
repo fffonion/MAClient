@@ -2584,7 +2584,8 @@ namespace MAClientGUI
             this.cboReservedName.Items.AddRange(new object[] {
             "特殊卡组",
             "⊙不改变",
-            "⊙不打怪"});
+            "⊙不打怪",
+            "⊙放跑"});
             this.cboReservedName.Location = new System.Drawing.Point(667, 331);
             this.cboReservedName.Name = "cboReservedName";
             this.cboReservedName.Size = new System.Drawing.Size(96, 28);
