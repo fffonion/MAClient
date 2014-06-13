@@ -237,8 +237,8 @@ def websocket_app(environ, start_response):
         request_reload_html()
         return _index_cache.replace('[connected]', '%d/%d' % (ol, len(offline_bots))).replace('[maxconnected]', '%s' % maxconnected)
 
-application = websocket_app
-if not os.path.exists('configs'):
-	os.mkdir('configs')
-server = gevent.pywsgi.WSGIServer(("", 10007), websocket_app, handler_class=WebSocketHandler)
-server.serve_forever()
+if __name__ == '__main__' or BAE:
+    if not os.path.exists('configs'):
+        os.mkdir('configs')
+    server = gevent.pywsgi.WSGIServer(("", 10007), websocket_app, handler_class=WebSocketHandler)
+    server.serve_forever()
