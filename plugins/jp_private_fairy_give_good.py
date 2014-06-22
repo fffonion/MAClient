@@ -4,7 +4,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = '日服自动点赞'
 __author = 'fffonion'
-__version__ = 0.3
+__version__ = 0.31
 hooks = {'EXIT_fairy_select':1}
 extra_cmd = {'good':'set_give_good'}
 # end meta
@@ -44,7 +44,7 @@ class plugin(plugin_prototype):
         fairies = kwargs['pop_extras']('fairy_event')
         if not fairies or len(fairies) == 0:
             return
-        if mac.cf._read_config('plugin', 'jp_private_fairy_good_disabled') == '1':
+        if mac._read_config('plugin', 'jp_private_fairy_good_disabled') == '1':
             mac.logger.warning('点赞已被禁用啦...')
             return
         mac.logger.info('找到%d个可赞的妹纸啦...' % len(fairies))

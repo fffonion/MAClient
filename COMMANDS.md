@@ -30,7 +30,7 @@ set_card/sc
     set_card card_deck_key
     set_card auto_set(CONDITION)
 
-保留的名称 no_change 不更改卡组，abort 直接跳出不战斗
+保留的名称 no_change 不更改卡组，abort 直接跳出不战斗，letitgo 等妖精逃跑
 
 card_deck_key为card_deck中已定义的项；当卡组名为auto_set时，此命令等效于auto_set CONDITION notest
 
@@ -48,11 +48,14 @@ auto_set/as
 	#delta 妖精血量误差(默认为1，即无误差)
 	#bc 可选max 玩家最大BC，cur 当前剩余bc(默认)，或输入一个数值
 	#notest 选出卡组后保存(无此参数时默认不保存)
+    #>carddeck 配卡并保存到配置卡组的carddeck中
 	#incl 包含某些卡片(默认为无) (现在还不能用)
 	auto_set #选出一排当前剩余BC下最大攻击的卡组
 	auto_set line:2 bc:max notest #选出两排不限BC的最大攻击卡组，并保存
 	auto_set aim:defeat line:1 bc:cur fairy:30,263215 notest #选出一排能打死Lv30剩余hp263215的普妖的卡组，并保存
 	auto_set aim:max_dmg line:1 bc:cur incl:124 #选出当前BC下一排最大攻击输出卡组，包括小狼女，不保存
+    auto_set aim:max_cp line:1 bc:40 incl:124 > forty
+    #选出cost40下一排最大CP卡组，包括小狼女，不保存，写入配置文件的forty卡组
 
 ###因子战
 
@@ -61,6 +64,7 @@ factor_battle/fcb
     factor_battle #自动选择碎片
     factor_battle lake:7 #选择湖7
     factor_battle lake:7 50 #选择湖7 且在BC<50时退出
+    #可使用mf命令查询湖id与卡片的对应表（需启用map_factor_lakes插件）
 
 ###秘境探索
 

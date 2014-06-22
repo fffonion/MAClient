@@ -30,14 +30,17 @@ import maclient_network
 # start meta
 __plugin_name__ = 'web broswer helper'
 __author = 'fffonion'
-__version__ = 0.45
+__version__ = 0.46
 hooks = {}
 extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy'}
 # end meta
 # generate weburl
 weburl = dict(maclient_network.serv)
 for k in weburl:
-    weburl[k] = weburl[k].replace('app/', 'web/?%s')
+    if isinstance(weburl[k], list):#new in 1.71
+        weburl[k] = 'http://%s:%d/connect/web/?%%s' % (weburl[k][0], weburl[k][2])
+    else:#legacy
+        weburl[k] = weburl[k].replace('app/', 'web/?%s')
 
 servers = ['static.sdg-china.com' ,'ma.webpatch.sdg-china.com', 'game.ma.mobimon.com.tw', 'web.million-arthurs.com', 'ma.actoz.com']
 # other stuffs
@@ -104,6 +107,7 @@ def enable_proxy():
         winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyEnable', 0, winreg.REG_DWORD, 1)
         winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyOverride', 0, winreg.REG_SZ, u'127.0.0.1')  # Bypass the proxy for localhost
         winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyServer', 0, winreg.REG_SZ, u'127.0.0.1:23301')
+        os.system(du8('TITLE 请按Ctrl+C 退出，不要直接X掉啊'))
 
 def disable_proxy():
     if winreg:
@@ -111,6 +115,7 @@ def disable_proxy():
             r'Software\Microsoft\Windows\CurrentVersion\Internet Settings',
             0, winreg.KEY_ALL_ACCESS)
         winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyEnable', 0, winreg.REG_DWORD, 0)
+        os.system(du8('TITLE 代理设置已清除ww'))
         # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyOverride')
         # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyServer')
 # opener

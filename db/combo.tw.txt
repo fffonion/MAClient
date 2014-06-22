@@ -403,7 +403,7 @@
 493,The quarrel of god slayers.,3,最大HP提升大,[1259,1245,1262]
 494,The sword of magic.,2,攻擊力提升中,[1242,1244,1240]
 495,The exist of crack.,5,攻擊力與最大HP提升小,[1237,1238]
-496,It cant be eat.,3,最大HP提升中,[1236,1263,1260]
+496,It can't be eat.,3,最大HP提升中,[1236,1263,1260]
 497,Sword of Sword,3,最大HP提升大,[1241,1236,1264,1265]
 498,Sports Contest,5,攻擊力與最大HP提升大,[1227,1224,1255]
 499,Happy Entertainment,3,最大HP提升大,[1250,1254,1249]
@@ -423,3 +423,31 @@
 513,Sence of fighting,5,攻擊力與最大HP提升中,[1307,1303,1304,1306]
 514,Dangerous fight,3,最大HP提升小,[1307,1310]
 515,New meet,3,最大HP提升小,[1297,947]
+516,War time,3,最大HP提升中,[1316,1311,1298]
+517,Mirim time,3,最大HP提升小,[1318,1319]
+518,Dangerous atmosphere,2,攻擊力提升大,[1317,1320,1318]
+519,Summertime,2,攻擊力提升小,[1316,1311,1321]
+520,Daren COMBO,3,最大HP提升小,4(80)
+521,Daren COMBO・Rise,3,最大HP提升小,6(80)
+522,Daren COMBO・Crown,3,最大HP提升中,8(80)
+523,{},3,最大HP提升小,4(79)
+524,{},3,最大HP提升小,6(79)
+525,{},3,最大HP提升中,8(79)
+526,Brilliant diary,3,最大HP提升中,[1322,1323]
+527,Reward of victory,2,攻擊力提升中,[1327,1328,1326]
+528,Debut!!,2,攻擊力提升中,[1330,1329,1333]
+529,Unknown diary,2,攻擊力提升中,[1332,1333,1334]
+530,The strongest mage?,3,最大HP提升小,[1334,1330]
+531,Excess energy,2,攻擊力提升中,[1324,1326]
+532,For the power of self-confidence,2,攻擊力提升大,[1347,1343]
+533,Novice to join,2,攻擊力提升中,[1340,1349,1345]
+534,Wolf?,2,攻擊力提升中,[1323,1257]
+535,Was rejected by,2,攻擊力提升中,[1323,1331]
+536,Never throw in the towel,2,攻擊力提升中,[1323,1347]
+537,Forgotten dreams?,5,攻擊力與最大HP提升大,[1337,1344,1348,1335,1336]
+538,The final breakthrough,3,最大HP提升小,[1330,1340]
+539,About this,2,攻擊力提升中,[1329,1326,1334]
+540,Aggressive Defense,3,最大HP提升中,[1358]
+541,Together shining bright,2,攻擊力提升中,[1358,1355]
+542,In your back ...,3,最大HP提升中,[1350,1356,1354]
+543,Must be able to light-emitting,3,最大HP提升小,[1355,1329]

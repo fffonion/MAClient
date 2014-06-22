@@ -28,7 +28,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.70
+__version__ = 1.71
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
@@ -249,7 +249,7 @@ class MAClient(object):
                 except:
                     self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\nhttp://yooooo.us/2013/maclient')
                     with open('debug_%s.xml' % urikey.replace('/', '#').replace('?', '~'),'w') as f:
-                        f.write('_dec')
+                        f.write(_dec)
                     self._exit(3)
             try:
                 err = dec.header.error
@@ -640,9 +640,15 @@ class MAClient(object):
     @plugin.func_hook
     def invoke_autoset(self, autoset_str, cur_fairy = None):
         aim, fairy, maxline, test_mode, delta, includes, bclimit, fast_mode, sel = 'MAX_DMG', None, 1, True, 1, [], BC_LIMIT_CURRENT, True, 'card.lv>=70 or card.plus_limit_count == 0'
+        save2deck, _just_set_save2deck = None, False
         if cur_fairy:
             fairy = cur_fairy
-        for arg in autoset_str.split(' '):
+        args = autoset_str.split(' ')
+        for _idx in range(len(args)):
+            if _just_set_save2deck:
+                _just_set_save2deck = False
+                continue
+            arg = args[_idx]
             if arg.startswith('aim:'):
                 aim = arg[4:]
             elif arg.startswith('fairy:'):
@@ -673,13 +679,21 @@ class MAClient(object):
                 fast_mode = False
             elif arg.startswith('incl:'):
                 includes = map(lambda x:int(x), arg[5:].split(','))
+            elif arg.startswith('>'):
+                if len(arg) > 1:#'xxx >deck1'
+                    save2deck = arg[1:]
+                elif _idx + 1 < len(args):
+                    save2deck = args[_idx + 1]
+                    _just_set_save2deck = True
+                else:
+                    self.logger.warning('无法从"%s"中提取卡组名' % arg)
             elif arg != '':
                 self.logger.warning('未识别的参数 %s' % arg)
         try:
             aim = getattr(maclient_smart, aim.upper())
         except AttributeError:
             self.logger.warning('未识别的目标 %s' % aim)
-        return self.set_card('auto_set', aim = aim, includes = includes, maxline = maxline, seleval = sel, fairy_info = fairy, delta = delta, test_mode = test_mode, bclimit = bclimit, fast_mode = fast_mode)
+        return self.set_card('auto_set', aim = aim, includes = includes, maxline = maxline, seleval = sel, fairy_info = fairy, delta = delta, test_mode = test_mode, bclimit = bclimit, fast_mode = fast_mode, save2deck = save2deck)
 
     @plugin.func_hook
     def set_card(self, deckkey, **kwargs):
@@ -699,6 +713,7 @@ class MAClient(object):
             else:
                 test_mode = kwargs.pop('test_mode')
                 bclimit = kwargs.pop('bclimit')
+                save2deck = kwargs.pop('save2deck')
                 res = maclient_smart.carddeck_gen(
                     self.player.card,
                     bclimit = (bclimit == BC_LIMIT_MAX and self.player.bc['max'] or (
@@ -728,6 +743,9 @@ class MAClient(object):
                 else:
                     self.logger.error(res[0])
                     return False, -1
+                if save2deck:
+                    self.logger.info('保存卡组到了 %s' % save2deck)
+                    self._write_config('carddeck', save2deck, ','.join(param))
                 if test_mode:
                     return False, 0
         else:
@@ -1468,6 +1486,16 @@ class MAClient(object):
         if cardd == 'abort':
             self.logger.debug('fairy_battle:abort battle sequence.')
             return False
+        elif cardd == 'letitgo':
+            self.logger.sleep('坐等%d分钟后妖精逃跑' % (int(fairy.time_limit) / 60))
+            time.sleep(int(fairy.time_limit))
+            # 如果是自己的妖精则设为死了
+            if fairy.serial_id == self.player.fairy['id']:
+                self.player.fairy.update({'id':0, 'alive':False})
+            # 如果是公会妖精则设为死了
+            elif 'race_type' in fairy and fairy.race_type in GUILD_RACE_TYPE:
+                self.player.fairy['guild_alive'] = False
+            return False
         _has_set, _last_bc = self.set_card(cardd, cur_fairy = fairy)
         if _last_bc == -1:#自动配卡出错或卡组不存在
             _has_set, _last_bc = self.set_card('min')
@@ -1780,7 +1808,9 @@ class MAClient(object):
                             confirm = True
                 else:
                     u = raw_inputd('没有要删除的好友\n输入序号可以手动删除好友，按回车返回> ')
-                    if not u.isdigit():
+                    if not u:
+                        pass
+                    elif not u.isdigit():
                         self.logger.warning('输入"%s"非数字' % u)
                     else:
                         deluser = users[int(u) - 1]

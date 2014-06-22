@@ -313,11 +313,11 @@ eg.：
 
 属性：
 
-`star`,`lv`,序列号 `sid`,卡片编号 `cid`，贩卖价格`price`, 是否闪卡`holo`
+`star`,`lv`,序列号 `sid`,卡片编号 `mid`，贩卖价格`price`, 是否闪卡`holo`
 
 eg：
 
-    card.star in [1,2] and card.lv<5 and card.cid != 124 and not card.holo #1星2星 lv5一下的卡且不是小狼女且不是闪卡:
+    card.star in [1,2] and card.lv<5 and card.mid != 124 and not card.holo #1星2星 lv5一下的卡且不是小狼女且不是闪卡:
 
 注：
 已自动排除所有小切切；如果不慎选入R及以上的卡，会出现提示确认

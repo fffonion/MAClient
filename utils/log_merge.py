@@ -9,6 +9,7 @@
 import os
 import re
 import sys
+import time
 
 try:
     files = sys.argv[1:]
@@ -52,7 +53,7 @@ def get_time(strt):
     else:  # 没时间数据,返回一个最小的时间
         return [0, '01', '00', '00', '01']
 
-
+t = time.time()
 merge_lines = []
 index = [0] * len(files)
 while True:
@@ -75,3 +76,4 @@ while True:
     if early not in merge_lines or not early.startswith('['):  # 重复检测
         merge_lines.append(early)
 open('events_merge.log', 'w').write(''.join(merge_lines))
+print('Finished in %.2f secs' % (time.time() - t))
