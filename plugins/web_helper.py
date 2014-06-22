@@ -37,7 +37,10 @@ extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy'}
 # generate weburl
 weburl = dict(maclient_network.serv)
 for k in weburl:
-    weburl[k] = weburl[k].replace('app/', 'web/?%s')
+    if isinstance(weburl[k], list):#new in 1.71
+        weburl[k] = 'http://%s:%d/connect/web/?%%s' % (weburl[k][0], weburl[k][2])
+    else:#legacy
+        weburl[k] = weburl[k].replace('app/', 'web/?%s')
 
 servers = ['static.sdg-china.com' ,'ma.webpatch.sdg-china.com', 'game.ma.mobimon.com.tw', 'web.million-arthurs.com', 'ma.actoz.com']
 # other stuffs
