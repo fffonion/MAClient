@@ -36,6 +36,7 @@ EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
 HALF_TEA, FULL_TEA = 0, 1
 GUILD_RACE_TYPE = ['11','12']
+CMD_NOLOGIN = ['ss', 'set_server', 'l', 'login', 'rl', 'relogin']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
 eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'fairy.not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type in GUILD_RACE_TYPE")]
@@ -424,9 +425,16 @@ class MAClient(object):
                 tasks = eval(taskeval)
                 self.logger.debug('tasker:eval result:%s' % (tasks))
             if isinstance(tasks, bool):
-                self.logger.error('任务表达式格式错误，可使用GUI作参考:\n表达式 %s\n输出 %s' % (taskeval, tasks))
+                self.logger.error('任务表达式为空或格式错误，可使用GUI作参考:\n表达式 %s\n输出 %s' % (taskeval, tasks))
                 self._exit(1)
             for task in tasks.split('|'):
+                if task.startswith('t:'):#is task
+                    return self.tasker(taskname = task[2:])
+                elif task.split()[0] in CMD_NOLOGIN or \
+                    (self.plugin.enable and task.split()[0] in self.plugin.extra_cmd_no_login):#无需登录可执行的命令
+                    pass
+                elif not self.player_initiated:
+                    self.login()
                 task = (task + ' ').split(' ')
                 self.logger.debug('tasker:%s' % task[0])
                 task[0] = task[0].lower()
@@ -467,10 +475,10 @@ class MAClient(object):
                 elif task[0] == 'sell_card' or task[0] == 'slc':
                     self.select_card_sell(' '.join(task[1:]))
                 elif task[0] == 'set_server' or task[0] == 'ss':
-                    self._write_config('system', 'server', task[1])
                     if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp','sg','my']:
                         self.logger.error('服务器"%s"无效'%(task[1]))
                     else:
+                        self._write_config('system', 'server', task[1])
                         self.loc = task[1]
                         self.poster.load_svr(self.loc)
                         self.load_config()

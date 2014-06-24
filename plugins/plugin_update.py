@@ -21,6 +21,7 @@ __author = 'fffonion'
 __version__ = 0.27
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update', 'us':'update_self'}
+require_feature_nologin = True
 #是否下载dev版
 GET_DEV_UPDATE = True
 

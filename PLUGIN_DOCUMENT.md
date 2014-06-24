@@ -38,6 +38,8 @@ from _prototype import plugin_prototype
 __plugin_name__='sample plugin'
 __author='fffonion'
 __version__=0.1
+require_version = 1.71 #需要这个版本以上的MAClient
+require_feature_nologin = True #无需登录即可运行的命令(extra_cmd用)
 ```
 
 定义事件钩子，即ENTER/EXIT _ EVENT_NAME：
