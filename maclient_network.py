@@ -319,6 +319,8 @@ class poster():
                         self.logger.info('post:GF*W? Retry using saved IP')
                         self._use_no_dns_method = True
                         trytime = 0
+                except httplib.IncompleteRead as e:
+                    self.logger.warning('post:网络可能不稳定(%s)' % e)
                 # except TypeError:  # 使用了官方版的httplib2
                 #     self.logger.warning(du8('你正在使用官方版的httplib2，因此省流模式将无法正常工作'))
                 #     self.issavetraffic = False
@@ -344,7 +346,11 @@ class poster():
             if savetraffic and self.issavetraffic:
                 return resp, content
             # 否则解码
-            dec = self.rollback_utf8(self.crypt.decode_data(content, second_cipher = self.has_2ndkey and not no2ndkey))
+            try:
+                dec = self.rollback_utf8(self.crypt.decode_data(content, second_cipher = self.has_2ndkey and not no2ndkey))
+            except ValueError as e:
+                self.logger.warning('网络可能不稳定，接收数据异常(%s)' % e)
+                return {'status':'600'}, ''
             if os.path.exists('debug'):
                 open('debug/%s.xml' % uri.replace('/', '#').replace('?', '~'), 'w').write(dec)
                 # open('debug/~%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(content)
