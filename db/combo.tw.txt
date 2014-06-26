@@ -223,11 +223,11 @@
 313,H.E.R.O.S.,2,攻擊力提升小,[901,902,903]
 314,Pretty Show,2,攻擊力提升大,[898,900,506]
 315,Need Some Milk,3,最大HP提升中,[904,302,183]
-316,Spacequake Alert,2,攻擊力提升大,[912,913,915]
+316,Spacequake Alert,2,攻擊力提升特大,[912,913,915]
 317,Normal Life,3,最大HP提升大,[914,917,918]
 318,Kindergarten of Spirits,3,最大HP提升中,[921,923,924]
 319,Tiny Unit,2,攻擊力提升特大,[921,922,923,924,925]
-320,Twilight Struggle,2,攻擊力提升中,[913,920,917]
+320,Twilight Struggle,2,攻擊力提升大,[913,920,917]
 321,The End of Summer,2,攻擊力提升中,[929,930,931]
 322,Princess Party,3,最大HP提升中,[446,447,469]
 323,The Dawn of Island,2,攻擊力提升中,[932,440,209]
@@ -430,9 +430,9 @@
 520,Daren COMBO,3,最大HP提升小,4(80)
 521,Daren COMBO・Rise,3,最大HP提升小,6(80)
 522,Daren COMBO・Crown,3,最大HP提升中,8(80)
-523,{},3,最大HP提升小,4(79)
-524,{},3,最大HP提升小,6(79)
-525,{},3,最大HP提升中,8(79)
+523,Kira COMBO,3,最大HP提升小,4(79)
+524,Kira COMBO・Rise,3,最大HP提升小,6(79)
+525,Kira COMBO・Crown,3,最大HP提升中,8(79)
 526,Brilliant diary,3,最大HP提升中,[1322,1323]
 527,Reward of victory,2,攻擊力提升中,[1327,1328,1326]
 528,Debut!!,2,攻擊力提升中,[1330,1329,1333]
@@ -451,3 +451,7 @@
 541,Together shining bright,2,攻擊力提升中,[1358,1355]
 542,In your back ...,3,最大HP提升中,[1350,1356,1354]
 543,Must be able to light-emitting,3,最大HP提升小,[1355,1329]
+544,Yamai Sisters,5,攻擊力與最大HP提升大,[1359,1297]
+545,Mission of Date,2,攻擊力提升中,[1366,1368,1369]
+546,Two Strike,2,攻擊力提升中,[920,1370]
+547,Mirror of Spirit,3,最大HP提升中,[912,1371]
