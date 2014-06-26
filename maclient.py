@@ -661,7 +661,7 @@ class MAClient(object):
                 aim = arg[4:]
             elif arg.startswith('fairy:'):
                 fairy = object_dict()
-                fairy.lv, fairy.hp, nothing = map(lambda x:int(x), (arg[6:] + ',-325').split(','))
+                fairy.lv, fairy.hp, nothing = map(int, (arg[6:] + ',-325').split(','))
                 if nothing != -325:
                     fairy.IS_WAKE = False
                 else:
@@ -686,7 +686,7 @@ class MAClient(object):
             elif arg.startswith('nofast'):
                 fast_mode = False
             elif arg.startswith('incl:'):
-                includes = map(lambda x:int(x), arg[5:].split(','))
+                includes = map(int, arg[5:].split(','))
             elif arg.startswith('>'):
                 if len(arg) > 1:#'xxx >deck1'
                     save2deck = arg[1:]
@@ -729,7 +729,7 @@ class MAClient(object):
                     **kwargs)
                 if len(res) == 5:
                     atk, hp, last_set_bc, sid, mid = res
-                    param = map(lambda x:str(x), sid)
+                    param = map(str, sid)
                     # 别看比较好
                     print(du8('设置卡组为: ATK:%d HP:%d COST:%d\n%s' % (
                         sum(atk),
@@ -1115,7 +1115,7 @@ class MAClient(object):
     def _boss_battle(self, area_id = None, floor_id = None):
         if not (area_id and floor_id):
             return False
-        self.set_card('auto_set', aim = maclient_smart.MAX_DMG, maxline = 4, seleval = 'card.lv>45', test_mode = False, bclimit = BC_LIMIT_MAX, fast_mode = True)
+        self.set_card('auto_set', aim = maclient_smart.MAX_DMG, maxline = 4, seleval = 'card.lv>45', test_mode = False, bclimit = BC_LIMIT_MAX, fast_mode = True, save2deck = None)
         param = "area_id=%s&floor_id=%s" % (area_id, floor_id)
         resp, ct = self._dopost('exploration/battle', postdata = param)
         if resp['error']:
@@ -1247,7 +1247,7 @@ class MAClient(object):
             return False
         if self._dopost('card/exchange', postdata = 'mode=1')[0]['error']:
             return False
-        serial_id = map(lambda x:str(x), serial_id)  # to string
+        serial_id = map(str, serial_id)  # to string
         while len(serial_id) > 0:
             # >30张要分割
             if len(serial_id) > 30:
