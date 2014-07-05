@@ -13,7 +13,7 @@
   </head>
 
   <body>
-<h1>MA Bot(v0.6d偽) 根本认不出来版 服务器当前负载:[connected]/[maxconnected]</h1>
+<h1>MA Bot(v0.6g偽) 服务器当前负载:[connected]/[maxconnected]</h1>
 <span style="float:left;margin-right:20px"><img src="http://ma.mengsky.net/ol.png"/></span>
 <span style="margin:0 auto; overflow:auto; _display:inline-block;">MAClient backend version = [version_str]<button id=btn_upload_cfg style="font-weight:bold;color:#DF5823" onclick="showreCaptcha()">上传配置</button><a href="http://pan.baidu.com/s/19qI4m#dir/path=%2FApp%2FMAClient" target="_blank">配置工具点我</a><br>
 最后重启时间[startup_time]
@@ -46,11 +46,12 @@
 </form>
     </section>
     
-	  <nobr><form id=upload_form onsubmit="return false;" style="display:none" enctype="multipart/form-data">
+	  <form id=upload_form onsubmit="return false;" style="display:none" enctype="multipart/form-data">
   	  <div class="recaptcha" id="recaptcha">别急，这里会有验证码</div>
       <input type="file" name="file" />
-      <button onclick="submit_cfg()">上传</button>请先用<a href="http://pan.baidu.com/s/19qI4m#dir/path=%2FApp%2FMAClient" target="_blank">MAClientGUI</a>工具转换为<b>UTF-8编码</b>，配置文件中请<b>不要</b>保存账号密码；服务器重启之后配置不会被删除；多次上传会覆盖之前的配置
-    </form></nobr>
+      <button onclick="submit_cfg()">上传</button>
+	  <br>请先用<a href="http://pan.baidu.com/s/19qI4m#dir/path=%2FApp%2FMAClient" target="_blank">MAClientGUI</a>工具转换为<b>UTF-8编码</b>，配置文件中请<b>不要</b>保存账号密码；服务器重启之后配置不会被删除；多次上传会覆盖之前的配置
+    </form>
 
     
 
@@ -59,7 +60,7 @@
   </body>
 
   <script>
-  var hist=["内存泄漏好惆怅","相信我这次肯定能下线了！","修复可能无法下线的bug","堵了两个漏洞","后台逻辑支持热替换","修改  版本跟进到58d91b06ed","修改  修改后台日志.重启服务器","修改  版本跟进到5a4ae5d1c8" ,"修改  错误的离线时间(多X了个3600" ,"修改  修正一个可能会导致频繁被挤下线的逻辑问题" ,"修改  报错修正" ,"修改  自动添怪(之前会重复添)，BC>95% or AP>90% or (AP>7 and 自己没怪)上楼，自动买卡(1，2，3星小于5级卡)，自动领卡" ,"修改  自己的 (BC>70 or BC>95%) 别人的 (BC>90%) 大刀(自动选3卡) 否则添" ,"修改  打怪优先级 自己的>别人的小于10分钟的>没打过的>别人的小于20分钟的" ,"修改  被挤掉重进时间3分改为8分钟（防止下不来2333333）"];
+  var hist=["换一个刷得出来的验证码","内存泄漏好惆怅","相信我这次肯定能下线了！","修复可能无法下线的bug","堵了两个漏洞","后台逻辑支持热替换","修改  版本跟进到58d91b06ed","修改  修改后台日志.重启服务器","修改  版本跟进到5a4ae5d1c8" ,"修改  错误的离线时间(多X了个3600" ,"修改  修正一个可能会导致频繁被挤下线的逻辑问题" ,"修改  报错修正" ,"修改  自动添怪(之前会重复添)，BC>95% or AP>90% or (AP>7 and 自己没怪)上楼，自动买卡(1，2，3星小于5级卡)，自动领卡" ,"修改  自己的 (BC>70 or BC>95%) 别人的 (BC>90%) 大刀(自动选3卡) 否则添" ,"修改  打怪优先级 自己的>别人的小于10分钟的>没打过的>别人的小于20分钟的" ,"修改  被挤掉重进时间3分改为8分钟（防止下不来2333333）"];
 	function toggle_hist(){
     if(hist[hist.length-1] == 0){//toggle to full
       hist.pop();
@@ -124,6 +125,7 @@ toggle_hist();
     }
   </script>
   <script>//upload_cfg
+  var _session = null;
   function validate_file(file){
       if(file==null) return false;
       name = file.name;
@@ -151,20 +153,23 @@ toggle_hist();
     var serv = $('#serv')[0].value;
     var login_id = $('#login_id')[0].value;
     var login_pwd = $('#login_pwd')[0].value;
-    var captcha_resp = $('#recaptcha_response_field')[0].value;
-    if(login_id=='' || login_pwd =='' ||serv == 'server' || captcha_resp==''){
+    //var captcha_resp = $('#recaptcha_response_field')[0].value;
+	var challange = $('#challange')[0].value;
+    if(login_id=='' || login_pwd =='' ||serv == 'server' || challange==''){
       log('请填写用户名，密码，服务器，验证码\n');return false;
     }
     var _hash = hex_md5(login_id + login_pwd + serv);
     form.append("_hash", _hash);
-    form.append("recaptcha_challenge", $('#recaptcha_challenge_field')[0].value);
-    form.append("recaptcha_response", captcha_resp);
+    //form.append("recaptcha_challenge", $('#recaptcha_challenge_field')[0].value);
+    //form.append("recaptcha_response", captcha_resp);
+	form.append("_challange", challange);
+	form.append("_session", _session);
     form.append("file", f);
     var xhr = new XMLHttpRequest();
     xhr.open("post", '/upload_cfg', true);
     xhr.onload = function () {
         switch(xhr.responseText){
-          case '-1':log("验证码填错\n");break;
+          case '-1':log("验证码填错或过期\n");break;
           case '-2':log("少填参数\n");break;
           case '-3':log("文件太大了(最大16kb\n");break;
           default:log("配置上传完成\n");$('#upload_form')[0].style.display='none';
@@ -173,8 +178,28 @@ toggle_hist();
     xhr.send(form);
     return false;
   }
+
+	function randomString(length) {
+		var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split('');
+		if (! length) {
+			length = Math.floor(Math.random() * chars.length);
+		}
+		var str = '';
+		for (var i = 0; i < length; i++) {
+			str += chars[Math.floor(Math.random() * chars.length)];
+		}
+		return str;
+	}
+  function showreCaptcha() {
+	  _session = randomString(16);
+	  $('#upload_form')[0].style.display='block';
+	  $('#upload_form')[0].innerHTML='<img src= "/challange?_session=' + _session +'" alt="challange_image"/><input id=challange placeholder="验证码／人◕‿‿◕人＼"/>' + $('#upload_form')[0].innerHTML;
+	  $('#recaptcha').remove();
+  }
+
   </script>
-  <script>//http://www.luokr.com/p/4
+  <!--<script>
+  //http://www.luokr.com/p/4
   function showreCaptcha() {
   $('#upload_form')[0].style.display='block';
 	var r = document.createElement('script'); r.type = 'text/javascript'; r.async = true;
@@ -203,6 +228,7 @@ toggle_hist();
 			setTimeout(a, w += 500);
 		}
 	};a();
-	}</script>
+	
+	}</script>-->
 </html>
 <!-- vim: set et sw=2 ts=2 sts=2 ff=unix fenc=utf8: -->

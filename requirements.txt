@@ -4,4 +4,3 @@ gevent>=1.0
 gevent-websocket>=0.3.6
 WebOb>=1.2.3
 pycrypto>=2.6
-recaptcha-client>=1.0.6
