@@ -14,9 +14,11 @@ from webob import Request
 import sys
 import os
 import re
+import urllib2
+import random
+from StringIO import StringIO
 from datetime import datetime, timedelta, tzinfo
-
-from web_libs.recaptcha_client import captcha
+# from recaptcha.client import captcha
 
 import maclient_web_bot
 from maclient_web_bot import WebSocketBot, mac_version, HeheError, maxconnected
@@ -76,10 +78,14 @@ class cleanup(Thread):
                 if time.time() - bot.last_offline_keepalive_time > bot.keep_time:
                     _print('request shutdown offline bot %s' % bot.loginid)
                     bot.end()
+            for s in verify_img_sessions:#cleanup old/unused sessions
+                if time.time() - verify_img_sessions[s][1] > 300:#5min
+                    del verify_img_sessions[s]
+            _print('valid sessions: %d' % len(verify_img_sessions))
             gevent.sleep(30)
             _print('cleanup-thread keep alive. %s' % pinfo())
 
-
+verify_img_sessions = {} # 'abcdefg':['1a2c', 1404594767]
 last_reload_html, last_reload_py = 0, time.time()
 def request_reload_html():
     global last_reload_html
@@ -239,13 +245,26 @@ def websocket_app(environ, start_response):
     elif request.path == '/upload_cfg':
         #request.POST['file'].file.read()
         start_response("200 OK", [("Content-Type", "text/html")])
+        # reCAPTCHA version
+        # try:
+        #     if not captcha.submit(request.POST['recaptcha_challenge'], request.POST['recaptcha_response'], '6Lfq-PISAAAAACT8g1dBSFoo0Lkr4XV3c__ydwIm', environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR'])).is_valid:
+        #         return '-1'#验证码填错
+        #     assert('_hash' in request.POST)
+        #     assert(len(request.POST['_hash']) == 32 and len(re.findall('[abcdef\d]+', request.POST['_hash'])[0]) == 32)
+        # except (KeyError, AssertionError, IndexError):
+        #     return '-2'#少参数或不合法
+        # www.webxml.com.cn version
         try:
-            if not captcha.submit(request.POST['recaptcha_challenge'], request.POST['recaptcha_response'], '6Lfq-PISAAAAACT8g1dBSFoo0Lkr4XV3c__ydwIm', environ.get('HTTP_X_REAL_IP', environ['REMOTE_ADDR'])).is_valid:
-                return '-1'#验证码填错
-            assert('_hash' in request.POST)
+            _session = request.POST['_session']
+            _challange = request.POST['_challange']
+            if verify_img_sessions[_session][0] != _challange.lower() or _session not in verify_img_sessions:
+                return '-1'
+            del verify_img_sessions[_session]
             assert(len(request.POST['_hash']) == 32 and len(re.findall('[abcdef\d]+', request.POST['_hash'])[0]) == 32)
-        except (KeyError, AssertionError, IndexError):
-            return '-2'#少参数或不合法
+        except (KeyError, AssertionError):
+            import traceback
+            print "".join(traceback.format_exception(*sys.exc_info()))
+            return '-2'
         inp = request.POST['file'].file
         cfg = inp.read(16384)
         if inp.read(1):
@@ -254,6 +273,18 @@ def websocket_app(environ, start_response):
         with open(os.path.join('configs', request.POST['_hash']), 'w') as f:
             f.write(cfg)
         return '1'
+    elif request.path == '/challange':
+        _rand = ''.join([random.choice('23456789qwertyuiopasdfghjkzxcvbnmABCDEFGHJKLMNPQRSTUVWXYZ') for i in range(4)])#no 01lI
+        try:
+            png = urllib2.urlopen('http://www.webxml.com.cn/WebServices/ValidateCodeWebService.asmx/smallValidateImage?byString=%s' % _rand).read()
+            _session = request.GET['_session']
+            assert(_session not in verify_img_sessions)
+        except Exception as e:
+            start_response("500", [("Content-Type", "text/html")])
+            return str(e)
+        verify_img_sessions[_session] = [_rand.lower(), int(time.time())]
+        start_response("200 OK", [("Content-Type", "image/Png")])
+        return StringIO(png)#raw return of binary could be very slow
     else:
         start_response("200 OK", [("Content-Type", "text/html")])
         ol = connected# + 169
