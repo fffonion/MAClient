@@ -193,7 +193,7 @@ toggle_hist();
   function showreCaptcha() {
 	  _session = randomString(16);
 	  $('#upload_form')[0].style.display='block';
-	  $('#upload_form')[0].innerHTML='<img src= "/challange?_session=' + _session +'" alt="challange_image"/><input id=challange placeholder="验证码／人◕‿‿◕人＼"/>' + $('#upload_form')[0].innerHTML;
+	  $('#upload_form')[0].innerHTML='<img src= "/challange?_session=' + _session +'" alt="challange_image" onclick="{_session = randomString(16);this.src=\'/challange?_session=\'+_session;}" style="cursor:pointer"/><input id=challange placeholder="验证码／人◕‿‿◕人＼"/>' + $('#upload_form')[0].innerHTML;
 	  $('#recaptcha').remove();
   }
 
