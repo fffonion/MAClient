@@ -1037,6 +1037,17 @@ namespace MAClientGUI
         {
             txtCondSell.Text = "";
         }
+        private bool check_path_valid(string path)
+        {
+            for (int i = 0; i < path.Length; i++)
+            {
+                if (Convert.ToInt32(Convert.ToChar(path.Substring(i, 1))) > Convert.ToInt32(Convert.ToChar(128)))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         private void start_mac(string arg = "")
         {
             string cfgpath = cboCfgFile.Text;
@@ -1064,7 +1075,11 @@ namespace MAClientGUI
                 }
 
             }
-
+            if (!check_path_valid(maclient_path))
+            {
+                MessageBox.Show("路径中包含非英文/数字，maclient可能无法启动", "呵呵", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             if (cfgpath == "" || !File.Exists(cfgpath))
             {
                 if (MessageBox.Show("木有发现配置文件，是否手动寻找？", "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
