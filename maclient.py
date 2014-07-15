@@ -39,7 +39,7 @@ GUILD_RACE_TYPE = ['11','12']
 CMD_NOLOGIN = ['ss', 'set_server', 'l', 'login', 'rl', 'relogin']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
-eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'fairy.not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type in GUILD_RACE_TYPE")]
+eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'fairy.not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type in GUILD_RACE_TYPE"), ('0BC', 'put_down == "4"')]
 eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('NOT_BATTLED', 'not_battled'),('fairy.hp%', 'float(fairy.hp)/float(fairy.hp_max)')]
 eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"'), ('not floor.IS_GUILD', "(not area_race_type or area_race_type not in GUILD_RACE_TYPE)"),
@@ -137,11 +137,7 @@ class MAClient(object):
         if self.cfg_save_traffic:
             self.poster.enable_savetraffic()
         # eval
-        etmp = self._read_config('condition', 'fairy_select') or 'True'
-
-        self.evalstr_fairy = self._eval_gen(
-            '(%s) and fairy.put_down in "01"' % etmp,
-            eval_fairy_select, 'fairy')  # 1战斗中 2胜利 3失败
+        self.evalstr_fairy = self._eval_gen(self._read_config('condition', 'fairy_select') or 'True', eval_fairy_select, 'fairy')
         self.evalstr_area = self._eval_gen(self._read_config('condition', 'explore_area'), eval_explore_area,'area')
         self.evalstr_floor = self._eval_gen(self._read_config('condition', 'explore_floor'), eval_explore_floor, 'floor')
         self.evalstr_selcard = self._eval_gen(self._read_config('condition', 'select_card_to_sell'), eval_select_card, 'card')
@@ -248,7 +244,9 @@ class MAClient(object):
                 try:
                     dec = XML2Dict.fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
                 except:
-                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\nhttp://yooooo.us/2013/maclient')
+                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\n'
+                        '如果是日服，可以试试重新登录(输入rl)\n'
+                        'http://yooooo.us/2013/maclient')
                     with open('debug_%s.xml' % urikey.replace('/', '#').replace('?', '~'),'w') as f:
                         f.write(_dec)
                     self._exit(3)
@@ -1348,7 +1346,7 @@ class MAClient(object):
             self.plugin.set_extras(token, 'fairy_event', [f for f in fairy_event if f.put_down == '5'])
         for fairy in fairy_event:
             # 挂了
-            if fairy.put_down not in '014':
+            if fairy.put_down not in '014':# 1战斗中 2胜利 3失败 4 0BC 5 可赞的
                 continue
             fairy.fairy.lv = int(fairy.fairy.lv)
             # (sid相同，或未记录的)且不是公会妖
