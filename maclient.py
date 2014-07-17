@@ -812,12 +812,13 @@ class MAClient(object):
         return False, 0
 
     @plugin.func_hook
-    def _use_item(self, itemid):
+    def _use_item(self, itemid, noerror = False):
         if itemid == 0:
             self.logger.debug('pseudo item id.')
             return
         if self.player.item.get_count(int(itemid)) == 0 :
-            self.logger.error('道具 %s 数量不足' % self.player.item.get_name(int(itemid)))
+            if not noerror:
+                self.logger.error('道具 %s 数量不足' % self.player.item.get_name(int(itemid)))
             return False
         param = 'item_id=%s' % itemid
         resp, ct = self._dopost('item/use', postdata = param)
@@ -829,13 +830,13 @@ class MAClient(object):
             return True
 
     @plugin.func_hook
-    def red_tea(self, silent = False, tea = FULL_TEA):
+    def red_tea(self, silent = False, tea = FULL_TEA, noerror = False):
         auto = float(self._read_config('tactic', 'auto_red_tea') or '0')
         if auto >= 1 or (auto >= 0.5 and tea == HALF_TEA):
             self._write_config('tactic', 'auto_red_tea', str(auto - (1 if tea == FULL_TEA else 0.5)))
             res = self._use_item(
                    str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2])) + 2)
-                )
+                , noerror = noerror)
         else:
             if silent:
                 self.logger.debug('red_tea:auto mode, let it go~')
@@ -844,7 +845,7 @@ class MAClient(object):
                 if raw_inputd('来一坨红茶？ y/n ') == 'y':
                     res = self._use_item(
                                str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2])) + 2)
-                            )
+                            , noerror = noerror)
                 else:
                     res = False
         #if res:
@@ -852,13 +853,13 @@ class MAClient(object):
         return res
 
     @plugin.func_hook
-    def green_tea(self, silent = False, tea = FULL_TEA):
+    def green_tea(self, silent = False, tea = FULL_TEA, noerror = False):
         auto = float(self._read_config('tactic', 'auto_green_tea') or '0')
         if auto >= 1 or (auto >= 0.5 and tea == HALF_TEA):
             self._write_config('tactic', 'auto_green_tea', str(auto - (1 if tea == FULL_TEA else 0.5)))
             res = self._use_item(
                        str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_ap_offset_%s' % self.loc[:2])) + 1)
-                    )
+                    , noerror = noerror)
         else:
             if silent:
                 self.logger.debug('green_tea:auto mode, let it go~')
@@ -867,7 +868,7 @@ class MAClient(object):
                 if raw_inputd('嗑一瓶绿茶？ y/n ') == 'y':
                     res = self._use_item(
                            str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_ap_offset_%s' % self.loc[:2])) + 1)
-                        )
+                        , noerror = noerror)
                 else:
                     res = False
         #if res:
@@ -1092,7 +1093,9 @@ class MAClient(object):
                         self.logger.warning('unrecognized event_type:%s' % info.event_type)
                 else:
                     self.logger.warning('AP不够了TUT')
-                    if not self.green_tea(self.cfg_auto_explore):
+                    # 先半绿，再大绿
+                    if not self.green_tea(self.cfg_auto_explore, tea = HALF_TEA, noerror = True) and \
+                        not self.green_tea(self.cfg_auto_explore):
                         self.logger.error('不给喝，不走了o(￣ヘ￣o＃) ')
                         return None, EXPLORE_NO_AP
                     else:
