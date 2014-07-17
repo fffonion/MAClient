@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.3-build20140519'
+__version__ = '1.3-build20140717'
 
 try:
     from multiprocessing import Pool
@@ -14,11 +14,12 @@ try:
 except:
     Pool = None
 # server specified configutaions
-max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_jp = max_card_count_sg = 250
+max_card_count_cn = max_card_count_kr = max_card_count_tw = max_card_count_sg = 250
+max_card_count_jp = 350
 max_fp_cn = max_fp_kr = max_fp_sg = 50000
 max_fp_tw = max_fp_jp = 1000000
 half_bc_offset_cn = half_ap_offset_cn = 110
-half_bc_offset_tw = half_ap_offset_tw = 5002
+half_bc_offset_tw = half_ap_offset_tw = 5022
 half_ap_offset_jp = 100
 half_bc_offset_jp = 109
 half_ap_offset_kr = half_bc_offset_kr = half_ap_offset_sg = half_bc_offset_sg = half_ap_offset_my = half_ap_offset_my = 0
@@ -41,7 +42,7 @@ key_rsa_pool = [
 app_ver_cn = 102
 app_ver_tw = 200
 app_ver_kr = 108
-app_ver_jp = 310
+app_ver_jp = 320
 app_ver_sg = 100
 app_ver_my = 101
 # wake

@@ -35,6 +35,8 @@ class plugins(object):
         self.plugins_instance = {}
         # 新增cli命令字典
         self.extra_cmd = {}
+        # 无需登录就可执行的命令
+        self.extra_cmd_no_login = []
         # 从maclient实例映射的变量
         self.val_dict = {}
         #self.load_plugins()
@@ -75,6 +77,8 @@ class plugins(object):
                     _conflict.append(e)
                     del(self.extra_cmd[e])
                 else:
+                    if self._get_module_meta(p, 'require_feature_nologin', nowarning = True):
+                        self.extra_cmd_no_login.append(e)
                     hdl = self._get_module_meta(p, ecmd[e])
                     if hdl:
                         self.extra_cmd[e] = hdl

@@ -170,3 +170,6 @@
 296,Campus Combo,2,Small increase in ATK,2(80)
 297,Campus Combo Rise,2,Small increase in ATK,4(80)
 298,Campus Combo Crown,2,Medium increase in ATK,6(80)
+299,Double Team Combo,2,Small increase in ATK,2(100)
+300,AWC Combo Rise,2,Small increase in ATK,4(100)
+301,AWC Combo Crown,2,Medium increase in ATK,6(100)
