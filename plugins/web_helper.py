@@ -84,13 +84,16 @@ def start_webproxy(plugin_vals):
         #if not winreg or True:
         #    global MITM_MODE
         #    MITM_MODE = weburl[plugin_vals['loc']].rstrip('/connect/web/?%s')
-        print(('现在将打开浏览器窗口\n'
+        if len(args) == 0 or args[0].rstrip() != '!':
+            print(du8('现在将打开浏览器窗口\n'
               '如果没有，请手动打开主页:\n'
               '%s\n'
-              '对不使用IE代理的浏览器，请将代理设置为127.0.0.1:23301\n'
-              '按Ctrl+C关闭并恢复无代理'
-            % homeurl).decode('utf-8'))
-        webbrowser.open(homeurl)
+                % homeurl))
+            webbrowser.open(homeurl)
+        else:
+            print(du8('已设定不自动打开首页'))
+        print(du8('对不使用IE代理的浏览器，请将代理设置为127.0.0.1:23301\n'
+              '按Ctrl+C关闭并恢复无代理'))
         server = ThreadingHTTPServer(("", 23301) , Proxy)
         try:
             server.serve_forever()

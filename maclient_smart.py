@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.3-build20140715'
+__version__ = '1.3-build20140717'
 
 try:
     from multiprocessing import Pool
@@ -19,7 +19,7 @@ max_card_count_jp = 350
 max_fp_cn = max_fp_kr = max_fp_sg = 50000
 max_fp_tw = max_fp_jp = 1000000
 half_bc_offset_cn = half_ap_offset_cn = 110
-half_bc_offset_tw = half_ap_offset_tw = 5002
+half_bc_offset_tw = half_ap_offset_tw = 5022
 half_ap_offset_jp = 100
 half_bc_offset_jp = 109
 half_ap_offset_kr = half_bc_offset_kr = half_ap_offset_sg = half_bc_offset_sg = half_ap_offset_my = half_ap_offset_my = 0
