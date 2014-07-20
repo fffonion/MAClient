@@ -179,7 +179,7 @@ class card(object):
             c = ''
         #变量名是不是很给力！
         if c:
-            self.multi = dict(map(lambda d: map(lambda e: int(e), d.split(',')), c.split(';')))
+            self.multi = dict(map(lambda d: map(lambda e: float(e), d.split(',')), c.split(';')))
         return opath.getmtime(opath.join(getPATH0, 'db/card.multi.txt')) > \
                     opath.getmtime(opath.join(getPATH0, 'db/card.%s.txt' % loc))
 
