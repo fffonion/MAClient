@@ -56,6 +56,7 @@
 58,Armed Selection,2,Small increase in ATK,[72,80,89]
 59,Adjustment,2,Small increase in ATK,[44,52,53,66]
 60,Dream England,2,Small increase in ATK,[83,102]
+61,Broken Heart,2,Small increase in ATK,[40,69]
 62,Overed Arondight,5,Small increase in ATK and max HP,[1,102,159]
 64,Rail Brave,2,Small increase in ATK,[12,19]
 65,Brand New One,2,Small increase in ATK,[29,102]
@@ -85,6 +86,7 @@
 94,Arrow Rain,2,Medium increase in ATK,[20,22,27,57]
 99,Conquest Creator,2,Small increase in ATK,[21,96]
 100,Triple Weapon,2,Small increase in ATK,[58,60,62]
+101,Closed Time,2,Small increase in ATK,[63,93,99]
 102,Money Game,2,Small increase in ATK,[64,90]
 104,Refinement Task,2,Small increase in ATK,[41,66]
 105,Million Sword,1,Medium increase in Excalibur`s damage,[11,45,81]
@@ -115,7 +117,15 @@
 130,Jewelry Combo,3,Small increase in Max HP,4(22)
 131,Jewelry Combo Rise,3,Small increase in Max HP,7(22)
 132,Jewelry Combo Crown,3,Medium increase in Max HP,9(22)
+133,Ray of Spirit,3,Medium increase in Max HP,[184,186,204]
+134,Love&Peace,3,Small increase in Max HP,[180,185]
+135,Power Mushroom,3,Small increase in Max HP,[187,191]
+137,Soul Trade,3,Medium increase in Max HP,[175,185,189]
+138,Intense Gaze,3,Small increase in Max HP,[190,192,199]
+139,Imperial Gold,3,Small increase in Max HP,[180,190,192]
+140,Intersecting Research,3,Small increase in Max HP,[193,194]
 143,Drive Girl,3,Small increase in Max HP,[198,200]
+145,Shared Sense,3,Small increase in Max HP,[200,202]
 148,Lakeside Song,3,Small increase in Max HP,[181,208]
 149,Mystery Drink,3,Small increase in Max HP,[205,206]
 150,Makeup,3,Small increase in Max HP,[206,207]
@@ -126,7 +136,15 @@
 157,Dimension Combo,2,Small increase in ATK,4(23)
 158,Dimension Combo Rise,2,Small increase in ATK,7(23)
 159,Dimension Combo Crown,2,Medium increase in ATK,9(23)
+183,Melancholic,3,Medium increase in Max HP,[259,255,265]
+191,Sales Talk,3,Small increase in Max HP,[267,265]
+192,Only Recital,3,Small increase in Max HP,[268,256]
+194,Standing Hate,3,Small increase in Max HP,[270,282]
+201,Rabbit Weapon,3,Small increase in Max HP,[277,270]
+208,Mistaken Thunder,3,Small increase in Max HP,[286,273,282]
 211,Bloody String,3,Small increase in Max HP,[291,293,295]
+213,Lava Soup,3,Small increase in Max HP,[293,291,213]
+221,Mechanic Mania,3,Small increase in Max HP,[226,314]
 238,Starlight Combo,3,Small increase in Max HP,4(24)
 239,Starlight Combo Rise,3,Small increase in Max HP,7(24)
 240,Starlight Combo Crown,3,Small increase in Max HP,9(24)
@@ -149,3 +167,9 @@
 290,Halloween Combo Crown,3,Small increase in Max HP,9(36)
 293,Audience,3,Small increase in Max HP,[182]
 295,Champion Dance,3,Small increase in Max HP,[219]
+296,Campus Combo,2,Small increase in ATK,2(80)
+297,Campus Combo Rise,2,Small increase in ATK,4(80)
+298,Campus Combo Crown,2,Medium increase in ATK,6(80)
+299,Double Team Combo,2,Small increase in ATK,2(100)
+300,AWC Combo Rise,2,Small increase in ATK,4(100)
+301,AWC Combo Crown,2,Medium increase in ATK,6(100)

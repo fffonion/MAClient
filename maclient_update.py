@@ -175,9 +175,13 @@ def update_multi(loc):
         maxpage = len(re.findall('href', nav)) - 2
         i += 1
         tr = re.findall('tr[^c]*class="even">(.*?)<\/tr', ct, re.DOTALL)
+        _error_card = []
         for t in tr:
             mid = re.findall('src="http://img.dwstatic.com/ma/[zh_]*pic/face/face_(\d+).jpg">', t)[0]
-            beishu = re.findall('class="icon(\d+)">', t)[0]#哈哈哈哈
+            try:
+                beishu = re.findall('class="icon([\d\.]+)">', t)[0]#哈哈哈哈
+            except IndexError:
+                _error_card.append('[%s]%s' % (mid, re.findall('title="([^"]+)"', t)[1]))
             clist.append(','.join([mid, beishu]))
         time.sleep(1.414)
     new = '%s=%s\n' % (loc, ';'.join(clist))
@@ -189,4 +193,6 @@ def update_multi(loc):
     lines = open(_f, **kw).readlines()
     lines[idx] = new
     open(_f, 'w', **kw).write(''.join(lines))
+    if _error_card:
+        print(du8('倍卡 %s 无法获得倍率数据，请使用am手动添加' % ','.join(_error_card)))
     return len(clist)

@@ -18,9 +18,10 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.26
+__version__ = 0.27
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update', 'us':'update_self'}
+require_feature_nologin = True
 #是否下载dev版
 GET_DEV_UPDATE = True
 
@@ -212,7 +213,6 @@ def _do_update(silent = False):
                         update_self({})('')
                 continue
             elif k.name == 'maclient_smart.py' and EXEBUNDLE:
-                raw_input()
                 new = _http_get('update/maclient_smart.bin', silent)
                 try:
                     assert(new and len(new)>28000)

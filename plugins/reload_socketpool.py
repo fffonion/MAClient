@@ -8,6 +8,7 @@ __author = 'fffonion'
 __version__ = 0.2
 hooks = {}
 extra_cmd = {'rs':'reload_socket', 'reload_socket':'reload_socket'}
+require_feature_nologin = True
 # end meta
 # 
 def reload_socket(plugin_vals):

@@ -4,7 +4,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = '日服自动点赞'
 __author = 'fffonion'
-__version__ = 0.3
+__version__ = 0.31
 hooks = {'EXIT_fairy_select':1}
 extra_cmd = {'good':'set_give_good'}
 # end meta

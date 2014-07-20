@@ -18,6 +18,7 @@ __version__ = 0.1
 hooks = {'ENTER__fairy_battle':1, 'EXIT__fairy_battle':1, 'ENTER__explore_floor':1, 'EXIT__explore_floor':1, 'ENTER_tasker':1, 'EXIT_tasker':1}
 # extra cmd hook
 extra_cmd = {'bgm':'set_bgm'}
+require_feature_nologin = True
 # end meta
 getPATH0 = (opath.split(sys.argv[0])[1].find('py') != -1 or sys.platform == 'cli') \
          and sys.path[0].decode(sys.getfilesystemencoding()) \

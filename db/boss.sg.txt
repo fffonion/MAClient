@@ -160,3 +160,17 @@
 60034,Arousal Andromeda,30000
 60035,Andromeda,5000
 60036,Arousal Andromeda,30000
+60037,Arthur: Blade Protector,10000
+60038,Arousal Arthur: Blade Protector,20000
+60039,Arthur: Techno Smith,10000
+60040,Arousal Arthur: Techno Smith,20000
+60041,Arthur: Sorcery King,10000
+60042,Arousal Arthur: Sorcery King,20000
+60043,Rozalina,10000
+60044,Arousal Rozalina,20000
+60045,Paula,10000
+60046,Arousal Paula,20000
+60047,Queen of Avalon,5000
+60048,Arousal Queen of Avalon,30000
+60049,Queen of Avalon,5000
+60050,Arousal Queen of Avalon,30000
