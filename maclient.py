@@ -17,6 +17,7 @@ from xml2dict import XML2Dict
 from xml2dict import object_dict
 import random
 import threading
+import traceback
 from cross_platform import *
 if PYTHON3:
     import configparser as ConfigParser
@@ -36,9 +37,10 @@ EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
 HALF_TEA, FULL_TEA = 0, 1
 GUILD_RACE_TYPE = ['11','12']
+CMD_NOLOGIN = ['ss', 'set_server', 'l', 'login', 'rl', 'relogin']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
 # eval dicts
-eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'fairy.not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type in GUILD_RACE_TYPE")]
+eval_fairy_select = [('LIMIT', 'time_limit'), ('NOT_BATTLED', 'fairy.not_battled'), ('.lv', '.fairy.lv'), ('IS_MINE', 'user.id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'),  ('IS_GUILD', "fairy.race_type in GUILD_RACE_TYPE"), ('0BC', 'put_down == "4"')]
 eval_fairy_select_carddeck = [('IS_MINE', 'discoverer_id == self.player.id'), ('IS_WAKE_RARE', 'wake_rare'), ('IS_WAKE', 'wake'), ('LIMIT', 'time_limit'),  ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('NOT_BATTLED', 'not_battled'),('fairy.hp%', 'float(fairy.hp)/float(fairy.hp_max)')]
 eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type in GUILD_RACE_TYPE"), ('IS_DAILY_EVENT', "id.startswith('5')"), ('NOT_FINNISHED', "prog_area!='100'")]
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"'), ('not floor.IS_GUILD', "(not area_race_type or area_race_type not in GUILD_RACE_TYPE)"),
@@ -136,11 +138,7 @@ class MAClient(object):
         if self.cfg_save_traffic:
             self.poster.enable_savetraffic()
         # eval
-        etmp = self._read_config('condition', 'fairy_select') or 'True'
-
-        self.evalstr_fairy = self._eval_gen(
-            '(%s) and fairy.put_down in "01"' % etmp,
-            eval_fairy_select, 'fairy')  # 1战斗中 2胜利 3失败
+        self.evalstr_fairy = self._eval_gen(self._read_config('condition', 'fairy_select') or 'True', eval_fairy_select, 'fairy')
         self.evalstr_area = self._eval_gen(self._read_config('condition', 'explore_area'), eval_explore_area,'area')
         self.evalstr_floor = self._eval_gen(self._read_config('condition', 'explore_floor'), eval_explore_floor, 'floor')
         self.evalstr_selcard = self._eval_gen(self._read_config('condition', 'select_card_to_sell'), eval_select_card, 'card')
@@ -247,7 +245,9 @@ class MAClient(object):
                 try:
                     dec = XML2Dict.fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
                 except:
-                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\nhttp://yooooo.us/2013/maclient')
+                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\n%s'
+                        'http://yooooo.us/2013/maclient' % 
+                        ('你也可以试试重新登录(输入rl)\n' if self.loc == 'jp' else ''))
                     with open('debug_%s.xml' % urikey.replace('/', '#').replace('?', '~'),'w') as f:
                         f.write(_dec)
                     self._exit(3)
@@ -424,9 +424,16 @@ class MAClient(object):
                 tasks = eval(taskeval)
                 self.logger.debug('tasker:eval result:%s' % (tasks))
             if isinstance(tasks, bool):
-                self.logger.error('任务表达式格式错误，可使用GUI作参考:\n表达式 %s\n输出 %s' % (taskeval, tasks))
+                self.logger.error('任务表达式为空或格式错误，可使用GUI作参考:\n表达式 %s\n输出 %s' % (taskeval, tasks))
                 self._exit(1)
             for task in tasks.split('|'):
+                if task.startswith('t:'):#is task
+                    return self.tasker(taskname = task[2:])
+                elif task.split()[0] in CMD_NOLOGIN or \
+                    (self.plugin.enable and task.split()[0] in self.plugin.extra_cmd_no_login):#无需登录可执行的命令
+                    pass
+                elif not self.player_initiated:
+                    self.login()
                 task = (task + ' ').split(' ')
                 self.logger.debug('tasker:%s' % task[0])
                 task[0] = task[0].lower()
@@ -467,10 +474,10 @@ class MAClient(object):
                 elif task[0] == 'sell_card' or task[0] == 'slc':
                     self.select_card_sell(' '.join(task[1:]))
                 elif task[0] == 'set_server' or task[0] == 'ss':
-                    self._write_config('system', 'server', task[1])
                     if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp','sg','my']:
                         self.logger.error('服务器"%s"无效'%(task[1]))
                     else:
+                        self._write_config('system', 'server', task[1])
                         self.loc = task[1]
                         self.poster.load_svr(self.loc)
                         self.load_config()
@@ -640,14 +647,20 @@ class MAClient(object):
     @plugin.func_hook
     def invoke_autoset(self, autoset_str, cur_fairy = None):
         aim, fairy, maxline, test_mode, delta, includes, bclimit, fast_mode, sel = 'MAX_DMG', None, 1, True, 1, [], BC_LIMIT_CURRENT, True, 'card.lv>=70 or card.plus_limit_count == 0'
+        save2deck, _just_set_save2deck = None, False
         if cur_fairy:
             fairy = cur_fairy
-        for arg in autoset_str.split(' '):
+        args = autoset_str.split(' ')
+        for _idx in range(len(args)):
+            if _just_set_save2deck:
+                _just_set_save2deck = False
+                continue
+            arg = args[_idx]
             if arg.startswith('aim:'):
                 aim = arg[4:]
             elif arg.startswith('fairy:'):
                 fairy = object_dict()
-                fairy.lv, fairy.hp, nothing = map(lambda x:int(x), (arg[6:] + ',-325').split(','))
+                fairy.lv, fairy.hp, nothing = map(int, (arg[6:] + ',-325').split(','))
                 if nothing != -325:
                     fairy.IS_WAKE = False
                 else:
@@ -672,14 +685,22 @@ class MAClient(object):
             elif arg.startswith('nofast'):
                 fast_mode = False
             elif arg.startswith('incl:'):
-                includes = map(lambda x:int(x), arg[5:].split(','))
+                includes = map(int, arg[5:].split(','))
+            elif arg.startswith('>'):
+                if len(arg) > 1:#'xxx >deck1'
+                    save2deck = arg[1:]
+                elif _idx + 1 < len(args):
+                    save2deck = args[_idx + 1]
+                    _just_set_save2deck = True
+                else:
+                    self.logger.warning('无法从"%s"中提取卡组名' % arg)
             elif arg != '':
                 self.logger.warning('未识别的参数 %s' % arg)
         try:
             aim = getattr(maclient_smart, aim.upper())
         except AttributeError:
             self.logger.warning('未识别的目标 %s' % aim)
-        return self.set_card('auto_set', aim = aim, includes = includes, maxline = maxline, seleval = sel, fairy_info = fairy, delta = delta, test_mode = test_mode, bclimit = bclimit, fast_mode = fast_mode)
+        return self.set_card('auto_set', aim = aim, includes = includes, maxline = maxline, seleval = sel, fairy_info = fairy, delta = delta, test_mode = test_mode, bclimit = bclimit, fast_mode = fast_mode, save2deck = save2deck)
 
     @plugin.func_hook
     def set_card(self, deckkey, **kwargs):
@@ -699,6 +720,7 @@ class MAClient(object):
             else:
                 test_mode = kwargs.pop('test_mode')
                 bclimit = kwargs.pop('bclimit')
+                save2deck = kwargs.pop('save2deck')
                 res = maclient_smart.carddeck_gen(
                     self.player.card,
                     bclimit = (bclimit == BC_LIMIT_MAX and self.player.bc['max'] or (
@@ -706,7 +728,7 @@ class MAClient(object):
                     **kwargs)
                 if len(res) == 5:
                     atk, hp, last_set_bc, sid, mid = res
-                    param = map(lambda x:str(x), sid)
+                    param = map(str, sid)
                     # 别看比较好
                     print(du8('设置卡组为: ATK:%d HP:%d COST:%d\n%s' % (
                         sum(atk),
@@ -728,6 +750,9 @@ class MAClient(object):
                 else:
                     self.logger.error(res[0])
                     return False, -1
+                if save2deck:
+                    self.logger.info('保存卡组到了 %s' % save2deck)
+                    self._write_config('carddeck', save2deck, ','.join(param))
                 if test_mode:
                     return False, 0
         else:
@@ -788,12 +813,13 @@ class MAClient(object):
         return False, 0
 
     @plugin.func_hook
-    def _use_item(self, itemid):
+    def _use_item(self, itemid, noerror = False):
         if itemid == 0:
             self.logger.debug('pseudo item id.')
             return
         if self.player.item.get_count(int(itemid)) == 0 :
-            self.logger.error('道具 %s 数量不足' % self.player.item.get_name(int(itemid)))
+            if not noerror:
+                self.logger.error('道具 %s 数量不足' % self.player.item.get_name(int(itemid)))
             return False
         param = 'item_id=%s' % itemid
         resp, ct = self._dopost('item/use', postdata = param)
@@ -805,13 +831,13 @@ class MAClient(object):
             return True
 
     @plugin.func_hook
-    def red_tea(self, silent = False, tea = FULL_TEA):
+    def red_tea(self, silent = False, tea = FULL_TEA, noerror = False):
         auto = float(self._read_config('tactic', 'auto_red_tea') or '0')
         if auto >= 1 or (auto >= 0.5 and tea == HALF_TEA):
             self._write_config('tactic', 'auto_red_tea', str(auto - (1 if tea == FULL_TEA else 0.5)))
             res = self._use_item(
                    str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2])) + 2)
-                )
+                , noerror = noerror)
         else:
             if silent:
                 self.logger.debug('red_tea:auto mode, let it go~')
@@ -820,7 +846,7 @@ class MAClient(object):
                 if raw_inputd('来一坨红茶？ y/n ') == 'y':
                     res = self._use_item(
                                str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_bc_offset_%s' % self.loc[:2])) + 2)
-                            )
+                            , noerror = noerror)
                 else:
                     res = False
         #if res:
@@ -828,13 +854,13 @@ class MAClient(object):
         return res
 
     @plugin.func_hook
-    def green_tea(self, silent = False, tea = FULL_TEA):
+    def green_tea(self, silent = False, tea = FULL_TEA, noerror = False):
         auto = float(self._read_config('tactic', 'auto_green_tea') or '0')
         if auto >= 1 or (auto >= 0.5 and tea == HALF_TEA):
             self._write_config('tactic', 'auto_green_tea', str(auto - (1 if tea == FULL_TEA else 0.5)))
             res = self._use_item(
                        str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_ap_offset_%s' % self.loc[:2])) + 1)
-                    )
+                    , noerror = noerror)
         else:
             if silent:
                 self.logger.debug('green_tea:auto mode, let it go~')
@@ -843,7 +869,7 @@ class MAClient(object):
                 if raw_inputd('嗑一瓶绿茶？ y/n ') == 'y':
                     res = self._use_item(
                            str((0 if tea == FULL_TEA else getattr(maclient_smart, 'half_ap_offset_%s' % self.loc[:2])) + 1)
-                        )
+                        , noerror = noerror)
                 else:
                     res = False
         #if res:
@@ -1068,7 +1094,9 @@ class MAClient(object):
                         self.logger.warning('unrecognized event_type:%s' % info.event_type)
                 else:
                     self.logger.warning('AP不够了TUT')
-                    if not self.green_tea(self.cfg_auto_explore):
+                    # 先半绿，再大绿
+                    if not self.green_tea(self.cfg_auto_explore, tea = HALF_TEA, noerror = True) and \
+                        not self.green_tea(self.cfg_auto_explore):
                         self.logger.error('不给喝，不走了o(￣ヘ￣o＃) ')
                         return None, EXPLORE_NO_AP
                     else:
@@ -1089,7 +1117,7 @@ class MAClient(object):
     def _boss_battle(self, area_id = None, floor_id = None):
         if not (area_id and floor_id):
             return False
-        self.set_card('auto_set', aim = maclient_smart.MAX_DMG, maxline = 4, seleval = 'card.lv>45', test_mode = False, bclimit = BC_LIMIT_MAX, fast_mode = True)
+        self.set_card('auto_set', aim = maclient_smart.MAX_DMG, maxline = 4, seleval = 'card.lv>45', test_mode = False, bclimit = BC_LIMIT_MAX, fast_mode = True, save2deck = None)
         param = "area_id=%s&floor_id=%s" % (area_id, floor_id)
         resp, ct = self._dopost('exploration/battle', postdata = param)
         if resp['error']:
@@ -1221,7 +1249,7 @@ class MAClient(object):
             return False
         if self._dopost('card/exchange', postdata = 'mode=1')[0]['error']:
             return False
-        serial_id = map(lambda x:str(x), serial_id)  # to string
+        serial_id = map(str, serial_id)  # to string
         while len(serial_id) > 0:
             # >30张要分割
             if len(serial_id) > 30:
@@ -1322,7 +1350,7 @@ class MAClient(object):
             self.plugin.set_extras(token, 'fairy_event', [f for f in fairy_event if f.put_down == '5'])
         for fairy in fairy_event:
             # 挂了
-            if fairy.put_down not in '014':
+            if fairy.put_down not in '014':# 1战斗中 2胜利 3失败 4 0BC 5 可赞的
                 continue
             fairy.fairy.lv = int(fairy.fairy.lv)
             # (sid相同，或未记录的)且不是公会妖
@@ -1628,41 +1656,48 @@ class MAClient(object):
                 token = os.urandom(8)
                 self.plugin.set_extras(token, 'battle_result', blist)
                 self.plugin.set_extras(token, 'battle_player', ct.body.battle_battle.battle_player_list)
-                for l in blist:
-                    if 'turn' in l:  # 回合数
-                        rnd = float(l.turn) - 0.5
-                    else:
-                        if 'attack_damage' in l:  # 普通攻击
-                            if l.action_player == '0':  # 玩家攻击
-                                matk += int(l.attack_damage)
-                            else:  # 妖精攻击
-                                fatk += int(l.attack_damage)
-                                rnd += 0.5  # 妖精回合
-                            if l.attack_type not in '12':
-                                self.logger.debug('fairy_battle%satk_type%s' % (_for_debug, l.attack_type))
-                        if 'special_attack_damage' in l:  # SUPER
-                            satk = int(l.special_attack_damage)
-                            if l.special_attack_id != '1':  # 和阵营有关？
-                                self.logger.debug('fairy_battle%ssatk_id%s dmg%s' % (_for_debug, l.special_attack_id, l.special_attack_damage))
-                        if 'skill_id' in l:
-                            # skillcnt+=1
-                            skill_var = l.skill_type == '1' and l.attack_damage or l.skill_hp_player
-                            skills.append('[%d]%s(%s).%s' % (
-                                math.ceil(rnd), skill_type[int(l.skill_type)], skill_var, self.carddb[int(l.skill_card)][0])
-                            )
-                        if 'combo_name' in l:
-                            cbos.append('%s.%s' % (
-                                skill_type[int(l.combo_type)] + ('' if l.combo_hp_player == '0' else l.combo_hp_player),
-                                l.combo_name)
-                            )
-                self.logger.info('战斗详情:\nROUND:%d/%d 平均ATK:%.1f/%.1f%s %s %s %s' %
-                    (math.ceil(rnd), math.floor(rnd),
-                    matk / math.ceil(rnd), 0 if rnd < 1 else fatk / math.floor(rnd),
-                    ' SUPER:%d' % satk if satk > 0 else '',
-                    res.winner == '1' and '受到伤害:%d' % fatk or '总伤害:%d' % matk,
-                    len(cbos) > 0 and '\nCOMBO:%s' % (','.join(cbos)) or '',
-                    len(skills) > 0 and '\nSKILL:%s' % (','.join(skills)) or '')
-                )
+                try:
+                    for l in blist:
+                        if 'turn' in l:  # 回合数
+                            rnd = float(l.turn) - 0.5
+                        else:
+                            if 'attack_damage' in l:  # 普通攻击
+                                if l.action_player == '0':  # 玩家攻击
+                                    matk += int(l.attack_damage)
+                                else:  # 妖精攻击
+                                    fatk += int(l.attack_damage)
+                                    rnd += 0.5  # 妖精回合
+                                if l.attack_type not in '12':
+                                    self.logger.debug('fairy_battle%satk_type%s' % (_for_debug, l.attack_type))
+                            if 'special_attack_damage' in l:  # SUPER
+                                satk = int(l.special_attack_damage)
+                                if l.special_attack_id != '1':  # 和阵营有关？
+                                    self.logger.debug('fairy_battle%ssatk_id%s dmg%s' % (_for_debug, l.special_attack_id, l.special_attack_damage))
+                            if 'skill_id' in l:
+                                # skillcnt+=1
+                                skill_var = l.skill_type == '1' and l.attack_damage or l.skill_hp_player
+                                skills.append('[%d]%s(%s).%s' % (
+                                    math.ceil(rnd), skill_type[int(l.skill_type)], skill_var, self.carddb[int(l.skill_card)][0])
+                                )
+                            if 'combo_name' in l:
+                                cbos.append('%s.%s' % (
+                                    skill_type[int(l.combo_type)] + ('' if l.combo_hp_player == '0' else l.combo_hp_player),
+                                    l.combo_name)
+                                )
+                except:
+                    self.logger.warning('提取战斗详情时遇到了奇怪的问题:\n%s' %
+                        "".join(traceback.format_exception(*sys.exc_info()))
+                    )
+                else:
+                    self.logger.info('战斗详情:\nROUND:%d/%d 平均ATK:%.1f/%.1f%s %s %s %s' %
+                        (math.ceil(rnd), math.floor(rnd),
+                        matk / math.ceil(rnd), 0 if rnd < 1 else fatk / math.floor(rnd),
+                        ' SUPER:%d' % satk if satk > 0 else '',
+                        res.winner == '1' and '受到伤害:%d' % fatk or '总伤害:%d' % matk,
+                        len(cbos) > 0 and '\nCOMBO:%s' % (','.join(cbos)) or '',
+                        len(skills) > 0 and '\nSKILL:%s' % (','.join(skills)) or '')
+                    )
+                
         # 记录截止时间，上次战斗时间，如果需要立即刷新，上次战斗时间为0.1
         self._write_config('fairy', fairy.serial_id,
             '%d,%.0f' % (int(fairy.time_limit) + int(float(time.time())), time.time()))
@@ -1790,7 +1825,9 @@ class MAClient(object):
                             confirm = True
                 else:
                     u = raw_inputd('没有要删除的好友\n输入序号可以手动删除好友，按回车返回> ')
-                    if not u.isdigit():
+                    if not u:
+                        pass
+                    elif not u.isdigit():
                         self.logger.warning('输入"%s"非数字' % u)
                     else:
                         deluser = users[int(u) - 1]

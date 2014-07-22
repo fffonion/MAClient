@@ -366,20 +366,11 @@ def main():
             elif ch == '6':
                 maclient1._exit(0)
             elif ch != '':
-                if ch.startswith('ss') or ch.startswith('set_server') or ch.startswith('l ') or ch.startswith('login') \
-                    or ch.startswith('relogin') or ch.startswith('rl'):
+                try:
                     maclient1.tasker(cmd = ch)
-                else:
-                    if not maclient1.player_initiated:
-                        maclient1.login()
-                    try:
-                        if ch.startswith('t:'):
-                            maclient1.tasker(taskname = ch[2:])
-                        else:
-                            maclient1.tasker(cmd = ch)
-                    except KeyboardInterrupt:
-                        release_socket(maclient1.poster.ht.connections)
-                        continue
+                except KeyboardInterrupt:
+                    release_socket(maclient1.poster.ht.connections)
+                    continue
             else:
                 maclient.logging.error(du8('嗯-v-？'))
             print(' %s %s' % ('-' * (getTerminalSize()[0] - 2), '\n'))

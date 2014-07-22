@@ -48,11 +48,14 @@ auto_set/as
 	#delta 妖精血量误差(默认为1，即无误差)
 	#bc 可选max 玩家最大BC，cur 当前剩余bc(默认)，或输入一个数值
 	#notest 选出卡组后保存(无此参数时默认不保存)
+    #>carddeck 配卡并保存到配置卡组的carddeck中
 	#incl 包含某些卡片(默认为无) (现在还不能用)
 	auto_set #选出一排当前剩余BC下最大攻击的卡组
 	auto_set line:2 bc:max notest #选出两排不限BC的最大攻击卡组，并保存
 	auto_set aim:defeat line:1 bc:cur fairy:30,263215 notest #选出一排能打死Lv30剩余hp263215的普妖的卡组，并保存
 	auto_set aim:max_dmg line:1 bc:cur incl:124 #选出当前BC下一排最大攻击输出卡组，包括小狼女，不保存
+    auto_set aim:max_cp line:1 bc:40 incl:124 > forty
+    #选出cost40下一排最大CP卡组，包括小狼女，不保存，写入配置文件的forty卡组
 
 ###因子战
 

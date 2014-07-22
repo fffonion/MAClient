@@ -25,17 +25,20 @@ from Crypto.Cipher import AES
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_v1_5
 
-
-serv = {'cn':'http://game1-CBT.ma.sdo.com:10001/connect/app/',
-    'cn2':'http://game2-CBT.ma.sdo.com:10001/connect/app/', 
-    'cn3':'http://game3-CBT.ma.sdo.com:10001/connect/app/',
-    'tw':'http://game.ma.mobimon.com.tw:10001/connect/app/','tw_data':'http://download.ma.mobimon.com.tw/',
-    'jp':'http://web.million-arthurs.com/connect/app/', 'jp_data':'',
-    'kr':'http://ma.actoz.com:10001/connect/app/', 'kr_data':'',
-    'sg':'http://playma.cherrycredits.com:10001/connect/app/', 'sg_data':'',
-    'my':'http://14.63.233.145:8080/connect/app/','my_data':'http://inaspace.download.mobile.actoz.com/live/contents_tw/'}
+#server ip may change in the future
+serv = {'cn':['game1-CBT.ma.sdo.com', '117.121.6.138', 10001],
+    'cn2':['game2-CBT.ma.sdo.com', '117.121.6.139', 10001], 
+    'cn3':['game3-CBT.ma.sdo.com', '117.121.6.147', 10001],
+    'tw':['game.ma.mobimon.com.tw', '210.59.246.241', 10001],'tw_data':'http://download.ma.mobimon.com.tw/',
+    'jp':['web.million-arthurs.com', '111.64.95.115', 80], 'jp_data':'',
+    'kr':['ma.actoz.com', '14.63.233.129', 10001], 'kr_data':'',
+    'sg':['playma.cherrycredits.com', '202.14.202.19', 10001], 'sg_data':'',
+    'my':['14.63.233.145', '14.63.233.145', 8080],'my_data':'http://inaspace.download.mobile.actoz.com/live/contents_tw/'}
 serv['cn1'] = serv['cn']
 serv['cn_data'] = serv['cn2_data'] = serv['cn3_data'] = 'http://MA.webpatch.sdg-china.com/'
+
+_get_serv = lambda x:'http://%s:%d/connect/app/' % (x[0], x[2])
+_get_ip_serv = lambda x:'http://%s:%d/connect/app/' % (x[1], x[2])
 
 headers_main = {'User-Agent': 'Million/%d (GT-I9100; GT-I9100; 2.3.4) samsung/GT-I9100/GT-I9100:2.3.4/GRJ22/eng.build.20120314.185218:eng/release-keys', 'Connection': 'Keep-Alive'}#, 'Accept-Encoding':'gzip,deflate'}
 headers_post = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -188,7 +191,7 @@ class poster():
         self.logger = logger
         self.load_svr(loc, ua)
         self.issavetraffic = False
-        
+        self._use_no_dns_method = False        
 
     def set_cookie(self, cookie):
         if not cookie.endswith(';'):
@@ -281,10 +284,17 @@ class poster():
             if savetraffic and self.issavetraffic:
                 extra_kwargs = {'callback_hook' : lambda x:x, 'chunk_size' : None}
             while trytime < ttimes:
+                if self._use_no_dns_method:
+                    _get = _get_ip_serv
+                    _header = dict(header)
+                    _header.update({'Host':serv[self.servloc][0]})
+                else:
+                    _get = _get_serv
+                    _header = header
                 try:
-                    resp, content = self.ht.request('%s%s%s' % (serv[self.servloc], uri, \
+                    resp, content = self.ht.request('%s%s%s' % (_get(serv[self.servloc]), uri, \
                         (not noencrypt and not self.shortloc == 'jp') and '?cyt=1' or ''), \
-                        method = 'POST', headers = header, body = postdata, **extra_kwargs)
+                        method = 'POST', headers = _header, body = postdata, **extra_kwargs)
                     assert(len(content) > 0 or (savetraffic and self.issavetraffic) or resp['status'] == '302')
                 except socket.error as e:
                     if e.errno == None:
@@ -305,6 +315,12 @@ class poster():
                     self.logger.warning('post:socket closed, retrying in %d times' % (ttimes - trytime))
                 except httplib2.ServerNotFoundError:
                     self.logger.warning('post:no internet, retrying in %d times' % (ttimes - trytime))
+                    if trytime >= ttimes - 1 and not self._use_no_dns_method:
+                        self.logger.info('post:GF*W? Retry using saved IP')
+                        self._use_no_dns_method = True
+                        trytime = 0
+                except httplib.IncompleteRead as e:
+                    self.logger.warning('post:网络可能不稳定(%s)' % e)
                 # except TypeError:  # 使用了官方版的httplib2
                 #     self.logger.warning(du8('你正在使用官方版的httplib2，因此省流模式将无法正常工作'))
                 #     self.issavetraffic = False
@@ -330,7 +346,11 @@ class poster():
             if savetraffic and self.issavetraffic:
                 return resp, content
             # 否则解码
-            dec = self.rollback_utf8(self.crypt.decode_data(content, second_cipher = self.has_2ndkey and not no2ndkey))
+            try:
+                dec = self.rollback_utf8(self.crypt.decode_data(content, second_cipher = self.has_2ndkey and not no2ndkey))
+            except ValueError as e:
+                self.logger.warning('网络可能不稳定，接收数据异常(%s)' % e)
+                return {'status':'600'}, ''
             if os.path.exists('debug'):
                 open('debug/%s.xml' % uri.replace('/', '#').replace('?', '~'), 'w').write(dec)
                 # open('debug/~%s.xml'%uri.replace('/','#').replace('?','~'),'w').write(content)
