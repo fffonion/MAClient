@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.3-build20140717'
+__version__ = '1.3-build20140722'
 
 try:
     from multiprocessing import Pool
@@ -42,7 +42,7 @@ key_rsa_pool = [
 app_ver_cn = 102
 app_ver_tw = 200
 app_ver_kr = 108
-app_ver_jp = 320
+app_ver_jp = 321
 app_ver_sg = 100
 app_ver_my = 101
 # wake

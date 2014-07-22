@@ -17,6 +17,7 @@ from xml2dict import XML2Dict
 from xml2dict import object_dict
 import random
 import threading
+import traceback
 from cross_platform import *
 if PYTHON3:
     import configparser as ConfigParser
@@ -244,9 +245,9 @@ class MAClient(object):
                 try:
                     dec = XML2Dict.fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
                 except:
-                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\n'
-                        '如果是日服，可以试试重新登录(输入rl)\n'
-                        'http://yooooo.us/2013/maclient')
+                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\n%s'
+                        'http://yooooo.us/2013/maclient' % 
+                        ('你也可以试试重新登录(输入rl)\n' if self.loc == 'jp' else ''))
                     with open('debug_%s.xml' % urikey.replace('/', '#').replace('?', '~'),'w') as f:
                         f.write(_dec)
                     self._exit(3)
@@ -1655,41 +1656,48 @@ class MAClient(object):
                 token = os.urandom(8)
                 self.plugin.set_extras(token, 'battle_result', blist)
                 self.plugin.set_extras(token, 'battle_player', ct.body.battle_battle.battle_player_list)
-                for l in blist:
-                    if 'turn' in l:  # 回合数
-                        rnd = float(l.turn) - 0.5
-                    else:
-                        if 'attack_damage' in l:  # 普通攻击
-                            if l.action_player == '0':  # 玩家攻击
-                                matk += int(l.attack_damage)
-                            else:  # 妖精攻击
-                                fatk += int(l.attack_damage)
-                                rnd += 0.5  # 妖精回合
-                            if l.attack_type not in '12':
-                                self.logger.debug('fairy_battle%satk_type%s' % (_for_debug, l.attack_type))
-                        if 'special_attack_damage' in l:  # SUPER
-                            satk = int(l.special_attack_damage)
-                            if l.special_attack_id != '1':  # 和阵营有关？
-                                self.logger.debug('fairy_battle%ssatk_id%s dmg%s' % (_for_debug, l.special_attack_id, l.special_attack_damage))
-                        if 'skill_id' in l:
-                            # skillcnt+=1
-                            skill_var = l.skill_type == '1' and l.attack_damage or l.skill_hp_player
-                            skills.append('[%d]%s(%s).%s' % (
-                                math.ceil(rnd), skill_type[int(l.skill_type)], skill_var, self.carddb[int(l.skill_card)][0])
-                            )
-                        if 'combo_name' in l:
-                            cbos.append('%s.%s' % (
-                                skill_type[int(l.combo_type)] + ('' if l.combo_hp_player == '0' else l.combo_hp_player),
-                                l.combo_name)
-                            )
-                self.logger.info('战斗详情:\nROUND:%d/%d 平均ATK:%.1f/%.1f%s %s %s %s' %
-                    (math.ceil(rnd), math.floor(rnd),
-                    matk / math.ceil(rnd), 0 if rnd < 1 else fatk / math.floor(rnd),
-                    ' SUPER:%d' % satk if satk > 0 else '',
-                    res.winner == '1' and '受到伤害:%d' % fatk or '总伤害:%d' % matk,
-                    len(cbos) > 0 and '\nCOMBO:%s' % (','.join(cbos)) or '',
-                    len(skills) > 0 and '\nSKILL:%s' % (','.join(skills)) or '')
-                )
+                try:
+                    for l in blist:
+                        if 'turn' in l:  # 回合数
+                            rnd = float(l.turn) - 0.5
+                        else:
+                            if 'attack_damage' in l:  # 普通攻击
+                                if l.action_player == '0':  # 玩家攻击
+                                    matk += int(l.attack_damage)
+                                else:  # 妖精攻击
+                                    fatk += int(l.attack_damage)
+                                    rnd += 0.5  # 妖精回合
+                                if l.attack_type not in '12':
+                                    self.logger.debug('fairy_battle%satk_type%s' % (_for_debug, l.attack_type))
+                            if 'special_attack_damage' in l:  # SUPER
+                                satk = int(l.special_attack_damage)
+                                if l.special_attack_id != '1':  # 和阵营有关？
+                                    self.logger.debug('fairy_battle%ssatk_id%s dmg%s' % (_for_debug, l.special_attack_id, l.special_attack_damage))
+                            if 'skill_id' in l:
+                                # skillcnt+=1
+                                skill_var = l.skill_type == '1' and l.attack_damage or l.skill_hp_player
+                                skills.append('[%d]%s(%s).%s' % (
+                                    math.ceil(rnd), skill_type[int(l.skill_type)], skill_var, self.carddb[int(l.skill_card)][0])
+                                )
+                            if 'combo_name' in l:
+                                cbos.append('%s.%s' % (
+                                    skill_type[int(l.combo_type)] + ('' if l.combo_hp_player == '0' else l.combo_hp_player),
+                                    l.combo_name)
+                                )
+                except:
+                    self.logger.warning('提取战斗详情时遇到了奇怪的问题:\n%s' %
+                        "".join(traceback.format_exception(*sys.exc_info()))
+                    )
+                else:
+                    self.logger.info('战斗详情:\nROUND:%d/%d 平均ATK:%.1f/%.1f%s %s %s %s' %
+                        (math.ceil(rnd), math.floor(rnd),
+                        matk / math.ceil(rnd), 0 if rnd < 1 else fatk / math.floor(rnd),
+                        ' SUPER:%d' % satk if satk > 0 else '',
+                        res.winner == '1' and '受到伤害:%d' % fatk or '总伤害:%d' % matk,
+                        len(cbos) > 0 and '\nCOMBO:%s' % (','.join(cbos)) or '',
+                        len(skills) > 0 and '\nSKILL:%s' % (','.join(skills)) or '')
+                    )
+                
         # 记录截止时间，上次战斗时间，如果需要立即刷新，上次战斗时间为0.1
         self._write_config('fairy', fairy.serial_id,
             '%d,%.0f' % (int(fairy.time_limit) + int(float(time.time())), time.time()))
