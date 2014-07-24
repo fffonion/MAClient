@@ -29,7 +29,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.71
+__version__ = 1.72
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
