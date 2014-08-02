@@ -194,6 +194,12 @@ class MAClient(object):
             self.logger.debug('plugin:loaded %s' % (','.join(plugin.plugins.keys())) or 'NONE')
         else:
             plugin.enable = False
+        _app_ver_override = self._read_config('system', 'app_ver_%s' % self.loc[:2])
+        if _app_ver_override:
+            if not _app_ver_override.isdigit():
+                self.logger.warning('重载版本号"%s"不是数字，将不使用' % _app_ver_override)
+            else:
+                setattr(maclient_smart, 'app_ver_%s' % self.loc[:2], int(_app_ver_override))
 
 
     def load_cookie(self):
@@ -259,7 +265,7 @@ class MAClient(object):
                 if err.code != '0':
                     resp['errmsg'] = err.message
                     # 1050木有BC 1010卖了卡或妖精已被消灭 8000基友点或卡满了 1020维护 1030有新版本
-                    if not err.code in ['1050', '1010'] and not (err.code == '1000' and self.loc == 'jp'):  # ,'8000']:
+                    if not err.code in ['1050', '1010', '1030'] and not (err.code == '1000' and self.loc == 'jp'):  # ,'8000']:
                         self.logger.error('code:%s msg:%s' % (err.code, err.message))
                         resp.update({'error':True, 'errno':int(err.code)})
                     if err.code == '9000':
@@ -291,6 +297,16 @@ class MAClient(object):
                         if hasattr(self, 'player'):
                             self.player.rev_update_checked = False  # 置为未检查
                         return resp, dec
+                    elif err.code == '1030':
+                        self.logger.error('客户端版本号升级了\n'
+                            '你可以在GUI中手动更改，或者在MAClient发布更新后使用pu更新\n'
+                            '当前版本号是%d，一般来说加1就可以了' % getattr(maclient_smart, 'app_ver_%s' % self.loc[:2]))
+                        _v = self._read_config('system', 'app_ver_%s' % self.loc)
+                        if _v and _v.isdigit():
+                            self.logger.warning('注意：你可能在配置文件中设置了错误的重载版本号，请删除system块下的app_ver_%s项'
+                                    % self.loc[:2])
+                        self._exit(int(err.code))
+                    return resp, dec
             if not self.player_initiated :
                 open(self.playerfile, 'w').write(_dec)
             else:

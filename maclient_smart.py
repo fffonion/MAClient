@@ -41,7 +41,7 @@ key_rsa_pool = [
 
 app_ver_cn = 102
 app_ver_tw = 200
-app_ver_kr = 108
+app_ver_kr = 109
 app_ver_jp = 321
 app_ver_sg = 100
 app_ver_my = 101
