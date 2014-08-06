@@ -30,9 +30,9 @@ import maclient_network
 # start meta
 __plugin_name__ = 'web broswer helper'
 __author = 'fffonion'
-__version__ = 0.46
+__version__ = 0.48
 hooks = {}
-extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy'}
+extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy', 'go':'make_request'}
 # end meta
 # generate weburl
 weburl = dict(maclient_network.serv)
@@ -100,6 +100,21 @@ def start_webproxy(plugin_vals):
         except KeyboardInterrupt:
             server.shutdown()
             disable_proxy()
+    return do
+
+def make_request(plugin_vals):
+    def do(args):
+        url = args.rstrip()
+        if not url:
+            return
+        headers['cookie'] = plugin_vals['cookie']
+        headers['User-Agent'] = plugin_vals['poster'].header['User-Agent']
+        headers['X-Requested-With'] += plugin_vals['loc'][:2]
+        homeurl = weburl[plugin_vals['loc']] % (plugin_vals['cookie'].rstrip(';'))
+        req = urllib2.Request(url, headers = headers)
+        resp = opener.open(req)
+        body = resp.read()
+        print('GET %s received %d bytes.' % (url, len(body)))
     return do
 
 def enable_proxy():
