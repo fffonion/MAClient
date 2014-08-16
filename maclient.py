@@ -306,7 +306,7 @@ class MAClient(object):
                             self.logger.warning('注意：你可能在配置文件中设置了错误的重载版本号，请删除system块下的app_ver_%s项'
                                     % self.loc[:2])
                         self._exit(int(err.code))
-                    return resp, dec
+                    #return resp, dec
             if not self.player_initiated :
                 open(self.playerfile, 'w').write(_dec)
             else:
