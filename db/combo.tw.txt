@@ -512,3 +512,7 @@
 602,Contrast character,3,最大HP提升小,[1448,1459]
 603,Should,2,攻擊力提升中,[1453,1449,1447]
 604,Guizu,3,最大HP提升中,[1454,1449]
+605,Burst runner league,3,最大HP提升小,[1466,1467]
+606,Go out on a date,3,最大HP提升中,[1468,1469]
+607,The daily of spirits,2,攻擊力提升小,[1471,1472]
+608,Passionate?,2,攻擊力提升小,[1470,1473]

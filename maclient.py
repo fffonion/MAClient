@@ -131,7 +131,13 @@ class MAClient(object):
         self.posttime = 0
         # self.set_remote(None)
         ua = self._read_config('system', 'user-agent')
-        self.poster = maclient_network.poster(self.loc, self.logger, ua)
+        try:
+            self.poster = maclient_network.poster(self.loc, self.logger, ua)
+        except ImportError as ex:
+            # No module named xxxx
+            mod_name = str(ex)[16:]
+            self.logger.error('%s模块不存在%s' % (mod_name, '，无法运行韩服' if mod_name == 'maclient_crypt_ext' else ''))
+            self._exit(10)
         if ua:
             self.logger.debug('system:ua changed to %s' % (self.poster.header['User-Agent']))
         self.load_cookie()
@@ -560,12 +566,16 @@ class MAClient(object):
                     # if self.loc == 'kr':
                     #      pdata='S=nosessionid&%s' % pdata
                     if self.loc not in ['jp', 'my']:
-                        self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
+                        self._dopost('notification/post_devicetoken', postdata = pdata , xmlresp = False, no2ndkey = True)
                 if self.loc == 'my':
                     login_uri = 'actozlogin'
                 else:
                     login_uri = 'login'
-                resp, ct = self._dopost(login_uri, postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
+                if self.loc == 'kr':
+                    pdata = 'login_id=%s&IsGetPus=1&DeviceKey=35%d&PushId=%s&Language=zh&CountryCode=CN&password=%s' % (self.username, random.randrange(0, 1000000000), token, self.password)
+                else:
+                    pdata = 'login_id=%s&password=%s' % (self.username, self.password)
+                resp, ct = self._dopost(login_uri, postdata = pdata, no2ndkey = True)
                 if resp['error']:
                     self.logger.info('登录失败么么哒w')
                     self._exit(1)
