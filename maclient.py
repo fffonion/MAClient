@@ -686,11 +686,11 @@ class MAClient(object):
                 aim = arg[4:]
             elif arg.startswith('fairy:'):
                 fairy = object_dict()
-                fairy.lv, fairy.hp, nothing = map(int, (arg[6:] + ',-325').split(','))
+                fairy.lv, fairy.hp, nothing = map(int, (arg[6:] + ',-325').split(','))[:3]
                 if nothing != -325:
-                    fairy.IS_WAKE = False
+                    fairy.wake = False
                 else:
-                    fairy.IS_WAKE = True
+                    fairy.wake = True
                 aim = 'DEFEAT'
             elif arg.startswith('line:'):
                 maxline = int(arg[5:])
