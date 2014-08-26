@@ -72,7 +72,8 @@ def reg_gen(plugin_vals):
             resp, ct = po.post('tutorial/next', postdata = 'S=%s&step=%s' % (po.cookie, 8000))
             if loc in ['kr', 'sg']:
                 # httplib2 doesn't follow redirection in POSTs
-                resp, ct = httplib2.Http().request(maclient_network.serv[loc] + 'mainmenu?fl=1', headers = GET_header)
+                print(maclient_network.serv[loc])
+                resp, ct = httplib2.Http().request('http://%s/%s' % (maclient_network.serv[loc][0], 'mainmenu?fl=1'), headers = GET_header)
             if len(ct) > 8000:
                 cnt += 1
                 print('Success. (%d done)' % cnt)

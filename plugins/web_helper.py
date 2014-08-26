@@ -30,9 +30,9 @@ import maclient_network
 # start meta
 __plugin_name__ = 'web broswer helper'
 __author = 'fffonion'
-__version__ = 0.46
+__version__ = 0.49
 hooks = {}
-extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy'}
+extra_cmd = {'web':'start_webproxy', 'w':'start_webproxy', 'go':'make_request'}
 # end meta
 # generate weburl
 weburl = dict(maclient_network.serv)
@@ -102,6 +102,21 @@ def start_webproxy(plugin_vals):
             disable_proxy()
     return do
 
+def make_request(plugin_vals):
+    def do(args):
+        url = args.rstrip()
+        if not url:
+            return
+        headers['cookie'] = plugin_vals['cookie']
+        headers['User-Agent'] = plugin_vals['poster'].header['User-Agent']
+        headers['X-Requested-With'] += plugin_vals['loc'][:2]
+        homeurl = weburl[plugin_vals['loc']] % (plugin_vals['cookie'].rstrip(';'))
+        req = urllib2.Request(url, headers = headers)
+        resp = opener.open(req)
+        body = resp.read()
+        print('GET %s received %d bytes.' % (url, len(body)))
+    return do
+
 def enable_proxy():
     if winreg:
         INTERNET_SETTINGS = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
@@ -111,6 +126,8 @@ def enable_proxy():
         winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyOverride', 0, winreg.REG_SZ, u'127.0.0.1')  # Bypass the proxy for localhost
         winreg.SetValueEx(INTERNET_SETTINGS, 'ProxyServer', 0, winreg.REG_SZ, u'127.0.0.1:23301')
         os.system(du8('TITLE 请按Ctrl+C 退出，不要直接X掉啊'))
+    else:
+        os.environ['http_proxy'] = 'http://127.0.0.1:23301'
 
 def disable_proxy():
     if winreg:
@@ -121,6 +138,8 @@ def disable_proxy():
         os.system(du8('TITLE 代理设置已清除ww'))
         # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyOverride')
         # winreg.DeleteKey(INTERNET_SETTINGS, 'ProxyServer')
+    else:
+        os.environ['http_proxy'] = ''
 # opener
 if PYTHON3:
     opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.request.getproxies()))

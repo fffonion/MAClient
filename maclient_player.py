@@ -191,7 +191,7 @@ class card(object):
             for elem in p:  # store as int
                 try:
                     self.cards[-1][elem] = int(getattr(p, elem))
-                except TypeError:
+                except (TypeError, UnicodeEncodeError): #not decimal
                     pass
         self.count = len(self.cards)
         # print self.cid('124')

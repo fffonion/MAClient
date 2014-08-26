@@ -10,6 +10,8 @@ import time
 import base64
 import socket
 import urllib
+import binascii
+import random
 import maclient_smart
 from cross_platform import *
 if PYTHON3:
@@ -49,8 +51,9 @@ b2u = PYTHON3 and (lambda x:x.decode(encoding = 'utf-8', errors = 'replace')) or
 tobytes = PYTHON3 and (lambda x:x if isinstance(x, bytes) else x.encode(encoding = 'utf-8', errors = 'replace')) or (lambda x:x)
 MOD_AES, MOD_AES_RANDOM, MOD_RSA_AES_RANDOM = 0, 1, 2
 class Crypt():
-    def __init__(self,loc):
-        self.init_cipher(loc=loc)
+    def __init__(self, loc):
+        self.loc = loc
+        self.init_cipher()
         self.random_cipher_plain=''
         if loc not in ['jp', 'my']:
             self.gen_rsa_pubkey()
@@ -60,15 +63,26 @@ class Crypt():
             #     self._gen_rnd_key = lambda x = 16 : ''.join([random.choice(string.letters + string.digits) for i in range(x)])
             # else:
             #     self._gen_rnd_key = lambda x = 16 : os.urandom(x)
+        if loc == 'kr':
+            import maclient_crypt_ext
+            #total = sha384('qUZzuhyUaTAsHDhEVyQw820TEXPHrHPO').hexdigest()
+            total = '5cb01273a084ffd4c848722db59504fd9ac6646929e7e5c806d63cf9db406aacbc55e4063bf32b74a4091451ad1daa5'
+            self.enc_plus = lambda x:binascii.hexlify(maclient_crypt_ext.encrypt(
+                x,
+                binascii.unhexlify(total[:32]),
+                binascii.unhexlify(total[32:64]))).upper()
         self.AES2ndKey = None
-
-    def gen_cipher_with_uid(self, uid, loc):
-        plain = '%s%s%s' % (getattr(maclient_smart, 'key_%s' % loc[:2])['crypt'][:16], uid, '0'*(16-len(uid)))
+        
+    def gen_cipher_with_uid(self, uid):
+        plain = '%s%s%s' % (getattr(maclient_smart, 'key_%s' % self.loc[:2])['crypt'][:16], uid, '0'*(16-len(uid)))
         return self._gen_cipher(plain)
 
     def gen_rsa_pubkey(self):
         #pk="""MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAM5U06JAbYWdRBrnMdE2bEuDmWgUav7xNKm7i8s1Uy/\nfvpvfxLeoWowLGIBKz0kDLIvhuLV8Lv4XV0+aXdl2j4kCAwEAAQ=="""
-        pk = maclient_smart.key_rsa_pool[2]
+        if self.loc == 'kr':
+            pk = maclient_smart.key_rsa_pool[-1]
+        else:
+            pk = maclient_smart.key_rsa_pool[2]
         #pk = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8A' + ''.join(pk[1:-2])
         pk = [pk[i:i+64] for i in range(0, len(pk), 64)]
         pk = '-----BEGIN PUBLIC KEY-----\n' + '\n'.join(pk) + '\n-----END PUBLIC KEY-----'
@@ -78,15 +92,20 @@ class Crypt():
         #self.rsa = RSA.load_pub_key_bio(bio)
 
     def gen_random_cipher(self):
-        self.random_cipher_plain = os.urandom(16)
+        if self.loc == 'kr':
+            self.random_cipher_plain = ''.join([random.choice(
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()") 
+                for i in range(16)])
+        else:
+            self.random_cipher_plain = os.urandom(16)
         self.random_cipher = self._gen_cipher(self.random_cipher_plain)
 
     def _gen_cipher(self,plain):
         return AES.new(plain, AES.MODE_ECB)
 
-    def init_cipher(self,loc = 'cn', uid = None):
-        _key = getattr(maclient_smart, 'key_%s' % loc[:2])
-        if loc in ['jp', 'my']:
+    def init_cipher(self, uid = None):
+        _key = getattr(maclient_smart, 'key_%s' % self.loc[:2])
+        if self.loc in ['jp', 'my']:
             #if not uid:
             #    uid = '0'
             _key['crypt'] = '%s%s' % (_key['crypt'], '0' * 16)
@@ -140,6 +159,15 @@ class Crypt():
         # print p_enc
         return p_enc.replace('\n', '')
 
+    def encode_param_kr(self, param):
+        if not param:
+            param = '{"timestamp":"%d"}' % (int(time.time() + 5000))
+        else:
+            param = '{"timestamp":"%d","%s"}' % (int(time.time() + 5000), '","'.join(map(lambda p:'":"'.join(p.split('=')).rstrip(':"'), param.split('&')))) # form to json
+        _enc_param = base64.encodestring(self.random_cipher.encrypt(pad(self.enc_plus(param))))
+        _rnd_key = base64.encodestring(self.rsa.encrypt(self.enc_plus(base64.encodestring(self.random_cipher_plain))))
+        return 'q=%s%s' % (self.urlunescape(_rnd_key.replace('\n', '')), self.urlunescape(_enc_param.replace('\n', '')))
+
     def decode_param(self, param_enc):
         p_enc = param_enc.split('&')
         p = '%0A&'.join(['%s=%s' % (p_enc[i].split('=')[0], self.decode_data64(p_enc[i].split('=')[1])) for i in xrange(len(p_enc))])
@@ -191,7 +219,7 @@ class poster():
         self.logger = logger
         self.load_svr(loc, ua)
         self.issavetraffic = False
-        self._use_no_dns_method = False        
+        self._use_no_dns_method = False
 
     def set_cookie(self, cookie):
         if not cookie.endswith(';'):
@@ -205,7 +233,7 @@ class poster():
             self.logger.warning('你正在使用官方版的httplib2，因此省流模式将无法正常工作')
 
     def gen_2nd_key(self, uid, loc='jp'):
-        self.crypt.AES2ndKey = self.crypt.gen_cipher_with_uid(uid, loc)
+        self.crypt.AES2ndKey = self.crypt.gen_cipher_with_uid(loc)
 
     def load_svr(self, loc, ua=''):
         self.ht = httplib2.Http(timeout = 15)
@@ -228,7 +256,7 @@ class poster():
                 self.header['User-Agent'] += 'GooglePlay'
                 self.v = '.'.join(list(str(maclient_smart.app_ver_jp)))#like 304 -> 3.0.4
         self.has_2ndkey = self.shortloc in ['jp', 'my']
-        self.crypt=Crypt(self.shortloc)
+        self.crypt = Crypt(self.shortloc)
 
     def update_server(self, check_inspection_str):
         #not using
@@ -254,7 +282,7 @@ class poster():
             if usecookie and not self.has_2ndkey:
                 header.update({'Cookie':self.cookie})
             if not noencrypt :
-                if  self.shortloc not in ['jp', 'my']:#pass key to server
+                if  self.shortloc not in ['jp', 'my', 'kr']:#pass key to server
                     #add sign to param
                     self.crypt.gen_random_cipher()
                     sign='K=%s'%self.crypt.urlunescape(
@@ -278,6 +306,9 @@ class poster():
                         self.crypt.encode_param('%sv=%s'% (postdata, self.v), second_cipher = self.has_2ndkey and not no2ndkey)
                         )
                     extraheader = {}
+                elif self.shortloc == 'kr':
+                    self.crypt.gen_random_cipher()
+                    postdata = self.crypt.encode_param_kr(postdata)
             trytime = 0
             ttimes = 3
             extra_kwargs = {}
@@ -360,5 +391,6 @@ class poster():
             return resp, dec
 
 if __name__ == "__main__":
-    p = Crypt('cn')
+    p = Crypt('kr')
     p.gen_random_cipher()
+    print(p.encode_param('a=b&c=d'))
