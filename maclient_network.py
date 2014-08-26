@@ -393,4 +393,4 @@ class poster():
 if __name__ == "__main__":
     p = Crypt('kr')
     p.gen_random_cipher()
-    print(p.encode_param('login_id=onion123123&IsGetPus=1&DeviceKey=358239059439812&PushId=APA91bF-2bQ2JZKPuBNf_TlAZyZpTZN_2e6JZ1V4KX5pDNlu4QdlGbnxgoi57JwQHviygAsYJLCWKJxTX6ZHclxYTtBFummAOujZXjAdO_P8aLpwC6y3hA0j0OGFFLeskHMhOT2n7AKxdCtLOR6Ts9aCa187cCTnjD98rfsJLvLhvlqpcT4HI6g&Language=zh&CountryCode=CN&password=1993x429'))
+    print(p.encode_param('a=b&c=d'))
