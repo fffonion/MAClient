@@ -17,6 +17,7 @@ from xml2dict import XML2Dict
 from xml2dict import object_dict
 import random
 import threading
+import traceback
 from cross_platform import *
 if PYTHON3:
     import configparser as ConfigParser
@@ -28,7 +29,7 @@ import maclient_logging
 import maclient_smart
 import maclient_plugin
 
-__version__ = 1.71
+__version__ = 1.72
 # CONSTS:
 EXPLORE_BATTLE, NORMAL_BATTLE, TAIL_BATTLE, WAKE_BATTLE = 0, 1, 2, 3
 GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
@@ -50,8 +51,12 @@ eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale
 eval_task = []
 #duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 
+no_unicode_patch = lambda x:x.replace('卡片', 'Cards').replace('妖精存活', 'FAIRY_ALIVE').replace('公会妖存活', 'GUILD_ALIVE')
 if PYTHON3:
-    setT = lambda strt : os.system(raw_du8('TITLE %s' % strt))
+    if sys.platform == 'win32':
+        setT = lambda strt : os.system(raw_du8('TITLE %s' % strt))
+    elif not ANDROID:
+        setT = lambda strt : os.system('echo -n "\033]2;%s\007" >/dev/tty' % no_unicode_patch(strt))
 elif NICE_TERM:
     setT = lambda strt : print(raw_du8('[SET-TITLE]%s'%strt))
 else:
@@ -61,8 +66,10 @@ else:
         import System.Console
         def setT(strt):
             System.Console.Title = strt
-    else:
+    elif sys.platform == 'win32':
         setT = lambda strt : os.system(raw_du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+    elif not ANDROID:
+        setT = lambda strt : os.system('echo -n "\033]2;%s\007" >/dev/tty' % no_unicode_patch(strt))
 
 class set_title(threading.Thread):
     def __init__(self, macInstance):
@@ -126,11 +133,17 @@ class MAClient(object):
         # 添加引用
         self.plugin = plugin
         self.cfg_save_session = savesession
-        self.settitle = os.name == 'nt'
+        self.settitle = not ANDROID
         self.posttime = 0
         # self.set_remote(None)
         ua = self._read_config('system', 'user-agent')
-        self.poster = maclient_network.poster(self.loc, self.logger, ua)
+        try:
+            self.poster = maclient_network.poster(self.loc, self.logger, ua)
+        except ImportError as ex:
+            # No module named xxxx
+            mod_name = str(ex)[16:]
+            self.logger.error('%s模块不存在%s' % (mod_name, '，无法运行韩服' if mod_name == 'maclient_crypt_ext' else ''))
+            self._exit(10)
         if ua:
             self.logger.debug('system:ua changed to %s' % (self.poster.header['User-Agent']))
         self.load_cookie()
@@ -193,6 +206,12 @@ class MAClient(object):
             self.logger.debug('plugin:loaded %s' % (','.join(plugin.plugins.keys())) or 'NONE')
         else:
             plugin.enable = False
+        _app_ver_override = self._read_config('system', 'app_ver_%s' % self.loc[:2])
+        if _app_ver_override:
+            if not _app_ver_override.isdigit():
+                self.logger.warning('重载版本号"%s"不是数字，将不使用' % _app_ver_override)
+            else:
+                setattr(maclient_smart, 'app_ver_%s' % self.loc[:2], int(_app_ver_override))
 
 
     def load_cookie(self):
@@ -244,9 +263,9 @@ class MAClient(object):
                 try:
                     dec = XML2Dict.fromstring(re.compile('&(?!#)').sub('&amp;',_dec)).response
                 except:
-                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\n'
-                        '如果是日服，可以试试重新登录(输入rl)\n'
-                        'http://yooooo.us/2013/maclient')
+                    self.logger.error('大概是换了版本号/新加密方法等等，总之是跪了orz…请提交debug_xxx.xml\n%s'
+                        'http://yooooo.us/2013/maclient' % 
+                        ('你也可以试试重新登录(输入rl)\n' if self.loc == 'jp' else ''))
                     with open('debug_%s.xml' % urikey.replace('/', '#').replace('?', '~'),'w') as f:
                         f.write(_dec)
                     self._exit(3)
@@ -258,7 +277,7 @@ class MAClient(object):
                 if err.code != '0':
                     resp['errmsg'] = err.message
                     # 1050木有BC 1010卖了卡或妖精已被消灭 8000基友点或卡满了 1020维护 1030有新版本
-                    if not err.code in ['1050', '1010'] and not (err.code == '1000' and self.loc == 'jp'):  # ,'8000']:
+                    if not err.code in ['1050', '1010', '1030'] and not (err.code == '1000' and self.loc == 'jp'):  # ,'8000']:
                         self.logger.error('code:%s msg:%s' % (err.code, err.message))
                         resp.update({'error':True, 'errno':int(err.code)})
                     if err.code == '9000':
@@ -290,6 +309,16 @@ class MAClient(object):
                         if hasattr(self, 'player'):
                             self.player.rev_update_checked = False  # 置为未检查
                         return resp, dec
+                    elif err.code == '1030':
+                        self.logger.error('客户端版本号升级了\n'
+                            '你可以在GUI中手动更改，或者在MAClient发布更新后使用pu更新\n'
+                            '当前版本号是%d，一般来说加1就可以了' % getattr(maclient_smart, 'app_ver_%s' % self.loc[:2]))
+                        _v = self._read_config('system', 'app_ver_%s' % self.loc)
+                        if _v and _v.isdigit():
+                            self.logger.warning('注意：你可能在配置文件中设置了错误的重载版本号，请删除system块下的app_ver_%s项'
+                                    % self.loc[:2])
+                        self._exit(int(err.code))
+                    #return resp, dec
             if not self.player_initiated :
                 open(self.playerfile, 'w').write(_dec)
             else:
@@ -543,12 +572,16 @@ class MAClient(object):
                     # if self.loc == 'kr':
                     #      pdata='S=nosessionid&%s' % pdata
                     if self.loc not in ['jp', 'my']:
-                        self._dopost('notification/post_devicetoken', postdata =pdata , xmlresp = False, no2ndkey = True)
+                        self._dopost('notification/post_devicetoken', postdata = pdata , xmlresp = False, no2ndkey = True)
                 if self.loc == 'my':
                     login_uri = 'actozlogin'
                 else:
                     login_uri = 'login'
-                resp, ct = self._dopost(login_uri, postdata = 'login_id=%s&password=%s' % (self.username, self.password), no2ndkey = True)
+                if self.loc == 'kr':
+                    pdata = 'login_id=%s&IsGetPus=1&DeviceKey=35%d&PushId=%s&Language=zh&CountryCode=CN&password=%s' % (self.username, random.randrange(0, 1000000000), token, self.password)
+                else:
+                    pdata = 'login_id=%s&password=%s' % (self.username, self.password)
+                resp, ct = self._dopost(login_uri, postdata = pdata, no2ndkey = True)
                 if resp['error']:
                     self.logger.info('登录失败么么哒w')
                     self._exit(1)
@@ -659,11 +692,11 @@ class MAClient(object):
                 aim = arg[4:]
             elif arg.startswith('fairy:'):
                 fairy = object_dict()
-                fairy.lv, fairy.hp, nothing = map(int, (arg[6:] + ',-325').split(','))
+                fairy.lv, fairy.hp, nothing = map(int, (arg[6:] + ',-325').split(','))[:3]
                 if nothing != -325:
-                    fairy.IS_WAKE = False
+                    fairy.wake = False
                 else:
-                    fairy.IS_WAKE = True
+                    fairy.wake = True
                 aim = 'DEFEAT'
             elif arg.startswith('line:'):
                 maxline = int(arg[5:])
@@ -1655,41 +1688,48 @@ class MAClient(object):
                 token = os.urandom(8)
                 self.plugin.set_extras(token, 'battle_result', blist)
                 self.plugin.set_extras(token, 'battle_player', ct.body.battle_battle.battle_player_list)
-                for l in blist:
-                    if 'turn' in l:  # 回合数
-                        rnd = float(l.turn) - 0.5
-                    else:
-                        if 'attack_damage' in l:  # 普通攻击
-                            if l.action_player == '0':  # 玩家攻击
-                                matk += int(l.attack_damage)
-                            else:  # 妖精攻击
-                                fatk += int(l.attack_damage)
-                                rnd += 0.5  # 妖精回合
-                            if l.attack_type not in '12':
-                                self.logger.debug('fairy_battle%satk_type%s' % (_for_debug, l.attack_type))
-                        if 'special_attack_damage' in l:  # SUPER
-                            satk = int(l.special_attack_damage)
-                            if l.special_attack_id != '1':  # 和阵营有关？
-                                self.logger.debug('fairy_battle%ssatk_id%s dmg%s' % (_for_debug, l.special_attack_id, l.special_attack_damage))
-                        if 'skill_id' in l:
-                            # skillcnt+=1
-                            skill_var = l.skill_type == '1' and l.attack_damage or l.skill_hp_player
-                            skills.append('[%d]%s(%s).%s' % (
-                                math.ceil(rnd), skill_type[int(l.skill_type)], skill_var, self.carddb[int(l.skill_card)][0])
-                            )
-                        if 'combo_name' in l:
-                            cbos.append('%s.%s' % (
-                                skill_type[int(l.combo_type)] + ('' if l.combo_hp_player == '0' else l.combo_hp_player),
-                                l.combo_name)
-                            )
-                self.logger.info('战斗详情:\nROUND:%d/%d 平均ATK:%.1f/%.1f%s %s %s %s' %
-                    (math.ceil(rnd), math.floor(rnd),
-                    matk / math.ceil(rnd), 0 if rnd < 1 else fatk / math.floor(rnd),
-                    ' SUPER:%d' % satk if satk > 0 else '',
-                    res.winner == '1' and '受到伤害:%d' % fatk or '总伤害:%d' % matk,
-                    len(cbos) > 0 and '\nCOMBO:%s' % (','.join(cbos)) or '',
-                    len(skills) > 0 and '\nSKILL:%s' % (','.join(skills)) or '')
-                )
+                try:
+                    for l in blist:
+                        if 'turn' in l:  # 回合数
+                            rnd = float(l.turn) - 0.5
+                        else:
+                            if 'attack_damage' in l:  # 普通攻击
+                                if l.action_player == '0':  # 玩家攻击
+                                    matk += int(l.attack_damage)
+                                else:  # 妖精攻击
+                                    fatk += int(l.attack_damage)
+                                    rnd += 0.5  # 妖精回合
+                                if l.attack_type not in '12':
+                                    self.logger.debug('fairy_battle%satk_type%s' % (_for_debug, l.attack_type))
+                            if 'special_attack_damage' in l:  # SUPER
+                                satk = int(l.special_attack_damage)
+                                if l.special_attack_id != '1':  # 和阵营有关？
+                                    self.logger.debug('fairy_battle%ssatk_id%s dmg%s' % (_for_debug, l.special_attack_id, l.special_attack_damage))
+                            if 'skill_id' in l:
+                                # skillcnt+=1
+                                skill_var = l.skill_type == '1' and l.attack_damage or l.skill_hp_player
+                                skills.append('[%d]%s(%s).%s' % (
+                                    math.ceil(rnd), skill_type[int(l.skill_type)], skill_var, self.carddb[int(l.skill_card)][0])
+                                )
+                            if 'combo_name' in l:
+                                cbos.append('%s.%s' % (
+                                    skill_type[int(l.combo_type)] + ('' if l.combo_hp_player == '0' else l.combo_hp_player),
+                                    l.combo_name)
+                                )
+                except:
+                    self.logger.warning('提取战斗详情时遇到了奇怪的问题:\n%s' %
+                        "".join(traceback.format_exception(*sys.exc_info()))
+                    )
+                else:
+                    self.logger.info('战斗详情:\nROUND:%d/%d 平均ATK:%.1f/%.1f%s %s %s %s' %
+                        (math.ceil(rnd), math.floor(rnd),
+                        matk / math.ceil(rnd), 0 if rnd < 1 else fatk / math.floor(rnd),
+                        ' SUPER:%d' % satk if satk > 0 else '',
+                        res.winner == '1' and '受到伤害:%d' % fatk or '总伤害:%d' % matk,
+                        len(cbos) > 0 and '\nCOMBO:%s' % (','.join(cbos)) or '',
+                        len(skills) > 0 and '\nSKILL:%s' % (','.join(skills)) or '')
+                    )
+                
         # 记录截止时间，上次战斗时间，如果需要立即刷新，上次战斗时间为0.1
         self._write_config('fairy', fairy.serial_id,
             '%d,%.0f' % (int(fairy.time_limit) + int(float(time.time())), time.time()))
