@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.4-build20140825'
+__version__ = '1.4-build20140826'
 
 try:
     from multiprocessing import Pool
@@ -41,7 +41,7 @@ key_rsa_pool = [
 "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCt3r+Zp4I3v3y60fAPw4Iq0rmxkR/vCWyiEHbyRZcOnBpHVDb+SDWMkER163Sll4WRQxvj3HjoxvYsAASStKnTvGxH4LUNRAlxL6xaYpwQ8ouVG9rgZEKtTs2VS07DgRBO12cZ0LsDbJIPL+fFbV/1XQj31ikuzgo3b1EGNGSN4QIDAQAB"
 ]
 
-app_ver_cn = 102
+app_ver_cn = 103
 app_ver_tw = 200
 app_ver_kr = 109
 app_ver_jp = 321
