@@ -14,6 +14,7 @@ EXEBUNDLE = hasattr(sys, 'argv') and opath.split(sys.argv[0])[1].find('py') == -
 LOCALE = locale.getdefaultlocale()[0]
 CODEPAGE = locale.getdefaultlocale()[1]
 NICE_TERM = 'NICE_TERM' in os.environ
+ANDROID = False
 
 try:
     import bae.core

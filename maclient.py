@@ -51,8 +51,12 @@ eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale
 eval_task = []
 #duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 
+no_unicode_patch = lambda x:x.replace('卡片', 'Cards').replace('妖精存活', 'FAIRY_ALIVE').replace('公会妖存活', 'GUILD_ALIVE')
 if PYTHON3:
-    setT = lambda strt : os.system(raw_du8('TITLE %s' % strt))
+    if sys.platform == 'win32':
+        setT = lambda strt : os.system(raw_du8('TITLE %s' % strt))
+    elif not ANDROID:
+        setT = lambda strt : os.system('echo -n "\033]2;%s\007" >/dev/tty' % no_unicode_patch(strt))
 elif NICE_TERM:
     setT = lambda strt : print(raw_du8('[SET-TITLE]%s'%strt))
 else:
@@ -62,8 +66,10 @@ else:
         import System.Console
         def setT(strt):
             System.Console.Title = strt
-    else:
+    elif sys.platform == 'win32':
         setT = lambda strt : os.system(raw_du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+    elif not ANDROID:
+        setT = lambda strt : os.system('echo -n "\033]2;%s\007" >/dev/tty' % no_unicode_patch(strt))
 
 class set_title(threading.Thread):
     def __init__(self, macInstance):
@@ -686,11 +692,11 @@ class MAClient(object):
                 aim = arg[4:]
             elif arg.startswith('fairy:'):
                 fairy = object_dict()
-                fairy.lv, fairy.hp, nothing = map(int, (arg[6:] + ',-325').split(','))
+                fairy.lv, fairy.hp, nothing = map(int, (arg[6:] + ',-325').split(','))[:3]
                 if nothing != -325:
-                    fairy.IS_WAKE = False
+                    fairy.wake = False
                 else:
-                    fairy.IS_WAKE = True
+                    fairy.wake = True
                 aim = 'DEFEAT'
             elif arg.startswith('line:'):
                 maxline = int(arg[5:])
@@ -2235,7 +2241,7 @@ class MAClient(object):
     #         if method==None:
     #             sleeped=False
     #             while True:
-    #                 ##print(self.remote.status,self.remote.STARTED)
+    #                 #print(self.remote.status,self.remote.STARTED)
     #                 if self.remote.status==self.remote.STARTED:
     #                     if self.remote.tasker!='':
     #                         self.tasker(cmd=self.remote.get_task())
