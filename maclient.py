@@ -51,8 +51,12 @@ eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale
 eval_task = []
 #duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db.duowan.com/ma/card/detail/%s.html'}
 
+no_unicode_patch = lambda x:x.replace('卡片', 'Cards').replace('妖精存活', 'FAIRY_ALIVE').replace('公会妖存活', 'GUILD_ALIVE')
 if PYTHON3:
-    setT = lambda strt : os.system(raw_du8('TITLE %s' % strt))
+    if sys.platform == 'win32':
+        setT = lambda strt : os.system(raw_du8('TITLE %s' % strt))
+    elif not ANDROID:
+        setT = lambda strt : os.system('echo -n "\033]2;%s\007" >/dev/tty' % no_unicode_patch(strt))
 elif NICE_TERM:
     setT = lambda strt : print(raw_du8('[SET-TITLE]%s'%strt))
 else:
@@ -62,8 +66,10 @@ else:
         import System.Console
         def setT(strt):
             System.Console.Title = strt
-    else:
+    elif sys.platform == 'win32':
         setT = lambda strt : os.system(raw_du8('TITLE %s' % strt).encode(locale.getdefaultlocale()[1] or 'utf-8', 'replace'))
+    elif not ANDROID:
+        setT = lambda strt : os.system('echo -n "\033]2;%s\007" >/dev/tty' % no_unicode_patch(strt))
 
 class set_title(threading.Thread):
     def __init__(self, macInstance):
@@ -127,7 +133,7 @@ class MAClient(object):
         # 添加引用
         self.plugin = plugin
         self.cfg_save_session = savesession
-        self.settitle = os.name == 'nt'
+        self.settitle = not ANDROID
         self.posttime = 0
         # self.set_remote(None)
         ua = self._read_config('system', 'user-agent')
