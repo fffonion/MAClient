@@ -29,6 +29,13 @@ pycrypto>=2.6
 recaptcha-client>=1.0.6
 ```
 
+如果希望支持韩服
+```
+# 请至release(https://github.com/fffonion/MAClient/releases/tag/kr-crypt-ext)中下载自己系统的依赖库
+unzip maclient_crypt_ext.*.zip
+chmod +x maclient_crypt_ext.so
+```
+
 ###访问http://[IP]:8000
 
 ###PS
