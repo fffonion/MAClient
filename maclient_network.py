@@ -234,7 +234,7 @@ class poster():
             self.logger.warning('你正在使用官方版的httplib2，因此省流模式将无法正常工作')
 
     def gen_2nd_key(self, uid, loc='jp'):
-        self.crypt.AES2ndKey = self.crypt.gen_cipher_with_uid(loc)
+        self.crypt.AES2ndKey = self.crypt.gen_cipher_with_uid(uid)
 
     def load_svr(self, loc, ua=''):
         self.servloc = loc
