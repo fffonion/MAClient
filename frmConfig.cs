@@ -172,7 +172,15 @@ namespace MAClientGUI
             txtDisabledPlugins.Text = cf.Read("plugin", "disabled");
             //button10.Text = "开始任务" + txtTaskName.Text;
             setToolTipText();
+            refreshOverride();
         }
+
+        private void refreshOverride(){
+            txtOverrideUA.Text = cf.Read("system", "user-agent");
+            txtOverrideToken.Text = cf.Read("system", "device_token");
+            txtOverrideVersion.Text = cf.Read("system", "app_ver_" + server.Substring(0, 2));
+        }
+
         private void refreshCond()
         {
             //txtCondTasker.Text = cf.Read("tasker", txtTaskName.Text);
@@ -235,6 +243,16 @@ namespace MAClientGUI
 
             cf.Write("plugin", "disabled", txtDisabledPlugins.Text);
 
+            saveOverride();
+        }
+        private void saveOverride()
+        {
+            if (txtOverrideUA.Text!="")
+                cf.Write("system", "user-agent", txtOverrideUA.Text);
+            if (txtOverrideToken.Text != "")
+                cf.Write("system", "device_token", txtOverrideToken.Text);
+            if (txtOverrideVersion.Text!="")
+                cf.Write("system", "app_ver_" + server.Substring(0, 2), txtOverrideVersion.Text);
         }
 
         private void saveCond()
@@ -302,6 +320,7 @@ namespace MAClientGUI
             string[] slist = { "cn", "cn2", "cn3", "tw", "kr", "jp","sg" };
             server = slist[cboServer.SelectedIndex];
             refreshAccount();
+            refreshOverride();
             if (cboServer.SelectedIndex >= 4 && cboServer.SelectedIndex <6)
                 chkUseNiceTerm.Checked = true;
             else
@@ -2153,6 +2172,23 @@ namespace MAClientGUI
         {
             var value = numAutoGT.Value.ToString().Split('.');
             numAutoGT.DecimalPlaces = value.Length == 2 ? value[1].Length : 0;
+        }
+
+        private void button85_Click(object sender, EventArgs e)
+        {
+            txtOverrideVersion.Text = "";
+            txtOverrideUA.Text = "";
+            txtOverrideToken.Text = "";
+        }
+
+        private void button83_Click(object sender, EventArgs e)
+        {
+            saveOverride();
+        }
+
+        private void button84_Click(object sender, EventArgs e)
+        {
+            refreshOverride();
         }
 
 
