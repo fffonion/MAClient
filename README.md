@@ -27,6 +27,9 @@ MAClient可以在支持websocket的浏览器上运行![chaojibang](http://ww1.si
 ###Linux/OS X/wwww
 需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)，自行编译PyCrypto库
 
+####韩服依赖库
+使用韩服的娃请至[release](https://github.com/fffonion/MAClient/releases)中下载适合自己系统的依赖库；依赖库暂时不开源
+
 MAClient可以在python2.x和3.x上运行
 ```shell
 git clone --recursive https://github.com/fffonion/MAClient.git
@@ -43,6 +46,7 @@ python MAClient_cli.py [config file] [task]/[commands]
 ```shell
 python build_cython_ext.py build_ext --inplace
 ```
+
 
 
 ##配置文件说明
