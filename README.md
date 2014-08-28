@@ -30,6 +30,11 @@ git clone https://github.com/fffonion/MAClient -b dev_bae
 - git push bae dev_web_bae:master #注意，一定要push到远端的 **master分支**
 - [管理控制台](http://developer.baidu.com/console)内点 快捷发布
 
+**如果希望支持韩服**
+- 请至[release](https://github.com/fffonion/MAClient/releases/tag/kr-crypt-ext)中下载自己系统的依赖库，并在git中提交后一并上传
+- 未测试过兼容性
+
+
 ###访问
 使用port服务中给的地址和端口号(不是自己填的10007)
 
