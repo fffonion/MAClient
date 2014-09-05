@@ -131,3 +131,31 @@ if sys.platform.startswith('win'):
     }
 
 
+def try_load_native(mod_name):#little hack on normal import routine
+    if mod_name in sys.modules:
+        return sys.modules[mod_name]
+    android_internal_mod_name = '/data/data/com.hipipal.qpyplus/files/lib/python2.7/site-packages/%s.so' % mod_name
+    #copy new files if has former library is in internal storage
+    # if ANDROID and opath.exists(android_internal_mod_name) and opath.exists('%s.so' % mod_name) and \
+    #         os.stat('%s.so' % mod_name).st_mtime > os.stat(android_internal_mod_name).st_mtime:
+    #     with open(android_internal_mod_name, 'wb') as f:
+    #         f.write(open('%s.so' % mod_name, 'rb').read())
+    try:
+        mod = __import__(mod_name)
+    except ImportError as ex:
+        if str(ex).find('failed to map segment') and ANDROID:#try to link library in noexec dir
+            mod_dir = '.'
+            if not opath.exists(opath.join('.', '%s.so' % mod_name)):
+                mod_dir = os.environ['PYTHONPATH'].split(':')[-1]#fix path when import is naked(comes with initial)
+            # python seems to load module in the same directory first, so if we failed here,
+            # we can assume that this a newer native library in (noexec) sdcard
+            with open(android_internal_mod_name, 'wb') as f:
+                f.write(open(opath.join(mod_dir, '%s.so' % mod_name), 'rb').read())
+            if opath.exists(opath.join(mod_dir, '%s.s_' % mod_name)):
+                os.remove(opath.join(mod_dir, '%s.s_' % mod_name))
+            os.rename(opath.join(mod_dir, '%s.so' % mod_name), opath.join(mod_dir, '%s.s_' % mod_name))
+            mod = __import__(mod_name) #throw exception now, it's the library problem
+        else:
+            raise ImportError(str(ex))
+    #globals()[mod_name] = mod
+    return mod
