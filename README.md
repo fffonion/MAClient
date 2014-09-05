@@ -2,6 +2,8 @@
 
 [For English Users](README.en.md)
 
+转到[dev](https://github.com/fffonion/MAClient/tree/dev)分支以获得最新版本（可能不稳定）
+
 ##文档
 
 [更新历史](https://github.com/fffonion/MAClient/wiki/HISTORY)

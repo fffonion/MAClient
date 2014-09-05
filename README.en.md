@@ -1,5 +1,7 @@
 ﻿MAClient is a full-featured client for Million Arthur. Currently support Mobimon server(tw), SNDA server(cn), Actoz server(kr), Japan server(jp), and Cherry server(sg).
 
+Switch to [dev](https://github.com/fffonion/MAClient/tree/dev) for latest code(may be unstable).
+
 ##Documents
 
 For [History](https://github.com/fffonion/MAClient/wiki/HISTORY)
