@@ -1,5 +1,7 @@
 ﻿MAClient是一个可以用来装B的百万亚瑟王客户端。支持台服、国服全区、韩服、日服和东南亚(新加坡)服。
 
+[For English Users](README.en.md)
+
 ##文档
 
 [更新历史](https://github.com/fffonion/MAClient/wiki/HISTORY)
@@ -25,7 +27,10 @@ MAClient可以在支持websocket的浏览器上运行![chaojibang](http://ww1.si
 参见 [在Android设备上运行MAClient](https://github.com/fffonion/MAClient/wiki/%E5%9C%A8Android%E6%89%8B%E6%9C%BA%E4%B8%8A%E8%BF%90%E8%A1%8CMAClient)
 
 ###Linux/OS X/wwww
-需要下载修改的[httplib2库](https://github.com/fffonion/httplib2-plus)，自行编译PyCrypto库
+从[这里](https://github.com/fffonion/httplib2-plus) 或者PIP下载httplib2，并安装PyCrypto。 你需要安装**python-devel** 和一个编译工具链来编译 PyCrypto。
+```
+sudo pip install httplib2 Crypto
+```
 
 ####韩服依赖库
 使用韩服的娃请至[release](https://github.com/fffonion/MAClient/releases)中下载适合自己系统的依赖库；依赖库暂时不开源
@@ -78,14 +83,14 @@ session不用管它
 请保证存在`min`项且值为舔刀卡组，以保证省流模式工作正常
 
 如果你卡片中存在小狼女，那么请不要大意地忽略这句话吧ww
-	
+    
 ###system
 
 系统设置
 
 ####server
 
-选服，可选`cn`,`cn2`,`cn3`,`tw`,`kr`,`jp`
+选服，可选`cn`,`cn2`,`cn3`,`tw`,`kr`,`jp`,'sg'
 
 ####loglevel
 
@@ -212,7 +217,7 @@ session不用管它
     set_server cn|set_card factor|factor_battle #设置国服，设置因子战卡组，然后因子战
     ss cn|sc factor|fcb #同上
     explore '明鏡月和島' in area.name #探索秘境名称包含'明鏡月和島' 
-	fcb l:1 70 或 fcb lake:1 70#因子战选择第一因子，下限BC70，因子默认为随机选择，BC下限默认为0
+    fcb l:1 70 或 fcb lake:1 70#因子战选择第一因子，下限BC70，因子默认为随机选择，BC下限默认为0
 
 各命令及参数的详细介绍见[COMMANDS文档](COMMANDS.md)
 
@@ -264,8 +269,8 @@ eg.：
 
     area.IS_EVENT and area.NOT_FINNISHED　#想进入一个没完成的活动秘境
     area.name == ' 學校四樓教室' #进入 学校四楼教室
-	area.NOT_FINNISHED | area.IS_EVENT #进入没完成的秘境；如果不存在没完成的秘境，则选择一个活动秘境
-	area.NOT_FINNISHED | 进入没完成的秘境；如果不存在没完成的秘境，则选择任一秘境
+    area.NOT_FINNISHED | area.IS_EVENT #进入没完成的秘境；如果不存在没完成的秘境，则选择一个活动秘境
+    area.NOT_FINNISHED | 进入没完成的秘境；如果不存在没完成的秘境，则选择任一秘境
 
 ####explore_floor
 选择地区满足的表达式，支持多个条件，留空表示随机
@@ -279,7 +284,7 @@ eg.：
 eg.：
 
     floor.cost<6 and floor.NOT_FINNISHED #进没完成的且cost小于6的地区：
-	floor.cost<3 | #进cost<3的地区；如果没有则随机选择一个地区
+    floor.cost<3 | #进cost<3的地区；如果没有则随机选择一个地区
 
 ####fairy_select
 妖精列表里的什么妖精要打
@@ -303,7 +308,7 @@ eg.：
 
 `lv`,`hp`,`name`,`IS_MINE`, 剩余时间 `TIME_LIMIT`(单位为秒), 是否觉醒 `IS_WAKE`, 是否稀有妖精 `IS_WAKE_RARE`,是否公会妖精 `IS_GUILD`
 
-只能使用and or表达式 或if else表达式，可嵌套；卡组名称需加引号，需在carddeck中给出；可以使用'no_change'表示不更改卡组
+只能使用and or表达式 或if else表达式，可嵌套；卡组名称需加引号，需在carddeck中给出；特殊卡组：不更改卡组`no_change`，放跑妖精`letitgo`，不打妖精`abort`
 
 eg.：
 

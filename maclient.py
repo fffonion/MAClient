@@ -23,10 +23,10 @@ if PYTHON3:
     import configparser as ConfigParser
 else:
     import ConfigParser
+maclient_smart = try_load_native('maclient_smart')
 import maclient_player
 import maclient_network
 import maclient_logging
-import maclient_smart
 import maclient_plugin
 
 __version__ = 1.72
