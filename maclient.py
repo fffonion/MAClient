@@ -319,7 +319,7 @@ class MAClient(object):
                                     % self.loc[:2])
                         self._exit(int(err.code))
                     #return resp, dec
-            if not self.player_initiated :
+            if not self.player_initiated:
                 open(self.playerfile, 'w').write(_dec)
             else:
                 # check revision update

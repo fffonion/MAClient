@@ -18,14 +18,14 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.27
+__version__ = 0.28
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update', 'us':'update_self'}
 require_feature_nologin = True
 #是否下载dev版
 GET_DEV_UPDATE = True
 
-repos = ['http://git.oschina.net/fffonion/MAClient', 'https://github.com/fffonion/MAClient']
+repos = ['http://storage.jcloud.com/maclient','http://git.oschina.net/fffonion/MAClient', 'https://github.com/fffonion/MAClient']
 headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'User-Agent': 'MAClient/update v%s' % __version__,
@@ -103,7 +103,13 @@ def _http_get(uri, silent=False):
     else:
         opener = urllib2.build_opener(urllib2.ProxyHandler(urllib.getproxies()))
     for repo in repos:
-        url = repo + '/raw/' + uri
+        if 'storage.jcloud.com' in repo:
+            _uri = uri
+            for p in ('/', 'dev', 'master', 'update', 'plugins'):
+                _uri = _uri.lstrip(p).lstrip('/')
+            url = repo + '/' + _uri
+        else:
+            url = repo + '/raw/' + uri
         try:
             resp = opener.open(urllib2.Request(url, headers=headers), timeout = 15)
             body = resp.read()
