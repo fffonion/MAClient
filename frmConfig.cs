@@ -197,6 +197,10 @@ namespace MAClientGUI
                 txtCondTasker.Text = "'" + txtCondTasker.Text + "'";
             txtCondFactor.Text = cf.Read("condition", "factor");
             txtCondSell.Text = cf.Read("condition", "select_card_to_sell");
+            if (txtCondSell.Text.Contains("not card.holo") || txtCondSell.Text.Contains("not $.holo"))
+                chkNoHolo.Checked = true;
+            else
+                chkNoHolo.Checked = false;
         }
 
         private void saveAll()
@@ -625,12 +629,13 @@ namespace MAClientGUI
 
         private void chkNoHolo_CheckedChanged(object sender, EventArgs e)
         {
-            string _t = "$.holo";
+            string _t = "not $.holo";
             if (!chkSuperPrefCards.Checked)
-                _t = "card.holo";
-            if (!chkNoHolo.Checked)
-                _t += "not ";
-            txtCondSell.Text = txtCondSell.Text.Replace("and " + _t + " and", "").Replace(_t + " and", "").Replace("and " + _t, "").Replace(_t, "");
+                _t = _t.Replace("$", "card");
+            if (chkNoHolo.Checked)
+                txtCondSell.Text += " and " + _t;
+            else
+                txtCondSell.Text = txtCondSell.Text.Replace("and " + _t + " and", "and").Replace(_t + " and", "").Replace("and " + _t, "").Replace(_t, "").TrimEnd();
         }
 
         /// <summary>
