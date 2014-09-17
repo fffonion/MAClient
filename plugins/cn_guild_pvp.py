@@ -6,7 +6,7 @@ from xml2dict import XML2Dict, object_dict
 # start meta
 __plugin_name__ = '国服公会PVP'
 __author = 'fffonion'
-__version__ = 0.1
+__version__ = 0.11
 hooks = {}
 extra_cmd = {'gpvp':'guild_pvp', 'guild_pvp':'guild_pvp'}
 
@@ -89,7 +89,7 @@ def guild_pvp(plugin_vals):
             postdata = 'event_id=%s&event_part_id=0&guild_id=%s' % (PVP_LAKE_ID, self.guild_id))
         if resp['error']:
             return
-        self.logger.info()
+        #self.logger.info()
         e_guild = ct.body.guild_battle_info.enemy_guild_info
         m_guild = ct.body.guild_battle_info.my_guild_info
         self.logger.info(('土豪券 剩余%03s\n' % ct.body.ticket_num) + 
