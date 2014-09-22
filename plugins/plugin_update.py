@@ -37,6 +37,8 @@ tolist = lambda obj:isinstance(obj, list) and obj  or [obj]
 
 def plugin_update(plugin_vals):
     def do(args):
+        if plugin_vals['cfg_auto_explore'] and not opath.exists(opath.join(_get_temp(), '.MAClient.auto_update')):#not user divided
+            open(opath.join(_get_temp(), '.MAClient.auto_update'), 'w').close()
         if not opath.exists(opath.join(_get_temp(), '.MAClient.update')):
             check_file = opath.join(_get_temp(), '.MAClient.noupdate')
             if '-f' in args.split(' ') and opath.exists(check_file):
@@ -76,13 +78,23 @@ def update_self(plugin_vals):
     return do
 
 class _bg_check(threading.Thread):
-    def __init__(self):
+    def __init__(self, do_update = False):
         threading.Thread.__init__(self)
+        self.do_update = do_update
+
     def run(self):
         time.sleep(3)
         if not opath.exists(opath.join(_get_temp(), '.MAClient.update')):
-            if _check_update(silent=True):
-                print(du8('\n已有新版本可供升级，请输入pu或plugin_update执行更新'))
+            if _check_update(silent = True):
+                if self.do_update:
+                    has_new = _do_update(silent = True)
+                    if has_new:
+                        print(du8('更新了%d个项目(%s)' % (len(has_new), ','.join(has_new))))
+                    else:
+                        print(du8('后台更新发生故障'))
+                    os.remove(opath.join(_get_temp(), '.MAClient.auto_update'))
+                else:
+                    print(du8('\n已有新版本可供升级，请输入pu或plugin_update执行更新'))
 
 def _get_temp():
     if sys.platform == 'win32':
@@ -205,6 +217,7 @@ def _do_update(silent = False):
     _done = False
     update_item = 'update_item' in _top and _top.update_item or None
     new_item = 'new_item' in _top and _top.new_item or None
+    _updated_count = []
     for (_prompt, _meta) in [('√ 已更新 %s ↑ v%s', update_item), ('√ 新增 %s v%s', new_item)]:
         for k in tolist(_meta):
             if not k:
@@ -226,6 +239,7 @@ def _do_update(silent = False):
                         os.remove(opath.join(getPATH0, 'maclient_smart.py_'))
                     os.rename(opath.join(getPATH0, 'maclient_smart.pyd'),opath.join(getPATH0, 'maclient_smart.py_'))
                     open(opath.join(getPATH0, 'maclient_smart.pyd'),'wb').write(new)
+                    _updated_count.append(k.name)
                 except (TypeError, WindowsError, AssertionError):
                     if not silent:
                         print(du8('× maclient_smart有新版本但更新失败 v%s 请至以下链接下载完整包\n'
@@ -239,6 +253,7 @@ def _do_update(silent = False):
                     print(du8('× %s 更新失败' % k.name))
                 continue
             open(opath.join(getPATH0, k.dir or '', k.name),'w').write(new.replace('\r\n', '\n'))
+            _updated_count.append(k.name)
             if not silent:
                 print(du8(_prompt % (k.name, k.version)))
                 _done = True
@@ -247,11 +262,12 @@ def _do_update(silent = False):
     os.remove(update_file)
     if _done:
         print(du8('重新启动maclient以应用更新'))
+    return _updated_count
 
 #run when being imported
 if opath.exists(opath.join(_get_temp(), '.MAClient.update')):
     __tip__ = '检测到更新，请输入pu或plugin_update执行更新'
 else:
-    b = _bg_check()
+    b = _bg_check(do_update = opath.exists(opath.join(_get_temp(), '.MAClient.auto_update')))
     b.setDaemon(True)
     b.start()
