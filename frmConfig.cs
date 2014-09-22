@@ -196,11 +196,13 @@ namespace MAClientGUI
             if (!txtCondTasker.Text.Contains("\"") && !txtCondTasker.Text.Contains("'"))
                 txtCondTasker.Text = "'" + txtCondTasker.Text + "'";
             txtCondFactor.Text = cf.Read("condition", "factor");
-            txtCondSell.Text = cf.Read("condition", "select_card_to_sell");
-            if (txtCondSell.Text.Contains("not card.holo") || txtCondSell.Text.Contains("not $.holo"))
+            txtCondCardExchange.Text = cf.Read("condition", "select_card_to_sell");
+            if (txtCondCardExchange.Text.Contains("not card.holo") || txtCondCardExchange.Text.Contains("not $.holo"))
                 chkNoHolo.Checked = true;
             else
                 chkNoHolo.Checked = false;
+            string[] _ = { "select_card_to_sell", "select_card_as_food", "select_card_to_feed" };
+            txtCondCardExchange.Text = cf.Read("condition", _[cboCardExchangeIdx.SelectedIndex]);
         }
 
         private void saveAll()
@@ -266,9 +268,10 @@ namespace MAClientGUI
             cf.Write("condition", "fairy_select", txtCondFairy.Text);
             cf.Write("condition", "explore_area", txtCondExplore.Text);
             cf.Write("condition", "explore_floor ", txtCondFloor.Text);
-            cf.Write("condition", "fairy_select_carddeck ", txtCondCarddeck.Text);
+            cf.Write("condition", "fairy_select_carddeck", txtCondCarddeck.Text);
             cf.Write("condition", "factor ", txtCondFactor.Text);
-            cf.Write("condition", "select_card_to_sell  ", txtCondSell.Text);
+            string[] _ = { "select_card_to_sell", "select_card_as_food", "select_card_to_feed" };
+            cf.Write("condition", _[cboCardExchangeIdx.SelectedIndex], txtCondCardExchange.Text);
         }
 
         private void setToolTipText()
@@ -295,7 +298,7 @@ namespace MAClientGUI
         private void frmConfig_Load(object sender, EventArgs e)
         {
             //setToolTipText();
-            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.71+)");
+            this.Text += (" v" + Application.ProductVersion + " (for MAClient v1.72+)");
             tabControl1.Enabled = false;
             DirectoryInfo folder = new DirectoryInfo(System.Environment.CurrentDirectory);
             foreach (FileInfo file in folder.GetFiles("*.ini"))
@@ -307,6 +310,7 @@ namespace MAClientGUI
             Control.CheckForIllegalCrossThreadCalls = false;//丑就丑点吧www
             cboReservedName.SelectedIndex = 0;
             lblCodePage.Text = Encoding.Default.CodePage + "/" + Encoding.Default.EncodingName;
+            cboCardExchangeIdx.SelectedIndex = 0;
         }
 
         private void btnGoBack_Click(object sender, EventArgs e)
@@ -595,36 +599,99 @@ namespace MAClientGUI
                 txtCondExplore.Text += "|";
         }
 
+
+
         /// <summary>
-        /// 卖卡选项卡！
+        /// 卖卡&合卡选项卡！
         /// </summary>
-        private void addSellCond(string cond)
+        int card_exchange_idx = 0;
+        bool card_exchange_modified_but_not_saved = false;
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (card_exchange_modified_but_not_saved)
+            {
+                card_exchange_modified_but_not_saved = false;
+                if (MessageBox.Show("已修改了配置，但是还没保存，马上保存嘛？" + cboDeckList.Text, "呵呵", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes){
+                    button90_Click(sender, e);
+                }else
+                {
+                    cboCardExchangeIdx.SelectedIndex = card_exchange_idx;
+                    return;
+                }
+
+            }
+            string[] ind = { "卖这些卡片", "这些作为狗粮", "这些是需合成的卡片" };
+            groupBox4.Text = ind[cboCardExchangeIdx.SelectedIndex];
+            card_exchange_idx = cboCardExchangeIdx.SelectedIndex;
+            string[] _ = { "select_card_to_sell", "select_card_as_food", "select_card_to_feed" };
+            try
+            {
+                txtCondCardExchange.Text = cf.Read("condition", _[card_exchange_idx]);
+            }
+            catch (NullReferenceException) { }
+        }
+
+        private void addExchangeCond(string cond)
         {
             if (!chkSuperPrefCards.Checked)
                 cond = cond.Replace("$.", "card.");
-            if (txtCondSell.Text != "")
-                txtCondSell.Text += " and ";
-            txtCondSell.Text += cond;
+            if (lblCardExchangeCache.Text != "")
+                lblCardExchangeCache.Text += " and ";
+            lblCardExchangeCache.Text += cond;
+           
         }
 
         private void btnSellStar_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox10.Text + "<=$.star<=" + textBox9.Text);
+            addExchangeCond(textBox10.Text + "<=$.star<=" + textBox9.Text);
         }
 
         private void btnSellLv_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox7.Text + "<=$.lv<=" + textBox8.Text);
+            addExchangeCond(textBox7.Text + "<=$.lv<=" + textBox8.Text);
         }
 
         private void btnSellPrice_Click(object sender, EventArgs e)
         {
-            addSellCond(textBox5.Text + "<=$.price<= " + textBox6.Text);
+            addExchangeCond(textBox5.Text + "<=$.price<= " + textBox6.Text);
         }
 
-        private void btnsSellExclude_Click(object sender, EventArgs e)
+        private void btnsSellExcludeIdx_Click(object sender, EventArgs e)
         {
-            addSellCond("$.mid not in [" + textBox11.Text + "]");
+            addExchangeCond("$.mid not in [" + textBox11.Text + "]");
+        }
+
+
+        private void btnsSellIncludeIdx_Click(object sender, EventArgs e)
+        {
+            addExchangeCond("$.mid in [" + textBox11.Text + "]");
+        }
+
+
+        private void btnsSellExcludeName_Click(object sender, EventArgs e)
+        {
+            if (textBox34.Text == "")
+            {
+                textBox34.Focus();
+                return;
+            }
+            addExchangeCond("$name not in [" + textBox34.Text + "]");
+        }
+
+        private void btnsSellIncludeName_Click(object sender, EventArgs e)
+        {
+            if (textBox34.Text == "")
+            {
+                textBox34.Focus();
+                return;
+            }
+            string c = "$.name in [";
+            foreach (string t in textBox34.Text.Split(','))
+            {
+                c += "'" + t +"',";
+            }
+            c = c.TrimEnd(',');
+            addExchangeCond(c + "]");
         }
 
         private void chkNoHolo_CheckedChanged(object sender, EventArgs e)
@@ -633,10 +700,42 @@ namespace MAClientGUI
             if (!chkSuperPrefCards.Checked)
                 _t = _t.Replace("$", "card");
             if (chkNoHolo.Checked)
-                txtCondSell.Text += " and " + _t;
+                lblCardExchangeCache.Text += " and " + _t;
             else
-                txtCondSell.Text = txtCondSell.Text.Replace("and " + _t + " and", "and").Replace(_t + " and", "").Replace("and " + _t, "").Replace(_t, "").TrimEnd();
+                lblCardExchangeCache.Text = lblCardExchangeCache.Text.Replace("and " + _t + " and", "and").Replace(_t + " and", "").Replace("and " + _t, "").Replace(_t, "").TrimEnd();
         }
+
+        private void button92_Click(object sender, EventArgs e)
+        {
+            lblCardExchangeCache.Text = "";
+        }
+
+        private void btnCardExchangeSave_Click(object sender, EventArgs e)
+        {
+            if (txtCondCardExchange.Text != "")
+            {
+                if (!txtCondCardExchange.Text.StartsWith("(") || !txtCondCardExchange.Text.EndsWith(")"))
+                    txtCondCardExchange.Text = "(" + txtCondCardExchange.Text + ")";
+                txtCondCardExchange.Text += " or " + lblCardExchangeCache.Text;
+            }else
+                txtCondCardExchange.Text = lblCardExchangeCache.Text;
+            lblCardExchangeCache.Text = "";
+            card_exchange_modified_but_not_saved = true;
+        }
+
+        private void button90_Click(object sender, EventArgs e)
+        {
+            string[] _ = { "select_card_to_sell", "select_card_as_food", "select_card_to_feed" };
+            cf.Write("condition", _[card_exchange_idx], txtCondCardExchange.Text);
+            card_exchange_modified_but_not_saved = false;
+        }
+
+        private void button89_Click(object sender, EventArgs e)
+        {
+            string[] _ = { "select_card_to_sell", "select_card_as_food", "select_card_to_feed" };
+            txtCondCardExchange.Text = cf.Read("condition", _[card_exchange_idx]);
+        }
+
 
         /// <summary>
         /// 地区选项卡！
@@ -857,7 +956,7 @@ namespace MAClientGUI
 
         private void button30_Click(object sender, EventArgs e)
         {
-            addFairyCond("$.LIMIT<" + (int.Parse(textBox31.Text) * 3600 + int.Parse(textBox30.Text) * 60 + int.Parse(textBox29.Text)));
+            addCarddeckCond("$.LIMIT<" + (int.Parse(textBox31.Text) * 3600 + int.Parse(textBox30.Text) * 60 + int.Parse(textBox29.Text)));
             button30.Enabled = false;
         }
 
@@ -1059,7 +1158,7 @@ namespace MAClientGUI
 
         private void button45_Click(object sender, EventArgs e)
         {
-            txtCondSell.Text = "";
+            txtCondCardExchange.Text = "";
         }
         private bool check_path_valid(string path)
         {
@@ -1277,14 +1376,14 @@ namespace MAClientGUI
         private void txtCondSell_Enter(object sender, EventArgs e)
         {
             CtrlAnimator a = new CtrlAnimator(this);
-            a.ChangeHeight(txtCondSell, 500);
+            a.ChangeHeight(txtCondCardExchange, 500);
             a.ChangeOffsetY(button45, 363);
         }
 
         private void txtCondSell_Leave(object sender, EventArgs e)
         {
             CtrlAnimator a = new CtrlAnimator(this);
-            a.ChangeHeight(txtCondSell, 137);
+            a.ChangeHeight(txtCondCardExchange, 137);
             a.ChangeOffsetY(button45, -363);
         }
 
@@ -2159,7 +2258,8 @@ namespace MAClientGUI
                 cf.Write("MAClientGUI", "no_enc_warning", "1");
                 lblEncWarningQuestion.Visible = false;
                 lblEncWarning.Visible = false;
-            }
+            }else
+                tabControl1.SelectedIndex = 9;
         }
 
         private void lblEncWarningQuestion_Click(object sender, EventArgs e)
@@ -2195,7 +2295,5 @@ namespace MAClientGUI
         {
             refreshOverride();
         }
-
-
     }
 }

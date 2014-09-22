@@ -330,16 +330,28 @@ namespace MAClientGUI
             this.label33 = new System.Windows.Forms.Label();
             this.button19 = new System.Windows.Forms.Button();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.lblCardExchangeCache = new System.Windows.Forms.Label();
+            this.button92 = new System.Windows.Forms.Button();
+            this.btnCardExchangeSave = new System.Windows.Forms.Button();
+            this.button89 = new System.Windows.Forms.Button();
+            this.button90 = new System.Windows.Forms.Button();
+            this.label103 = new System.Windows.Forms.Label();
+            this.label102 = new System.Windows.Forms.Label();
+            this.cboCardExchangeIdx = new System.Windows.Forms.ComboBox();
             this.button45 = new System.Windows.Forms.Button();
-            this.txtCondSell = new System.Windows.Forms.TextBox();
+            this.txtCondCardExchange = new System.Windows.Forms.TextBox();
             this.chkSuperPrefCards = new System.Windows.Forms.CheckBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnsSellIncludeIdx = new System.Windows.Forms.Button();
+            this.btnsSellIncludeName = new System.Windows.Forms.Button();
+            this.textBox34 = new System.Windows.Forms.TextBox();
+            this.btnsSellExcludeName = new System.Windows.Forms.Button();
             this.chkNoHolo = new System.Windows.Forms.CheckBox();
             this.label69 = new System.Windows.Forms.Label();
             this.label68 = new System.Windows.Forms.Label();
             this.label67 = new System.Windows.Forms.Label();
             this.textBox11 = new System.Windows.Forms.TextBox();
-            this.btnsSellExclude = new System.Windows.Forms.Button();
+            this.btnsSellExcludeIdx = new System.Windows.Forms.Button();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label27 = new System.Windows.Forms.Label();
@@ -353,6 +365,17 @@ namespace MAClientGUI
             this.btnSellLv = new System.Windows.Forms.Button();
             this.btnSellStar = new System.Windows.Forms.Button();
             this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.groupBox14 = new System.Windows.Forms.GroupBox();
+            this.txtOverrideToken = new System.Windows.Forms.TextBox();
+            this.label101 = new System.Windows.Forms.Label();
+            this.button85 = new System.Windows.Forms.Button();
+            this.txtOverrideUA = new System.Windows.Forms.TextBox();
+            this.label100 = new System.Windows.Forms.Label();
+            this.label99 = new System.Windows.Forms.Label();
+            this.button84 = new System.Windows.Forms.Button();
+            this.label98 = new System.Windows.Forms.Label();
+            this.button83 = new System.Windows.Forms.Button();
+            this.txtOverrideVersion = new System.Windows.Forms.TextBox();
             this.label97 = new System.Windows.Forms.Label();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
             this.lblCfgEnc = new System.Windows.Forms.Label();
@@ -376,17 +399,6 @@ namespace MAClientGUI
             this.dockMenu_head = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.chkUseNiceTerm = new System.Windows.Forms.CheckBox();
-            this.txtOverrideVersion = new System.Windows.Forms.TextBox();
-            this.button83 = new System.Windows.Forms.Button();
-            this.groupBox14 = new System.Windows.Forms.GroupBox();
-            this.label98 = new System.Windows.Forms.Label();
-            this.button84 = new System.Windows.Forms.Button();
-            this.label99 = new System.Windows.Forms.Label();
-            this.label100 = new System.Windows.Forms.Label();
-            this.txtOverrideUA = new System.Windows.Forms.TextBox();
-            this.button85 = new System.Windows.Forms.Button();
-            this.txtOverrideToken = new System.Windows.Forms.TextBox();
-            this.label101 = new System.Windows.Forms.Label();
             this.grpSystem.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numFairySleepFactor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDelay)).BeginInit();
@@ -431,9 +443,9 @@ namespace MAClientGUI
             this.tabPage6.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabPage9.SuspendLayout();
+            this.groupBox14.SuspendLayout();
             this.groupBox13.SuspendLayout();
             this.dockMenu.SuspendLayout();
-            this.groupBox14.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnChooseCfg
@@ -947,7 +959,7 @@ namespace MAClientGUI
             // numTaskTimes
             // 
             this.numTaskTimes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.numTaskTimes.Location = new System.Drawing.Point(275, 79);
+            this.numTaskTimes.Location = new System.Drawing.Point(276, 79);
             this.numTaskTimes.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numTaskTimes.Maximum = new decimal(new int[] {
             99999,
@@ -962,7 +974,7 @@ namespace MAClientGUI
             // numFactorTimes
             // 
             this.numFactorTimes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.numFactorTimes.Location = new System.Drawing.Point(275, 110);
+            this.numFactorTimes.Location = new System.Drawing.Point(276, 110);
             this.numFactorTimes.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numFactorTimes.Maximum = new decimal(new int[] {
             99999,
@@ -1007,7 +1019,7 @@ namespace MAClientGUI
             // numFairyTimes
             // 
             this.numFairyTimes.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.numFairyTimes.Location = new System.Drawing.Point(275, 143);
+            this.numFairyTimes.Location = new System.Drawing.Point(276, 143);
             this.numFairyTimes.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.numFairyTimes.Maximum = new decimal(new int[] {
             99999,
@@ -1311,7 +1323,7 @@ namespace MAClientGUI
             // txtUsername
             // 
             this.txtUsername.Font = new System.Drawing.Font("微软雅黑", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.txtUsername.Location = new System.Drawing.Point(66, 23);
+            this.txtUsername.Location = new System.Drawing.Point(70, 23);
             this.txtUsername.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(193, 34);
@@ -1548,7 +1560,7 @@ namespace MAClientGUI
             this.lblEncWarning.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.lblEncWarning.Location = new System.Drawing.Point(580, 270);
             this.lblEncWarning.Name = "lblEncWarning";
-            this.lblEncWarning.Size = new System.Drawing.Size(76, 66);
+            this.lblEncWarning.Size = new System.Drawing.Size(84, 66);
             this.lblEncWarning.TabIndex = 1058;
             this.lblEncWarning.TabStop = true;
             this.lblEncWarning.Text = "    当前配置编码不能用于手机！";
@@ -1807,9 +1819,9 @@ namespace MAClientGUI
             this.label70.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label70.Font = new System.Drawing.Font("微软雅黑", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.label70.ForeColor = System.Drawing.Color.ForestGreen;
-            this.label70.Location = new System.Drawing.Point(618, 21);
+            this.label70.Location = new System.Drawing.Point(616, 21);
             this.label70.Name = "label70";
-            this.label70.Size = new System.Drawing.Size(58, 29);
+            this.label70.Size = new System.Drawing.Size(60, 29);
             this.label70.TabIndex = 2;
             this.label70.Text = "开启";
             // 
@@ -1889,7 +1901,7 @@ namespace MAClientGUI
             this.chkSuperPrefCarddeck.AutoSize = true;
             this.chkSuperPrefCarddeck.Checked = true;
             this.chkSuperPrefCarddeck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSuperPrefCarddeck.Location = new System.Drawing.Point(479, 404);
+            this.chkSuperPrefCarddeck.Location = new System.Drawing.Point(479, 402);
             this.chkSuperPrefCarddeck.Name = "chkSuperPrefCarddeck";
             this.chkSuperPrefCarddeck.Size = new System.Drawing.Size(171, 24);
             this.chkSuperPrefCarddeck.TabIndex = 26;
@@ -2606,9 +2618,9 @@ namespace MAClientGUI
             // tabPage7
             // 
             this.tabPage7.BackColor = System.Drawing.SystemColors.Control;
-            this.tabPage7.Controls.Add(this.label41);
             this.tabPage7.Controls.Add(this.button39);
             this.tabPage7.Controls.Add(this.txtCondTasker);
+            this.tabPage7.Controls.Add(this.label41);
             this.tabPage7.Controls.Add(this.label92);
             this.tabPage7.Controls.Add(this.lblInfiniteWarning);
             this.tabPage7.Controls.Add(this.btnTaskerSave);
@@ -3290,7 +3302,7 @@ namespace MAClientGUI
             // 
             // btnTaskerReset
             // 
-            this.btnTaskerReset.Location = new System.Drawing.Point(591, 429);
+            this.btnTaskerReset.Location = new System.Drawing.Point(591, 426);
             this.btnTaskerReset.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnTaskerReset.Name = "btnTaskerReset";
             this.btnTaskerReset.Size = new System.Drawing.Size(80, 35);
@@ -3900,9 +3912,9 @@ namespace MAClientGUI
             this.groupBox12.Controls.Add(this.button77);
             this.groupBox12.Controls.Add(this.button78);
             this.groupBox12.Font = new System.Drawing.Font("微软雅黑", 8F);
-            this.groupBox12.Location = new System.Drawing.Point(14, 204);
+            this.groupBox12.Location = new System.Drawing.Point(14, 199);
             this.groupBox12.Name = "groupBox12";
-            this.groupBox12.Size = new System.Drawing.Size(359, 69);
+            this.groupBox12.Size = new System.Drawing.Size(359, 74);
             this.groupBox12.TabIndex = 32;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "仅用于跳出条件，进入地区时恒为True";
@@ -3913,7 +3925,7 @@ namespace MAClientGUI
             this.button79.Location = new System.Drawing.Point(281, 20);
             this.button79.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button79.Name = "button79";
-            this.button79.Size = new System.Drawing.Size(73, 45);
+            this.button79.Size = new System.Drawing.Size(73, 49);
             this.button79.TabIndex = 32;
             this.button79.Text = "两个都要";
             this.button79.UseVisualStyleBackColor = true;
@@ -3925,7 +3937,7 @@ namespace MAClientGUI
             this.button77.Location = new System.Drawing.Point(9, 20);
             this.button77.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button77.Name = "button77";
-            this.button77.Size = new System.Drawing.Size(129, 45);
+            this.button77.Size = new System.Drawing.Size(129, 49);
             this.button77.TabIndex = 30;
             this.button77.Text = "公会秘境地区，且开出公会妖则退出";
             this.button77.UseVisualStyleBackColor = true;
@@ -3937,7 +3949,7 @@ namespace MAClientGUI
             this.button78.Location = new System.Drawing.Point(143, 20);
             this.button78.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button78.Name = "button78";
-            this.button78.Size = new System.Drawing.Size(132, 45);
+            this.button78.Size = new System.Drawing.Size(132, 49);
             this.button78.TabIndex = 31;
             this.button78.Text = "非公会秘境地区，开出一般妖则退出";
             this.button78.UseVisualStyleBackColor = true;
@@ -3968,7 +3980,7 @@ namespace MAClientGUI
             // button75
             // 
             this.button75.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button75.Location = new System.Drawing.Point(224, 164);
+            this.button75.Location = new System.Drawing.Point(224, 160);
             this.button75.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button75.Name = "button75";
             this.button75.Size = new System.Drawing.Size(136, 34);
@@ -4012,7 +4024,7 @@ namespace MAClientGUI
             // button12
             // 
             this.button12.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button12.Location = new System.Drawing.Point(59, 164);
+            this.button12.Location = new System.Drawing.Point(59, 160);
             this.button12.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(136, 34);
@@ -4194,7 +4206,15 @@ namespace MAClientGUI
             // 
             this.tabPage6.BackColor = System.Drawing.SystemColors.Control;
             this.tabPage6.Controls.Add(this.button45);
-            this.tabPage6.Controls.Add(this.txtCondSell);
+            this.tabPage6.Controls.Add(this.txtCondCardExchange);
+            this.tabPage6.Controls.Add(this.lblCardExchangeCache);
+            this.tabPage6.Controls.Add(this.button92);
+            this.tabPage6.Controls.Add(this.btnCardExchangeSave);
+            this.tabPage6.Controls.Add(this.button89);
+            this.tabPage6.Controls.Add(this.button90);
+            this.tabPage6.Controls.Add(this.label103);
+            this.tabPage6.Controls.Add(this.label102);
+            this.tabPage6.Controls.Add(this.cboCardExchangeIdx);
             this.tabPage6.Controls.Add(this.chkSuperPrefCards);
             this.tabPage6.Controls.Add(this.groupBox4);
             this.tabPage6.Location = new System.Drawing.Point(4, 28);
@@ -4202,8 +4222,92 @@ namespace MAClientGUI
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Size = new System.Drawing.Size(682, 471);
             this.tabPage6.TabIndex = 5;
-            this.tabPage6.Text = "卖卡";
+            this.tabPage6.Text = "卖卡&合卡";
             this.tabPage6.ToolTipText = "卖哪些卡";
+            // 
+            // lblCardExchangeCache
+            // 
+            this.lblCardExchangeCache.Font = new System.Drawing.Font("微软雅黑", 7.471698F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.lblCardExchangeCache.Location = new System.Drawing.Point(15, 137);
+            this.lblCardExchangeCache.Name = "lblCardExchangeCache";
+            this.lblCardExchangeCache.Size = new System.Drawing.Size(647, 49);
+            this.lblCardExchangeCache.TabIndex = 36;
+            // 
+            // button92
+            // 
+            this.button92.Location = new System.Drawing.Point(582, 396);
+            this.button92.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button92.Name = "button92";
+            this.button92.Size = new System.Drawing.Size(80, 35);
+            this.button92.TabIndex = 35;
+            this.button92.Text = "重来";
+            this.button92.UseVisualStyleBackColor = true;
+            this.button92.Click += new System.EventHandler(this.button92_Click);
+            // 
+            // btnCardExchangeSave
+            // 
+            this.btnCardExchangeSave.Location = new System.Drawing.Point(487, 396);
+            this.btnCardExchangeSave.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnCardExchangeSave.Name = "btnCardExchangeSave";
+            this.btnCardExchangeSave.Size = new System.Drawing.Size(80, 35);
+            this.btnCardExchangeSave.TabIndex = 34;
+            this.btnCardExchangeSave.Text = "添加";
+            this.btnCardExchangeSave.UseVisualStyleBackColor = true;
+            this.btnCardExchangeSave.Click += new System.EventHandler(this.btnCardExchangeSave_Click);
+            // 
+            // button89
+            // 
+            this.button89.Location = new System.Drawing.Point(582, 249);
+            this.button89.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button89.Name = "button89";
+            this.button89.Size = new System.Drawing.Size(80, 35);
+            this.button89.TabIndex = 33;
+            this.button89.Text = "撤销";
+            this.button89.UseVisualStyleBackColor = true;
+            this.button89.Click += new System.EventHandler(this.button89_Click);
+            // 
+            // button90
+            // 
+            this.button90.Location = new System.Drawing.Point(485, 249);
+            this.button90.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button90.Name = "button90";
+            this.button90.Size = new System.Drawing.Size(80, 35);
+            this.button90.TabIndex = 32;
+            this.button90.Text = "保存";
+            this.button90.UseVisualStyleBackColor = true;
+            this.button90.Click += new System.EventHandler(this.button90_Click);
+            // 
+            // label103
+            // 
+            this.label103.AutoSize = true;
+            this.label103.Location = new System.Drawing.Point(481, 186);
+            this.label103.Name = "label103";
+            this.label103.Size = new System.Drawing.Size(79, 20);
+            this.label103.TabIndex = 31;
+            this.label103.Text = "你是想要：";
+            // 
+            // label102
+            // 
+            this.label102.Location = new System.Drawing.Point(488, 349);
+            this.label102.Name = "label102";
+            this.label102.Size = new System.Drawing.Size(174, 45);
+            this.label102.TabIndex = 30;
+            this.label102.Text = "请打开db文件夹下的card.xx.txt搜索卡片id";
+            // 
+            // cboCardExchangeIdx
+            // 
+            this.cboCardExchangeIdx.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboCardExchangeIdx.Font = new System.Drawing.Font("微软雅黑", 12F);
+            this.cboCardExchangeIdx.FormattingEnabled = true;
+            this.cboCardExchangeIdx.Items.AddRange(new object[] {
+            "选择要卖的卡",
+            "选择狗粮",
+            "选择合成目标"});
+            this.cboCardExchangeIdx.Location = new System.Drawing.Point(485, 209);
+            this.cboCardExchangeIdx.Name = "cboCardExchangeIdx";
+            this.cboCardExchangeIdx.Size = new System.Drawing.Size(177, 32);
+            this.cboCardExchangeIdx.TabIndex = 29;
+            this.cboCardExchangeIdx.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // button45
             // 
@@ -4217,18 +4321,18 @@ namespace MAClientGUI
             this.button45.UseVisualStyleBackColor = true;
             this.button45.Click += new System.EventHandler(this.button45_Click);
             // 
-            // txtCondSell
+            // txtCondCardExchange
             // 
-            this.txtCondSell.Font = new System.Drawing.Font("Lucida Console", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtCondSell.Location = new System.Drawing.Point(13, 12);
-            this.txtCondSell.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtCondSell.Multiline = true;
-            this.txtCondSell.Name = "txtCondSell";
-            this.txtCondSell.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtCondSell.Size = new System.Drawing.Size(658, 118);
-            this.txtCondSell.TabIndex = 7;
-            this.txtCondSell.Enter += new System.EventHandler(this.txtCondSell_Enter);
-            this.txtCondSell.Leave += new System.EventHandler(this.txtCondSell_Leave);
+            this.txtCondCardExchange.Font = new System.Drawing.Font("Lucida Console", 15F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCondCardExchange.Location = new System.Drawing.Point(13, 12);
+            this.txtCondCardExchange.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtCondCardExchange.Multiline = true;
+            this.txtCondCardExchange.Name = "txtCondCardExchange";
+            this.txtCondCardExchange.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtCondCardExchange.Size = new System.Drawing.Size(658, 118);
+            this.txtCondCardExchange.TabIndex = 7;
+            this.txtCondCardExchange.Enter += new System.EventHandler(this.txtCondSell_Enter);
+            this.txtCondCardExchange.Leave += new System.EventHandler(this.txtCondSell_Leave);
             // 
             // chkSuperPrefCards
             // 
@@ -4244,12 +4348,16 @@ namespace MAClientGUI
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.btnsSellIncludeIdx);
+            this.groupBox4.Controls.Add(this.btnsSellIncludeName);
+            this.groupBox4.Controls.Add(this.textBox34);
+            this.groupBox4.Controls.Add(this.btnsSellExcludeName);
             this.groupBox4.Controls.Add(this.chkNoHolo);
             this.groupBox4.Controls.Add(this.label69);
             this.groupBox4.Controls.Add(this.label68);
             this.groupBox4.Controls.Add(this.label67);
             this.groupBox4.Controls.Add(this.textBox11);
-            this.groupBox4.Controls.Add(this.btnsSellExclude);
+            this.groupBox4.Controls.Add(this.btnsSellExcludeIdx);
             this.groupBox4.Controls.Add(this.textBox5);
             this.groupBox4.Controls.Add(this.textBox6);
             this.groupBox4.Controls.Add(this.label27);
@@ -4270,7 +4378,53 @@ namespace MAClientGUI
             this.groupBox4.Size = new System.Drawing.Size(455, 277);
             this.groupBox4.TabIndex = 8;
             this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "卖这些卡片";
+            // 
+            // btnsSellIncludeIdx
+            // 
+            this.btnsSellIncludeIdx.Font = new System.Drawing.Font("微软雅黑", 8.830189F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnsSellIncludeIdx.Location = new System.Drawing.Point(318, 91);
+            this.btnsSellIncludeIdx.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnsSellIncludeIdx.Name = "btnsSellIncludeIdx";
+            this.btnsSellIncludeIdx.Size = new System.Drawing.Size(120, 34);
+            this.btnsSellIncludeIdx.TabIndex = 32;
+            this.btnsSellIncludeIdx.Text = "包括这些id";
+            this.btnsSellIncludeIdx.UseVisualStyleBackColor = true;
+            this.btnsSellIncludeIdx.Click += new System.EventHandler(this.btnsSellIncludeIdx_Click);
+            // 
+            // btnsSellIncludeName
+            // 
+            this.btnsSellIncludeName.Font = new System.Drawing.Font("微软雅黑", 8.830189F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnsSellIncludeName.Location = new System.Drawing.Point(38, 224);
+            this.btnsSellIncludeName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnsSellIncludeName.Name = "btnsSellIncludeName";
+            this.btnsSellIncludeName.Size = new System.Drawing.Size(120, 34);
+            this.btnsSellIncludeName.TabIndex = 31;
+            this.btnsSellIncludeName.Text = "包括这些名称";
+            this.btnsSellIncludeName.UseVisualStyleBackColor = true;
+            this.btnsSellIncludeName.Click += new System.EventHandler(this.btnsSellIncludeName_Click);
+            // 
+            // textBox34
+            // 
+            this.textBox34.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox34.Location = new System.Drawing.Point(164, 176);
+            this.textBox34.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.textBox34.Multiline = true;
+            this.textBox34.Name = "textBox34";
+            this.textBox34.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox34.Size = new System.Drawing.Size(148, 86);
+            this.textBox34.TabIndex = 30;
+            // 
+            // btnsSellExcludeName
+            // 
+            this.btnsSellExcludeName.Font = new System.Drawing.Font("微软雅黑", 8.830189F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnsSellExcludeName.Location = new System.Drawing.Point(38, 176);
+            this.btnsSellExcludeName.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnsSellExcludeName.Name = "btnsSellExcludeName";
+            this.btnsSellExcludeName.Size = new System.Drawing.Size(120, 34);
+            this.btnsSellExcludeName.TabIndex = 29;
+            this.btnsSellExcludeName.Text = "不包括这些名称";
+            this.btnsSellExcludeName.UseVisualStyleBackColor = true;
+            this.btnsSellExcludeName.Click += new System.EventHandler(this.btnsSellExcludeName_Click);
             // 
             // chkNoHolo
             // 
@@ -4290,7 +4444,7 @@ namespace MAClientGUI
             // 
             this.label69.AutoSize = true;
             this.label69.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label69.Location = new System.Drawing.Point(228, 216);
+            this.label69.Location = new System.Drawing.Point(228, 148);
             this.label69.Name = "label69";
             this.label69.Size = new System.Drawing.Size(17, 17);
             this.label69.TabIndex = 27;
@@ -4300,7 +4454,7 @@ namespace MAClientGUI
             // 
             this.label68.AutoSize = true;
             this.label68.Font = new System.Drawing.Font("微软雅黑", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label68.Location = new System.Drawing.Point(228, 142);
+            this.label68.Location = new System.Drawing.Point(228, 111);
             this.label68.Name = "label68";
             this.label68.Size = new System.Drawing.Size(17, 17);
             this.label68.TabIndex = 27;
@@ -4319,31 +4473,31 @@ namespace MAClientGUI
             // textBox11
             // 
             this.textBox11.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox11.Location = new System.Drawing.Point(318, 112);
+            this.textBox11.Location = new System.Drawing.Point(318, 128);
             this.textBox11.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox11.Multiline = true;
             this.textBox11.Name = "textBox11";
             this.textBox11.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox11.Size = new System.Drawing.Size(120, 127);
+            this.textBox11.Size = new System.Drawing.Size(120, 134);
             this.textBox11.TabIndex = 13;
             this.textBox11.Text = "124,49,8";
             // 
-            // btnsSellExclude
+            // btnsSellExcludeIdx
             // 
-            this.btnsSellExclude.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnsSellExclude.Location = new System.Drawing.Point(318, 62);
-            this.btnsSellExclude.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnsSellExclude.Name = "btnsSellExclude";
-            this.btnsSellExclude.Size = new System.Drawing.Size(120, 34);
-            this.btnsSellExclude.TabIndex = 12;
-            this.btnsSellExclude.Text = "不包括这些id";
-            this.btnsSellExclude.UseVisualStyleBackColor = true;
-            this.btnsSellExclude.Click += new System.EventHandler(this.btnsSellExclude_Click);
+            this.btnsSellExcludeIdx.Font = new System.Drawing.Font("微软雅黑", 8.830189F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnsSellExcludeIdx.Location = new System.Drawing.Point(318, 55);
+            this.btnsSellExcludeIdx.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnsSellExcludeIdx.Name = "btnsSellExcludeIdx";
+            this.btnsSellExcludeIdx.Size = new System.Drawing.Size(120, 34);
+            this.btnsSellExcludeIdx.TabIndex = 12;
+            this.btnsSellExcludeIdx.Text = "不包括这些id";
+            this.btnsSellExcludeIdx.UseVisualStyleBackColor = true;
+            this.btnsSellExcludeIdx.Click += new System.EventHandler(this.btnsSellExcludeIdx_Click);
             // 
             // textBox5
             // 
             this.textBox5.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox5.Location = new System.Drawing.Point(183, 211);
+            this.textBox5.Location = new System.Drawing.Point(183, 143);
             this.textBox5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(42, 25);
@@ -4353,7 +4507,7 @@ namespace MAClientGUI
             // textBox6
             // 
             this.textBox6.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox6.Location = new System.Drawing.Point(249, 211);
+            this.textBox6.Location = new System.Drawing.Point(249, 143);
             this.textBox6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(42, 25);
@@ -4364,7 +4518,7 @@ namespace MAClientGUI
             // 
             this.label27.AutoSize = true;
             this.label27.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label27.Location = new System.Drawing.Point(116, 211);
+            this.label27.Location = new System.Drawing.Point(116, 143);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(58, 21);
             this.label27.TabIndex = 9;
@@ -4373,7 +4527,7 @@ namespace MAClientGUI
             // btnSellPrice
             // 
             this.btnSellPrice.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnSellPrice.Location = new System.Drawing.Point(38, 206);
+            this.btnSellPrice.Location = new System.Drawing.Point(38, 138);
             this.btnSellPrice.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSellPrice.Name = "btnSellPrice";
             this.btnSellPrice.Size = new System.Drawing.Size(66, 34);
@@ -4385,7 +4539,7 @@ namespace MAClientGUI
             // textBox7
             // 
             this.textBox7.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox7.Location = new System.Drawing.Point(183, 137);
+            this.textBox7.Location = new System.Drawing.Point(183, 106);
             this.textBox7.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new System.Drawing.Size(42, 25);
@@ -4395,7 +4549,7 @@ namespace MAClientGUI
             // textBox8
             // 
             this.textBox8.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox8.Location = new System.Drawing.Point(249, 137);
+            this.textBox8.Location = new System.Drawing.Point(249, 106);
             this.textBox8.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(42, 25);
@@ -4426,7 +4580,7 @@ namespace MAClientGUI
             // 
             this.label31.AutoSize = true;
             this.label31.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label31.Location = new System.Drawing.Point(116, 137);
+            this.label31.Location = new System.Drawing.Point(116, 106);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(58, 21);
             this.label31.TabIndex = 3;
@@ -4445,7 +4599,7 @@ namespace MAClientGUI
             // btnSellLv
             // 
             this.btnSellLv.Font = new System.Drawing.Font("微软雅黑", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.btnSellLv.Location = new System.Drawing.Point(38, 131);
+            this.btnSellLv.Location = new System.Drawing.Point(38, 100);
             this.btnSellLv.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSellLv.Name = "btnSellLv";
             this.btnSellLv.Size = new System.Drawing.Size(66, 34);
@@ -4477,6 +4631,121 @@ namespace MAClientGUI
             this.tabPage9.Size = new System.Drawing.Size(682, 471);
             this.tabPage9.TabIndex = 11;
             this.tabPage9.Text = "工具";
+            // 
+            // groupBox14
+            // 
+            this.groupBox14.Controls.Add(this.txtOverrideToken);
+            this.groupBox14.Controls.Add(this.label101);
+            this.groupBox14.Controls.Add(this.button85);
+            this.groupBox14.Controls.Add(this.txtOverrideUA);
+            this.groupBox14.Controls.Add(this.label100);
+            this.groupBox14.Controls.Add(this.label99);
+            this.groupBox14.Controls.Add(this.button84);
+            this.groupBox14.Controls.Add(this.label98);
+            this.groupBox14.Controls.Add(this.button83);
+            this.groupBox14.Controls.Add(this.txtOverrideVersion);
+            this.groupBox14.Location = new System.Drawing.Point(21, 142);
+            this.groupBox14.Name = "groupBox14";
+            this.groupBox14.Size = new System.Drawing.Size(336, 230);
+            this.groupBox14.TabIndex = 1059;
+            this.groupBox14.TabStop = false;
+            this.groupBox14.Text = "自定义客户端属性";
+            // 
+            // txtOverrideToken
+            // 
+            this.txtOverrideToken.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtOverrideToken.Location = new System.Drawing.Point(11, 150);
+            this.txtOverrideToken.Name = "txtOverrideToken";
+            this.txtOverrideToken.Size = new System.Drawing.Size(309, 25);
+            this.txtOverrideToken.TabIndex = 1065;
+            // 
+            // label101
+            // 
+            this.label101.AutoSize = true;
+            this.label101.Location = new System.Drawing.Point(7, 127);
+            this.label101.Name = "label101";
+            this.label101.Size = new System.Drawing.Size(131, 20);
+            this.label101.TabIndex = 1064;
+            this.label101.Text = "推送Token(可乱填)";
+            // 
+            // button85
+            // 
+            this.button85.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button85.Location = new System.Drawing.Point(160, 194);
+            this.button85.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button85.Name = "button85";
+            this.button85.Size = new System.Drawing.Size(73, 31);
+            this.button85.TabIndex = 1063;
+            this.button85.Text = "恢复";
+            this.button85.UseVisualStyleBackColor = true;
+            this.button85.Click += new System.EventHandler(this.button85_Click);
+            // 
+            // txtOverrideUA
+            // 
+            this.txtOverrideUA.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtOverrideUA.Location = new System.Drawing.Point(11, 89);
+            this.txtOverrideUA.Name = "txtOverrideUA";
+            this.txtOverrideUA.Size = new System.Drawing.Size(309, 25);
+            this.txtOverrideUA.TabIndex = 1062;
+            // 
+            // label100
+            // 
+            this.label100.AutoSize = true;
+            this.label100.Location = new System.Drawing.Point(6, 32);
+            this.label100.Name = "label100";
+            this.label100.Size = new System.Drawing.Size(261, 20);
+            this.label100.TabIndex = 1061;
+            this.label100.Text = "客户端重载版本号（没提示出错就留空）";
+            // 
+            // label99
+            // 
+            this.label99.AutoSize = true;
+            this.label99.Location = new System.Drawing.Point(7, 66);
+            this.label99.Name = "label99";
+            this.label99.Size = new System.Drawing.Size(209, 20);
+            this.label99.TabIndex = 1060;
+            this.label99.Text = "UA(请填入形如Million/%d xxx)";
+            // 
+            // button84
+            // 
+            this.button84.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button84.Location = new System.Drawing.Point(6, 194);
+            this.button84.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button84.Name = "button84";
+            this.button84.Size = new System.Drawing.Size(73, 31);
+            this.button84.TabIndex = 1059;
+            this.button84.Text = "撤销";
+            this.button84.UseVisualStyleBackColor = true;
+            this.button84.Click += new System.EventHandler(this.button84_Click);
+            // 
+            // label98
+            // 
+            this.label98.AutoSize = true;
+            this.label98.Location = new System.Drawing.Point(236, 200);
+            this.label98.Name = "label98";
+            this.label98.Size = new System.Drawing.Size(93, 20);
+            this.label98.TabIndex = 3;
+            this.label98.Text = "改烂了我不管";
+            // 
+            // button83
+            // 
+            this.button83.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.button83.Location = new System.Drawing.Point(83, 194);
+            this.button83.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button83.Name = "button83";
+            this.button83.Size = new System.Drawing.Size(73, 31);
+            this.button83.TabIndex = 1057;
+            this.button83.Text = "保存";
+            this.button83.UseVisualStyleBackColor = true;
+            this.button83.Click += new System.EventHandler(this.button83_Click);
+            // 
+            // txtOverrideVersion
+            // 
+            this.txtOverrideVersion.Font = new System.Drawing.Font("微软雅黑", 9F);
+            this.txtOverrideVersion.Location = new System.Drawing.Point(274, 32);
+            this.txtOverrideVersion.Name = "txtOverrideVersion";
+            this.txtOverrideVersion.Size = new System.Drawing.Size(46, 25);
+            this.txtOverrideVersion.TabIndex = 1058;
             // 
             // label97
             // 
@@ -4726,121 +4995,6 @@ namespace MAClientGUI
             this.chkUseNiceTerm.Text = "使用终端模拟器";
             this.chkUseNiceTerm.UseVisualStyleBackColor = true;
             // 
-            // txtOverrideVersion
-            // 
-            this.txtOverrideVersion.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.txtOverrideVersion.Location = new System.Drawing.Point(274, 32);
-            this.txtOverrideVersion.Name = "txtOverrideVersion";
-            this.txtOverrideVersion.Size = new System.Drawing.Size(46, 25);
-            this.txtOverrideVersion.TabIndex = 1058;
-            // 
-            // button83
-            // 
-            this.button83.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button83.Location = new System.Drawing.Point(83, 194);
-            this.button83.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button83.Name = "button83";
-            this.button83.Size = new System.Drawing.Size(73, 31);
-            this.button83.TabIndex = 1057;
-            this.button83.Text = "保存";
-            this.button83.UseVisualStyleBackColor = true;
-            this.button83.Click += new System.EventHandler(this.button83_Click);
-            // 
-            // groupBox14
-            // 
-            this.groupBox14.Controls.Add(this.txtOverrideToken);
-            this.groupBox14.Controls.Add(this.label101);
-            this.groupBox14.Controls.Add(this.button85);
-            this.groupBox14.Controls.Add(this.txtOverrideUA);
-            this.groupBox14.Controls.Add(this.label100);
-            this.groupBox14.Controls.Add(this.label99);
-            this.groupBox14.Controls.Add(this.button84);
-            this.groupBox14.Controls.Add(this.label98);
-            this.groupBox14.Controls.Add(this.button83);
-            this.groupBox14.Controls.Add(this.txtOverrideVersion);
-            this.groupBox14.Location = new System.Drawing.Point(21, 142);
-            this.groupBox14.Name = "groupBox14";
-            this.groupBox14.Size = new System.Drawing.Size(336, 230);
-            this.groupBox14.TabIndex = 1059;
-            this.groupBox14.TabStop = false;
-            this.groupBox14.Text = "自定义客户端属性";
-            // 
-            // label98
-            // 
-            this.label98.AutoSize = true;
-            this.label98.Location = new System.Drawing.Point(236, 200);
-            this.label98.Name = "label98";
-            this.label98.Size = new System.Drawing.Size(93, 20);
-            this.label98.TabIndex = 3;
-            this.label98.Text = "改烂了我不管";
-            // 
-            // button84
-            // 
-            this.button84.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button84.Location = new System.Drawing.Point(6, 194);
-            this.button84.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button84.Name = "button84";
-            this.button84.Size = new System.Drawing.Size(73, 31);
-            this.button84.TabIndex = 1059;
-            this.button84.Text = "撤销";
-            this.button84.UseVisualStyleBackColor = true;
-            this.button84.Click += new System.EventHandler(this.button84_Click);
-            // 
-            // label99
-            // 
-            this.label99.AutoSize = true;
-            this.label99.Location = new System.Drawing.Point(7, 66);
-            this.label99.Name = "label99";
-            this.label99.Size = new System.Drawing.Size(209, 20);
-            this.label99.TabIndex = 1060;
-            this.label99.Text = "UA(请填入形如Million/%d xxx)";
-            // 
-            // label100
-            // 
-            this.label100.AutoSize = true;
-            this.label100.Location = new System.Drawing.Point(6, 32);
-            this.label100.Name = "label100";
-            this.label100.Size = new System.Drawing.Size(261, 20);
-            this.label100.TabIndex = 1061;
-            this.label100.Text = "客户端重载版本号（没提示出错就留空）";
-            // 
-            // txtOverrideUA
-            // 
-            this.txtOverrideUA.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.txtOverrideUA.Location = new System.Drawing.Point(11, 89);
-            this.txtOverrideUA.Name = "txtOverrideUA";
-            this.txtOverrideUA.Size = new System.Drawing.Size(309, 25);
-            this.txtOverrideUA.TabIndex = 1062;
-            // 
-            // button85
-            // 
-            this.button85.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.button85.Location = new System.Drawing.Point(160, 194);
-            this.button85.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.button85.Name = "button85";
-            this.button85.Size = new System.Drawing.Size(73, 31);
-            this.button85.TabIndex = 1063;
-            this.button85.Text = "恢复";
-            this.button85.UseVisualStyleBackColor = true;
-            this.button85.Click += new System.EventHandler(this.button85_Click);
-            // 
-            // txtOverrideToken
-            // 
-            this.txtOverrideToken.Font = new System.Drawing.Font("微软雅黑", 9F);
-            this.txtOverrideToken.Location = new System.Drawing.Point(11, 150);
-            this.txtOverrideToken.Name = "txtOverrideToken";
-            this.txtOverrideToken.Size = new System.Drawing.Size(309, 25);
-            this.txtOverrideToken.TabIndex = 1065;
-            // 
-            // label101
-            // 
-            this.label101.AutoSize = true;
-            this.label101.Location = new System.Drawing.Point(7, 127);
-            this.label101.Name = "label101";
-            this.label101.Size = new System.Drawing.Size(131, 20);
-            this.label101.TabIndex = 1064;
-            this.label101.Text = "推送Token(可乱填)";
-            // 
             // frmConfig
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
@@ -4937,11 +5091,11 @@ namespace MAClientGUI
             this.groupBox4.PerformLayout();
             this.tabPage9.ResumeLayout(false);
             this.tabPage9.PerformLayout();
+            this.groupBox14.ResumeLayout(false);
+            this.groupBox14.PerformLayout();
             this.groupBox13.ResumeLayout(false);
             this.groupBox13.PerformLayout();
             this.dockMenu.ResumeLayout(false);
-            this.groupBox14.ResumeLayout(false);
-            this.groupBox14.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -5040,13 +5194,13 @@ namespace MAClientGUI
         private System.Windows.Forms.Label label32;
         private System.Windows.Forms.Button btnSellLv;
         private System.Windows.Forms.Button btnSellStar;
-        private System.Windows.Forms.TextBox txtCondSell;
+        private System.Windows.Forms.TextBox txtCondCardExchange;
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.Label label27;
         private System.Windows.Forms.Button btnSellPrice;
         private System.Windows.Forms.TextBox textBox11;
-        private System.Windows.Forms.Button btnsSellExclude;
+        private System.Windows.Forms.Button btnsSellExcludeIdx;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.TextBox txtCondExplore;
@@ -5307,6 +5461,18 @@ namespace MAClientGUI
         private System.Windows.Forms.Label label101;
         private System.Windows.Forms.Button button85;
         private System.Windows.Forms.TextBox txtOverrideUA;
+        private System.Windows.Forms.ComboBox cboCardExchangeIdx;
+        private System.Windows.Forms.Button btnsSellIncludeIdx;
+        private System.Windows.Forms.Button btnsSellIncludeName;
+        private System.Windows.Forms.TextBox textBox34;
+        private System.Windows.Forms.Button btnsSellExcludeName;
+        private System.Windows.Forms.Label label102;
+        private System.Windows.Forms.Label label103;
+        private System.Windows.Forms.Button button89;
+        private System.Windows.Forms.Button button90;
+        private System.Windows.Forms.Button button92;
+        private System.Windows.Forms.Button btnCardExchangeSave;
+        private System.Windows.Forms.Label lblCardExchangeCache;
     }
 }
 
