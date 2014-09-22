@@ -6,7 +6,7 @@ import time
 # start meta
 __plugin_name__ = '显示超详细的战斗详情'
 __author = 'fffonion'
-__version__ = 0.11
+__version__ = 0.12
 __tip__ = '战斗详情加强版已启动'
 require_version = 1.70
 from cross_platform import *
@@ -114,9 +114,12 @@ class plugin(plugin_prototype):
         if not satk and not cbos and not skills:
             return
         fname = '[%s]%sLv%s_%s_%d%03d.txt' % (self.player.name, args[1].name, args[1].lv, args[1].serial_id, time.time(), ord(os.urandom(1)))
-        cards = ' '.join(map(lambda x:'%s(%s)' % (self.carddb[int(len(x)>4 and self.player.card.sid(x).master_card_id or x)][0],
-            str(len(x)>4 and self.player.card.sid(x).master_card_id or x)),
-            self.mac_instance._read_config('record', 'last_set_card').strip(',').split(',')))
+        try:
+            cards = ' '.join(map(lambda x:'%s(%s)' % (self.carddb[int(len(x)>4 and self.player.card.sid(x).master_card_id or x)][0],
+                str(len(x)>4 and self.player.card.sid(x).master_card_id or x)),
+                self.mac_instance._read_config('record', 'last_set_card').strip(',').split(',')))
+        except ValueError:
+            return
         #    self.mac_instance._read_config('record', 'last_set_card').split(',')))
         if not opath.exists(opath.join(getPATH0, 'battle_details')):
             os.mkdir(opath.join(getPATH0, 'battle_details'))

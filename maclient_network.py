@@ -12,8 +12,8 @@ import socket
 import urllib
 import binascii
 import random
-import maclient_smart
 from cross_platform import *
+maclient_smart = try_load_native('maclient_smart')
 if PYTHON3:
     import http.client as httplib
     xrange = range
@@ -64,7 +64,7 @@ class Crypt():
             # else:
             #     self._gen_rnd_key = lambda x = 16 : os.urandom(x)
         if loc == 'kr':
-            import maclient_crypt_ext
+            maclient_crypt_ext = try_load_native('maclient_crypt_ext')
             #total = sha384('qUZzuhyUaTAsHDhEVyQw820TEXPHrHPO').hexdigest()
             total = '5cb01273a084ffd4c848722db59504fd9ac6646929e7e5c806d63cf9db406aacbc55e4063bf32b74a4091451ad1daa5'
             self.enc_plus = lambda x:binascii.hexlify(maclient_crypt_ext.encrypt(

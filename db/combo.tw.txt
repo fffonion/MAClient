@@ -516,3 +516,31 @@
 606,Go out on a date,3,最大HP提升中,[1468,1469]
 607,The daily of spirits,2,攻擊力提升小,[1471,1472]
 608,Passionate?,2,攻擊力提升小,[1470,1473]
+609,BLACK COMBO,3,最大HP提升小,4(50)
+610,BLACK COMBO・Rise,3,最大HP提升小,6(50)
+611,BLACK COMBO・Crown,3,最大HP提升中,8(50)
+612,HEART fight COMBO,3,最大HP提升小,4(77)
+613,HEART fight  COMBO・Rise,3,最大HP提升小,6(77)
+614,HEART fight  COMBO・Crown,3,最大HP提升中,8(77)
+615,Strategic Fight,3,最大HP提升小,[1485,1486]
+616,On the 3rd,2,攻擊力提升中,[1480,1483,1485,1486]
+617,Importance of Order,3,最大HP提升小,[1479,1480]
+618,Freezing Queen,2,攻擊力提升中,[1477,1478,1474]
+619,Rivals,3,最大HP提升小,[1475,1481]
+620,Nameless Supportor,3,最大HP提升小,[1487,1488]
+621,Shy Queens,2,攻擊力提升中,[1481,1482]
+622,Partner of Queens,3,最大HP提升中,[1470,1476]
+623,{},3,最大HP提升中,[1474,1491]
+624,{},2,攻擊力提升中,[1490,1475]
+625,{},3,最大HP提升小,[1492,1493]
+626,F-moon COMBO,3,最大HP提升小,4(76)
+627,F-moon  COMBO・Rise,3,最大HP提升小,6(76)
+628,F-moon  COMBO・Crown,3,最大HP提升中,8(76)
+629,Minnie wonderful Hanayome,3,最大HP提升中,[1502,755]
+630,Happy starting point,2,攻擊力提升中,[1502,1503,1504]
+631,Sacred wedding ceremony,2,攻擊力提升小,[1496,1497]
+632,Wedding blessing,3,最大HP提升小,[1498,1499]
+633,Arthur's wedding,3,最大HP提升中,[1500,1501]
+634,Elusive,5,攻擊力與最大HP提升中,[1505,1506,1507]
+635,Hopeless and Lies,3,最大HP提升小,[1507,1509]
+636,Seeds of Hope,3,最大HP提升小,[1506,1510]

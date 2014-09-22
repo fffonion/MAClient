@@ -23,10 +23,10 @@ if PYTHON3:
     import configparser as ConfigParser
 else:
     import ConfigParser
+maclient_smart = try_load_native('maclient_smart')
 import maclient_player
 import maclient_network
 import maclient_logging
-import maclient_smart
 import maclient_plugin
 
 __version__ = 1.72
@@ -36,6 +36,7 @@ GACHA_FRIENNSHIP_POINT, GACHAgacha_TICKET, GACHA_11 = 1, 2, 4
 EXPLORE_HAS_BOSS, EXPLORE_NO_FLOOR, EXPLORE_OK, EXPLORE_ERROR, EXPLORE_NO_AP = -2, -1, 0, 1, 2
 BC_LIMIT_MAX, BC_LIMIT_CURRENT = -2, -1
 HALF_TEA, FULL_TEA = 0, 1
+MODE_SELL_CARD, MODE_BUILDUP_FOOD, MODE_BUILDUP_BASE = 0, 1, 2
 GUILD_RACE_TYPE = ['11','12']
 CMD_NOLOGIN = ['ss', 'set_server', 'l', 'login', 'rl', 'relogin']
 #SERV_CN, SERV_CN2, SERV_TW = 'cn', 'cn2', 'tw'
@@ -46,7 +47,7 @@ eval_explore_area = [('IS_EVENT', "area_type=='1'"), ('IS_GUILD', "race_type in 
 eval_explore_floor = [('NOT_FINNISHED', 'progress!="100"'), ('not floor.IS_GUILD', "(not area_race_type or area_race_type not in GUILD_RACE_TYPE)"),
 ('floor.IS_GUILD', "(not area_race_type or area_race_type in GUILD_RACE_TYPE)"),#little hack, 进入时area_race_type=0
 ('floor.HAS_FACTOR', '[floor.found_item_list.found_item[z] for z in range(len(floor.found_item_list.found_item)) if floor.found_item_list.found_item[z].type=="2"]')]
-eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale_price'), ('sid', 'serial_id'), ('holo', 'holography==1')]
+eval_select_card = [('atk', 'power'), ('mid', 'master_card_id'), ('price', 'sale_price'), ('sid', 'serial_id'), ('holo', 'holography==1'), ('card.name', 'self.carddb[int(card.master_card_id)][0]')]
 
 eval_task = []
 #duowan = {'cn':'http://db.duowan.com/ma/cn/card/detail/%s.html', 'tw':'http://db.duowan.com/ma/card/detail/%s.html'}
@@ -154,6 +155,8 @@ class MAClient(object):
         self.evalstr_area = self._eval_gen(self._read_config('condition', 'explore_area'), eval_explore_area,'area')
         self.evalstr_floor = self._eval_gen(self._read_config('condition', 'explore_floor'), eval_explore_floor, 'floor')
         self.evalstr_selcard = self._eval_gen(self._read_config('condition', 'select_card_to_sell'), eval_select_card, 'card')
+        self.evalstr_buildcard_food = self._eval_gen(self._read_config('condition', 'select_card_as_food') or '$.star in [1,2] and $.lv<=6', eval_select_card, 'card')
+        self.evalstr_buildcard_base = self._eval_gen(self._read_config('condition', 'select_card_to_feed') or '$.star >= 5', eval_select_card, 'card')
         self.evalstr_fairy_select_carddeck = self._eval_gen(self._read_config('condition', 'fairy_select_carddeck'),
             eval_fairy_select_carddeck, 'fairy')
         self.evalstr_factor = self._eval_gen(self._read_config('condition', 'factor'), [])
@@ -319,7 +322,7 @@ class MAClient(object):
                                     % self.loc[:2])
                         self._exit(int(err.code))
                     #return resp, dec
-            if not self.player_initiated :
+            if not self.player_initiated:
                 open(self.playerfile, 'w').write(_dec)
             else:
                 # check revision update
@@ -500,7 +503,9 @@ class MAClient(object):
                 elif task[0] == 'red_tea' or task[0] == 'rt':
                     self.red_tea(tea = HALF_TEA if '/' in ' '.join(task[1:]) else FULL_TEA)
                 elif task[0] == 'sell_card' or task[0] == 'slc':
-                    self.select_card_sell(' '.join(task[1:]))
+                    self.sell_card(' '.join(task[1:]))
+                elif task[0] == 'buildup_card' or task[0] == 'buc':
+                    self.buildup_card(*((' '.join(task[1:]) + ';').split(';')[:2]))#blc [food_cond],[base_cond]
                 elif task[0] == 'set_server' or task[0] == 'ss':
                     if task[1] not in ['cn','cn1','cn2','cn3','tw','kr','jp','sg','my']:
                         self.logger.error('服务器"%s"无效'%(task[1]))
@@ -616,7 +621,7 @@ class MAClient(object):
         else:  # 第一次
             try:
                 self.player = maclient_player.player(xmldict, self.loc)
-            except AttributeError:
+            except (AttributeError, KeyError):
                 self.logger.warning('保存的登录信息有误，将重新登录')
                 if opath.exists(self.playerfile):
                     os.remove(self.playerfile)
@@ -649,7 +654,7 @@ class MAClient(object):
             if int(self.player.card.count) >= getattr(maclient_smart, 'max_card_count_%s' % self.loc[:2]):
                 if self.cfg_auto_sell:
                     self.logger.info('卡片放满了，自动卖卡 v(￣▽￣*)')
-                    return self.select_card_sell()
+                    return self.sell_card()
                 else:
                     self.logger.warning('卡片已经放不下了，请自行卖卡www')
                     return False
@@ -1236,16 +1241,31 @@ class MAClient(object):
         return hasgot, resp['errmsg']
 
     @plugin.func_hook
-    def select_card_sell(self, cond = ''):
+    def _select_card_exchange(self, mode, cond = ''):
         cinfo = []
         sid = []
         warning_card = []
-        self.logger.debug('select_card:eval:%s' % (self.evalstr_selcard))
+        if mode == MODE_SELL_CARD:
+            _raw_eval_str = '(%s) and card.master_card_id not in [390, 391, 392, 404]' % (cond or self.evalstr_selcard)  # 卖卡排除切尔莉
+            _tip = '贩卖'
+        elif mode == MODE_BUILDUP_FOOD:#狗粮
+            _raw_eval_str = cond or self.evalstr_buildcard_food
+            _tip = '喂食'
+        elif mode == MODE_BUILDUP_BASE:
+            _raw_eval_str = '(%s) and card.lv != card.lv_max' % (cond or self.evalstr_buildcard_base) # 排除满级卡
+            _tip = '合成'
+        else:
+            self.logger.error('select_card_exchange:mode%d undefined' % mode)
+        # if cond:#override
+        #     _raw_eval_str = self._eval_gen(cond, eval_select_card)
+        if self._dopost('card/exchange', postdata = 'mode=1')[0]['error']:
+            return []
+        self.logger.debug('select_card:eval:%s' % (_raw_eval_str))
         for card in self.player.card.cards:
             card.star = int(self.carddb[int(card.master_card_id)][1])
-            evalres = eval(self.evalstr_selcard) and not card.master_card_id in [390, 391, 392, 404]  # 切尔莉
+            evalres = eval(_raw_eval_str)
             if evalres:
-                if card.star > 3:
+                if card.star > 3 and mode != MODE_BUILDUP_BASE:#合成卡不用提醒
                     warning_card.append('%s lv%d %s' % (
                         self.carddb[int(card.master_card_id)][0],
                         card.lv,
@@ -1258,28 +1278,28 @@ class MAClient(object):
                     '☆' * self.carddb[int(card.master_card_id)][1])
                 )
         if len(sid) == 0:
-            self.logger.info('没有要贩卖的卡片')
+            self.logger.info('没有要%s的卡片' % _tip)
         else:
-            self.logger.info('将要贩卖这些卡片：%s' % (', '.join(cinfo)))
+            self.logger.info('将要%s这些卡片：%s' % (_tip, ', '.join(cinfo)))
         if len(warning_card) > 0:
             if self.cfg_sell_card_warning >= 1:
                 self.logger.warning('存在稀有以上卡片：%s\n真的要继续吗？y/n' % (', '.join(warning_card)))
                 if raw_inputd('> ') != 'y':
                     self.logger.debug('select_card:user aborted')
-                    return False
+                    return []
         else:
             if self.cfg_sell_card_warning == 2:
-                self.logger.warning('根据卖卡警告设置，需要亚瑟大人的确认\n真的要继续吗？y/n')
+                self.logger.warning('根据卡片警告设置，需要亚瑟大人的确认\n真的要继续吗？y/n')
                 if raw_inputd('> ') != 'y':
                     self.logger.debug('select_card:user aborted')
-                    return False
-        return self._sell_card(sid)
+                    return []
+        return sid
 
-    def _sell_card(self, serial_id):
+    @plugin.func_hook
+    def sell_card(self, cond = ''):
+        serial_id = self._select_card_exchange(MODE_SELL_CARD, cond)
         if serial_id == []:
-            self.logger.debug('sell_card:no cards selected')
-            return False
-        if self._dopost('card/exchange', postdata = 'mode=1')[0]['error']:
+            self.logger.debug('_sell_card:no cards selected')
             return False
         serial_id = map(str, serial_id)  # to string
         while len(serial_id) > 0:
@@ -1298,6 +1318,51 @@ class MAClient(object):
             resp, ct = self._dopost('trunk/sell', postdata = paramsell)
             if not resp['error']:
                 self.logger.info('%s(%d张卡片)' % (resp['errmsg'], len(se_id)))
+        return True
+
+    @plugin.func_hook
+    def buildup_card(self, cond_base = '', cond_food = ''):
+        food_id = self._select_card_exchange(MODE_BUILDUP_FOOD, cond_food)
+        if food_id == []:
+            self.logger.debug('_buildup_card:no cards selected')
+            return False
+        base_id = self._select_card_exchange(MODE_BUILDUP_BASE, cond_base)
+        if base_id == []:
+            self.logger.debug('_buildup_card:no cards selected')
+            return False
+        food_id = map(str, food_id)  # to string
+        base_id = map(str, base_id)
+        if len(base_id) > 1:
+            self.logger.info('有%d张需要合成的卡片，随便选一张YAY' % len(base_id))
+            base_id = random.choice(base_id)
+        else:
+            base_id = base_id[0]
+        c = self.player.card.sid(base_id)
+        self.logger.info('把%d张卡片喂给 %s[Lv%s 突破%s] 吃' % (len(food_id), self.carddb[int(c.master_card_id)][0], c.lv, c.limit_over))
+        while len(food_id) > 0:
+            # >30张要分割
+            if len(food_id) > 30:
+                self.logger.debug('_buildup_card:too many cards (%d)' % (len(food_id)))
+                se_id = food_id[:30]
+            else:
+                se_id = food_id
+            food_id = food_id[len(se_id):]
+            # 吃吃吃
+            paramcomp = 'add_serial_id=%s&base_serial_id=%s' % (','.join(se_id), base_id)
+            slp = random.random() * 4 + len(se_id) * 0.6 + 1.732
+            self.logger.sleep('%f秒后合成……' % slp)
+            time.sleep(slp)
+            _m_price = sum(map(lambda x:int(self.player.card.sid(int(x)).material_price), se_id))
+            resp, ct = self._dopost('compound/buildup/compound', postdata = paramcomp)
+            if not resp['error']:
+                self.logger.info('嗝~(%d张卡片，耗资%dG)' % (len(se_id),_m_price))
+        n = self.player.card.sid(base_id)
+        self.logger.info('[%s] Lv:%s 突破:%s ATK:%s->%s HP:%s->%s' % (
+            self.carddb[int(c.master_card_id)][0],
+            ('%s->%s' % (c.lv, n.lv)) if c.lv != n.lv else n.lv, 
+            ('%s->%s' % (c.limit_over, n.limit_over)) if c.limit_over != n.limit_over else n.limit_over,
+            c.power, n.power, c.hp, n.hp
+            ))
         return True
 
     @plugin.func_hook

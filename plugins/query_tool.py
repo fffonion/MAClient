@@ -7,7 +7,7 @@ from cross_platform import *
 # start meta
 __plugin_name__ = 'query infomation of player'
 __author = 'fffonion'
-__version__ = 0.39
+__version__ = 0.40
 hooks = {}
 extra_cmd = {'q_item':'query_item', 'qi':'query_item', 'q_holo':'query_holo', 'qh':'query_holo', 'qgc':'query_guild_contribution','q_rank':'query_rank','qr':'query_rank'}
 # end meta
@@ -133,6 +133,8 @@ def query_rank(plugin_vals):
             elif _goto:
                 _gurl = _lib.query_goto[_guild_mode + _coll_mode]
                 x = opener.open(urllib2.Request(_gurl % _goto,headers = _header)).read()
+            # if True:
+            #     x = open(r'z:/test.htm').read()
             else:
                 _rev = _lib.query_rev[_guild_mode + _coll_mode]
                 if not _rev:
@@ -143,8 +145,9 @@ def query_rank(plugin_vals):
                     return
                 _url = _lib.query_base % _rev
                 x = opener.open(urllib2.Request(_url, headers = _header)).read()
+
             try:
-                show_it(x)
+                show_it(_lib.pre(x))
             except IndexError:
                 logger.warning('匹配失败，请重新登录；如果问题仍然存在，请更新插件')
         else:#cn

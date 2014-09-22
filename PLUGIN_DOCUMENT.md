@@ -2,6 +2,8 @@ MAClient Plugin Document
 ================
 本文档给出maclient插件制作的标准和一些参考
 
+[For English Users](PLUGIN_DOCUMENT.en.md)
+
 *   [概述](#概述)
 *   [HOOK插件](#hook插件)
     *   [示例](#示例)
@@ -16,7 +18,7 @@ MAClient Plugin Document
 
 ##概述
 
-MAClient1.50版本开始支持插件，通过在配置项中的“启用插件”功能(enable_plguins)和“禁用单个插件”选项(disabled)来控制插件的启用与否。
+MAClient1.50版本开始支持插件，通过在配置项中的“启用插件”功能(enable_plugins)和“禁用单个插件”选项(disabled)来控制插件的启用与否。
 
 插件为py脚本，放置在plugins目录下，由maclient_plugin在运行时载入；其中下划线开头的脚本和子目录中的脚本 __不会__ 被载入；同名脚本的优先级为pyd>py>pyc=pyo
 
@@ -35,16 +37,16 @@ MAClient1.50版本开始支持插件，通过在配置项中的“启用插件�
 开头需从_prototype导入plugin_prototype父类；然后定义插件名称，作者，版本：
 ```Python
 from _prototype import plugin_prototype
-__plugin_name__='sample plugin'
-__author='fffonion'
-__version__=0.1
+__plugin_name__ = 'sample plugin'
+__author = 'fffonion'
+__version__ = 0.1
 require_version = 1.71 #需要这个版本以上的MAClient
 require_feature_nologin = True #无需登录即可运行的命令(extra_cmd用)
 ```
 
 定义事件钩子，即ENTER/EXIT _ EVENT_NAME：
 ```Python
-hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
+hooks = {'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
 ```
 
 ###可用事件名称
@@ -59,7 +61,10 @@ hooks={'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
     explore 探索：选择地区
     _explore_floor 探索：走路
     gacha 转蛋
-    select_card_sell 自动卖卡
+    select_card_sell 自动卖卡(1.72以后取消)
+    _select_card_exchange 选卡来卖或者合成(1.72及以上版本)
+    sell_card 卡片贩卖(1.72及以上版本)
+    buildup_card 卡片合成(1.72及以上版本)
     fairy_battle_loop 刷新妖精列表循环
     fairy_select 选择妖精
     _fairy_battle 攻击妖精
@@ -101,7 +106,7 @@ class plugin(plugin_prototype):
 ```
 类名称必须为plugin，且继承plugin_prototype父类
 
-对每个事件钩子，必须有一个同名的类方法，args 和 kwargs 中被传入了这个事件被调用时传入的参数。
+对每个事件钩子，必须有一个同名的类方法，`*args` 和 `**kwargs` 中被传入了这个事件被调用时传入的参数。返回`args`和`kwargs`可以修改真正传递给被hook事件的参数。
 
 可以使用self.tuple_assign（继承自父类）修改args中参数内容，如self.tuple_assign(args, 0, '123')#将args第一个参数改为123
 
@@ -139,7 +144,7 @@ def start_webproxy(plugin_vals):
     return do
 ```
 
-在plugin_vals中传入了maclient在运行中的 __所有实例变量__
+在plugin_vals中传入了maclient在运行中的 __所有实例变量__。实际上它就是 `self.__dict__`
 
 ###有用的变量
 
@@ -150,7 +155,7 @@ def start_webproxy(plugin_vals):
     │  └ .cards 玩家所拥有的卡片 ，列表，元素为object_dict类型
     │  └ .sid(xxx) 按serial_id找卡片
     │  └ .mid(xxx) 按master_card_id找卡片，返回列表
-    ├─.item 卡片数据
+    ├─.item 道具数据
     │  └ .name 道具数据库 {'1':'AP回复药',……}
     │  └ .count 道具数量，如{'1':123}表示1号道具有123个
     ├─.ap / bc
