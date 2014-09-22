@@ -541,3 +541,6 @@
 631,Sacred wedding ceremony,2,攻擊力提升小,[1496,1497]
 632,Wedding blessing,3,最大HP提升小,[1498,1499]
 633,Arthur's wedding,3,最大HP提升中,[1500,1501]
+634,Elusive,5,攻擊力與最大HP提升中,[1505,1506,1507]
+635,Hopeless and Lies,3,最大HP提升小,[1507,1509]
+636,Seeds of Hope,3,最大HP提升小,[1506,1510]
