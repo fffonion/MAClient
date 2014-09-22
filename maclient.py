@@ -621,7 +621,7 @@ class MAClient(object):
         else:  # 第一次
             try:
                 self.player = maclient_player.player(xmldict, self.loc)
-            except AttributeError:
+            except (AttributeError, KeyError):
                 self.logger.warning('保存的登录信息有误，将重新登录')
                 if opath.exists(self.playerfile):
                     os.remove(self.playerfile)
@@ -654,7 +654,7 @@ class MAClient(object):
             if int(self.player.card.count) >= getattr(maclient_smart, 'max_card_count_%s' % self.loc[:2]):
                 if self.cfg_auto_sell:
                     self.logger.info('卡片放满了，自动卖卡 v(￣▽￣*)')
-                    return self.select_card_sell()
+                    return self.sell_card()
                 else:
                     self.logger.warning('卡片已经放不下了，请自行卖卡www')
                     return False
@@ -1246,26 +1246,24 @@ class MAClient(object):
         sid = []
         warning_card = []
         if mode == MODE_SELL_CARD:
-            _raw_eval_str = self.evalstr_selcard
+            _raw_eval_str = '(%s) and card.master_card_id not in [390, 391, 392, 404]' % (cond or self.evalstr_selcard)  # 卖卡排除切尔莉
             _tip = '贩卖'
         elif mode == MODE_BUILDUP_FOOD:#狗粮
-            _raw_eval_str = self.evalstr_buildcard_food
+            _raw_eval_str = cond or self.evalstr_buildcard_food
             _tip = '喂食'
         elif mode == MODE_BUILDUP_BASE:
-            _raw_eval_str = self.evalstr_buildcard_base
+            _raw_eval_str = '(%s) and card.lv != card.lv_max' % (cond or self.evalstr_buildcard_base) # 排除满级卡
             _tip = '合成'
         else:
             self.logger.error('select_card_exchange:mode%d undefined' % mode)
-        if cond:#override
-            _raw_eval_str = self._eval_gen(cond, eval_select_card)
+        # if cond:#override
+        #     _raw_eval_str = self._eval_gen(cond, eval_select_card)
         if self._dopost('card/exchange', postdata = 'mode=1')[0]['error']:
             return []
         self.logger.debug('select_card:eval:%s' % (_raw_eval_str))
         for card in self.player.card.cards:
             card.star = int(self.carddb[int(card.master_card_id)][1])
-            evalres = eval(_raw_eval_str) and (
-                card.master_card_id not in [390, 391, 392, 404]  # 卖卡排除切尔莉
-                or mode in (MODE_BUILDUP_FOOD, MODE_BUILDUP_BASE)) # 合成不排除切尔莉
+            evalres = eval(_raw_eval_str)
             if evalres:
                 if card.star > 3 and mode != MODE_BUILDUP_BASE:#合成卡不用提醒
                     warning_card.append('%s lv%d %s' % (
@@ -1325,8 +1323,11 @@ class MAClient(object):
     @plugin.func_hook
     def buildup_card(self, cond_base = '', cond_food = ''):
         food_id = self._select_card_exchange(MODE_BUILDUP_FOOD, cond_food)
+        if food_id == []:
+            self.logger.debug('_buildup_card:no cards selected')
+            return False
         base_id = self._select_card_exchange(MODE_BUILDUP_BASE, cond_base)
-        if food_id == [] or base_id == []:
+        if base_id == []:
             self.logger.debug('_buildup_card:no cards selected')
             return False
         food_id = map(str, food_id)  # to string
