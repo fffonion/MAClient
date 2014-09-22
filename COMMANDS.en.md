@@ -101,6 +101,16 @@ same as red potion
 
 sell_card/slc
 
+    sell_card
+    sell_card $.star in [1,2]
+
+###Build Up card
+
+buildup_card/buc
+
+    buildup_card
+    buildup_card $.star==7;$.star in [1,2] # buc base material
+
 ###Set server
 
 set_server/ss

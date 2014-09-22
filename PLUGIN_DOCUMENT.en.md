@@ -60,7 +60,10 @@ hooks = {'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
 * explore explore: select area
 * _explore_floor explore: explore in a floor
 * gacha
-* select_card_sell
+* select_card_sell auto sell <1.72
+* _select_card_exchange >=1.72及以上版本
+* sell_card >=1.72
+* buildup_card >=1.72
 * fairy_battle_loop
 * fairy_select
 * _fairy_battle

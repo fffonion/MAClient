@@ -342,3 +342,9 @@ eg：
     card.star in [1,2] and card.lv<5 and card.mid != 124 and not card.holo
 
 PS：All **Cherrys** are excluded.
+
+####select_card_as_food
+As former, but no exclusion of **Cherrys**
+
+####select_card_to_feed
+As former, but no warning of R+ card (of course)
