@@ -102,6 +102,16 @@ green_tea/gt
 
 sell_card/slc
 
+    sell_card
+    sell_card $.star in [1,2]
+
+###自动合卡
+
+buildup_card/buc
+
+    buildup_card
+    buildup_card $.star==7;$.star in [1,2] # buc 目标条件 狗粮条件
+
 ###设置账号类型
 
 set_server/ss

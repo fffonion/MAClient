@@ -70,6 +70,7 @@
 73,Honest Sense,2,Small increase in ATK,[2,73]
 75,Take Over One,2,Small increase in ATK,[88,107]
 77,Invincible,3,Small increase in Max HP,[80,104]
+78,Revenge for Misconduct,2,Small increase in ATK,[1,106,138]
 79,Battle and Field,5,Small increase in ATK and max HP,[105,125]
 80,Solid Fighter,2,Small increase in ATK,[126,128]
 81,Fine Player,2,Small increase in ATK,[17,86,127]
@@ -84,6 +85,7 @@
 92,Discontent Explosion,2,Small increase in ATK,[42,144]
 93,Destiny`s Link,2,Small increase in ATK,[16,145]
 94,Arrow Rain,2,Medium increase in ATK,[20,22,27,57]
+98,Dirty Girls,2,Small increase in ATK,[24,59,98]
 99,Conquest Creator,2,Small increase in ATK,[21,96]
 100,Triple Weapon,2,Small increase in ATK,[58,60,62]
 101,Closed Time,2,Small increase in ATK,[63,93,99]
@@ -125,6 +127,7 @@
 139,Imperial Gold,3,Small increase in Max HP,[180,190,192]
 140,Intersecting Research,3,Small increase in Max HP,[193,194]
 143,Drive Girl,3,Small increase in Max HP,[198,200]
+144,Magic Flower,3,Small increase in Max HP,[179,191,201]
 145,Shared Sense,3,Small increase in Max HP,[200,202]
 148,Lakeside Song,3,Small increase in Max HP,[181,208]
 149,Mystery Drink,3,Small increase in Max HP,[205,206]
@@ -137,6 +140,7 @@
 158,Dimension Combo Rise,2,Small increase in ATK,7(23)
 159,Dimension Combo Crown,2,Medium increase in ATK,9(23)
 183,Melancholic,3,Medium increase in Max HP,[259,255,265]
+184,Real Right Arm,3,Small increase in Max HP,[260,263]
 191,Sales Talk,3,Small increase in Max HP,[267,265]
 192,Only Recital,3,Small increase in Max HP,[268,256]
 194,Standing Hate,3,Small increase in Max HP,[270,282]
@@ -145,6 +149,8 @@
 211,Bloody String,3,Small increase in Max HP,[291,293,295]
 213,Lava Soup,3,Small increase in Max HP,[293,291,213]
 221,Mechanic Mania,3,Small increase in Max HP,[226,314]
+222,Invisible,3,Small increase in Max HP,[301,295]
+233,Prime Present,3,Small increase in Max HP,[314,304]
 238,Starlight Combo,3,Small increase in Max HP,4(24)
 239,Starlight Combo Rise,3,Small increase in Max HP,7(24)
 240,Starlight Combo Crown,3,Small increase in Max HP,9(24)
@@ -173,3 +179,18 @@
 299,Double Team Combo,2,Small increase in ATK,2(100)
 300,AWC Combo Rise,2,Small increase in ATK,4(100)
 301,AWC Combo Crown,2,Medium increase in ATK,6(100)
+302,Bridal Combo,3,Small increase in Max HP,2(65)
+303,Bridal Combo Rise,3,Small increase in Max HP,4(65)
+304,Bridal Combo Crown,3,Medium increase in Max HP,6(65)
+305,Enchanted Combo,3,Small increase in Max HP,2(83)
+306,Enchanted Combo Rise,3,Small increase in Max HP,4(83)
+307,Enchanted Combo Crown,5,Medium increase in ATK and max HP,6(83)
+308,Tiny Combo,2,Small increase in ATK,2(85)
+309,Tiny Combo Rise,2,Small increase in ATK,4(85)
+310,Tiny Combo Crown,2,Medium increase in ATK,6(85)
+311,Blossom Combo,3,Small increase in Max HP,2(87)
+312,Blossom Combo Rise,3,Small increase in Max HP,4(87)
+313,Blossom Combo Crown,3,Medium increase in Max HP,6(87)
+314,Sports Day Combo,2,Small increase in ATK,2(68)
+315,Sports Day Combo Rise,2,Small increase in ATK,4(68)
+316,Sports Day Combo Crown,2,Medium increase in ATK,6(68)

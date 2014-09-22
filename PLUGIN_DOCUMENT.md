@@ -61,7 +61,10 @@ hooks = {'ENTER__fairy_battle':1,'EXIT__fairy_battle':1,'ENTER_explore':1}
     explore 探索：选择地区
     _explore_floor 探索：走路
     gacha 转蛋
-    select_card_sell 自动卖卡
+    select_card_sell 自动卖卡(1.72以后取消)
+    _select_card_exchange 选卡来卖或者合成(1.72及以上版本)
+    sell_card 卡片贩卖(1.72及以上版本)
+    buildup_card 卡片合成(1.72及以上版本)
     fairy_battle_loop 刷新妖精列表循环
     fairy_select 选择妖精
     _fairy_battle 攻击妖精
