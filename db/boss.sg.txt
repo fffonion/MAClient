@@ -174,3 +174,36 @@
 60048,Arousal Queen of Avalon,30000
 60049,Queen of Avalon,5000
 60050,Arousal Queen of Avalon,30000
+60051,Bisclavret,10000
+60052,Arousal Bisclavret,20000
+60053,Guinevere,10000
+60054,Arousal Guinevere,20000
+60055,Pied Piper,10000
+60056,Arousal Pied Piper,20000
+60057,Mad Hatter,10000
+60058,Arousal Mad Hatter,20000
+60059,Snow White,5000
+60060,Arousal Snow White,30000
+60061,Snow White,5000
+60062,Arousal Snow White,30000
+60063,Toddler Gareth,10000
+60064,Arousal Toddler Gareth,20000
+60065,Toddler Tinia,10000
+60066,Arousal Toddler Tinia,20000
+60067,Marigold,10000
+60068,Arousal Marigold,20000
+60069,Rose,10000
+60070,Arousal Rose,20000
+60071,Myorang,10000
+60072,Arousal Myorang,20000
+60073,Dinia,10000
+60074,Arousal Dinia,20000
+60075,Score,5000
+60076,Arousal Score,30000
+60077,Score,5000
+60078,Arousal Score,30000
+60079,Stonemiu,100000
+60080,Stonemiu,175000
+60081,Stonemiu,250000
+60082,Stonemiu,325000
+60083,Stonemiu,400000
