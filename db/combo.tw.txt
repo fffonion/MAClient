@@ -544,3 +544,8 @@
 634,Elusive,5,攻擊力與最大HP提升中,[1505,1506,1507]
 635,Hopeless and Lies,3,最大HP提升小,[1507,1509]
 636,Seeds of Hope,3,最大HP提升小,[1506,1510]
+637,Adverse Gakuen,3,最大HP提升中,[1515,1514,1516]
+638,Gakuen care guide,2,攻擊力提升小,[1515,1520]
+639,Model student,3,最大HP提升中,[1517,1518]
+640,Les Miserables,2,攻擊力提升中,[1517,1519]
+641,Re-return,3,最大HP提升小,[1519]

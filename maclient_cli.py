@@ -223,7 +223,7 @@ def main():
                     continue
             elif ch == 'h':
                 print(du8('登陆 login/l,设置卡组 set_card/sc,因子战 factor_battle/fcb,秘境探索 explore/e,'
-                    '刷列表中的妖精 fairy_battle/fyb,嗑红 red_tea/rt,嗑绿 green_tea/gt,自动卖卡 sell_card/slc,'
+                    '刷列表中的妖精 fairy_battle/fyb,嗑红 red_tea/rt,嗑绿 green_tea/gt,自动卖卡 sell_card/slc,自动合卡 buildup_card/buc'
                     '设置账号类型 set_server/ss,好友相关 friend/f,转蛋gacha/g,分配点数point/p,礼物盒reward_box/rb,'
                     '手动选择妖精战斗fairy_select/fs,重新登录relogin/rl,问好like/greet/gr,自动配卡as/auto_set; '
                     '\n| 分割多个，空格分隔命令与参数\n'

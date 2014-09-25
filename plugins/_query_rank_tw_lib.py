@@ -4,7 +4,7 @@
 #      fffonion        <fffonion@gmail.com>
 from datetime import datetime
 import re
-__version__ = 20140921
+__version__ = 20140925
 query_base = 'http://game.ma.mobimon.com.tw:10001/connect/web/revisions_detail?id=%d'
 query_goto = ['http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_fairy?to=%s',
 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist?to=%s',
@@ -13,19 +13,19 @@ query_goto = ['http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_fairy
 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_country?to=%s&country=%d']
 query_country = 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_country?country=%d'
 # self.fairy, self.collect, guild.fairy, guild.collect
-query_rev = [485, None, None, None]
+query_rev = [496, None, None, None]
 #('闇黑帝國',106), ('海洋聯盟',107), ('巨人國度',108)
 query_country_id = []
 # 有效期
-query_lifetime = datetime(2014, 9, 25, 10, 0, 0, 0)
+query_lifetime = datetime(2014, 10, 9, 10, 0, 0, 0)
 now = datetime.now()
 
 #妖精(种类)计数
-fairy_count = 2
+fairy_count = 4
 #用于妖精排名的道具加权指数，通过len(re.findall('</table))来判断是否存在第二个表格
 fairy_item_count = 1
 #妖精与收集品排名的种类：1.(1+收集品) * 妖精等级加权和, 2.妖精等级乘积 *　收集品
-fairy_with_coll_type = 2
+fairy_with_coll_type = 1
 
 #收集品种类计数
 item_count = 4
