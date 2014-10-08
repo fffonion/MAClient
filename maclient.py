@@ -2172,7 +2172,7 @@ class MAClient(object):
                 self.logger.info('BP:%s Rank:%s x%s %s left.' % (
                     cmp_parts.event_point, cmp_parts.event_rank, cmp_parts.event_bonus_rate,
                     time.strftime('%M\'%S"', time.localtime(int(cmp_parts.event_bonus_end_time) / 1000 - time.time())) if cmp_parts.event_bonus_end_time != '0' else '0'))
-            random.shuffle(lakes)
+            #random.shuffle(lakes)
             if sel_lake == ['']:
                 l = lakes[0]
             else:

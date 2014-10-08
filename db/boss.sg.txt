@@ -207,3 +207,7 @@
 60081,Stonemiu,250000
 60082,Stonemiu,325000
 60083,Stonemiu,400000
+60084,Snail Bride,10000
+60085,Arousal Snail Bride,20000
+60086,Lavia,10000
+60087,Arousal Lavia,20000

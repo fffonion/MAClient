@@ -146,17 +146,21 @@
 194,Standing Hate,3,Small increase in Max HP,[270,282]
 201,Rabbit Weapon,3,Small increase in Max HP,[277,270]
 208,Mistaken Thunder,3,Small increase in Max HP,[286,273,282]
+209,Hope of Neat,3,Big increase in Max HP,[288,299,307]
 211,Bloody String,3,Small increase in Max HP,[291,293,295]
 213,Lava Soup,3,Small increase in Max HP,[293,291,213]
+214,Tea Time,3,Small increase in Max HP,[294,293,311]
+217,Ball Crash,3,Medium increase in Max HP,[298,295,299]
 221,Mechanic Mania,3,Small increase in Max HP,[226,314]
 222,Invisible,3,Small increase in Max HP,[301,295]
+229,Skeleton Armor,3,Big increase in Max HP,[308,311,312]
 233,Prime Present,3,Small increase in Max HP,[314,304]
 238,Starlight Combo,3,Small increase in Max HP,4(24)
 239,Starlight Combo Rise,3,Small increase in Max HP,7(24)
 240,Starlight Combo Crown,3,Small increase in Max HP,9(24)
-248,Gravure Combo,3,Small increase in Max HP,4(25)
-249,Gravure Combo Rise,3,Small increase in Max HP,7(25)
-250,Gravure Combo Crown,3,Small increase in Max HP,9(25)
+248,Gravia Combo,3,Small increase in Max HP,4(25)
+249,Gravia Combo Rise,3,Small increase in Max HP,7(25)
+250,Gravia Combo Crown,3,Small increase in Max HP,9(25)
 254,Magician Girl,3,Small increase in Max HP,[326,343]
 255,Golden Ball,3,Small increase in Max HP,[327,342]
 257,Rope Catch,3,Small increase in Max HP,[334,346]
@@ -191,6 +195,8 @@
 311,Blossom Combo,3,Small increase in Max HP,2(87)
 312,Blossom Combo Rise,3,Small increase in Max HP,4(87)
 313,Blossom Combo Crown,3,Medium increase in Max HP,6(87)
-314,Sports Day Combo,2,Small increase in ATK,2(68)
-315,Sports Day Combo Rise,2,Small increase in ATK,4(68)
-316,Sports Day Combo Crown,2,Medium increase in ATK,6(68)
+314,Swimsuit Faeries,1,Big increase in Excalibur`s damage,[288,299,307]
+315,Sports Day Combo,2,Small increase in ATK,2(68)
+316,Sports Day Combo Rise,2,Small increase in ATK,4(68)
+317,Sports Day Combo Crown,2,Medium increase in ATK,6(68)
+318,Lolita Attack,3,Small increase in Max HP,[758,757]
