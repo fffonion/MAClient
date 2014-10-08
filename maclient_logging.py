@@ -76,7 +76,7 @@ class Logging(object):
         except (ValueError, TypeError):
             fmt = fmt.replace('%','%%')
             self.__write(raw_du8('%-5s - [%s] %s\n' % (level, datetime.now(zh_BJ()).strftime('%X'), fmt % args)))
-        #sys.stdout.flush()
+        sys.stdout.flush()
         return '[%s] %s\n' % (datetime.now(zh_BJ()).strftime('%b %d %X'), fmt % args)
 
     def dummy(self, *args, **kwargs):
