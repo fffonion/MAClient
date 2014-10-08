@@ -549,3 +549,8 @@
 639,Model student,3,最大HP提升中,[1517,1518]
 640,Les Miserables,2,攻擊力提升中,[1517,1519]
 641,Re-return,3,最大HP提升小,[1519]
+642,Difficult To Get Along,3,最大HP提升中,[1518,1524]
+643,Worlds Apart,2,攻擊力提升中,[1522,1523,1524]
+644,Campus Watch,3,最大HP提升小,[1526]
+645,Indispensable,3,最大HP提升小,[1514,1527]
+646,Guidance Of Well-,3,最大HP提升小,[1523,1525]

@@ -18,7 +18,7 @@ else:
 # start meta
 __plugin_name__ = '在线升级插件'
 __author = 'fffonion'
-__version__ = 0.28
+__version__ = 0.29
 hooks = {}
 extra_cmd = {'plugin_update':'plugin_update', 'pu':'plugin_update', 'us':'update_self'}
 require_feature_nologin = True
@@ -28,7 +28,7 @@ GET_DEV_UPDATE = True
 repos = ['http://storage.jcloud.com/maclient','http://git.oschina.net/fffonion/MAClient', 'https://github.com/fffonion/MAClient']
 headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'User-Agent': 'MAClient/update v%s' % __version__,
+    'User-Agent': 'MAClient.update/%s' % __version__,
     'X-Requested-With': 'MAClient',
     'Accept-Language': 'zh-CN, en-US',
     'Accept-Charset': 'utf-8, iso-8859-1, utf-16, *;q=0.7',
@@ -84,15 +84,15 @@ class _bg_check(threading.Thread):
 
     def run(self):
         time.sleep(3)
-        if not opath.exists(opath.join(_get_temp(), '.MAClient.update')):
+        if not opath.exists(opath.join(_get_temp(), '.MAClient.update')) or self.do_update:#没有检查过更新，或静默升级
             if _check_update(silent = True):
                 if self.do_update:
                     has_new = _do_update(silent = True)
                     if has_new:
-                        print(du8('更新了%d个项目(%s)' % (len(has_new), ','.join(has_new))))
+                        print(du8('\n更新了%d个项目(%s)' % (len(has_new), ','.join(has_new))))
                     else:
-                        print(du8('后台更新发生故障'))
-                    os.remove(opath.join(_get_temp(), '.MAClient.auto_update'))
+                        print(du8('\n后台更新发生故障'))
+                    #os.remove(opath.join(_get_temp(), '.MAClient.auto_update'))
                 else:
                     print(du8('\n已有新版本可供升级，请输入pu或plugin_update执行更新'))
 
@@ -102,6 +102,7 @@ def _get_temp():
     else:
         try:
             open('/tmp/.MAClient.test', 'w')
+            os.remove('/tmp/.MAClient.test')
         except OSError:
             return '.'
         except IOError:
@@ -142,7 +143,7 @@ def _http_get(uri, silent=False):
 def _check_update(silent = False):
     check_file = opath.join(_get_temp(), '.MAClient.noupdate')
     if opath.exists(check_file):
-        if time.time() - os.path.getmtime(check_file) < 86400:#1天内只检查一次
+        if time.time() - os.path.getmtime(check_file) < 10800:#3小时内只检查一次
             return
         os.remove(check_file)
     if not silent:
@@ -257,10 +258,10 @@ def _do_update(silent = False):
             if not silent:
                 print(du8(_prompt % (k.name, k.version)))
                 _done = True
-    if not EXEBUNDLE:
+    if not EXEBUNDLE and not silent:
         print(du8('你可以通过us命令来更新本体到最新版'))
     os.remove(update_file)
-    if _done:
+    if _done and not silent:
         print(du8('重新启动maclient以应用更新'))
     return _updated_count
 
