@@ -6,7 +6,7 @@
 import time
 import math
 import itertools
-__version__ = '1.4-build20140911'
+__version__ = '1.5-build20141008'
 
 try:
     from multiprocessing import Pool
@@ -188,7 +188,7 @@ def carddeck_gen(player_cards, aim = DEFEAT, bclimit = 999, includes = [], maxli
             card.hp,
             card.power * _multi[card.master_card_id] if card.master_card_id in _multi else card.power,
             card.lv,
-            card.master_card_id,
+            card.master_card_id % 1000000,#for jp
             card.serial_id)
         for card in player_cards.cards if eval(seleval)]  # 减少待选卡片数
     print('Selecting cards from %s candidates...' % len(_cards))
