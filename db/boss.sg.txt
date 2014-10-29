@@ -211,3 +211,9 @@
 60085,Arousal Snail Bride,20000
 60086,Lavia,10000
 60087,Arousal Lavia,20000
+60088,Constantine,10000
+60089,Arousal Constantine,20000
+60090,Arousal Mordred,35000
+60091,Lancelot,10000
+60092,Arousal Lancelot,20000
+60093,Arousal Mordred,35000

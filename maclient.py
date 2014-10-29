@@ -2114,7 +2114,7 @@ class MAClient(object):
 
 
     @plugin.func_hook
-    def point_setting(self):
+    def point_setting(self, setting = None):
         if self._dopost('menu/menulist')[0]['error']:
             return
         if self._dopost('menu/playerinfo', postdata = 'kind=6&user_id=%s' % self.player.id)[0]['error']:
@@ -2128,13 +2128,16 @@ class MAClient(object):
             return False
         else:
             self.logger.info('还有%d点未分配点数' % free_points)
-        while True:
-            try:
-                ap, bc = raw_inputd('输入要分配给AP BC的点数，空格分隔> ').split(' ')
-            except ValueError:
-                self.logger.warning('少输入了一个数或者多输了一个数吧')
-            else:
-                break
+        if setting:
+            ap, bc = setting
+        else:
+            while True:
+                try:
+                    ap, bc = raw_inputd('输入要分配给AP BC的点数，空格分隔> ').split(' ')
+                except ValueError:
+                    self.logger.warning('少输入了一个数或者多输了一个数吧')
+                else:
+                    break
         if not self._dopost('town/pointsetting', postdata = 'ap=%s&bc=%s' % (ap, bc))[0]['error']:
             self.logger.info('点数分配成功！')
             return True
@@ -2163,10 +2166,7 @@ class MAClient(object):
         cmp_parts = cmp_parts_ct.body.competition_parts
         for i in xrange(int(trycnt)):
             self.logger.info('factor_battle:因子战:第%d/%s次 寻找油腻的师姐' % (i + 1, trycnt))
-            lakes = cmp_parts.lake
-            # only one
-            if len(lakes) == 1:
-                lakes = [lakes]
+            lakes = self.tolist(cmp_parts.lake)
             # EVENT HANDLE
             if 'event_point' in cmp_parts:
                 self.logger.info('BP:%s Rank:%s x%s %s left.' % (

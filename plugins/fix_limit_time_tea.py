@@ -85,6 +85,8 @@ class plugin(plugin_prototype):
         elif int(itemid) == self.half_offset + 1:
             iid= self.MINOR_GREEN
             cnt = min(50/self.PERCENT_GREEN, minor_ap_cnt)
+        else:#other id
+            return
         #adjust count
         if iid == self.MINOR_RED:
             cnt = min(int((100 - 100 * mac.player.bc['current'] / mac.player.bc['max']) / self.PERCENT_RED), cnt)

@@ -183,7 +183,8 @@ class plugins(object):
                 # module object
                 try:
                     self.plugins[m] = __import__(m)
-                except:
+                except Exception as ex:
+                    print(ex)
                     self.logger.warning('%s is disabled due to an Error' % m)
                 else:
                     # plugin instance
