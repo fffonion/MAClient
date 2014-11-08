@@ -2158,7 +2158,7 @@ class MAClient(object):
         battle_win = 1
         if self.loc in ['jp', 'sg']:
             self._dopost('battle/area', xmlresp = False)
-            resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = True)
+            resp, cmp_parts_ct = self._dopost('battle/competition_parts?redirect_flg=1', noencrypt = self.loc == 'sg')#日服返回加密结果
         else:
             resp, cmp_parts_ct = self._dopost('battle/area')
         if resp['error']:
