@@ -4,7 +4,7 @@
 #      fffonion        <fffonion@gmail.com>
 from datetime import datetime
 import re
-__version__ = 20140925
+__version__ = 20141010
 query_base = 'http://game.ma.mobimon.com.tw:10001/connect/web/revisions_detail?id=%d'
 query_goto = ['http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_fairy?to=%s',
 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist?to=%s',
@@ -13,11 +13,11 @@ query_goto = ['http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_fairy
 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_country?to=%s&country=%d']
 query_country = 'http://game.ma.mobimon.com.tw:10001/connect/web/mb_ranklist_country?country=%d'
 # self.fairy, self.collect, guild.fairy, guild.collect
-query_rev = [496, None, None, None]
+query_rev = [506, None, None, None]
 #('闇黑帝國',106), ('海洋聯盟',107), ('巨人國度',108)
 query_country_id = []
 # 有效期
-query_lifetime = datetime(2014, 10, 9, 10, 0, 0, 0)
+query_lifetime = datetime(2014, 10, 23, 10, 0, 0, 0)
 now = datetime.now()
 
 #妖精(种类)计数

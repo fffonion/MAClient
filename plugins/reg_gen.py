@@ -3,12 +3,14 @@
 # general registration helper(tw)
 # Contributor:
 #      fffonion        <fffonion@gmail.com>
+from __future__ import print_function
 from _prototype import plugin_prototype
 import random
 import time
 import sys
 import os
 import sys
+import string
 import httplib2
 from cross_platform import *
 import maclient_network
@@ -17,7 +19,7 @@ if PYTHON3:
 from xml2dict import XML2Dict
 __plugin_name__ = 'invitation tool'
 __author = 'fffonion'
-__version__ = 0.33
+__version__ = 0.35
 hooks = {}
 extra_cmd = {"reg":"reg_gen"}
 def reg_gen(plugin_vals):
@@ -28,10 +30,18 @@ def reg_gen(plugin_vals):
         if 'player' not in plugin_vals:
             logger.error('玩家信息还没有初始化')
             return
-        invid = hex(int(plugin_vals['player'].id))[2:]
+        if args[0].strip().lstrip('-').isdigit():
+            reg_cnt = int(args[0].strip()) # >0 => auto_mode
+        else:
+            reg_cnt = -1
+        if reg_cnt == -0xe9:#ubw mode
+            invid = hex(random.randrange(100000, 2333333))[2:]
+        else:
+            invid = hex(int(plugin_vals['player'].id))[2:]
         cnt = 0
-        logger.warning('如果连续注册遇到code 500\n请明天再试\n或者使用VPN或代理连接(MAClient会在启动时自动读取IE代理)')
-        print(du8('招待码 = %s' % invid))
+        _prt = lambda x: print(du8(x)) if reg_cnt != -0xe9 else None
+        #logger.warning('如果连续注册遇到code 500\n请明天再试\n或者使用VPN或代理连接(MAClient会在启动时自动读取IE代理)')
+        _prt('招待码 = %s' % invid)
         while True:
             po.cookie = ''
             po.post('check_inspection')
@@ -41,6 +51,9 @@ def reg_gen(plugin_vals):
             # print po.cookie
             while True:
                 uname, pwd = '', ''
+                if reg_cnt > 0 or reg_cnt == -0xe9:#auto_mode or ubw mode
+                    uname = ''.join([random.choice(string.letters + string.digits) for i in range(random.randrange(4,14))])
+                    pwd = ''.join([random.choice(string.letters + string.digits) for i in range(random.randrange(8,14))])
                 while len(uname) < 4 or len(uname) > 14:
                     uname = raw_input('user-name: ')
                 while len(pwd) < 8 or len(pwd) > 14:
@@ -53,7 +66,8 @@ def reg_gen(plugin_vals):
                 else:
                     p = 'invitation_id=%s&login_id=%s&password=%s&param=%s' % (invid, uname, pwd, '35' + (''.join([str(random.randint(0, 9)) for i in range(10)])))
                 # print maclient_network.encode_param(p)
-                r, d = po.post('regist', postdata = p)
+                print(p)
+                r, d = po.post('regist', postdata = p, extraheader = {'X-Forwarded-For':'.'.join([str(random.randrange(0,256)) for i in range(4)])})
                 if(XML2Dict.fromstring(d).response.header.error.code != '0'):
                     print(XML2Dict.fromstring(d).response.header.error.message)
                     continue
@@ -72,16 +86,22 @@ def reg_gen(plugin_vals):
             resp, ct = po.post('tutorial/next', postdata = 'S=%s&step=%s' % (po.cookie, 8000))
             if loc in ['kr', 'sg']:
                 # httplib2 doesn't follow redirection in POSTs
-                print(maclient_network.serv[loc])
+                _prt(maclient_network.serv[loc])
                 resp, ct = httplib2.Http().request('http://%s/%s' % (maclient_network.serv[loc][0], 'mainmenu?fl=1'), headers = GET_header)
             if len(ct) > 8000:
                 cnt += 1
-                print('Success. (%d done)' % cnt)
+                _prt('Success. (%d done)' % cnt)
             else:
-                print('Error occured.')
+                _prt('Error occured.')
             time.sleep(2.232131)
+            reg_cnt -= 1
+            if reg_cnt > 0:#auto
+                continue
+            elif reg_cnt == -0xe9:#ubw mode
+                open('.ubw.account.new.txt', 'w').write(' '.join((uname, pwd)))
+                return
             if raw_input('exit?(y/n)') == 'y':
-                print(du8("请重新登录 relogin(rl) 来刷新玩家信息!"))
+                _prt(du8("请重新登录 relogin(rl) 来刷新玩家信息!"))
                 break
 
     return do

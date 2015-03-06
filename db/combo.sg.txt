@@ -171,6 +171,11 @@
 270,High School Combo,3,Small increase in Max HP,4(26)
 271,High School Combo Rise,3,Small increase in Max HP,7(26)
 272,High School Combo Crown,3,Small increase in Max HP,9(26)
+273,Factor Friend,3,Medium increase in Max HP,[352,353]
+275,UFO Fighter,3,Small increase in Max HP,[355,366]
+277,Steal Work,3,Small increase in Max HP,[357,373]
+282,Overflowing,3,Small increase in Max HP,[362,379]
+285,Cat Attack,3,Small increase in Max HP,[374,376]
 286,Drumstick,3,Small increase in Max HP,[375,382]
 288,Halloween Combo,3,Small increase in Max HP,4(36)
 289,Halloween Combo Rise,3,Small increase in Max HP,7(36)
@@ -200,3 +205,5 @@
 316,Sports Day Combo Rise,2,Small increase in ATK,4(68)
 317,Sports Day Combo Crown,2,Medium increase in ATK,6(68)
 318,Lolita Attack,3,Small increase in Max HP,[758,757]
+319,Ghost Combo,3,Small increase in Max HP,2(61)
+320,Ghost Combo Rise,3,Small increase in Max HP,4(61)

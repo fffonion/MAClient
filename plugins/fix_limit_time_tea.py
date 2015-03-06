@@ -3,7 +3,7 @@ from _prototype import plugin_prototype
 # start meta
 __plugin_name__ = '台服优先嗑限时红绿茶'
 __author = 'fffonion'
-__version__ = 0.20
+__version__ = 0.21
 hooks = {'ENTER__use_item':1, 'EXIT_red_tea':1, 'EXIT_green_tea':1}
 extra_cmd = {}
 require_version = 1.70
@@ -58,18 +58,21 @@ class plugin(plugin_prototype):
         itemid = args[1]
         if mac.loc != 'tw' or self.already_inhook:
             return
+        if not self._guessed_id:
+            self.guess_id(mac.player.item)
         if mac.cfg_auto_choose_red_tea and (\
                 int(itemid) == 2 and (100 * mac.player.bc['current'] / mac.player.bc['max']) <  1.35 * self.PERCENT_RED \
                 or \
                 int(itemid) == 1 and (100 * mac.player.ap['current'] / mac.player.ap['max']) <  1.35 * self.PERCENT_GREEN \
             ):#如果勾选 自动选择红绿茶, 且剩余低于1倍小茶回复量，则嗑全回复
             return
-        if not self._guessed_id:
-            self.guess_id(mac.player.item)
+
         self.already_inhook = True
         minor_bc_cnt = 0 if not self.MINOR_RED else mac.player.item.get_count(self.MINOR_RED)#为None时，数量设为0
         minor_ap_cnt = 0 if not self.MINOR_GREEN else mac.player.item.get_count(self.MINOR_GREEN)
-        
+        #没有药，直接退出
+        if (int(itemid) == 2 and self.PERCENT_RED == 0) or (int(itemid) == 1 and self.PERCENT_GREEN == 0):
+            return
         if int(itemid) == 2:
             iid= self.MINOR_RED
             cnt = min(100/self.PERCENT_RED, minor_bc_cnt)
@@ -82,6 +85,8 @@ class plugin(plugin_prototype):
         elif int(itemid) == self.half_offset + 1:
             iid= self.MINOR_GREEN
             cnt = min(50/self.PERCENT_GREEN, minor_ap_cnt)
+        else:#other id
+            return
         #adjust count
         if iid == self.MINOR_RED:
             cnt = min(int((100 - 100 * mac.player.bc['current'] / mac.player.bc['max']) / self.PERCENT_RED), cnt)
